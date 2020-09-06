@@ -113,6 +113,9 @@ namespace com.espertech.esper.common.client.soda
             if (IsLowEndpointIncluded && IsHighEndpointIncluded)
             {
                 Children[0].ToEPL(writer, Precedence);
+                if (IsNotBetween) {
+                    writer.Write(" not");
+                }
                 writer.Write(" between ");
                 Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" and ");
@@ -121,6 +124,9 @@ namespace com.espertech.esper.common.client.soda
             else
             {
                 Children[0].ToEPL(writer, Precedence);
+                if (IsNotBetween) {
+                    writer.Write(" not");
+                }
                 writer.Write(" in ");
                 if (IsLowEndpointIncluded)
                 {

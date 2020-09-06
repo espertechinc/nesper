@@ -42,10 +42,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.arrayOf()");
-				builder.WithExpression(fields[1], "strvals.arrayOf(v => v)");
-				builder.WithExpression(fields[2], "strvals.arrayOf( (v, i) => v || '_' || Integer.toString(i))");
-				builder.WithExpression(fields[3], "strvals.arrayOf( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+				builder.WithExpression(fields[0], "Strvals.arrayOf()");
+				builder.WithExpression(fields[1], "Strvals.arrayOf(v => v)");
+				builder.WithExpression(fields[2], "Strvals.arrayOf( (v, i) => v || '_' || Convert.ToString(i))");
+				builder.WithExpression(fields[3], "Strvals.arrayOf( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
@@ -71,9 +71,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.arrayOf(x => x.p00)");
-				builder.WithExpression(fields[1], "contained.arrayOf((x, i) => x.p00 + i*10)");
-				builder.WithExpression(fields[2], "contained.arrayOf((x, i, s) => x.p00 + i*10 + s*100)");
+				builder.WithExpression(fields[0], "Contained.arrayOf(x => x.P00)");
+				builder.WithExpression(fields[1], "Contained.arrayOf((x, i) => x.P00 + i*10)");
+				builder.WithExpression(fields[2], "Contained.arrayOf((x, i, s) => x.P00 + i*10 + s*100)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.selectFrom(v => v.id).arrayOf()");
+				builder.WithExpression(fields[0], "Contained.selectFrom(v => v.Id).arrayOf()");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.selectfrom((v, i) => v || '-' || Integer.toString(i)).arrayOf()");
+				builder.WithExpression(fields[0], "Strvals.selectfrom((v, i) => v || '-' || Convert.ToString(i)).arrayOf()");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.selectfrom(v => Integer.parseInt(v)).arrayOf()");
+				builder.WithExpression(fields[0], "Strvals.selectfrom(v => Int.Parse(v)).arrayOf()");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 

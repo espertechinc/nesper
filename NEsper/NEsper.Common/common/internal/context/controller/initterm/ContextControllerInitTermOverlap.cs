@@ -87,17 +87,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool terminateChildContexts)
         {
             base.Deactivate(path, terminateChildContexts);
-            if (distinctSvc != null) {
-                distinctSvc.Clear(path);
-            }
+            distinctSvc?.Clear(path);
         }
 
         public override void Destroy()
         {
             base.Destroy();
-            if (distinctSvc != null) {
-                distinctSvc.Destroy();
-            }
+            distinctSvc?.Destroy();
         }
 
         public override void RangeNotification(

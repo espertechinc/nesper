@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenMethod methodNode = codegenMethodScope.MakeChild(
+			var methodNode = codegenMethodScope.MakeChild(
 					typeof(ICollection<object>),
 					typeof(ExprDotMethodForgeNoDuckEvalWrapArray),
 					codegenClassScope)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 
@@ -29,34 +30,120 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
 
         public static IDictionary<string, object> ElementToDictionary(this JsonElement element)
         {
-            var result = new Dictionary<string, object>();
-            var enumerator = element.EnumerateObject();
-            for (int ii = 0 ; enumerator.MoveNext() ; ii++) {
-                var property = enumerator.Current;
-                result.Add(property.Name, ElementToValue(property.Value));
-            }
+            switch (element.ValueKind) {
+                case JsonValueKind.Object:
+                    var result = new Dictionary<string, object>();
+                    var enumerator = element.EnumerateObject();
+                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                        var property = enumerator.Current;
+                        result.Add(property.Name, ElementToValue(property.Value));
+                    }
 
-            return result;
+                    return result;
+
+                case JsonValueKind.Null:
+                    return null;
+                
+                default:
+                    throw new ArgumentException("Invalid JsonElement", nameof(element));
+            }
+        }
+
+        public static IDictionary<string, T> ElementToDictionary<T>(
+            this JsonElement element,
+            Func<JsonElement, T> deserializer)
+        {
+            switch (element.ValueKind) {
+                case JsonValueKind.Object:
+                    var result = new Dictionary<string, T>();
+                    var enumerator = element.EnumerateObject();
+                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                        var property = enumerator.Current;
+                        var propertyName = property.Name;
+                        var propertyValue = deserializer.Invoke(property.Value);
+                        result.Add(propertyName, propertyValue);
+                    }
+
+                    return result;
+
+                case JsonValueKind.Null:
+                    return null;
+                
+                default:
+                    throw new ArgumentException("Invalid JsonElement", nameof(element));
+            }
         }
         
-        public static IList<object> ElementToArray(this JsonElement element)
+        public static IList<object> ElementToList(this JsonElement element)
         {
-            return ElementToArray(element, ElementToValue);
+            return ElementToList(element, ElementToValue);
         }
 
-        public static IList<T> ElementToArray<T>(
+        public static IList<T> ElementToList<T>(
             this JsonElement element,
-            JsonDeserializer<T> deserializer)
+            Func<JsonElement, T> deserializer)
         {
-            var result = new List<T>();
-            var enumerator = element.EnumerateArray();
-            for (int ii = 0; enumerator.MoveNext(); ii++) {
-                var itemElement = enumerator.Current;
-                var itemValue = deserializer.Invoke(itemElement);
-                result.Add(itemValue);
-            }
+            switch (element.ValueKind) {
+                case JsonValueKind.Array:
+                    var result = new List<T>();
+                    var enumerator = element.EnumerateArray();
+                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                        var itemElement = enumerator.Current;
+                        var itemValue = deserializer.Invoke(itemElement);
+                        result.Add(itemValue);
+                    }
 
-            return result;
+                    return result;
+
+                case JsonValueKind.Null:
+                    return null;
+                
+                default:
+                    throw new ArgumentException("Invalid JsonElement", nameof(element));
+            }
+        }
+
+        public static IList<T> ElementToList<T>(
+            this JsonElement element,
+            IJsonDeserializer deserializer)
+        {
+            switch (element.ValueKind) {
+                case JsonValueKind.Array:
+                    var result = new List<T>();
+                    var enumerator = element.EnumerateArray();
+                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                        var itemElement = enumerator.Current;
+                        var itemValue = (T) deserializer.Deserialize(itemElement);
+                        result.Add(itemValue);
+                    }
+
+                    return result;
+
+                case JsonValueKind.Null:
+                    return null;
+                
+                default:
+                    throw new ArgumentException("Invalid JsonElement", nameof(element));
+            }
+        }
+        
+        public static object[] ElementToArray(this JsonElement element)
+        {
+            return ElementToList(element)?.ToArray();
+        }
+
+        public static T[] ElementToArray<T>(
+            this JsonElement element,
+            Func<JsonElement, T> deserializer)
+        {
+            return ElementToList<T>(element, deserializer)?.ToArray();
+        }
+
+        public static T[] ElementToArray<T>(
+            this JsonElement element,
+            IJsonDeserializer deserializer)
+        {
+            return ElementToList<T>(element, deserializer)?.ToArray();
         }
 
         public static object ElementToNumeric(this JsonElement element)

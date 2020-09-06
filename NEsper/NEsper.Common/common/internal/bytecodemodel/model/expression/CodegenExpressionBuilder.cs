@@ -107,6 +107,25 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionExprDotMethod(expression, method, @params);
         }
 
+        public static CodegenExpression OutputVariable<T>(
+            string variableName)
+        {
+            return OutputVariable(typeof(T), variableName);
+        }
+
+        public static CodegenExpression OutputVariable(
+            string variableName)
+        {
+            return OutputVariable(null, variableName);
+        }
+
+        public static CodegenExpression OutputVariable(
+            Type variableType,
+            string variableName)
+        {
+            return new CodegenExpressionOutputVariable(variableType, variableName);
+        }
+
         public static CodegenExpression GetProperty(
             CodegenExpression expression,
             string property)
@@ -208,6 +227,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public static CodegenExpression Constant(object constant)
         {
             return new CodegenExpressionConstant(constant);
+        }
+
+        public static CodegenExpression DefaultValue()
+        {
+            return new CodegenExpressionDefault();
         }
 
         public static CodegenExpression MapOfConstant(IDictionary<string, object> constants) {
@@ -412,6 +436,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionStaticMethod(clazz, method, @params);
         }
 
+        public static CodegenExpression FlexCast(Type expectedType, CodegenExpression expression)
+        {
+            return expectedType == typeof(FlexCollection) 
+                ? FlexWrap(expression)
+                : Cast(expectedType, expression);
+        }
+
         public static CodegenExpression FlexWrap(
             CodegenExpression expression)
         {
@@ -534,6 +565,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public static CodegenExpression Typeof(Type type)
         {
             return new CodegenExpressionTypeof(type);
+        }
+
+        public static CodegenExpressionLambda Lambda(CodegenBlock parent)
+        {
+            return new CodegenExpressionLambda(parent);
+        }
+
+        public static CodegenExpressionLambda Lambda(
+            CodegenBlock parent,
+            IList<CodegenNamedParam> paramNames)
+        {
+            return new CodegenExpressionLambda(parent, paramNames);
         }
 
         public static void RenderExpressions(

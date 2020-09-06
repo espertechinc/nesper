@@ -11,8 +11,8 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.lookup;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.lookup;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.table.update;
@@ -154,9 +154,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                     stopCallback = new ProxyAgentInstanceMgmtCallback {
                         ProcStop = services => {
                             var instance = namedWindow.GetNamedWindowInstance(services.AgentInstanceContext);
-                            if (instance != null) {
-                                instance.RemoveExplicitIndex(indexName);
-                            }
+                            instance?.RemoveExplicitIndex(indexName);
                         }
                     };
                 }
@@ -174,9 +172,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 stopCallback = new ProxyAgentInstanceMgmtCallback {
                     ProcStop = services => {
                         var instance = table.GetTableInstance(services.AgentInstanceContext.AgentInstanceId);
-                        if (instance != null) {
-                            instance.RemoveExplicitIndex(indexName);
-                        }
+                        instance?.RemoveExplicitIndex(indexName);
                     }
                 };
             }

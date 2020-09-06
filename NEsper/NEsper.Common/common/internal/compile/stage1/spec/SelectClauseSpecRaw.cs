@@ -52,13 +52,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <value>
         /// 	<c>true</c> if this instance is only wildcard; otherwise, <c>false</c>.
         /// </value>
-        public bool IsOnlyWildcard {
-            get {
-                return
-                    (_selectClauseElements.Count == 1) &&
-                    (_selectClauseElements[0] is SelectClauseElementWildcard);
-            }
-        }
+        public bool IsOnlyWildcard =>
+            (_selectClauseElements.Count == 1) &&
+            (_selectClauseElements[0] is SelectClauseElementWildcard);
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is distinct.
@@ -70,9 +66,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Returns the list of select expressions. </summary>
         /// <returns>list of expressions</returns>
-        public IList<SelectClauseElementRaw> SelectExprList {
-            get { return _selectClauseElements; }
-        }
+        public IList<SelectClauseElementRaw> SelectExprList => _selectClauseElements;
 
         /// <summary>Returns true if the select clause contains at least one wildcard. </summary>
         /// <returns>true if clause contains wildcard, false if not</returns>

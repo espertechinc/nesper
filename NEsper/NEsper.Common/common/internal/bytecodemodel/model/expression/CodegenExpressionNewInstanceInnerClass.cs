@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string innerName,
             CodegenExpression[] @params)
         {
-            _innerName = innerName;
+            _innerName = innerName.CodeInclusionTypeName();
             _params = @params;
         }
 
@@ -41,7 +42,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             
             CodegenExpressionBuilder.RenderExpressions(builder, _params, isInnerClass);
 
-            builder.Append(") /* CodegenExpressionNewInstanceInnerClass */");
+            builder.Append(")");
         }
 
         public void MergeClasses(ISet<Type> classes)

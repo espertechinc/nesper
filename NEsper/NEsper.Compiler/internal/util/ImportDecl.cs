@@ -38,6 +38,10 @@ namespace com.espertech.esper.compiler.@internal.util
             string @namespace,
             string typeName)
         {
+            if (@namespace == null) {
+                throw new ArgumentNullException(@namespace);
+            }
+
             Namespace = @namespace
                 .Replace(".internal.", ".@internal.")
                 .Replace(".internal", ".@internal")
@@ -47,6 +51,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Replace(".lock", ".@lock")
                 .Replace(".event.", ".@event.")
                 .Replace(".event", ".@event");
+
             TypeName = typeName;
         }
 

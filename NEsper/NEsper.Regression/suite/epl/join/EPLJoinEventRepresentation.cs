@@ -29,9 +29,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinEventRepresentations());
-            execs.Add(new EPLJoinJoinMapEventNotUnique());
+            WithEventRepresentations(execs);
+            WithMapEventNotUnique(execs);
+            WithWrapperEventNotUnique(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWrapperEventNotUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinWrapperEventNotUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapEventNotUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinJoinMapEventNotUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventRepresentations(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinJoinEventRepresentations());
             return execs;
         }
 
@@ -88,8 +109,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var jsonSchemas =
                     "@public @buseventtype create json schema S0_JSON(id String, p00 int);\n" +
                     "@public @buseventtype create json schema S1_JSON(id String, p00 int);\n" +
-                    "@public @buseventtype @JsonSchema(className='" + nameof(MyLocalJsonProvidedS0) + "') create json schema S0_JSONCLASSPROVIDED();\n" +
-                    "@public @buseventtype @JsonSchema(className='" + nameof(MyLocalJsonProvidedS1) + "') create json schema S1_JSONCLASSPROVIDED();\n";
+                    "@public @buseventtype @JsonSchema(ClassName='" +
+                    nameof(MyLocalJsonProvidedS0) +
+                    "') create json schema S0_JSONCLASSPROVIDED();\n" +
+                    "@public @buseventtype @JsonSchema(ClassName='" +
+                    nameof(MyLocalJsonProvidedS1) +
+                    "') create json schema S1_JSONCLASSPROVIDED();\n";
                 env.CompileDeploy(jsonSchemas, path);
 
                 var milestone = new AtomicLong();
@@ -110,8 +135,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     var s0Type = "S0_" + rep.GetName();
                     var s1Type = "S1_" + rep.GetName();
                     var eplTwo = "select * from " +
-                                 s0Type + "#keepall as s0, " +
-                                 s1Type + "#keepall as s1 " +
+                                 s0Type +
+                                 "#keepall as s0, " +
+                                 s1Type +
+                                 "#keepall as s1 " +
                                  " where s0.Id = s1.Id";
                     TryJoinAssertion(env, eplTwo, rep, "s0.Id,s1.Id,s0.P00,s1.P00", milestone, path, typeof(MyLocalJsonProvidedWildcard));
                 }
@@ -194,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.UndeployAll();
             }
         }
-        
+
         [Serializable]
         public class MyLocalJsonProvidedS0
         {

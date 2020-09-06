@@ -38,18 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.util
             // Recursively compile the statement within the statement.
             WalkSubselectSelectClause(spec.SelectClauseSpec.SelectExprList, visitor);
 
-            if (spec.WhereClause != null) {
-                spec.WhereClause.Accept(visitor);
-            }
+            spec.WhereClause?.Accept(visitor);
 
-            if (spec.HavingClause != null) {
-                spec.HavingClause.Accept(visitor);
-            }
+            spec.HavingClause?.Accept(visitor);
 
             if (spec.UpdateDesc != null) {
-                if (spec.UpdateDesc.OptionalWhereClause != null) {
-                    spec.UpdateDesc.OptionalWhereClause.Accept(visitor);
-                }
+                spec.UpdateDesc.OptionalWhereClause?.Accept(visitor);
 
                 foreach (OnTriggerSetAssignment assignment in spec.UpdateDesc.Assignments) {
                     assignment.Expression.Accept(visitor);
@@ -145,9 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             else if (onTriggerDesc is OnTriggerSplitStreamDesc) {
                 OnTriggerSplitStreamDesc splits = (OnTriggerSplitStreamDesc) onTriggerDesc;
                 foreach (OnTriggerSplitStream split in splits.SplitStreams) {
-                    if (split.WhereClause != null) {
-                        split.WhereClause.Accept(visitor);
-                    }
+                    split.WhereClause?.Accept(visitor);
 
                     if (split.SelectClause.SelectExprList != null) {
                         WalkSubselectSelectClause(split.SelectClause.SelectExprList, visitor);
@@ -157,14 +149,10 @@ namespace com.espertech.esper.common.@internal.epl.util
             else if (onTriggerDesc is OnTriggerMergeDesc) {
                 OnTriggerMergeDesc merge = (OnTriggerMergeDesc) onTriggerDesc;
                 foreach (OnTriggerMergeMatched matched in merge.Items) {
-                    if (matched.OptionalMatchCond != null) {
-                        matched.OptionalMatchCond.Accept(visitor);
-                    }
+                    matched.OptionalMatchCond?.Accept(visitor);
 
                     foreach (OnTriggerMergeAction action in matched.Actions) {
-                        if (action.OptionalWhereClause != null) {
-                            action.OptionalWhereClause.Accept(visitor);
-                        }
+                        action.OptionalWhereClause?.Accept(visitor);
 
                         if (action is OnTriggerMergeActionUpdate) {
                             OnTriggerMergeActionUpdate update = (OnTriggerMergeActionUpdate) action;

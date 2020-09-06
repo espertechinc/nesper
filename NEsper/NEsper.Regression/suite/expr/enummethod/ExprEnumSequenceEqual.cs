@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.selectFrom(x => key0).sequenceEqual(contained.selectFrom(y => id))");
+				builder.WithExpression(fields[0], "Contained.selectFrom(x => Key0).sequenceEqual(Contained.selectFrom(y => Id))");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.sequenceEqual(strvalstwo)");
+				builder.WithExpression(fields[0], "Strvals.sequenceEqual(Strvalstwo)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
@@ -100,11 +100,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string epl;
 
-				epl = "select window(*).sequenceEqual(strvals) from SupportCollection#lastevent";
+				epl = "select window(*).sequenceEqual(Strvals) from SupportCollection#lastevent";
 				TryInvalidCompile(
 					env,
 					epl,
-					"Failed to validate select-clause expression 'window(*).sequenceEqual(strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
+					"Failed to validate select-clause expression 'window(*).sequenceEqual(Strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
 			}
 		}
 	}

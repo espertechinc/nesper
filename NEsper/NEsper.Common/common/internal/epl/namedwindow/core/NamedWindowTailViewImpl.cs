@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 viewsPerStatements = new CopyOnWriteList<NamedWindowConsumerView>();
 
                 // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
-                // without the runtimelock
+                // without the runtime lock
                 IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> newConsumers =
                     NamedWindowUtil.CreateConsumerMap(isPrioritized);
                 newConsumers.PutAll(consumersNonContext);

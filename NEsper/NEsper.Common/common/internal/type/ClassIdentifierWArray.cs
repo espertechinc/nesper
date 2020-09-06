@@ -51,24 +51,23 @@ namespace com.espertech.esper.common.@internal.type
                 return new ClassIdentifierWArray(typeName);
             }
 
-            var testType = Type.GetType(typeName, false);
-            if (testType != null) {
-                if (testType.IsArray) {
-                    return new ClassIdentifierWArray(
-                        testType.GetElementType().FullName,
-                        testType.GetArrayRank(),
-                        testType.GetElementType().IsValueType);
-                }
-                else {
-                    return new ClassIdentifierWArray(typeName); // Generics like Nullable show up here
-                }
-            }
-
             var name = typeName.Substring(0, indexStart);
             var arrayPart = typeName.Substring(indexStart).ToLowerInvariant().Trim();
             arrayPart = arrayPart.Replace(" ", "");
             var primitive = "[" + PRIMITIVE_KEYWORD + "]";
             if (!arrayPart.StartsWith("[]") && !arrayPart.StartsWith(primitive)) {
+                var testType = Type.GetType(typeName, false);
+                if (testType != null) {
+                    if (testType.IsArray) {
+                        return new ClassIdentifierWArray(
+                            testType.GetElementType().FullName,
+                            testType.GetArrayRank(),
+                            testType.GetElementType().IsValueType);
+                    }
+
+                    return new ClassIdentifierWArray(typeName); // Generics like Nullable show up here
+                }
+
                 throw new EPException(
                     "Invalid array keyword '" + arrayPart + "', expected ']' or '" + PRIMITIVE_KEYWORD + "'");
             }

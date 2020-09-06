@@ -24,7 +24,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	public class TestEPLParser : AbstractCompilerTest
 	{
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestDisplayAST()
 		{
 			var expression = "select * from A where exp > ANY (select a from B)";
@@ -40,7 +40,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			walker.Walk(listener, (IParseTree) ast.First); // initiate walk of tree with listener
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestInvalidCases()
 		{
 			var className = typeof(SupportBean).Name;
@@ -211,7 +211,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsInvalid("on pattern[every B] update ABC as abc set a=");
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestValidCases()
 		{
 			var className = typeof(SupportBean).Name;
@@ -695,10 +695,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			           ")\n" +
 			           "select * from MyField";
 			AssertIsValid(text);
-			text = "@EPL(name=\"MyStmtName\"," +
+			text = "@EPL(Name=\"MyStmtName\"," +
 			       "  tags=@Tags(" +
-			       "    {@Tag(name=\"vehicleId\", type='int', value=100), " +
-			       "     @Tag(name=\"vehicleId\", type='int', value=100)" +
+			       "    {@Tag(Name=\"vehicleId\", type='int', value=100), " +
+			       "     @Tag(Name=\"vehicleId\", type='int', value=100)" +
 			       "    } " +
 			       "  )" +
 			       ")\n" +
@@ -707,7 +707,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(
 				"@Name('MyStatementName')\n" +
 				"@Description('This statement does ABC')\n" +
-				"@Tag(name='abc', value='cde')\n" +
+				"@Tag(Name='abc', value='cde')\n" +
 				"select a from B");
 
 			// row pattern recog
@@ -748,7 +748,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				")");
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestBitWiseCases()
 		{
 			var className = typeof(SupportBean).Name;
@@ -760,7 +760,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(eplSmt + "().win:some_view({})");
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestIfThenElseCase()
 		{
 			var className = typeof(SupportBean).Name;

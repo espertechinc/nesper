@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
     [TestFixture]
     public class TestPointRegionQuadTreeFilterIndexRandomMovingPoints : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIt()
         {
             var tools = new SupportQuadTreeToolUnique<PointRegionQuadTree<object>>(

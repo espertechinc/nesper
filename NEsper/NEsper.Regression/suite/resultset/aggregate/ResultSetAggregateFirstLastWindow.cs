@@ -28,6 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new ResultSetAggregateStar());
             execs.Add(new ResultSetAggregateUnboundedSimple());
             execs.Add(new ResultSetAggregateUnboundedStream());
@@ -48,6 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             execs.Add(new ResultSetAggregateWindowAndSumWGroup());
             execs.Add(new ResultSetAggregateOutputRateLimiting());
             execs.Add(new ResultSetAggregateOnDelete());
+            #endif
             execs.Add(new ResultSetAggregateLastMaxMixedOnSelect());
             execs.Add(new ResultSetAggregateLateInitialize());
             execs.Add(new ResultSetAggregateMixedNamedWindow());
@@ -416,14 +418,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select first().Property as val0, first().MyMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
+                    "@Name('s0') select first().GetProperty() as val0, first().MyMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportEventPropertyWithMethod("P1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "val0", "val1" },
-                    new object[] {"P1", "abc"});
+                    new[] {"val0", "val1"},
+                    new[] {"P1", "abc"});
 
                 env.UndeployAll();
             }

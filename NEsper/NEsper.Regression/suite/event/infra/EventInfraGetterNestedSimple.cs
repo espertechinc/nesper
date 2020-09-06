@@ -40,10 +40,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env.SendEventBean(new LocalEvent(property));
 			};
 			var beanepl = "@public @buseventtype create schema LocalInnerEvent as " +
-			              typeof(LocalInnerEvent).FullName +
+			              typeof(LocalInnerEvent).MaskTypeName() +
 			              ";\n" +
 			              "@public @buseventtype create schema LocalEvent as " +
-			              typeof(LocalEvent).FullName +
+			              typeof(LocalEvent).MaskTypeName() +
 			              ";\n";
 			RunAssertion(env, beanepl, bean);
 
@@ -51,8 +51,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			BiConsumer<EventType, NullableObject<string>> map = (
 				type,
 				nullable) => {
-				IDictionary<string, object> property = nullable == null ? null : Collections.SingletonDataMap("id", nullable.Value);
-				env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
+				IDictionary<string, object> property = nullable == null ? null : Collections.SingletonDataMap("Id", nullable.Value);
+				env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
 			};
 			RunAssertion(env, GetEpl("map"), map);
 
@@ -72,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				var @event = new JObject();
 				if (nullable != null) {
 					if (nullable.Value != null) {
-						@event.Add("property", new JObject(new JProperty("id", nullable.Value)));
+						@event.Add("Property", new JObject(new JProperty("Id", nullable.Value)));
 					}
 					else {
-						@event.Add("property", new JObject(new JProperty("id", null)));
+						@event.Add("Property", new JObject(new JProperty("Id", null)));
 					}
 				}
 
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, GetEpl("json"), json);
 
 			// Json-Class-Provided
-			var eplJsonProvided = "@JsonSchema(className='" +
-			                      typeof(MyLocalJsonProvided).FullName +
+			var eplJsonProvided = "@JsonSchema(ClassName='" +
+			                      typeof(MyLocalJsonProvided).MaskTypeName() +
 			                      "') @public @buseventtype create json schema LocalEvent();\n";
 			RunAssertion(env, eplJsonProvided, json);
 
@@ -96,9 +96,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				var schema = SupportAvroUtil.GetAvroSchema(type).AsRecordSchema();
 				var @event = new GenericRecord(schema);
 				if (nullable != null) {
-					var inside = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-					inside.Put("id", nullable.Value);
-					@event.Put("property", inside);
+					var inside = new GenericRecord(schema.GetField("Property").Schema.AsRecordSchema());
+					inside.Put("Id", nullable.Value);
+					@event.Put("Property", inside);
 				}
 
 				env.SendEventAvro(@event, "LocalEvent");
@@ -114,11 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			var epl = createSchemaEPL +
 			          "@Name('s0') select * from LocalEvent;\n" +
-			          "@Name('s1') select property.id as c0, exists(property.id) as c1, typeof(property.id) as c2 from LocalEvent;\n";
+			          "@Name('s1') select Property.Id as c0, exists(Property.Id) as c1, typeof(Property.Id) as c2 from LocalEvent;\n";
 			env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 			var eventType = env.Statement("s0").EventType;
 
-			var g0 = eventType.GetGetter("property.id");
+			var g0 = eventType.GetGetter("Property.Id");
 
 			sender.Invoke(eventType, new NullableObject<string>("a"));
 			var @event = env.Listener("s0").AssertOneGetNewAndReset();
@@ -164,10 +164,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			return "@public @buseventtype create " +
 			       underlying +
-			       " schema LocalInnerEvent(id string);\n" +
+			       " schema LocalInnerEvent(Id string);\n" +
 			       "@public @buseventtype create " +
 			       underlying +
-			       " schema LocalEvent(property LocalInnerEvent);\n";
+			       " schema LocalEvent(Property LocalInnerEvent);\n";
 		}
 
 		public class LocalInnerEvent
@@ -193,13 +193,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public MyLocalJsonProvidedInnerEvent property;
+			public MyLocalJsonProvidedInnerEvent Property;
 		}
 
 		[Serializable]
 		public class MyLocalJsonProvidedInnerEvent
 		{
-			public string id;
+			public string Id;
 		}
 	}
 } // end of namespace

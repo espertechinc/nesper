@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				block.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, eval));
 			}
 
-			block.IfCondition(Not(ExprDotMethod(Ref("distinct"), "containsKey", Ref("comparable"))))
+			block.IfCondition(Not(ExprDotMethod(Ref("distinct"), "ContainsKey", Ref("comparable"))))
 				.Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")))
 				.BlockEnd();
 		}

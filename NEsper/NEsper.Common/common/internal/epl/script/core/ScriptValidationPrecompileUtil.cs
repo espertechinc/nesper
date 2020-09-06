@@ -87,8 +87,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     parameters.Add(param);
                 }
             }
-#else
-            throw new NotSupportedException();
 #endif
         }
     }

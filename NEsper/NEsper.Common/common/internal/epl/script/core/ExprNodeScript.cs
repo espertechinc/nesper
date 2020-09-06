@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             var that = (ExprNodeScript) node;
 
-            if (Script != null ? !Script.Equals(that.Script) : that.Script != null) {
+            if (!Script?.Equals(that.Script) ?? that.Script != null) {
                 return false;
             }
 
@@ -218,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 parameterTypes,
                 Script.CompiledBuf,
                 validationContext.ImportService,
-                validationContext.ScriptService);
+                validationContext.ScriptCompiler);
 
             // Determine declared return type
             var declaredReturnType = GetDeclaredReturnType(Script.OptionalReturnTypeName, validationContext);
@@ -293,10 +293,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             Type[] parameterTypes,
             ExpressionScriptCompiled scriptCompiledBuf,
             ImportServiceCompileTime importService,
-            ScriptServiceCompileTime scriptingService)
+            ScriptCompiler scriptingCompiler)
         {
             return new ExpressionScriptCompiledImpl(
-                scriptingService.Compile(
+                scriptingCompiler.Compile(
                     Script.OptionalDialect ?? _defaultDialect,
                     Script));
         }
@@ -336,9 +336,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 symbols.GetAddExprEvalCtx(codegenMethodScope));
         }
 
-        public CodegenExpressionField GetField(CodegenClassScope codegenClassScope)
+        public CodegenExpressionInstanceField GetField(CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.NamespaceScope.AddOrGetFieldSharable(
+            return codegenClassScope.NamespaceScope.AddOrGetDefaultFieldSharable(
                 new ScriptCodegenFieldSharable(_scriptDescriptor, codegenClassScope));
         }
 

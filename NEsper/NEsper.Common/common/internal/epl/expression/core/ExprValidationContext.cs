@@ -104,14 +104,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsFilterExpression { get; }
 
-        public ScriptServiceCompileTime ScriptService =>
-            StatementCompileTimeService.ScriptServiceCompileTime;
-
         public ImportServiceCompileTime ImportService =>
             StatementCompileTimeService.ImportServiceCompileTime;
         
         public ClassProvidedExtension ClassProvidedExtension =>
             StatementCompileTimeService.ClassProvidedExtension;
+
+        public ScriptCompiler ScriptCompiler =>
+            StatementCompileTimeService.ScriptCompiler;
 
         public VariableCompileTimeResolver VariableCompileTimeResolver =>
             StatementCompileTimeService.VariableCompileTimeResolver;

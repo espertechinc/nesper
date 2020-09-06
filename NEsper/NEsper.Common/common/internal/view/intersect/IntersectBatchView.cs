@@ -66,9 +66,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {
-                if (view is AgentInstanceMgmtCallback) {
-                    ((AgentInstanceMgmtCallback) view).Stop(services);
-                }
+                (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
 

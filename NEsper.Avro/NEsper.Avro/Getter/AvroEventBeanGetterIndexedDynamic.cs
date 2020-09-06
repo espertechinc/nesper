@@ -119,7 +119,8 @@ namespace NEsper.Avro.Getter
                 GetType(),
                 "IsExistsPropertyAvro",
                 underlyingExpression,
-                CodegenExpressionBuilder.Constant(_propertyName));
+                CodegenExpressionBuilder.Constant(_propertyName),
+                CodegenExpressionBuilder.Constant(_index));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -166,7 +167,7 @@ namespace NEsper.Avro.Getter
             var value = record.Get(propertyName);
             return AvroEventBeanGetterIndexed.IsIndexableValue(value);
         }
-        
+
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -174,7 +175,11 @@ namespace NEsper.Avro.Getter
         /// <param name="propertyName">property</param>
         /// <param name="index">index</param>
         /// <returns></returns>
-        public static bool IsExistsPropertyAvro(GenericRecord record, string propertyName, int index) {
+        public static bool IsExistsPropertyAvro(
+            GenericRecord record,
+            string propertyName,
+            int index)
+        {
             var values = record.Get(propertyName);
             switch (values) {
                 case null:
@@ -195,7 +200,7 @@ namespace NEsper.Avro.Getter
             else {
                 list = CompatExtensions.UnwrapIntoList<object>(values);
             }
-            
+
             return index < list.Count;
         }
     }

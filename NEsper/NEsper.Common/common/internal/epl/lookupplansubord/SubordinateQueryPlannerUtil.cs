@@ -94,14 +94,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     ? "table scan"
                     : plan.LookupStrategyFactory.ToQueryPlan();
                 queryPlanLog.Info(prefix + "strategy " + strategy);
-                if (plan != null) {
-                    if (plan.IndexDescs != null) {
-                        for (var i = 0; i < plan.IndexDescs.Length; i++) {
-                            var indexName = plan.IndexDescs[i].IndexName;
-                            var indexText = indexName != null ? "index " + indexName + " " : "(implicit) ";
-                            queryPlanLog.Info(prefix + "shared index");
-                            queryPlanLog.Info(prefix + indexText);
-                        }
+                if (plan?.IndexDescs != null) {
+                    for (var i = 0; i < plan.IndexDescs.Length; i++) {
+                        var indexName = plan.IndexDescs[i].IndexName;
+                        var indexText = indexName != null ? "index " + indexName + " " : "(implicit) ";
+                        queryPlanLog.Info(prefix + "shared index");
+                        queryPlanLog.Info(prefix + indexText);
                     }
                 }
 

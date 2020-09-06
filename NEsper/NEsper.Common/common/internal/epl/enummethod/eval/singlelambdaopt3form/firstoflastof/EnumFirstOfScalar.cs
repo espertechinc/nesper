@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							props[0] = next;
 							props[1] = count;
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
+							if (pass == null || false.Equals(pass)) {
 								continue;
 							}
 

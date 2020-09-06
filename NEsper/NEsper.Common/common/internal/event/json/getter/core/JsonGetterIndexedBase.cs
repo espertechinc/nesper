@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -49,7 +51,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -57,7 +60,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(underlyingExpression, FieldName), Constant(Index));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "ArrayValueAtIndex",
+                Cast<Array>(ExprDotName(underlyingExpression, FieldName)),
+                Constant(Index));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -65,7 +72,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -73,7 +81,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "ArrayExistsAtIndex", ExprDotName(underlyingExpression, FieldName), Constant(Index));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "ArrayExistsAtIndex",
+                Cast<Array>(ExprDotName(underlyingExpression, FieldName)),
+                Constant(Index));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -81,7 +93,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingFragmentCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingFragmentCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public bool IsExistsProperty(EventBean eventBean)

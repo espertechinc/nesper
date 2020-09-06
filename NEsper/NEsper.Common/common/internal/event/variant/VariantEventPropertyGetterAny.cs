@@ -111,11 +111,8 @@ namespace com.espertech.esper.common.@internal.@event.variant
         {
             var variant = (VariantEvent) eventBean;
             var getter = propertyGetterCache.GetGetter(propertyName, variant.UnderlyingEventBean.EventType);
-            if (getter == null) {
-                return null;
-            }
 
-            var result = getter.Get(variant.UnderlyingEventBean);
+            var result = getter?.Get(variant.UnderlyingEventBean);
             return result;
         }
 

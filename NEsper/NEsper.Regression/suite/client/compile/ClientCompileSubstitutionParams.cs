@@ -16,6 +16,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -287,8 +288,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_S0(id=?:subs_1:int);\n" +
-                          "@Name('s1') select * from SupportBean_S1(p10=?:subs_2:string);\n";
+                var epl = "@Name('s0') select * from SupportBean_S0(Id=?:subs_1:int);\n" +
+                          "@Name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
                 var compiled = env.Compile(epl);
 
                 var options = new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -332,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     env.Deployment.Deploy(compiled, options);
                     Assert.Fail();
                 }
-                catch (EPDeployException e) {
+                catch (EPDeployException) {
                     // expected
                 }
 
@@ -390,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidCompile(
                     env,
                     "select ?:p0:int as c0, ?:p0:long from SupportBean",
-                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Int32' and 'System.Int64'");
+                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Nullable<System.Int32>' and 'System.Nullable<System.Int64>'");
             }
         }
 
@@ -446,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var compiled = env.Compile(
                     soda,
-                    "@Name('s0') select * from SupportBean(TheString=(?::SupportBean.getTheString()))",
+                    "@Name('s0') select * from SupportBean(TheString=(?::SupportBean.GetTheString()))",
                     new CompilerArguments(new Configuration()));
                 DeployWithResolver(env, compiled, null, prepared => prepared.SetObject(1, new SupportBean("E1", 0)));
                 env.AddListener("s0");
@@ -467,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@Name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.getTheString())");
+                var compiled = env.Compile("@Name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.GetTheString())");
                 DeployWithResolver(env, compiled, null, prepared => prepared.SetObject("psb", new SupportBean("E1", 0)));
                 env.AddListener("s0");
 
@@ -509,7 +510,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select (select symbol from SupportMarketDataBean(symbol=?::string)#lastevent) as mysymbol from SupportBean";
+                var stmtText = "select (select Symbol from SupportMarketDataBean(Symbol=?::string)#lastevent) as mysymbol from SupportBean";
                 var compiled = env.Compile(stmtText);
 
                 DeployWithResolver(env, compiled, "s0", prepared => prepared.SetObject(1, "S1"));
@@ -578,14 +579,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var path = new RegressionPath();
                 var types =
                     "create schema MyEventOne as " +
-                    typeof(MyEventOne).Name +
+                    typeof(MyEventOne).MaskTypeName() +
                     ";\n" +
                     "create schema MyEventTwo as " +
-                    typeof(MyEventTwo).Name +
+                    typeof(MyEventTwo).MaskTypeName() +
                     ";\n";
                 env.CompileDeployWBusPublicType(types, path);
 
-                var epl = "select * from MyEventOne(key = ?::IKey)";
+                var epl = "select * from MyEventOne(Key = ?::IKey)";
                 var compiled = env.Compile(epl, path);
                 var lKey = new MyObjectKeyInterface();
                 DeployWithResolver(env, compiled, "s0", prepared => prepared.SetObject(1, lKey));
@@ -595,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
 
                 // Test substitution parameter and concrete subclass in key matching
-                epl = "select * from MyEventTwo where key = ?::MyObjectKeyConcrete";
+                epl = "select * from MyEventTwo where Key = ?::MyObjectKeyConcrete";
                 compiled = env.Compile(epl, path);
                 var cKey = new MyObjectKeyConcrete();
                 DeployWithResolver(env, compiled, "s1", prepared => prepared.SetObject(1, cKey));
@@ -728,7 +729,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject("x", 10),
-                            "Failed to find substitution parameter named 'x', available parameters are [p0]");
+                            "Failed to find substitution parameter named 'x', available parameters are [\"p0\"]");
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(0, "a"),

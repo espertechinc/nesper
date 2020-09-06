@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             getter = new KeyedMethodPropertyGetter(method, 1, null, null);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(bean.GetIndexed(1), getter.Get(theEvent));

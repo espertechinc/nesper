@@ -605,13 +605,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         
                         SelectExprProcessorForge forgeX;
                         if (singleStreamWrapper) {
-                            forgeX = new SelectEvalInsertWildcardSSWrapper(selectExprForgeContext, resultEventType);
+                            forgeX = new SelectEvalInsertWildcardSSWrapper(selectExprForgeContext, resultEventTypeInner);
                         }
                         else if (joinWildcardProcessor == null) {
-                            forgeX = new SelectEvalWildcard(selectExprForgeContext, resultEventType);
+                            forgeX = new SelectEvalWildcard(selectExprForgeContext, resultEventTypeInner);
                         }
                         else {
-                            forgeX = new SelectEvalWildcardJoin(selectExprForgeContext, resultEventType, joinWildcardProcessor);
+                            forgeX = new SelectEvalWildcardJoin(selectExprForgeContext, resultEventTypeInner, joinWildcardProcessor);
                         }
 
                         return new SelectExprProcessorWInsertTarget(forgeX, insertIntoTargetType, additionalForgeables);
@@ -1796,11 +1796,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             EventType eventType)
         {
             var nw = namedWindowCompileTimeResolver.Resolve(eventType.Name);
-            if (nw == null) {
-                return null;
-            }
 
-            return nw.OptionalEventTypeAs;
+            return nw?.OptionalEventTypeAs;
         }
 
         private static EPTypesAndPropertyDescPair DetermineInsertedEventTypeTargets(

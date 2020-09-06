@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraTableOnDelete.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableOnMerge()
         {
             RegressionRunner.Run(session, InfraTableOnMerge.Executions());
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraTableRollup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableSelect()
         {
             RegressionRunner.Run(session, InfraTableSelect.Executions());

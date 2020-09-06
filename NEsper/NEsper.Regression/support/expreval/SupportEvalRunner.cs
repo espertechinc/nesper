@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
@@ -216,6 +217,15 @@ namespace com.espertech.esper.regressionlib.support.expreval
 					result = eval.Evaluate(eventsPerStream, true, null);
 				}
 				catch (Exception ex) {
+					Console.WriteLine("Failed at expression " + expected.Key + " at event #" + assertionNumber);
+
+					for (Exception exx = ex; exx != null; exx = exx.InnerException) {
+						Console.WriteLine(">> {0}", exx.GetType().CleanName());
+						Console.WriteLine("--------------------");
+						Console.WriteLine(ex.Message);
+						Console.WriteLine(ex.StackTrace.ToString());
+					}
+
 					Log.Error("Failed at expression " + expected.Key + " at event #" + assertionNumber, ex);
 					Assert.Fail();
 				}

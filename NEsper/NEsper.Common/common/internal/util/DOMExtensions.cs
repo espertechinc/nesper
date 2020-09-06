@@ -31,11 +31,7 @@ namespace com.espertech.esper.common.@internal.util
             string key)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
-            if (valueNode != null) {
-                return valueNode.InnerText;
-            }
-
-            return null;
+            return valueNode?.InnerText;
         }
 
         public static string GetRequiredAttribute(

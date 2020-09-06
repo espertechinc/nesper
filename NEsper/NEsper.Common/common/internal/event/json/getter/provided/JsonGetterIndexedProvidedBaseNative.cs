@@ -59,7 +59,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(underlyingExpression, _field.Name), Constant(_index));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "ArrayValueAtIndex",
+                Cast<Array>(ExprDotName(underlyingExpression, _field.Name)),
+                Constant(_index));
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -75,7 +79,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "ArrayExistsAtIndex", ExprDotName(underlyingExpression, _field.Name), Constant(_index));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "ArrayExistsAtIndex",
+                Cast<Array>(ExprDotName(underlyingExpression, _field.Name)),
+                Constant(_index));
         }
 
         public override bool IsExistsProperty(EventBean eventBean)

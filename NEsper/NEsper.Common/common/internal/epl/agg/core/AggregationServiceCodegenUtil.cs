@@ -56,8 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                             classScope);
                 }
 
+                var instance = optionalMultiKey.ClassNameMK.Type != null
+                    ? NewInstance(optionalMultiKey.ClassNameMK.Type, expressions)
+                    : NewInstanceInner(optionalMultiKey.ClassNameMK.Name, expressions);
+
                 exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
-                method.Block.MethodReturn(NewInstanceInner(optionalMultiKey.ClassNameMK, expressions));
+                method.Block.MethodReturn(instance);
             };
 
             return namedMethods.AddMethodWithSymbols(

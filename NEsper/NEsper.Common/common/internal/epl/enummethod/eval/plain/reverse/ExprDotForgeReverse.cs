@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 type = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
             return new EnumForgeDescFactoryReverse(type, inputEventType == null);

@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 EventTypeUtility.ResolveTypeCodegen(OptionalInnerType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
                 typeof(JsonFieldGetterHelperSchema),
-                "handleJsonCreateFragmentIndexed",
+                "HandleJsonCreateFragmentIndexed",
                 underlyingExpression,
                 Constant(_field.FieldName),
                 Constant(Index),

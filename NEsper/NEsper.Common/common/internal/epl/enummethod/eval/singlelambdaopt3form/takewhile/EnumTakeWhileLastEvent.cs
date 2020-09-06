@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -55,28 +56,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							eventsLambda[StreamNumLambda] = item;
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
-								return EmptyList<object>.Instance;
+							if (pass == null || false.Equals(pass)) {
+								return FlexCollection.Empty;
 							}
 
-							return Collections.SingletonList(item);
+							return FlexCollection.OfEvent(item);
 						}
 
 						var all = TakeWhileLastEventBeanToArray(eventBeanCollection);
-						var result = new ArrayDeque<object>();
+						var result = new ArrayDeque<EventBean>();
 
 						for (var i = all.Length - 1; i >= 0; i--) {
 							eventsLambda[StreamNumLambda] = all[i];
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
+							if (pass == null || false.Equals(pass)) {
 								break;
 							}
 
 							result.AddFirst(all[i]);
 						}
 
-						return result;
+						return FlexCollection.Of(result);
 					},
 				};
 			}
@@ -84,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -100,23 +101,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 			var blockSingle = block.IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
-				.DeclareVar(
-					typeof(EventBean),
-					"item",
-					Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")))
+				.DeclareVar<EventBean>("item", Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("item"));
+			
+			block.DebugStack();
+
 			CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
 				blockSingle,
 				InnerExpression.EvaluationType,
 				innerValue,
-				StaticMethod(typeof(Collections), "emptyList"));
-			blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", Ref("item")));
+				EnumValue(typeof(FlexCollection), "Empty"));
+			blockSingle.BlockReturn(
+				FlexWrap(StaticMethod(typeof(Collections), "SingletonList", Ref("item"))));
 
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
-				.DeclareVar(
-					typeof(EventBean[]),
-					"all",
-					StaticMethod(typeof(EnumTakeWhileHelper), "takeWhileLastEventBeanToArray", EnumForgeCodegenNames.REF_ENUMCOLL));
+			block
+				.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance<ArrayDeque<EventBean>>())
+				.DeclareVar<EventBean[]>("all", StaticMethod(typeof(EnumTakeWhileHelper), "TakeWhileLastEventBeanToArray", EnumForgeCodegenNames.REF_ENUMCOLL));
 
 			var forEach = block.ForLoop(
 					typeof(int),
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					DecrementRef("i"))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), ArrayAtIndex(Ref("all"), Ref("i")));
 			CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(forEach, InnerExpression.EvaluationType, innerValue);
-			forEach.Expression(ExprDotMethod(Ref("result"), "addFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
+			forEach.Expression(ExprDotMethod(Ref("result"), "AddFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
 		}
 
 		public override bool HasForEachLoop()
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(Ref("result"));
+			block.MethodReturn(FlexWrap(Ref("result")));
 		}
 	}
 } // end of namespace

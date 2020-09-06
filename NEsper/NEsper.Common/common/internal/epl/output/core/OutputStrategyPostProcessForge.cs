@@ -71,13 +71,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             if (isRouted) {
                 if (insertIntoStreamSelector != null) {
                     if (insertIntoStreamSelector.Value.IsSelectsIStream()) {
-                        ifResultNotNull.InstanceMethod(
+                        ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
                             Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
                     }
 
                     if (insertIntoStreamSelector.Value.IsSelectsRStream()) {
-                        ifResultNotNull.InstanceMethod(
+                        ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
                             Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
                     }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -27,7 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumWhereScalar : ThreeFormScalar
 	{
-
 		public EnumWhereScalar(
 			ExprDotEvalParamLambda lambda,
 			ObjectArrayEventType fieldEventType,
@@ -63,21 +63,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							props[0] = next;
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
+							if (pass == null || false.Equals(pass)) {
 								continue;
 							}
 
 							result.Add(next);
 						}
 
-						return result;
+						return FlexCollection.Of(result);
 					});
 			}
 		}
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(Ref("result"));
+			block.MethodReturn(FlexWrap(Ref("result")));
 		}
 	}
 } // end of namespace

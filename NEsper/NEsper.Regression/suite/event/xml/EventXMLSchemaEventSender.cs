@@ -44,13 +44,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 string epl = "@public @buseventtype " +
-                             "@XMLSchema(rootElementName='a')" +
-                             "@XMLSchemaField(name='element1', xpath='/a/b/c', type='string')" +
+                             "@XMLSchema(RootElementName='a')" +
+                             "@XMLSchemaField(Name='element1', XPath='/a/b/c', Type='string')" +
                              "create xml schema MyEventCreateSchemaABC();\n" +
                              "" +
                              "@public @buseventtype " +
-                             "@XMLSchema(rootElementName='a', eventSenderValidatesRoot=false)" +
-                             "@XMLSchemaField(name='element2', xpath='//c', type='string')" +
+                             "@XMLSchema(RootElementName='a', EventSenderValidatesRoot=false)" +
+                             "@XMLSchemaField(Name='element2', XPath='//c', Type='string')" +
                              "create xml schema MyEventCreateSchemaB()";
                 RegressionPath path = new RegressionPath();
                 env.CompileDeploy(epl, path);

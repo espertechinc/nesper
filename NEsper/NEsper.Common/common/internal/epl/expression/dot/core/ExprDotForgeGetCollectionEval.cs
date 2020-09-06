@@ -105,7 +105,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				.MethodReturn(
 					CodegenLegoCast.CastSafeFromObjectType(
 						targetType,
-						StaticMethod(typeof(ExprDotForgeGetCollectionEval), "collectionElementAt", Ref("target"), Ref("index"))));
+						StaticMethod(
+							typeof(ExprDotForgeGetCollectionEval),
+							"CollectionElementAt",
+							Ref("target"),
+							Ref("index"))));
 			return LocalMethod(methodNode, inner);
 		}
 	}

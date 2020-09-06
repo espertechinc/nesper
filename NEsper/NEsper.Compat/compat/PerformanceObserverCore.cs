@@ -50,7 +50,7 @@ namespace com.espertech.esper.compat
             stopWatch.Start();
             r.Invoke();
             stopWatch.Stop();
-            return 100 * stopWatch.ElapsedMilliseconds;
+            return stopWatch.ElapsedMilliseconds;
         }
     }
 }

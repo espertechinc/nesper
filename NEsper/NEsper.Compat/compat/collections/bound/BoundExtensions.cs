@@ -4,6 +4,30 @@ namespace com.espertech.esper.compat.collections.bound
 {
     public static class BoundExtensions
     {
+        public static bool IsLessThan<TK>(
+            Bound<TK> bound,
+            TK value,
+            IComparer<TK> comparer)
+        {
+            if (bound == null)
+                return true;
+            return bound.IsInclusive 
+                ? comparer.Compare(value, bound.Value) <= 0
+                : comparer.Compare(value, bound.Value) < 0;
+        }
+
+        public static bool IsGreaterThan<TK>(
+            Bound<TK> bound,
+            TK value,
+            IComparer<TK> comparer)
+        {
+            if (bound == null)
+                return true;
+            return bound.IsInclusive 
+                ? comparer.Compare(value, bound.Value) >= 0
+                : comparer.Compare(value, bound.Value) > 0;
+        }
+
         public static Bound<TV> MergeLower<TV>(
             this Bound<TV> bound,
             Bound<TV> other,

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return enumcoll;
 						}
 
-						IDictionary<object, object> distinct = new Dictionary<object, object>();
+						IDictionary<object, object> distinct = new NullableDictionary<object, object>();
 						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
 						object[] props = resultEvent.Properties;
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(ExprDotMethod(Ref("distinct"), "values"));
+			block.MethodReturn(FlexWrap(ExprDotName(Ref("distinct"), "Values")));
 		}
 	}
 } // end of namespace

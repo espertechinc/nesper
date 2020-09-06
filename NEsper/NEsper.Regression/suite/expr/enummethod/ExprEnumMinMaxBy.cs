@@ -34,14 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.minBy(x => p00)");
-                builder.WithExpression(fields[1], "contained.maxBy(x => p00)");
-                builder.WithExpression(fields[2], "contained.minBy(x => p00).id");
-                builder.WithExpression(fields[3], "contained.maxBy(x => p00).p00");
-                builder.WithExpression(fields[4], "contained.minBy( (x, i) => case when i < 1 then p00 else p00*10 end).p00");
-                builder.WithExpression(fields[5], "contained.maxBy( (x, i) => case when i < 1 then p00 else p00*10 end).p00");
-                builder.WithExpression(fields[6], "contained.minBy( (x, i, s) => case when i < 1 and s > 2 then p00 else p00*10 end).p00");
-                builder.WithExpression(fields[7], "contained.maxBy( (x, i, s) => case when i < 1 and s > 2 then p00 else p00*10 end).p00");
+                builder.WithExpression(fields[0], "Contained.minBy(x => P00)");
+                builder.WithExpression(fields[1], "Contained.maxBy(x => P00)");
+                builder.WithExpression(fields[2], "Contained.minBy(x => P00).Id");
+                builder.WithExpression(fields[3], "Contained.maxBy(x => P00).P00");
+                builder.WithExpression(fields[4], "Contained.minBy( (x, i) => case when i < 1 then P00 else P00*10 end).P00");
+                builder.WithExpression(fields[5], "Contained.maxBy( (x, i) => case when i < 1 then P00 else P00*10 end).P00");
+                builder.WithExpression(fields[6], "Contained.minBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
+                builder.WithExpression(fields[7], "Contained.maxBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -81,12 +81,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.minBy(v => extractNum(v))");
-                builder.WithExpression(fields[1], "strvals.maxBy(v => extractNum(v))");
-                builder.WithExpression(fields[2], "strvals.minBy( (v, i) => extractNum(v) + i*10)");
-                builder.WithExpression(fields[3], "strvals.maxBy( (v, i) => extractNum(v) + i*10)");
-                builder.WithExpression(fields[4], "strvals.minBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
-                builder.WithExpression(fields[5], "strvals.maxBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
+                builder.WithExpression(fields[0], "Strvals.minBy(v => extractNum(v))");
+                builder.WithExpression(fields[1], "Strvals.maxBy(v => extractNum(v))");
+                builder.WithExpression(fields[2], "Strvals.minBy( (v, i) => extractNum(v) + i*10)");
+                builder.WithExpression(fields[3], "Strvals.maxBy( (v, i) => extractNum(v) + i*10)");
+                builder.WithExpression(fields[4], "Strvals.minBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
+                builder.WithExpression(fields[5], "Strvals.maxBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(String)));
 

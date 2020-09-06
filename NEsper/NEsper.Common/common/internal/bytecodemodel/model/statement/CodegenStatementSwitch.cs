@@ -86,6 +86,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             }
             else {
                 _defaultBlock.Render(builder, isInnerClass, level + 2, indent);
+                if (!_blocksReturnValues) {
+                    indent.Indent(builder, level + 2);
+                    builder.Append("break;\n");
+                }
             }
 
             indent.Indent(builder, level);

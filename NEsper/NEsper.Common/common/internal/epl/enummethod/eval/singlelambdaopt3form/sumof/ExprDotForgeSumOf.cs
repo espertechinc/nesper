@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			else if (evalType.IsBigInteger()) {
 				return ExprDotEvalSumMethodFactoryBigInteger.INSTANCE;
 			}
-			else if (TypeExtensions.IsInt64(evalType)) {
+			else if (evalType.IsInt64()) {
 				return ExprDotEvalSumMethodFactoryLong.INSTANCE;
 			}
 			else {

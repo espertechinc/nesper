@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.util
             return set;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayAllNull()
         {
             Assert.IsTrue(IsArrayAllNull(null));
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.IsFalse(IsArrayAllNull(new Object[] {null, "b"}));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArraySameReferences()
         {
             String a = "a";
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.IsFalse(IsArraySameReferences(new Object[] {new String(new char[] {'a'})}, new Object[] {new String(new char[] {'a'})}));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetMapValueChecked()
         {
             Assert.IsNull(GetMapValueChecked(null, "x"));
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual("y", GetMapValueChecked(Collections.SingletonDataMap("x", "y"), "x"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetMapKeyExistsChecked()
         {
             Assert.IsFalse(GetMapKeyExistsChecked(null, "x"));
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.IsTrue(GetMapKeyExistsChecked(Collections.SingletonDataMap("x", "y"), "x"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivide()
         {
             RunAssertionSubdivide3("", "");
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.util
             RunAssertionSubdivide("a,b,c", "a|b|c", 1);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddArray()
         {
             TryAddStringArr(new [] { "b","a" }, CollectionUtil.AddArrays(new[] { "b" }, new[] { "a" }));
@@ -224,7 +224,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddArraySetSemantics()
         {
             var e = new EventBean[10];
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayExpandCollectionAndArray()
         {
             RunAssertionExpandColl("", "", "");
@@ -288,7 +288,7 @@ namespace com.espertech.esper.common.@internal.util
             RunAssertionExpandColl("a,b,c,d", "a,b,c", "d");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayExpandSingle()
         {
             RunAssertionExpandSingle("a", "", "a");
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.util
             RunAssertionExpandSingle("a,b,c,d", "a,b,c", "d");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayShrink()
         {
             RunAssertionShrink("a,c", "a,b,c", 1);
@@ -308,7 +308,7 @@ namespace com.espertech.esper.common.@internal.util
             RunAssertionShrink("", "a", 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCompare()
         {
             object[][] testdata = {
@@ -333,7 +333,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCopySort()
         {
             object[][] testdata = {
@@ -362,7 +362,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToString()
         {
             object[][] testdata = {

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			method.Block
 				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
 				.IfRefNullReturnNull("inner")
-				.IfCondition(Relational(Constant(Index), GE, ExprDotName(Ref("inner"), "length")))
+				.IfCondition(Relational(Constant(Index), GE, ExprDotName(Ref("inner"), "Length")))
 				.BlockReturn(ConstantNull())
 				.MethodReturn(InnerGetter.UnderlyingGetCodegen(ArrayAtIndex(Ref("inner"), Constant(Index)), method, codegenClassScope));
 			return LocalMethod(method, underlyingExpression);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			method.Block
 				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
 				.IfRefNullReturnFalse("inner")
-				.IfCondition(Relational(Constant(Index), GE, ExprDotName(Ref("inner"), "length")))
+				.IfCondition(Relational(Constant(Index), GE, ExprDotName(Ref("inner"), "Length")))
 				.BlockReturn(ConstantFalse())
 				.MethodReturn(InnerGetter.UnderlyingExistsCodegen(ArrayAtIndex(Ref("inner"), Constant(Index)), method, codegenClassScope));
 			return LocalMethod(method, underlyingExpression);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			method.Block
 				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
 				.IfRefNullReturnNull("inner")
-				.IfCondition(Relational(Constant(Index), GE, ExprDotName(Ref("inner"), "length")))
+				.IfCondition(Relational(Constant(Index), GE, ExprDotName(Ref("inner"), "Length")))
 				.BlockReturn(ConstantNull())
 				.MethodReturn(InnerGetter.UnderlyingFragmentCodegen(ArrayAtIndex(Ref("inner"), Constant(Index)), method, codegenClassScope));
 			return LocalMethod(method, underlyingExpression);

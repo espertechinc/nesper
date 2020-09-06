@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             ResultSetProcessor[] processors,
             AgentInstanceContext agentInstanceContext)
         {
-            this.@internalEventRouter = internalEventRouter;
+            this.internalEventRouter = internalEventRouter;
             this.tableStateInstances = tableStateInstances;
             this.items = items;
             this.epStatementHandle = epStatementHandle;

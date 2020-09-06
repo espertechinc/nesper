@@ -54,9 +54,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
             IDictionary<string, object> optionalTriggeringPattern)
         {
-            if (patternStopCallback != null) {
-                patternStopCallback.Stop();
-            }
+            patternStopCallback?.Stop();
 
             var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
             Func<FilterSpecActivatable, FilterValueSetParam[][]> contextAddendumFunction = filter =>
@@ -69,14 +67,14 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             var rootNode = EvalNodeUtil.MakeRootNodeFromFactory(pattern.Pattern, patternAgentInstanceContext);
 
             var matchedEventMap = new MatchedEventMapImpl(pattern.PatternContext.MatchedEventMapMeta);
-            if (optionalTriggeringEvent != null && endConditionMatchEventProvider != null) {
-                endConditionMatchEventProvider.PopulateEndConditionFromTrigger(
+            if (optionalTriggeringEvent != null) {
+                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(
                     matchedEventMap,
                     optionalTriggeringEvent);
             }
 
-            if (optionalTriggeringPattern != null && endConditionMatchEventProvider != null) {
-                endConditionMatchEventProvider.PopulateEndConditionFromTrigger(matchedEventMap, optionalTriggeringPattern);
+            if (optionalTriggeringPattern != null) {
+                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(matchedEventMap, optionalTriggeringPattern);
             }
             
             // capture any callbacks that may occur right after start

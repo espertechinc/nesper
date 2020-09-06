@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 				             "   " +
 				             "from SupportBean#keepall;\n" +
 				             "on SupportBean_S0 merge MyTable mt when matched then update set mt.reset();\n" +
-				             "@Name('s0') select MyTable.myWordcms.countMinSketchFrequency(p10) as c0 from SupportBean_S1;\n";
+				             "@Name('s0') select MyTable.myWordcms.countMinSketchFrequency(P10) as c0 from SupportBean_S1;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string[] fieldSetOne = "myAvedev,myCount,myCountDistinct,myMax,myMedian,myStddev,myFirstEver,myCountEver,myMaxByEver".SplitCsv();
 
@@ -195,8 +195,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 				             "  avg(IntPrimitive) as avgone, avg(IntPrimitive) as avgtwo," +
 				             "  window(*) as winone, window(*) as wintwo " +
 				             "from SupportBean#keepall group by TheString;\n" +
-				             "on SupportBean_S0 merge MyTable where p00 = k  when matched then update set avgone.reset(), winone.reset();\n" +
-				             "on SupportBean_S1 merge MyTable where p10 = k  when matched then update set avgtwo.reset(), wintwo.reset();\n";
+				             "on SupportBean_S0 merge MyTable where P00 = k  when matched then update set avgone.reset(), winone.reset();\n" +
+				             "on SupportBean_S1 merge MyTable where P10 = k  when matched then update set avgtwo.reset(), wintwo.reset();\n";
 				env.CompileDeploy(epl);
 				string[] propertyNames = "k,avgone,avgtwo,winone,wintwo".SplitCsv();
 

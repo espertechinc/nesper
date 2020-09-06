@@ -46,23 +46,142 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 		public static IList<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLOtherCreateSchemaPathSimple());
-			execs.Add(new EPLOtherCreateSchemaPublicSimple());
-			execs.Add(new EPLOtherCreateSchemaArrayPrimitiveType());
-			execs.Add(new EPLOtherCreateSchemaCopyProperties());
-			execs.Add(new EPLOtherCreateSchemaConfiguredNotRemoved());
-			execs.Add(new EPLOtherCreateSchemaAvroSchemaWAnnotation());
-			execs.Add(new EPLOtherCreateSchemaColDefPlain());
-			execs.Add(new EPLOtherCreateSchemaModelPONO());
-			execs.Add(new EPLOtherCreateSchemaNestableMapArray());
-			execs.Add(new EPLOtherCreateSchemaInherit());
-			execs.Add(new EPLOtherCreateSchemaCopyFromOrderObjectArray());
-			execs.Add(new EPLOtherCreateSchemaInvalid());
-			execs.Add(new EPLOtherCreateSchemaWithEventType());
-			execs.Add(new EPLOtherCreateSchemaVariantType());
-			execs.Add(new EPLOtherCreateSchemaSameCRC());
-			execs.Add(new EPLOtherCreateSchemaBeanImport());
+			WithPathSimple(execs);
+			WithPublicSimple(execs);
+			WithArrayPrimitiveType(execs);
+			WithCopyProperties(execs);
+			WithConfiguredNotRemoved(execs);
+			WithAvroSchemaWAnnotation(execs);
+			WithColDefPlain(execs);
+			WithModelPONO(execs);
+			WithNestableMapArray(execs);
+			WithInherit(execs);
+			WithCopyFromOrderObjectArray(execs);
+			WithInvalid(execs);
+			WithWithEventType(execs);
+			WithVariantType(execs);
+			WithSameCRC(execs);
+			WithBeanImport(execs);
+			WithCopyFromDeepWithValueObject(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithCopyFromDeepWithValueObject(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new EPLOtherCreateSchemaCopyFromDeepWithValueObject());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBeanImport(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaBeanImport());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithSameCRC(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaSameCRC());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithVariantType(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaVariantType());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWithEventType(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaWithEventType());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithCopyFromOrderObjectArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaCopyFromOrderObjectArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInherit(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaInherit());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNestableMapArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaNestableMapArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithModelPONO(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaModelPONO());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithColDefPlain(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaColDefPlain());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithAvroSchemaWAnnotation(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaAvroSchemaWAnnotation());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithConfiguredNotRemoved(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaConfiguredNotRemoved());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithCopyProperties(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaCopyProperties());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithArrayPrimitiveType(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaArrayPrimitiveType());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithPublicSimple(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaPublicSimple());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithPathSimple(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLOtherCreateSchemaPathSimple());
 			return execs;
 		}
 
@@ -70,15 +189,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create schema SchemaA (account string, foo " +
-				          typeof(MyLocalValueObject).FullName +
-				          ");\n" +
-				          "create schema SchemaB (symbol string) copyfrom SchemaA;\n" +
-				          "create schema SchemaC () copyfrom SchemaB;\n" +
-				          "create schema SchemaD () copyfrom SchemaB;\n" +
-				          "insert into SchemaD select account, " +
-				          typeof(EPLOtherCreateSchema).FullName +
-				          ".getLocalValueObject() as foo, symbol from SchemaC;\n";
+				var epl = 
+					"create schema SchemaA (account string, foo " + typeof(MyLocalValueObject).MaskTypeName() + ");\n" +
+					"create schema SchemaB (symbol string) copyfrom SchemaA;\n" +
+					"create schema SchemaC () copyfrom SchemaB;\n" +
+					"create schema SchemaD () copyfrom SchemaB;\n" +
+					"insert into SchemaD select account, " + typeof(EPLOtherCreateSchema).FullName + ".GetLocalValueObject() as foo, symbol from SchemaC;\n";
 				env.CompileDeploy(epl).UndeployAll();
 			}
 		}
@@ -107,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				}
 				catch (Exception ex) {
 					Assert.AreEqual(
-						"Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
+						"Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
 						ex.Message);
 				}
 			}
@@ -117,9 +233,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('schema') create schema SimpleSchema(p0 string, p1 int);" +
-				          "@Name('s0') select * from SimpleSchema;\n" +
-				          "insert into SimpleSchema select TheString as p0, IntPrimitive as p1 from SupportBean;\n";
+				var epl =
+					"@Name('schema') create schema SimpleSchema(p0 string, p1 int);" +
+				    "@Name('s0') select * from SimpleSchema;\n" +
+				    "insert into SimpleSchema select TheString as p0, IntPrimitive as p1 from SupportBean;\n";
+
 				env.CompileDeploy(epl).AddListener("s0");
 				Assert.AreEqual(StatementType.CREATE_SCHEMA, env.Statement("schema").GetProperty(StatementProperty.STATEMENTTYPE));
 				Assert.AreEqual("SimpleSchema", env.Statement("schema").GetProperty(StatementProperty.CREATEOBJECTNAME));
@@ -197,8 +315,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			{
 				CompileDeployWExport("@Name('schema') create schema MySchema as (c0 int[primitive], c1 int[])", soda, env);
 				var expectedType = new[] {
-					new object[] {"c0", typeof(int[])}, 
-					new object[] {"c1", typeof(int?[])}};
+					new object[] {"c0", typeof(int[])},
+					new object[] {"c1", typeof(int?[])}
+				};
 				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
 					expectedType,
 					GetTypeStmt(env, "schema"),
@@ -224,9 +343,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 					new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true),
 					stmtSchemaType.GetPropertyDescriptor("beanarray"));
 
-				env.CompileDeploy("@Name('s0') insert into MySchema select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent").AddListener("s0");
+				env.CompileDeploy("@Name('s0') insert into MySchema select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent").AddListener("s0");
 				env.SendEventBean(theEvent);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].id".SplitCsv(), new object[] {"E1", 2});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].Id".SplitCsv(), new object[] {"E1", 2});
 				env.UndeployModuleContaining("s0");
 
 				// test named window
@@ -241,17 +360,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 					new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true),
 					stmtWindowType.GetPropertyDescriptor("beanarray"));
 
-				env.CompileDeploy("@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent", path);
+				env.CompileDeploy("@Name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent", path);
 				env.SendEventBean(theEvent);
 				EPAssertionUtil.AssertProps(
 					env.Listener("window").AssertOneGetNewAndReset(),
-					"bean.TheString,beanarray[0].id".SplitCsv(),
+					"bean.TheString,beanarray[0].Id".SplitCsv(),
 					new object[] {"E1", 2});
 				env.UndeployModuleContaining("windowInsertOne");
 
 				// insert pattern to named window
 				env.CompileDeploy(
-					"@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(id=0)]",
+					"@Name('windowInsertOne') insert into MyWindow select sb as bean, S0Arr as beanarray from pattern [sb=SupportBean -> S0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
 					path);
 				env.SendEventBean(new SupportBean("E2", 2));
 				env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -259,15 +378,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				env.SendEventBean(new SupportBean_S0(0, "S0_3"));
 				EPAssertionUtil.AssertProps(
 					env.Listener("window").AssertOneGetNewAndReset(),
-					"bean.TheString,beanarray[0].id,beanarray[1].id".SplitCsv(),
+					"bean.TheString,beanarray[0].Id,beanarray[1].Id".SplitCsv(),
 					new object[] {"E2", 10, 20});
 				env.UndeployModuleContaining("windowInsertOne");
 
 				// test configured Map type
-				env.CompileDeploy("@Name('s0') insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
+				env.CompileDeploy("@Name('s0') insert into MyConfiguredMap select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent")
 					.AddListener("s0");
 				env.SendEventBean(theEvent);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].id".SplitCsv(), new object[] {"E1", 2});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].Id".SplitCsv(), new object[] {"E1", 2});
 
 				env.UndeployAll();
 			}
@@ -278,6 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			public void Run(RegressionEnvironment env)
 			{
 				foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+					Console.WriteLine("EPLOtherCreateSchemaCopyProperties: rep={0}", rep);
 					TryAssertionSchemaCopyProperties(env, rep);
 				}
 			}
@@ -346,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				}
 				else if (eventRepresentationEnum.IsJsonProvidedClassEvent()) {
 					env.CompileDeploy(
-						"@JsonSchema(className='" +
+						"@JsonSchema(ClassName='" +
 						typeof(MyLocalJsonProvidedMyType).FullName +
 						"') create json schema MyType(a string, b string, c BaseOne, d BaseTwo[])",
 						path);
@@ -453,6 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			public void Run(RegressionEnvironment env)
 			{
 				foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+					Console.WriteLine("EPLOtherCreateSchemaInvalid: rep={0}", rep);
 					TryAssertionInvalid(env, rep);
 				}
 
@@ -469,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				EventRepresentationChoice eventRepresentationEnum)
 			{
 				var expectedOne = !eventRepresentationEnum.IsAvroEvent()
-					? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Type or java.util.Map or the name of a previously-declared event type ["
+					? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or Dictionary or the name of a previously-declared event type ["
 					: "Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
 				var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedDummy>();
 				TryInvalidCompile(env, $"{prefix} create schema MyEventType as (col1 xxxx)", expectedOne);
@@ -497,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				TryInvalidCompile(
 					env,
 					$"{prefix} create schema MyEventTypeT3 as () inherits",
-					"Incorrect syntax near end-of-input expecting an identifier but found end-of-input at line 1 column ");
+					"Incorrect syntax near end-of-input expecting an identifier but found EOF at line 1 column ");
 
 				env.UndeployAll();
 			}
@@ -508,7 +629,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			public void Run(RegressionEnvironment env)
 			{
 				var schema = SchemaBuilder.Union(IntType(), StringType());
-				var epl = $"@AvroSchemaField(name='carId',schema='{schema}') create avro schema MyEvent(carId object)";
+				var epl = $"@AvroSchemaField(Name='carId',schema='{schema}') create avro schema MyEvent(carId object)";
 				env.CompileDeploy(epl);
 				env.UndeployAll();
 			}
@@ -559,11 +680,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				Assert.AreEqual(typeof(SupportBean_ST0), env.Statement("s1").EventType.UnderlyingType);
 
 				env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "id,p00".SplitCsv(), new object[] {"E1", 2});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "Id,P00".SplitCsv(), new object[] {"E1", 2});
 				Assert.IsFalse(env.Listener("s1").IsInvoked);
 
 				env.SendEventBean(new SupportBean_ST0("E2", 3), "SupportBeanTwo");
-				EPAssertionUtil.AssertProps(env.Listener("s1").AssertOneGetNewAndReset(), "id,p00".SplitCsv(), new object[] {"E2", 3});
+				EPAssertionUtil.AssertProps(env.Listener("s1").AssertOneGetNewAndReset(), "Id,P00".SplitCsv(), new object[] {"E2", 3});
 				Assert.IsFalse(env.Listener("s0").IsInvoked);
 
 				// assert type information

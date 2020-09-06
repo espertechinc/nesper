@@ -483,7 +483,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block.Expression(
                 ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                    .Add(EPModuleClassProvidedInitServicesConstants.GETCLASSPROVIDEDCOLLECTOR)
+                    .Get(EPModuleClassProvidedInitServicesConstants.GETCLASSPROVIDEDCOLLECTOR)
                     .Add("RegisterClass", Constant(classProvided.Key), classProvided.Value.Make(method, classScope)));
             return method;
         }
@@ -663,9 +663,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 var detailExpr = jsonEventType.Detail.ToExpression(method, classScope);
                 method.Block.Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                        .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
                         .Add(
-                            "registerJson",
+                            "RegisterJson",
                             Ref("metadata"),
                             Ref("props"),
                             Constant(superTypeNames),
@@ -763,7 +763,7 @@ namespace com.espertech.esper.compiler.@internal.util
                         .Add(
                             "RegisterAvro",
                             Ref("metadata"),
-                            Constant(avroType.Schema.ToString()),
+                            Constant(avroTypeSchema),
                             Constant(superTypeNames)));
             }
             else if (eventType is VariantEventType variantEventType) {

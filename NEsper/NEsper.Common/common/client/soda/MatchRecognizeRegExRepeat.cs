@@ -77,16 +77,10 @@ namespace com.espertech.esper.common.client.soda
             }
             else
             {
-                if (Low != null)
-                {
-                    Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                }
+                Low?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
                 writer.Write(",");
-                if (High != null)
-                {
-                    High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                }
+                High?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
             writer.Write("}");

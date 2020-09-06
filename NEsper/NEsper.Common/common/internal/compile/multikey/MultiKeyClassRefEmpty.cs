@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
         {
         }
 
-        public string ClassNameMK => null;
+        public NameOrType ClassNameMK => null;
 
         public Type[] MKTypes => new Type[0];
 

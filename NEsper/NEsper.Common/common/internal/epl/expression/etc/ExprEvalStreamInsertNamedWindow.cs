@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     ExprDotMethod(
                         eventSvc,
                         method,
-                        Cast(_namedWindowAsType.UnderlyingType, ExprDotUnderlying(Ref("@event"))),
+                        FlexCast(_namedWindowAsType.UnderlyingType, ExprDotUnderlying(Ref("@event"))),
                         namedWindowType));
             return LocalMethod(methodNode);
         }

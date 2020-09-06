@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			var method = codegenMethodScope.MakeChild(typeof(ICollection<object>), typeof(EnumDistinctOfScalarNoParams), codegenClassScope)
+			var method = codegenMethodScope
+				.MakeChild(typeof(ICollection<object>), typeof(EnumDistinctOfScalarNoParams), codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
 
 			method.Block
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				loop.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, Cast(_fieldType, Ref("next"))))
 					.Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")));
 				
-				method.Block.MethodReturn(ExprDotMethod(Ref("distinct"), "values"));
+				method.Block.MethodReturn(ExprDotName(Ref("distinct"), "Values"));
 			}
 
 			return LocalMethod(method, args.Expressions);

@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 		public class CodegenSharableSerdeName
 		{
 			public static readonly CodegenSharableSerdeName OBJECTARRAYMAYNULLNULL =
-				new CodegenSharableSerdeName("objectArrayMayNullNull");
+				new CodegenSharableSerdeName("ObjectArrayMayNullNull");
 
 			public string MethodName { get; }
 			CodegenSharableSerdeName(string methodName)

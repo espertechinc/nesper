@@ -1273,12 +1273,7 @@ namespace com.espertech.esper.common.client.scopetest
             EventBean[] events,
             IList<string> propertyNames)
         {
-            if (events == null) {
-                return null;
-            }
-
-            return events
-                .Select(ev => propertyNames.Select(ev.Get).ToArray())
+            return events?.Select(ev => propertyNames.Select(ev.Get).ToArray())
                 .ToArray();
         }
 

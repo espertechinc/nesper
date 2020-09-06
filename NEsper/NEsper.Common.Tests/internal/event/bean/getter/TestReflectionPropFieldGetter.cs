@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             unitTestBean = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, testEvent);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetter()
         {
             ReflectionPropFieldGetter getter = MakeGetter(typeof(SupportLegacyBean), "fieldLegacyVal");

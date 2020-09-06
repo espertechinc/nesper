@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select strvals.enumPlugInLambdaScalarWStateAndValue('X', (r, v) => r || v) as c0 " +
+                var epl = "@Name('s0') select Strvals.enumPlugInLambdaScalarWStateAndValue('X', (r, v) => r || v) as c0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select intvals.enumPlugInLambdaScalarWPredicateAndIndex((v, ind) => v > 0 and ind < 3) as c0 " +
+                var epl = "@Name('s0') select Intvals.enumPlugInLambdaScalarWPredicateAndIndex((v, ind) => v > 0 and ind < 3) as c0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             {
                 var fields = "val0".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "intvals.enumPlugInEarlyExit() as val0 " +
+                          "Intvals.enumPlugInEarlyExit() as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             {
                 var fields = "val0".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "intvals.enumPlugInOne(10, 20) as val0 " +
+                          "Intvals.enumPlugInOne(10, 20) as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
@@ -302,9 +302,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "strvals.enumPlugInMedian(v => extractNum(v)) as c0," +
-                          "strvals.enumPlugInMedian((v, i) => extractNum(v) + i*10) as c1," +
-                          "strvals.enumPlugInMedian((v, i, s) => extractNum(v) + i*10+s*100) as c2 " +
+                          "Strvals.enumPlugInMedian(v => extractNum(v)) as c0," +
+                          "Strvals.enumPlugInMedian((v, i) => extractNum(v) + i*10) as c1," +
+                          "Strvals.enumPlugInMedian((v, i, s) => extractNum(v) + i*10+s*100) as c2 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?), typeof(double?), typeof(double?)});
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             {
                 var fields = "val0".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "contained.enumPlugInMedian(x => p00) as val0 " +
+                          "Contained.enumPlugInMedian(x => P00) as val0 " +
                           "from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var eplFragment = "@Name('s0') select intvals.enumPlugInMedian() as val0 from SupportCollection";
+                var eplFragment = "@Name('s0') select Intvals.enumPlugInMedian() as val0 from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
@@ -634,9 +634,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public static void Next(
                 MyLocalEnumMethodForgePredicateReturnEventsState state,
                 EventBean @event,
-                bool pass)
+                bool? pass)
             {
-                if (pass) {
+                if (pass ?? false) {
                     state.Add(@event);
                 }
             }
@@ -686,9 +686,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public static void Next(
                 MyLocalEnumMethodForgePredicateReturnSingleEventState state,
                 EventBean @event,
-                bool pass)
+                bool? pass)
             {
-                if (pass) {
+                if (pass ?? false) {
                     state.Add(@event);
                 }
             }
@@ -807,9 +807,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public static void Next(
                 MyLocalEnumMethodForgeThreeState state,
                 object value,
-                bool pass)
+                bool? pass)
             {
-                if (pass) {
+                if (pass ?? false) {
                     state.Increment();
                 }
             }
@@ -817,9 +817,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public static void Next(
                 MyLocalEnumMethodForgeThreeState state,
                 EventBean @event,
-                bool pass)
+                bool? pass)
             {
-                if (pass) {
+                if (pass ?? false) {
                     state.Increment();
                 }
             }

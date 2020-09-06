@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (target is EventBean) {
-                target = Collections.SingletonList((EventBean) target);
+            if (target is EventBean eventBean) {
+                target = Collections.SingletonList(eventBean);
             }
 
             var coll = target.Unwrap<object>();
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            var eventsLambda = AllocateCopyEventLambda(eventsPerStream, enumEvalNumRequiredEvents);
+            var eventsLambda = eventsPerStream == null ? new EventBean[0] : AllocateCopyEventLambda(eventsPerStream, enumEvalNumRequiredEvents);
             return enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
         }
 

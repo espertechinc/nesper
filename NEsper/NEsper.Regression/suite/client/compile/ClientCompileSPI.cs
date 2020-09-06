@@ -12,6 +12,7 @@ using System.Linq;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.framework;
@@ -70,10 +71,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 CompileEvaluate("1*1", 1, expressionCompiler);
                 CompileEvaluate("'a' || 'y'", "ay", expressionCompiler);
 
-                var list = (ICollection<object>) CompileEvaluate("java.util.Arrays.asList({\"a\"})", expressionCompiler);
+                var arrays = typeof(Arrays).FullName;
+                
+                var list = (ICollection<object>) CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
                 EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] {"a"});
 
-                CompileEvaluate("java.util.Arrays.asList({'a', 'b'}).firstOf()", "a", expressionCompiler);
+                CompileEvaluate($"{arrays}.AsList({{'a', 'b'}}).firstOf()", "a", expressionCompiler);
 
                 try {
                     var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");

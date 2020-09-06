@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -33,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         private void RunAssertionJsonClassProvided(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                    "@JsonSchema(className='" +
+                    "@JsonSchema(ClassName='" +
                     typeof(MyLocalJsonProvided).MaskTypeName() +
                     "') @public @buseventtype create json schema JsonSchema();\n" +
                     "@Name('s0') select * from JsonSchema;\n")
@@ -49,8 +50,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionJson(RegressionEnvironment env)
         {
+            var mapType = typeof(IDictionary<string, object>).CleanName();
             env.CompileDeploy(
-                    "@public @buseventtype create json schema JsonSchema(indexed int[], mapped System.Collections.Generic.IDictionary<string, object>);\n" +
+                    $"@public @buseventtype create json schema JsonSchema(indexed int[], mapped `{mapType}`);\n" +
                     "@Name('s0') select * from JsonSchema;\n")
                 .AddListener("s0");
             env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");

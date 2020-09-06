@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 		public StatementBaseInfo Base => _base;
 
 		public StmtForgeMethodResult Make(
-			string packageName,
+			string @namespace,
 			string classPostfix,
 			StatementCompileTimeServices services)
 		{
@@ -73,7 +73,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 				services.EventTypeCompileTimeResolver);
 			services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
-			CodegenNamespaceScope namespaceScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
+			string statementFieldsClassName =
+				CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+
+			CodegenNamespaceScope namespaceScope = new CodegenNamespaceScope(
+				@namespace,
+				statementFieldsClassName,
+				services.IsInstrumented);
 
 			string aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
 			StmtClassForgeable aiFactoryForgeable = AiFactoryForgable(aiFactoryProviderClassName, namespaceScope, statementEventType, objectName);
@@ -96,9 +102,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 				informationals,
 				namespaceScope);
 
+			var stmtClassForgeableStmtFields = new StmtClassForgeableStmtFields(
+				statementFieldsClassName,
+				namespaceScope,
+				1);
+			
 			IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
 			forgeables.Add(aiFactoryForgeable);
 			forgeables.Add(stmtProvider);
+			forgeables.Add(stmtClassForgeableStmtFields);
 			return new StmtForgeMethodResult(
 				forgeables,
 				EmptyList<FilterSpecCompiled>.Instance, 

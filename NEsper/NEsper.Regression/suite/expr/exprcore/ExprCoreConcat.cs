@@ -19,9 +19,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    public void Run(RegressionEnvironment env) {
 	        var fields = "c1,c2,c3".SplitCsv();
 	        var builder = new SupportEvalBuilder("SupportBean_S0")
-	            .WithExpression(fields[0], "p00 || p01")
-	            .WithExpression(fields[1], "p00 || p01 || p02")
-	            .WithExpression(fields[2], "p00 || '|' || p01");
+	            .WithExpression(fields[0], "P00 || P01")
+	            .WithExpression(fields[1], "P00 || P01 || P02")
+	            .WithExpression(fields[2], "P00 || '|' || P01");
 
 	        builder.WithAssertion(new SupportBean_S0(1, "a", "b", "c")).Expect(fields, "ab", "abc", "a|b");
 	        builder.WithAssertion(new SupportBean_S0(1, null, "b", "c")).Expect(fields, null, null, null);

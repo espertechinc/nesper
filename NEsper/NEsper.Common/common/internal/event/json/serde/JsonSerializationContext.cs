@@ -6,32 +6,46 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.parser.core;
 using com.espertech.esper.common.@internal.@event.json.serializers;
-
-using JsonSerializer = com.espertech.esper.common.@internal.@event.json.serializers.JsonSerializer;
 
 namespace com.espertech.esper.common.@internal.@event.json.serde
 {
-	public interface JsonSerializationContext
-	{
-		JsonSerializer Serializer { get; }
-		
-		JsonDeserializer<object> Deserializer { get; }
+	/// <summary>
+	///     This object provides context during serialization.
+	/// </summary>
+	public class JsonSerializationContext : IDisposable
+    {
+	    /// <summary>
+	    ///     Constructor.
+	    /// </summary>
+	    /// <param name="writer"></param>
+	    public JsonSerializationContext(Utf8JsonWriter writer)
+        {
+            Writer = writer;
+        }
 
-		object NewUnderlying();
+	    /// <summary>
+	    ///     The underling json writer for this context.
+	    /// </summary>
+	    public Utf8JsonWriter Writer { get; }
 
-		void SetValue(
-			string name,
-			object value,
-			object und);
+	    /// <summary>
+	    ///     Performs application-defined tasks associated with freeing, releasing, or
+	    ///     resetting unmanaged resources.
+	    /// </summary>
+	    public void Dispose()
+        {
+        }
 
-		object GetValue(
-			string name,
-			object und);
-
-		object Copy(object und);
-	}
+	    /// <summary>
+	    ///     Returns a JsonWriter for a specific type.
+	    /// </summary>
+	    public IJsonSerializer SerializerFor(Type type)
+        {
+            throw new NotImplementedException("C31D92BF-D489-4824-B3CE-E5776D017AC2");
+        }
+    }
 } // end of namespace

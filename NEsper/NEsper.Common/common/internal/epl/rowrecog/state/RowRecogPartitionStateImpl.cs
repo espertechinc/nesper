@@ -108,9 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <param name="oldEvents">to remove</param>
         public void RemoveEventFromPrev(EventBean[] oldEvents)
         {
-            if (RandomAccess != null) {
-                RandomAccess.Remove(oldEvents);
-            }
+            RandomAccess?.Remove(oldEvents);
         }
 
         /// <summary>
@@ -119,9 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <param name="oldEvent">to remove</param>
         public void RemoveEventFromPrev(EventBean oldEvent)
         {
-            if (RandomAccess != null) {
-                RandomAccess.Remove(oldEvent);
-            }
+            RandomAccess?.Remove(oldEvent);
         }
 
         /// <summary>
@@ -133,9 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         {
             var currentSize = CurrentStatesForPrint.Count;
             var keepList = RemoveEventFromState(oldEvent, CurrentStatesForPrint.GetEnumerator());
-            if (RandomAccess != null) {
-                RandomAccess.Remove(oldEvent);
-            }
+            RandomAccess?.Remove(oldEvent);
 
             CurrentStatesForPrint = keepList;
             return currentSize - keepList.Count;

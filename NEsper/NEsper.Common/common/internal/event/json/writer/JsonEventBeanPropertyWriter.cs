@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,18 +22,15 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 {
     public class JsonEventBeanPropertyWriter : EventPropertyWriterSPI
     {
-        private readonly JsonSerializationContext SerializationContext;
         /// <summary>
         /// The field being assigned.
         /// </summary>
         private readonly JsonUnderlyingField _field;
 
         public JsonEventBeanPropertyWriter(
-            JsonSerializationContext serializationContext,
             JsonUnderlyingField field)
         {
-            this.SerializationContext = serializationContext;
-            this._field = field;
+            _field = field;
         }
 
         /// <summary>
@@ -40,8 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
         public JsonUnderlyingField Field => _field;
 
         /// <summary>
-        /// Assigns (sets) the named property in the target (underlying)
-        /// to the provided value.
+        /// Writes the named property the underlying value to the serialization target.
         /// </summary>
         /// <param name="value">value to be set</param>
         /// <param name="target"></param>
@@ -53,16 +51,16 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
         }
 
         /// <summary>
-        /// Assigns (sets) the named property in the underlying to the
-        /// provided value.
+        /// Writes the named property the underlying value to the serialization target.
         /// </summary>
         /// <param name="value">value to be set</param>
-        /// <param name="und">underlying event (json) where the event lives</param>
+        /// <param name="und">underlying event (json) is being written to (target)</param>
         public virtual void Write(
             object value,
             object und)
         {
-            SerializationContext.SetValue(_field.FieldName, value, und);
+            throw new NotImplementedException("broken: cccafd65-2be7-4774-8af6-72ed61e65ca0");
+            //SerializationContext.SetValue(_field.FieldName, value, und);
         }
         
         /// <summary>

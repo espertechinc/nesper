@@ -15,6 +15,8 @@ using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
@@ -49,13 +51,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.AdvanceTime(0);
 				string epl =
-					"@public @buseventtype @JsonSchema(className='" +
+					"@public @buseventtype @JsonSchema(ClassName='" +
 					typeof(MyLocalJsonProvidedEventOne).FullName +
 					"') create json schema EventOne();\n" +
-					"@public @buseventtype @JsonSchema(className='" +
+					"@public @buseventtype @JsonSchema(ClassName='" +
 					typeof(MyLocalJsonProvidedEventTwo).FullName +
 					"') create json schema EventTwo();\n" +
-					"@public @buseventtype @JsonSchema(className='" +
+					"@public @buseventtype @JsonSchema(ClassName='" +
 					typeof(MyLocalJsonProvidedEventOut).FullName +
 					"') create json schema EventOut();\n" +
 					"@Name('s0') insert into EventOut select s as startEvent, e as endEvents from pattern [" +
@@ -82,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@public @buseventtype @JsonSchema(className='" +
+				string epl = "@public @buseventtype @JsonSchema(ClassName='" +
 				             typeof(MyLocalJsonProvidedPrimitiveInt).FullName +
 				             "') create json schema MySchema();\n" +
 				             "insert into MySchema select IntBoxed as primitiveInt from SupportBean;\n" +
@@ -100,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string prefix = "@JsonSchema(className='" + typeof(MyLocalJsonProvidedStringInt).FullName + "') ";
+				string prefix = "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedStringInt).FullName + "') ";
 				string epl = prefix + "create json schema MySchema(c0 int)";
 				TryInvalidSchema(
 					env,
@@ -114,7 +116,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string prefix = EventRepresentationChoice.JSONCLASSPROVIDED.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt));
+				var mapType = typeof(Properties).FullName;
+				var prefix = EventRepresentationChoice.JSONCLASSPROVIDED.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt));
+				
 				TryInvalidSchema(
 					env,
 					prefix + "select 0 as dummy from SupportBean",
@@ -129,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					env,
 					prefix + "select new {a=0} as c0 from SupportBean",
 					typeof(MyLocalJsonProvidedStringInt),
-					"Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type 'java.util.Map'");
+					$"Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type '{mapType}'");
 			}
 		}
 
@@ -139,14 +143,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				string epl;
 
-				epl = "@JsonSchema(dynamic=true, className='" + typeof(SupportClientsEvent).FullName + "') create json schema Clients()";
+				epl = "@JsonSchema(Dynamic=true, ClassName='" + typeof(SupportClientsEvent).FullName + "') create json schema Clients()";
 				TryInvalidCompile(
 					env,
 					epl,
 					"The dynamic flag is not supported when used with a provided JSON event class");
 
 				epl = "create json schema ABC();\n" +
-				      "@JsonSchema(className='" +
+				      "@JsonSchema(ClassName='" +
 				      typeof(SupportClientsEvent).FullName +
 				      "') create json schema Clients() inherits ABC";
 				TryInvalidCompile(
@@ -154,19 +158,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					epl,
 					"Specifying a supertype is not supported with a provided JSON event class");
 
-				epl = "@JsonSchema(className='" + typeof(MyLocalNonPublicInvalid).FullName + "') create json schema Clients()";
+				epl = "@JsonSchema(ClassName='" + typeof(MyLocalNonPublicInvalid).FullName + "') create json schema Clients()";
 				TryInvalidCompile(
 					env,
 					epl,
 					"Provided JSON event class is not public");
 
-				epl = "@JsonSchema(className='" + typeof(MyLocalNoDefaultCtorInvalid).FullName + "') create json schema Clients()";
+				epl = "@JsonSchema(ClassName='" + typeof(MyLocalNoDefaultCtorInvalid).FullName + "') create json schema Clients()";
 				TryInvalidCompile(
 					env,
 					epl,
 					"Provided JSON event class does not have a public default constructor or is a non-static inner class");
 
-				epl = "@JsonSchema(className='" + typeof(MyLocalInstanceInvalid).FullName + "') create json schema Clients()";
+				epl = "@JsonSchema(ClassName='" + typeof(MyLocalInstanceInvalid).FullName + "') create json schema Clients()";
 				TryInvalidCompile(
 					env,
 					epl,
@@ -179,17 +183,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string schema =
-					"create json schema Partner(id long, name string, since java.time.OffsetDateTime);\n" +
+					"create json schema Partner(id long, name string, since System.DateTimeOffset);\n" +
 					"create json schema Client(" +
 					"_id long,\n" +
 					"`index` int,\n" +
-					"guid java.util.UUID,\n" +
+					"guid Guid,\n" +
 					"isActive boolean,\n" +
-					"balance BigDecimal,\n" +
+					"balance decimal,\n" +
 					"picture string,\n" +
 					"age int,\n" +
 					"eyeColor " +
-					typeof(SupportClientsEvent.EyeColor).FullName +
+					typeof(SupportClientsEvent.EyeColor).MaskTypeName() +
 					",\n" +
 					"name string,\n" +
 					"gender string,\n" +
@@ -198,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"phones long[],\n" +
 					"address string,\n" +
 					"about string,\n" +
-					"registered java.time.LocalDate,\n" +
+					"registered DateTimeEx,\n" +
 					"latitude double,\n" +
 					"longitude double,\n" +
 					"tags string[],\n" +
@@ -264,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@public @buseventtype @JsonSchema(className='" +
+				string epl = "@public @buseventtype @JsonSchema(ClassName='" +
 				             typeof(SupportClientsEvent).FullName +
 				             "') create json schema Clients();\n" +
 				             "@Name('s0') select * from Clients;";
@@ -299,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@public @buseventtype @JsonSchema(className='" +
+				string epl = "@public @buseventtype @JsonSchema(ClassName='" +
 				             typeof(SupportUsersEvent).FullName +
 				             "') create json schema Users();\n" +
 				             "@Name('s0') select * from Users;";

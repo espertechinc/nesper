@@ -15,6 +15,6 @@ namespace com.espertech.esper.common.client.annotation
 	/// </summary>
 	public class JsonEventFieldAttribute : Attribute
     {
-        public Type Adapter { get; set; }
+        public virtual Type Adapter { get; set; }
     }
 } // end of namespace

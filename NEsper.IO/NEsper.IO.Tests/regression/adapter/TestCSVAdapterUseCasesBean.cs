@@ -34,7 +34,7 @@ namespace com.espertech.esperio.regression.adapter
     	    _baseUseCase = new TestCSVAdapterUseCases(true);
     	}
     
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestReadWritePropsBean()
         {
             var configuration = new Configuration(_container);

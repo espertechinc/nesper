@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             CodegenStatementSwitch switchStmt,
             CodegenExpressionRef name)
         {
-            switchStmt.DefaultBlock.BlockThrow(NewInstance(typeof(NoSuchElementException), Concat(Constant("Field named "), name)));
+            switchStmt.DefaultBlock
+                .BlockThrow(NewInstance(typeof(NoSuchElementException), Concat(Constant("Field named "), name)));
         }
 
         public static CodegenExpression[] GetCasesNumberNtoM(StmtClassForgeableJsonDesc desc)

@@ -90,9 +90,7 @@ namespace com.espertech.esper.common.@internal.context.util
                     var lastController = contextControllers[contextControllers.Length - 1];
                     var lastContextName = lastController.Factory.FactoryEnv.ContextName;
                     var inner = (IDictionary<string, object>) mappedEventBean.Properties.Get(lastContextName);
-                    if (inner != null) {
-                        inner.PutAll(terminationProperties);
-                    }
+                    inner?.PutAll(terminationProperties);
                 }
             }
 

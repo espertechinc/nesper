@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            var fields = "g,ge".SplitCsv();
 	            var eplReference = new Atomic<string>();
 	            var builder = new SupportEvalBuilder("SupportBeanArrayCollMap")
-	                .WithExpressions(fields, "LongBoxed>all({1,2},IntArr,intCol)", "LongBoxed>=all({1,2},IntArr,intCol)")
+	                .WithExpressions(fields, "LongBoxed>all({1,2},IntArr,IntCol)", "LongBoxed>=all({1,2},IntArr,IntCol)")
 	                .WithStatementConsumer(stmt => eplReference.Set(stmt.GetProperty(StatementProperty.EPL).ToString()));
 
 	            var arrayBean = MakeBean();
@@ -319,8 +319,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "g,ge".SplitCsv();
 	            var epl = "@Name('s0') select " +
-	                      "LongBoxed > any ({1, 2}, IntArr, intCol) as g, " +
-	                      "LongBoxed >= any ({1, 2}, IntArr, intCol) as ge " +
+	                      "LongBoxed > any ({1, 2}, IntArr, IntCol) as g, " +
+	                      "LongBoxed >= any ({1, 2}, IntArr, IntCol) as ge " +
 	                      "from SupportBeanArrayCollMap";
 	            env.CompileDeploy(epl).AddListener("s0");
 

@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream[forge.StreamNum];
+            var @event = eventsPerStream[forge.StreamNum];
             if (@event == null) {
                 return null;
             }
 
-            object index = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
+            var index = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
             if (index == null || !index.IsInt32()) {
                 Log.Warn(forge.GetWarningText("integer", index));
                 return null;
@@ -62,12 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType,
                 typeof(ExprDotNodeForgePropertyExprEvalIndexed),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
                 .IfRefNullReturnNull("@event")

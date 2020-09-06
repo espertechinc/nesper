@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprArrayNodeForgeEval : ExprEvaluator,
         ExprEnumerationEval
     {
-        private const String PRIMITIVE_ARRAY_NULL_MSG = "new-array received a null value as an array element of an array of primitives";
+        private const string PRIMITIVE_ARRAY_NULL_MSG = "new-array received a null value as an array element of an array of primitives";
         
         private readonly ExprArrayNodeForge _forge;
         private readonly ExprEvaluator[] _evaluators;
@@ -126,9 +127,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge.EvaluationType,
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
+
+            var arrayType = forge.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    forge.EvaluationType,
+                    arrayType,
                     "array",
                     NewArrayByLength(forge.ArrayReturnType, Constant(forgeRenderable.ChildNodes.Length)));
             var requiresPrimitive =
@@ -139,6 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var child = forgeRenderable.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
                 var refname = "r" + i;
+
                 block.DeclareVar(
                     childType,
                     refname,
@@ -146,26 +150,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 if (child.EvaluationType.CanNotBeNull()) {
                     if (!forge.IsMustCoerce) {
-                        block.AssignArrayElement("array", Constant(i), Ref(refname));
+                        block
+                            .Debug("ExprArrayNodeForgeEval-1.1: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                Unbox(Ref(refname), childType));
                     }
                     else {
-                        block.AssignArrayElement(
-                            "array",
-                            Constant(i),
-                            forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                        block
+                            .Debug("ExprArrayNodeForgeEval-1.2: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                forge.Coercer.CoerceCodegen(Ref(refname), childType));
                     }
                 }
                 else {
                     var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     if (!forge.IsMustCoerce) {
-                        ifNotNull.AssignArrayElement("array", Constant(i), Ref(refname));
+                        ifNotNull
+                            .Debug("ExprArrayNodeForgeEval-2.1: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                Unbox(Ref(refname), childType));
                     }
                     else {
-                        ifNotNull.AssignArrayElement(
-                            "array",
-                            Constant(i),
-                            forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                        ifNotNull
+                            .Debug("ExprArrayNodeForgeEval-2.2: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
                     }
+
                     if (requiresPrimitive) {
                         block.IfCondition(
                                 EqualsNull(Ref(refname)))

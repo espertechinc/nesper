@@ -84,9 +84,7 @@ namespace com.espertech.esper.common.@internal.view.length
             }
 
             // update event buffer for access by expressions, if any
-            if (ViewUpdatedCollection != null) {
-                ViewUpdatedCollection.Update(newData, expiredArr);
-            }
+            ViewUpdatedCollection?.Update(newData, expiredArr);
 
             // If there are child views, call update method
             if (Child != null) {

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client.util;
 
 namespace com.espertech.esper.runtime.client
@@ -80,7 +81,9 @@ namespace com.espertech.esper.runtime.client
 
 		    protected bool Equals(Item other)
 		    {
-			    return _objectType == other._objectType && _objectName == other._objectName && Equals(_deploymentIds, other._deploymentIds);
+			    return _objectType == other._objectType && 
+			           _objectName == other._objectName &&
+			           _deploymentIds.SetEquals(other._deploymentIds);
 		    }
 
 		    public override bool Equals(object obj)

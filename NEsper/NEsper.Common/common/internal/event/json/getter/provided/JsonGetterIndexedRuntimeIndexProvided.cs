@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 	    }
 
 	    public CodegenExpression EventBeanGetIndexedCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope, CodegenExpression beanExpression, CodegenExpression key) {
-	        return StaticMethod(typeof(CollectionUtil), "arrayValueAtIndex", ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name), key);
+	        return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name), key);
 	    }
 
 	    public object Get(EventBean eventBean, int index) {

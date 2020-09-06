@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             return execs;
         }
 
-        //@Hook(HookType=HookType.SQLCOL, hook="this is a sample and not used")
+        //@Hook(HookType=HookType.SQLCOL, Hook="this is a sample and not used")
         internal class EPLDatabaseOutputColumnConversion : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 string[] fields = {"myint"};
                 var hookType = typeof(SupportSQLColumnTypeConversion).FullName;
                 var stmtText =
-                    $"@Name('s0') @Hook(HookType=HookType.SQLCOL, hook='{hookType}') select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
+                    $"@Name('s0') @Hook(HookType=HookType.SQLCOL, Hook='{hookType}') select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
                 env.CompileDeploy(stmtText);
 
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("myint"));

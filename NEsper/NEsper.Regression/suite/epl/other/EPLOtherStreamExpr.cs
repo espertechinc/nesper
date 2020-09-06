@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var prefix = "@Name('s0') select * from SupportMarketDataBean as S0 where " +
-                             typeof(SupportStaticMethodLib).Name;
+                             typeof(SupportStaticMethodLib).FullName;
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(S0)");
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(*)");
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZeroEventBean(S0)");

@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         public bool IsThreading { get; set; }
 
         /// <summary>
-        ///     Returns the runtimemetrics production interval in milliseconds.
+        ///     Returns the runtime metrics production interval in milliseconds.
         /// </summary>
         /// <returns>runtime metrics production interval</returns>
         public long RuntimeInterval { get; set; }

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client.annotation;
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 			var schema = (XMLSchemaAttribute) schemaAnnotations[0];
 			if (string.IsNullOrEmpty(schema.RootElementName)) {
 				throw new ExprValidationException(
-					"Required annotation field 'rootElementName' for annotation @" + nameof(XMLSchemaAttribute) + " could not be found");
+					"Required annotation field 'RootElementName' for annotation @" + nameof(XMLSchemaAttribute) + " could not be found");
 			}
 
 			config.RootElementName = schema.RootElementName.Trim();

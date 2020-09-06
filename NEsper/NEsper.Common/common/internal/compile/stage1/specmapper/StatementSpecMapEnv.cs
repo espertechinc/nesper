@@ -57,7 +57,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public CompilerServices CompilerServices { get; }
 
+        public bool IsAttachPatternText => Configuration.Compiler.ByteCode.IsAttachPatternEPL;
+        
         public ClassProvidedExtension ClassProvidedExtension { get; }
-
     }
 } // end of namespace

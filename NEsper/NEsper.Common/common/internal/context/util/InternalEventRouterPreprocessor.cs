@@ -24,7 +24,7 @@ using com.espertech.esper.compat.logging;
 namespace com.espertech.esper.common.@internal.context.util
 {
     /// <summary>
-    ///     Interface for a service that routes events within the runtimefor further processing.
+    ///     Interface for a service that routes events within the runtime for further processing.
     /// </summary>
     public class InternalEventRouterPreprocessor
     {

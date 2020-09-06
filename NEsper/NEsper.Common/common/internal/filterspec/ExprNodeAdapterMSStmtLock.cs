@@ -36,9 +36,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Array.Copy(prototypeArray, 0, eventsPerStream, 0, prototypeArray.Length);
             eventsPerStream[0] = theEvent;
 
-            if (_variableService != null) {
-                _variableService.SetLocalVersion();
-            }
+            _variableService?.SetLocalVersion();
 
             var writeLockTimeout = TimeSpan.FromMilliseconds(LOCK_BACKOFF_MSEC);
             using (evaluatorContext.AgentInstanceLock.AcquireWriteLock(writeLockTimeout)) {

@@ -93,10 +93,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(name);
             writer.Write(type.GetText());
-            if (optionalRepeat != null)
-            {
-                optionalRepeat.WriteEPL(writer);
-            }
+            optionalRepeat?.WriteEPL(writer);
         }
     }
 } // end of namespace

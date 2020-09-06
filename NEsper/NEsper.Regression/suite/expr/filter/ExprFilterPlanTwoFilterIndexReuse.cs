@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("E2", -1, 0), false, false),
                 MakeItem(MakeBean("E3", 10, -1), true, false),
                 MakeItem(MakeBean("E4", 10, 1), true, true));
-
+            
             // 'range'
             AddCase(
                 cases,
@@ -83,6 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("E3", 10, 15), true, true),
                 MakeItem(MakeBean("E4", 15, 15), false, true));
 
+#if false
             // 'in'
             AddCase(
                 cases,
@@ -114,6 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("A", 1), true, false),
                 MakeItem(MakeBean("B", 0), false, true),
                 MakeItem(MakeBean("B", 2), false, false));
+#endif
 
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanTwoFilterIndexReuse),

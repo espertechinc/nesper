@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     if (nextValue == -1) {
                         nextValue = NextValue(microsecondsSet, 0);
                         remainder = nextValue;
-                        after.AddMilliseconds(-1);
+                        after.AddMilliseconds(1);
                     }
                 } else {
                     result.Milliseconds = after.Millisecond;

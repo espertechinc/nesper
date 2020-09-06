@@ -29,14 +29,70 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraUpdateNonPropertySet());
-            execs.Add(new InfraMultipleDataWindowIntersect());
-            execs.Add(new InfraMultipleDataWindowUnion());
-            execs.Add(new InfraSubclass());
-            execs.Add(new InfraUpdateCopyMethodBean());
-            execs.Add(new InfraUpdateWrapper());
-            execs.Add(new InfraUpdateMultikeyWArrayPrimitiveArray());
+            WithUpdateNonPropertySet(execs);
+            WithMultipleDataWindowIntersect(execs);
+            WithMultipleDataWindowUnion(execs);
+            WithSubclass(execs);
+            WithUpdateCopyMethodBean(execs);
+            WithUpdateWrapper(execs);
+            WithUpdateMultikeyWArrayPrimitiveArray(execs);
+            WithUpdateMultikeyWArrayTwoFields(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateMultikeyWArrayTwoFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraUpdateMultikeyWArrayTwoFields());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateMultikeyWArrayPrimitiveArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUpdateMultikeyWArrayPrimitiveArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateWrapper(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUpdateWrapper());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateCopyMethodBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUpdateCopyMethodBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubclass(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubclass());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultipleDataWindowUnion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMultipleDataWindowUnion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultipleDataWindowIntersect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMultipleDataWindowIntersect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateNonPropertySet(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUpdateNonPropertySet());
             return execs;
         }
 
@@ -46,40 +102,41 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             @event.LongPrimitive = 999;
         }
 
-        internal class InfraUpdateMultikeyWArrayTwoFields : RegressionExecution {
+        internal class InfraUpdateMultikeyWArrayTwoFields : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
+                             "insert into MyWindow select * from SupportEventWithManyArray;\n" +
+                             "on SupportEventWithIntArray as sewia " +
+                             "update MyWindow as mw set Value = sewia.Value " +
+                             "where mw.Id = sewia.Id and mw.IntOne = sewia.Array;\n";
+                env.CompileDeploy(epl);
 
-    public void Run (RegressionEnvironment env) {
-        string epl = "@Name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
-            "insert into MyWindow select * from SupportEventWithManyArray;\n" +
-            "on SupportEventWithIntArray as sewia " +
-            "update MyWindow as mw set value = sewia.value " +
-            "where mw.id = sewia.id and mw.IntOne = sewia.array;\n";
-        env.CompileDeploy (epl);
+                env.SendEventBean(new SupportEventWithManyArray("ID1").WithIntOne(new int[] {1, 2}));
+                env.SendEventBean(new SupportEventWithManyArray("ID2").WithIntOne(new int[] {3, 4}));
+                env.SendEventBean(new SupportEventWithManyArray("ID3").WithIntOne(new int[] {1}));
 
-        env.SendEventBean (new SupportEventWithManyArray ("ID1").WithIntOne (new int[] { 1, 2 }));
-        env.SendEventBean (new SupportEventWithManyArray ("ID2").WithIntOne (new int[] { 3, 4 }));
-        env.SendEventBean (new SupportEventWithManyArray ("ID3").WithIntOne (new int[] { 1 }));
+                env.Milestone(0);
 
-        env.Milestone (0);
+                env.SendEventBean(new SupportEventWithIntArray("ID2", new int[] {3, 4}, 10));
+                env.SendEventBean(new SupportEventWithIntArray("ID3", new int[] {1}, 11));
+                env.SendEventBean(new SupportEventWithIntArray("ID1", new int[] {1, 2}, 12));
+                env.SendEventBean(new SupportEventWithIntArray("IDX", new int[] {1}, 14));
+                env.SendEventBean(new SupportEventWithIntArray("ID1", new int[] {1, 2, 3}, 15));
 
-        env.SendEventBean (new SupportEventWithIntArray ("ID2", new int[] { 3, 4 }, 10));
-        env.SendEventBean (new SupportEventWithIntArray ("ID3", new int[] { 1 }, 11));
-        env.SendEventBean (new SupportEventWithIntArray ("ID1", new int[] { 1, 2 }, 12));
-        env.SendEventBean (new SupportEventWithIntArray ("IDX", new int[] { 1 }, 14));
-        env.SendEventBean (new SupportEventWithIntArray ("ID1", new int[] { 1, 2, 3 }, 15));
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.GetEnumerator("create"),
+                    "Id,Value".SplitCsv(),
+                    new object[][] {
+                        new object[] {"ID1", 12},
+                        new object[] {"ID2", 10},
+                        new object[] {"ID3", 11}
+                    });
 
-        EPAssertionUtil.AssertPropsPerRowAnyOrder(
-            env.GetEnumerator("create"),
-            "id,value".SplitCsv(),
-            new object[][] {
-                new object[] {"ID1", 12}, 
-                new object[] {"ID2", 10}, 
-                new object[] {"ID3", 11}
-            });
-
-        env.UndeployAll ();
-    }
-}
+                env.UndeployAll();
+            }
+        }
 
         internal class InfraUpdateMultikeyWArrayPrimitiveArray : RegressionExecution
         {
@@ -89,8 +146,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string epl = "@Name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                              "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                              "on SupportEventWithIntArray as sewia " +
-                             "update MyWindow as mw set value = sewia.value " +
-                             "where mw.IntOne = sewia.array;\n";
+                             "update MyWindow as mw set Value = sewia.Value " +
+                             "where mw.IntOne = sewia.Array;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportEventWithManyArray("E1").WithIntOne(new int[] {1, 2}));
@@ -107,11 +164,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "id,value".SplitCsv(),
+                    "Id,Value".SplitCsv(),
                     new object[][] {
-                        new object[] {"E1", 13}, 
-                        new object[] {"E2", 10}, 
-                        new object[] {"E3", 11}, 
+                        new object[] {"E1", 13},
+                        new object[] {"E2", 10},
+                        new object[] {"E3", 11},
                         new object[] {"E4", 12}
                     });
 
@@ -162,11 +219,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "insert into MyWindowUNP select * from SupportBean;\n" +
                           "@Name('update') on SupportBean_S0 as sb " +
                           "update MyWindowUNP as mywin" +
-                          " set mywin.SetIntPrimitive(10)," +
-                          "     setBeanLongPrimitive999(mywin);\n";
+                          " set mywin.IntPrimitive = (10)," +
+                          "     SetBeanLongPrimitive999(mywin);\n";
                 env.CompileDeploy(epl).AddListener("update");
 
-                var fields = new [] { "IntPrimitive","LongPrimitive" };
+                var fields = new[] {"IntPrimitive", "LongPrimitive"};
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertProps(
@@ -197,18 +254,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(1, newevents.Length);
                 EPAssertionUtil.AssertProps(
                     newevents[0],
-                    new [] { "IntPrimitive" },
+                    new[] {"IntPrimitive"},
                     new object[] {300});
                 Assert.AreEqual(1, oldevents.Length);
                 oldevents = EPAssertionUtil.Sort(oldevents, "TheString");
                 EPAssertionUtil.AssertPropsPerRow(
                     oldevents,
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new[] {new object[] {"E2", 3}});
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new[] {new object[] {"E1", 2}, new object[] {"E2", 300}});
 
                 env.UndeployAll();
@@ -234,18 +291,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(1, newevents.Length);
                 EPAssertionUtil.AssertProps(
                     newevents[0],
-                    new [] { "IntPrimitive" },
+                    new[] {"IntPrimitive"},
                     new object[] {300});
                 Assert.AreEqual(1, oldevents.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     oldevents,
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new[] {new object[] {"E2", 3}});
 
                 var events = EPAssertionUtil.Sort(env.GetEnumerator("create"), "TheString");
                 EPAssertionUtil.AssertPropsPerRow(
                     events,
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new[] {new object[] {"E1", 2}, new object[] {"E2", 300}});
 
                 env.UndeployAll();

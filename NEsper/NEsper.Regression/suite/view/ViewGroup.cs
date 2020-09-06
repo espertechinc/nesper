@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
@@ -169,13 +170,13 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string epl = "create schema event as " +
-                             typeof(EventWithTags).FullName +
+                             typeof(EventWithTags).MaskTypeName() +
                              ";\n" +
                              "\n" +
                              "insert into stream1\n" +
-                             "select name, tags from event;\n" +
+                             "select Name, Tags from event;\n" +
                              "\n" +
-                             "select name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\n" +
+                             "select Name, Tags('a\\.b') from stream1.std:groupwin(Name, Tags('a\\.b')).win:length(10)\n" +
                              "having count(1) >= 5;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
@@ -679,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 else {
                     // 0.53 sec for 100k
                     for (var i = 0; i < 10; i++) {
-                        var stmtString = "SELECT * FROM SupportSensorEvent(type='A" +
+                        var stmtString = "SELECT * FROM SupportSensorEvent(Type='A" +
                                          i +
                                          "')#length(1000000)#weighted_avg(measurement,confidence)";
                         env.CompileDeploy(stmtString).AddListener("s0");

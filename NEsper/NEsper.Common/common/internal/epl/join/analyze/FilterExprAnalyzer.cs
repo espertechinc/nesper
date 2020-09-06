@@ -239,11 +239,8 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             bool isOuterJoin)
         {
             var affector = provider.GetAffector(isOuterJoin);
-            if (affector == null) {
-                return;
-            }
 
-            affector.Apply(queryGraph);
+            affector?.Apply(queryGraph);
         }
 
         private static void AnalyzeRelationalOpNode(

@@ -144,15 +144,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             var metadata = dataflow.OperatorMetadata.Get(operatorNum);
 
             // see if the operator is already provided by options
-            if (options.OperatorProvider != null) {
-                var operatorX = options.OperatorProvider.Provide(
-                    new EPDataFlowOperatorProviderContext(
-                        dataflow.DataflowName,
-                        metadata.OperatorName,
-                        operatorFactory));
-                if (operatorX != null) {
-                    return operatorX;
-                }
+            var operatorX = options.OperatorProvider?.Provide(
+                new EPDataFlowOperatorProviderContext(
+                    dataflow.DataflowName,
+                    metadata.OperatorName,
+                    operatorFactory));
+            if (operatorX != null) {
+                return operatorX;
             }
 
             IDictionary<string, object> additionalParameters = null;

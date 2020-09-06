@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 using com.espertech.esper.regressionlib.support.util;
@@ -83,34 +84,34 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			// Json-Class-Provided
 			var eplJsonProvided =
-				"@JsonSchema(className='" +
-				typeof(MyLocalJSONProvidedLvl4).FullName +
+				"@JsonSchema(ClassName='" +
+				typeof(MyLocalJSONProvidedLvl4).MaskTypeName() +
 				"') create json schema " +
 				JSONPROVIDED_TYPENAME +
 				"_4();\n" +
-				"@JsonSchema(className='" +
-				typeof(MyLocalJSONProvidedLvl3).FullName +
+				"@JsonSchema(ClassName='" +
+				typeof(MyLocalJSONProvidedLvl3).MaskTypeName() +
 				"') create json schema " +
 				JSONPROVIDED_TYPENAME +
 				"_3(lvl3 int, l4 " +
 				JSONPROVIDED_TYPENAME +
 				"_4[]);\n" +
-				"@JsonSchema(className='" +
-				typeof(MyLocalJSONProvidedLvl2).FullName +
+				"@JsonSchema(ClassName='" +
+				typeof(MyLocalJSONProvidedLvl2).MaskTypeName() +
 				"') create json schema " +
 				JSONPROVIDED_TYPENAME +
 				"_2(lvl2 int, l3 " +
 				JSONPROVIDED_TYPENAME +
 				"_3[]);\n" +
-				"@JsonSchema(className='" +
-				typeof(MyLocalJSONProvidedLvl1).FullName +
+				"@JsonSchema(ClassName='" +
+				typeof(MyLocalJSONProvidedLvl1).MaskTypeName() +
 				"') create json schema " +
 				JSONPROVIDED_TYPENAME +
 				"_1(lvl1 int, l2 " +
 				JSONPROVIDED_TYPENAME +
 				"_2[]);\n" +
-				"@JsonSchema(className='" +
-				typeof(MyLocalJSONProvidedTop).FullName +
+				"@JsonSchema(ClassName='" +
+				typeof(MyLocalJSONProvidedTop).MaskTypeName() +
 				"') @name('types') @public @buseventtype create json schema " +
 				JSONPROVIDED_TYPENAME +
 				"(l1 " +
@@ -421,6 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.l1 = l1;
 			}
 
+			[PropertyName("l1")]
 			public InfraNestedIndexedPropLvl1[] L1 => l1;
 		}
 
@@ -437,8 +439,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl1 = lvl1;
 			}
 
+			[PropertyName("l2")]
 			public InfraNestedIndexedPropLvl2[] L2 => l2;
 
+			[PropertyName("lvl1")]
 			public int Lvl1 => lvl1;
 		}
 
@@ -455,8 +459,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl2 = lvl2;
 			}
 
+			[PropertyName("l3")]
 			public InfraNestedIndexedPropLvl3[] L3 => l3;
 
+			[PropertyName("lvl2")]
 			public int Lvl2 => lvl2;
 		}
 
@@ -473,8 +479,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl3 = lvl3;
 			}
 
+			[PropertyName("l4")]
 			public InfraNestedIndexedPropLvl4[] L4 => l4;
 
+			[PropertyName("lvl3")]
 			public int Lvl3 => lvl3;
 		}
 
@@ -487,6 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl4 = lvl4;
 			}
 
+			[PropertyName("lvl4")]
 			public int Lvl4 => lvl4;
 		}
 

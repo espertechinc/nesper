@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return relOpNode;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(opNode.EqualsNode(opNode, false));
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse(opNode.EqualsNode(new ExprOrNode(), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             var childOne = new SupportExprNode("d");
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             opNode.AddChildNode(new SupportExprNode(typeof(long?)));
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(typeof(bool?), opNode.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             opNode.AddChildNode(new SupportExprNode(10));
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("10>=5", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(opNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // Test success

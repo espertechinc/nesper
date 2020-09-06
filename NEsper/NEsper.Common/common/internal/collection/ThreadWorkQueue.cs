@@ -6,9 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.collection

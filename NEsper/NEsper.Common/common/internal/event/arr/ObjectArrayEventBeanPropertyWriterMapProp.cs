@@ -65,9 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string key)
         {
             var mapEntry = (IDictionary<string, object>) array[index];
-            if (mapEntry != null) {
-                mapEntry.Put(key, value);
-            }
+            mapEntry?.Put(key, value);
         }
     }
 } // end of namespace

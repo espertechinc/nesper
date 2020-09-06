@@ -20,6 +20,8 @@ using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
 
+// ReSharper disable RedundantExplicitArrayCreation
+
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
     public class ResultSetQueryTypeRollupDimensionality
@@ -27,31 +29,192 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeBoundRollup2Dim());
-            execs.Add(new ResultSetQueryTypeUnboundRollup2Dim());
-            execs.Add(new ResultSetQueryTypeUnboundRollup1Dim());
-            execs.Add(new ResultSetQueryTypeUnboundRollup2DimBatchWindow());
-            execs.Add(new ResultSetQueryTypeUnboundRollup3Dim());
-            execs.Add(new ResultSetQueryTypeMixedAccessAggregation());
-            execs.Add(new ResultSetQueryTypeNonBoxedTypeWithRollup());
-            execs.Add(new ResultSetQueryTypeGroupByWithComputation());
-            execs.Add(new ResultSetQueryTypeUnboundRollupUnenclosed());
-            execs.Add(new ResultSetQueryTypeUnboundCubeUnenclosed());
-            execs.Add(new ResultSetQueryTypeUnboundGroupingSet2LevelUnenclosed());
-            execs.Add(new ResultSetQueryTypeBoundCube3Dim());
-            execs.Add(new ResultSetQueryTypeBoundGroupingSet2LevelNoTopNoDetail());
-            execs.Add(new ResultSetQueryTypeBoundGroupingSet2LevelTopAndDetail());
-            execs.Add(new ResultSetQueryTypeUnboundCube4Dim());
-            execs.Add(new ResultSetQueryTypeInvalid());
-            execs.Add(new ResultSetQueryTypeOutputWhenTerminated());
-            execs.Add(new ResultSetQueryTypeContextPartitionAlsoRollup());
-            execs.Add(new ResultSetQueryTypeOnSelect());
-            execs.Add(new ResultSetQueryTypeNamedWindowCube2Dim());
-            execs.Add(new ResultSetQueryTypeNamedWindowDeleteAndRStream2Dim());
+            WithBoundRollup2Dim(execs);
+            WithUnboundRollup2Dim(execs);
+            WithUnboundRollup1Dim(execs);
+            WithUnboundRollup2DimBatchWindow(execs);
+            WithUnboundRollup3Dim(execs);
+            WithMixedAccessAggregation(execs);
+            WithNonBoxedTypeWithRollup(execs);
+            WithGroupByWithComputation(execs);
+            WithUnboundRollupUnenclosed(execs);
+            WithUnboundCubeUnenclosed(execs);
+            WithUnboundGroupingSet2LevelUnenclosed(execs);
+            WithBoundCube3Dim(execs);
+            WithBoundGroupingSet2LevelNoTopNoDetail(execs);
+            WithBoundGroupingSet2LevelTopAndDetail(execs);
+            WithUnboundCube4Dim(execs);
+            WithInvalid(execs);
+            WithOutputWhenTerminated(execs);
+            WithContextPartitionAlsoRollup(execs);
+            WithOnSelect(execs);
+            WithNamedWindowCube2Dim(execs);
+            WithNamedWindowDeleteAndRStream2Dim(execs);
+            WithRollupMultikeyWArray(execs);
+            WithRollupMultikeyWArrayGroupingSet(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRollupMultikeyWArrayGroupingSet(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRollupMultikeyWArrayGroupingSet());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRollupMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(false, true));
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(false, false));
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(true, false));
-            execs.Add(new ResultSetQueryTypeRollupMultikeyWArrayGroupingSet());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowDeleteAndRStream2Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeNamedWindowDeleteAndRStream2Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowCube2Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeNamedWindowCube2Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeOnSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContextPartitionAlsoRollup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeContextPartitionAlsoRollup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenTerminated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeOutputWhenTerminated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundCube4Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundCube4Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBoundGroupingSet2LevelTopAndDetail(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeBoundGroupingSet2LevelTopAndDetail());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBoundGroupingSet2LevelNoTopNoDetail(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeBoundGroupingSet2LevelNoTopNoDetail());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBoundCube3Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeBoundCube3Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundGroupingSet2LevelUnenclosed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundGroupingSet2LevelUnenclosed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundCubeUnenclosed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundCubeUnenclosed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundRollupUnenclosed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundRollupUnenclosed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupByWithComputation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeGroupByWithComputation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBoxedTypeWithRollup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeNonBoxedTypeWithRollup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMixedAccessAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeMixedAccessAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundRollup3Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundRollup3Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundRollup2DimBatchWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundRollup2DimBatchWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundRollup1Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundRollup1Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundRollup2Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeUnboundRollup2Dim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBoundRollup2Dim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeBoundRollup2Dim());
             return execs;
         }
 
@@ -82,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                new [] { "c0", "c1" },
+                new[] {"c0", "c1"},
                 new[] {new object[] {"E1", 4}, new object[] {"E2", 2}, new object[] {null, 6}});
 
             env.SendEventBean(new SupportBean_S0(1));
@@ -99,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Listener("s0").GetAndResetLastNewData(),
-                new [] { "c0", "c1" },
+                new[] {"c0", "c1"},
                 new[] {new object[] {"E2", 4}, new object[] {"E1", 11}, new object[] {null, 15}});
 
             env.UndeployAll();
@@ -110,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string groupBy,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8" };
+            var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"};
 
             var epl = "@Name('s0')" +
                       "select TheString as c0, " +
@@ -221,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string groupBy,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1", "c2", "c3" };
+            var fields = new[] {"c0", "c1", "c2", "c3"};
             var epl = "@Name('s0')" +
                       "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                       "group by " +
@@ -279,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string rollup,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
 
             var epl = "@Name('s0')" +
                       "select TheString as c0, sum(IntPrimitive) as c1 from SupportBean " +
@@ -324,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             bool isJoin,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
+            var fields = new[] {"c0", "c1", "c2", "c3", "c4"};
 
             var epl = "@Name('s0')" +
                       "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, count(*) as c3, sum(DoublePrimitive) as c4 " +
@@ -554,7 +717,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 long expectedByArray,
                 long expectedByArrayAndValue)
             {
-                string[] fields = new string[] {"array", "value", "cnt"};
+                string[] fields = new string[] {"Array", "Value", "cnt"};
                 env.SendEventBean(new SupportEventWithIntArray(id, array, value));
                 EventBean[] @out = env.Listener("s0").GetAndResetLastNewData();
                 EPAssertionUtil.AssertProps(@out[0], fields, new object[] {array, value, expectedByArrayAndValue});
@@ -587,7 +750,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("c0"));
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 env.SendEventBean(MakeEvent("E1", 1, 10));
                 EPAssertionUtil.AssertPropsPerRow(
@@ -631,7 +794,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "@Name('s0') context SegmentedByString select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean group by rollup(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 env.Milestone(0);
 
                 env.SendEventBean(MakeEvent("E1", 1, 10));
@@ -673,7 +836,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "@Name('s0') on SupportBean_S0 as S0 select mw.TheString as c0, sum(mw.IntPrimitive) as c1, count(*) as c2 from MyWindow mw group by rollup(mw.TheString);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 // {E0, 0}, new object[] {E1, 1}, new object[] {E2, 2}, new object[] {E0, 3}, new object[] {E1, 4}, new object[] {E2, 5}, new object[] {E0, 6}, new object[] {E1, 7}, new object[] {E2, 8}, new object[] {E0, 9}
                 for (var i = 0; i < 10; i++) {
@@ -755,7 +918,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 string groupBy,
                 AtomicLong milestone)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                           "group by " +
@@ -822,7 +985,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 RegressionEnvironment env,
                 string groupBy)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                           "group by " +
@@ -864,7 +1027,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length(4) " +
                           "group by grouping sets(TheString, IntPrimitive)";
@@ -925,7 +1088,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length(4) " +
                           "group by grouping sets((), (TheString, IntPrimitive))";
@@ -971,7 +1134,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
+                var fields = new[] {"c0", "c1", "c2", "c3", "c4"};
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, DoublePrimitive as c3, sum(IntBoxed) as c4 from SupportBean " +
                           "group by cube(TheString, IntPrimitive, LongPrimitive, DoublePrimitive)";
@@ -1108,7 +1271,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           groupBy;
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 env.SendEventBean(MakeEvent(0, "E1", 10, 100)); // insert event
                 EPAssertionUtil.AssertPropsPerRow(
@@ -1205,7 +1368,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 string groupBy,
                 AtomicLong milestone)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean(IntBoxed = 0);\n" +
                           "on SupportBean(IntBoxed = 1) as sb " +
@@ -1463,7 +1626,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 bool join,
                 AtomicLong milestone)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#length(3) " +
@@ -1604,7 +1767,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean " +
                           "group by rollup(TheString, IntPrimitive)";
@@ -1685,7 +1848,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 var epl = "@Name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length_batch(4) " +
@@ -1765,7 +1928,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 var epl = "@Name('s0') select sum(IntPrimitive) as c0, TheString as c1, window(*) as c2 " +
                           "from SupportBean#length(2) sb group by rollup(TheString) order by TheString";

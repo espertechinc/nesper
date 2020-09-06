@@ -29,15 +29,6 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXMLDOM,
             BeanEventTypeFactory beanEventTypeFactory,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
-            ImportService importService)
-        {
-        }
-
-        public static void BuildXMLTypes(
-            EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
-            IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXMLDOM,
-            BeanEventTypeFactory beanEventTypeFactory,
-            XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
             IResourceManager resourceManager)
         {
             // Add from the configuration the XML DOM names and type def

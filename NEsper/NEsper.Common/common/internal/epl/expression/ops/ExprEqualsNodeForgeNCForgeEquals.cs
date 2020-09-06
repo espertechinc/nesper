@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
             else {
                 if (!MultiKeyPlanner.RequiresDeepEquals(lhsType.GetElementType())) {
-                    compare = StaticMethod(typeof(Arrays), "Equals", Ref("left"), Ref("right"));
+                    compare = StaticMethod(typeof(Arrays), "AreEqual", Ref("left"), Ref("right"));
                 }
                 else {
                     compare = StaticMethod(typeof(Arrays), "DeepEquals", Ref("left"), Ref("right"));

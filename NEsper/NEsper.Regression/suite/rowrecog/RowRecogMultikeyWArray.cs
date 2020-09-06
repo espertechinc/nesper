@@ -34,12 +34,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 			{
 				string text = "@Name('s0') select * from SupportEventWithIntArray " +
 				              "match_recognize (" +
-				              " partition by array" +
-				              " measures A.id as a, B.id as b" +
+				              " partition by Array" +
+				              " measures A.Id as a, B.Id as b" +
 				              " pattern (A B)" +
 				              " define" +
-				              " A as A.value = 1," +
-				              " B as B.value = 2" +
+				              " A as A.Value = 1," +
+				              " B as B.Value = 2" +
 				              ")";
 
 				env.CompileDeploy(text).AddListener("s0");

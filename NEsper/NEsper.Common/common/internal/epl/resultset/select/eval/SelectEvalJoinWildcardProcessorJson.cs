@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 methodNode.Block.AssignRef(ExprDotName(Ref("tuple"), field.FieldName), rhs);
             }
 
-            methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedJson", Ref("tuple"), mType));
+            methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("tuple"), mType));
             return methodNode;
         }
 

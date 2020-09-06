@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             return new ByteBuffer(value.GetUTF8Bytes());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             // top-k for 3
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             UpdateAssert(state, "c", "a=3,e=3,c=4");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTopK()
         {
             var space = 10000;

@@ -8,19 +8,37 @@
 
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.compat
 {
 	[Serializable]
 	public class UnsupportedOperationException : NotSupportedException
 	{
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnsupportedOperationException"/> class.
-        /// </summary>
-		public UnsupportedOperationException() : base() { }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnsupportedOperationException"/> class.
-        /// </summary>
-        /// <param name="message">The message.</param>
-		public UnsupportedOperationException( string message ) : base( message ) { }	}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnsupportedOperationException"/> class.
+		/// </summary>
+		public UnsupportedOperationException() : base()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnsupportedOperationException"/> class.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		public UnsupportedOperationException(string message) : base(message)
+		{
+		}
+
+		/// <summary>
+		/// Serialization constructor.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected UnsupportedOperationException(
+			SerializationInfo info,
+			StreamingContext context) : base(info, context)
+		{
+		}
+	}
 }

@@ -69,9 +69,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                     InternalHandleAdd(pair);
                 }
 
-                if (aggregationService != null) {
-                    aggregationService.ApplyEnter(newData, null, agentInstanceContext);
-                }
+                aggregationService?.ApplyEnter(newData, null, agentInstanceContext);
             }
 
             if (oldData != null) {

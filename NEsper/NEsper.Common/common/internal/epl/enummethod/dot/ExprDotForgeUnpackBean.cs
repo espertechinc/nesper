@@ -38,12 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (target == null) {
-                return null;
-            }
-
             EventBean theEvent = (EventBean) target;
-            return theEvent.Underlying;
+            return theEvent?.Underlying;
         }
 
         public CodegenExpression Codegen(
@@ -60,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(Cast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
+                .MethodReturn(FlexCast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
             return LocalMethod(methodNode, inner);
         }
 

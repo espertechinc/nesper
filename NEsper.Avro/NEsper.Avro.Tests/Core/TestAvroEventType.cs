@@ -31,7 +31,7 @@ namespace NEsper.Avro.Core
 {
     public class TestAvroEventType
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             var lvl2Schema = SchemaBuilder.Record(
@@ -110,7 +110,7 @@ namespace NEsper.Avro.Core
             Assert.AreEqual(21, eventBean.Get("lvl1.lvl2.nestedIndexed[1]"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRequiredType()
         {
             var schema = SchemaBuilder.Record(
@@ -150,7 +150,7 @@ namespace NEsper.Avro.Core
             AssertValuesRequired(new AvroGenericDataEventBean(SupportAvroUtil.ParseQuoted(schema, jsonWValues), eventType));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestOptionalType()
         {
             var schema = SchemaBuilder.Record(
@@ -167,7 +167,7 @@ namespace NEsper.Avro.Core
             RunAssertionNullableOrOptTypes(schema);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNullableType()
         {
             var schema = SchemaBuilder.Record(
@@ -184,7 +184,7 @@ namespace NEsper.Avro.Core
             RunAssertionNullableOrOptTypes(schema);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNestedSimple()
         {
             var schemaText = "{" +
@@ -224,7 +224,7 @@ namespace NEsper.Avro.Core
             AssertValuesNested(datum, new AvroGenericDataEventBean(datum, eventType));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayOfPrimitive()
         {
             var schema = SchemaBuilder.Record(
@@ -250,7 +250,7 @@ namespace NEsper.Avro.Core
             asserter.Invoke(new AvroGenericDataEventBean(datum, eventType));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMapOfString()
         {
             var schema = SchemaBuilder.Record(
@@ -281,7 +281,7 @@ namespace NEsper.Avro.Core
         }
 
 #if FALSE        
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFixed()
         {
             var schema = SchemaBuilder.Record(
@@ -311,7 +311,7 @@ namespace NEsper.Avro.Core
             asserter.Invoke(new AvroGenericDataEventBean(datum, eventType));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEnumSymbol()
         {
             var schema = SchemaBuilder.Record(
@@ -344,7 +344,7 @@ namespace NEsper.Avro.Core
         }
 #endif
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestUnionResultingInObject()
         {
             var schema = SchemaBuilder.Record(
@@ -380,7 +380,7 @@ namespace NEsper.Avro.Core
             asserterFromJson.Invoke("{'anUnion':null}", null);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestUnionResultingInNumber()
         {
             var schema = SchemaBuilder.Record(
@@ -502,7 +502,7 @@ namespace NEsper.Avro.Core
             ByteBuffer expected,
             ByteBuffer received)
         {
-            Assert.IsTrue(Arrays.Equals(expected.Array, received.Array));
+            Assert.IsTrue(Arrays.AreEqual(expected.Array, received.Array));
         }
 
         private GenericRecord GetRecordWithValues(RecordSchema schema)

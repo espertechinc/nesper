@@ -202,11 +202,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         private void AddProperties(IDictionary<string, object> newDataMap)
         {
-            if (viewFactory.additionalProps == null) {
-                return;
-            }
-
-            viewFactory.additionalProps.AddProperties(newDataMap, lastValuesEventNew);
+            viewFactory.additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
         }
 
         public static EventType CreateEventType(

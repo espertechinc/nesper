@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
                 Array.Sort(receivedIds);
                 Array.Sort(expectedIds);
-                expectedIds.DeepEquals(receivedIds);
+                CompatExtensions.DeepEqualsWithType(expectedIds, receivedIds);
             }
         }
     }

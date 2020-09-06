@@ -348,7 +348,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 if (!result.Success) {
                     var diagnosticsMessage = result.Diagnostics.RenderAny();
                     throw new RoslynCompilationException(
-                        "failure during module compilation: " + diagnosticsMessage,
+                        "Failure during module compilation: " + diagnosticsMessage,
                         result.Diagnostics);
                 }
 

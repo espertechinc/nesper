@@ -91,14 +91,14 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 	            try {
 	                env.StageService.GetStage(null);
 	                Assert.Fail();
-	            } catch (ArgumentException ex) {
+	            } catch (ArgumentException) {
 	                // expected
 	            }
 
 	            try {
 	                env.StageService.GetExistingStage(null);
 	                Assert.Fail();
-	            } catch (ArgumentException ex) {
+	            } catch (ArgumentException) {
 	                // expected
 	            }
 

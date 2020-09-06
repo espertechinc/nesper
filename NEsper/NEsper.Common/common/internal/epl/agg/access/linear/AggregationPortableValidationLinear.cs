@@ -75,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             ExprValidationContext validationContext)
         {
             name = name.ToLowerInvariant();
-            return AggregationAccessorLinearTypeExtensions.FromString(name) != null || (name == "countevents") || (name == "listreference");
+            return AggregationAccessorLinearTypeExtensions.FromString(name) != null ||
+                   (name == "countevents") || 
+                   (name == "listreference");
         }
 
         public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
@@ -93,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 var result = typeof(int?);
                 if (aggMethodName == "listreference") {
                     provider = typeof(AggregationMethodLinearListReference);
-                    result = typeof(List<object>);
+                    result = typeof(IList<EventBean>);
                 }
 
                 return new AggregationMultiFunctionMethodDesc(new AggregationMethodLinearNoParamForge(provider, result), null, null, null);
@@ -101,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
             var methodType = AggregationAccessorLinearTypeExtensions.FromString(aggMethodName);
             if (methodType == AggregationAccessorLinearType.FIRST || methodType == AggregationAccessorLinearType.LAST) {
-                return HandleMethodFirstLast(@params, methodType, validationContext);
+                return HandleMethodFirstLast(@params, methodType.Value, validationContext);
             }
             else {
                 return HandleMethodWindow(@params, validationContext);

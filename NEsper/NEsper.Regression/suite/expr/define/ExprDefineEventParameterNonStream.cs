@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"@Name('s0') expression combineProperties {v -> v.p00 || v.p01} select combineProperties((select * from SupportBean_S0#keepall)) as c0 from SupportBean_S1 as p";
+					"@Name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties((select * from SupportBean_S0#keepall)) as c0 from SupportBean_S1 as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertS1(env, null);
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"@Name('s0') expression combineProperties {v -> v.p00 || v.p01} select combineProperties(p.a) as c0 from pattern [a=SupportBean_S0 -> SupportBean_S1] as p";
+					"@Name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties(p.a) as c0 from pattern [a=SupportBean_S0 -> SupportBean_S1] as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendS0(env, "a", "b");

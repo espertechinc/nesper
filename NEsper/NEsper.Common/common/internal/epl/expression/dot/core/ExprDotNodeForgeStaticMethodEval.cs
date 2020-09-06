@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -87,14 +89,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var args = new object[_childEvals.Length];
-            for (int i = 0; i < args.Length; i++) {
+            for (var i = 0; i < args.Length; i++) {
                 args[i] = _childEvals[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            // The method is static so the object it is invoked on
-            // can be null
+            // The method is static so the object it is invoked on can be null
             try {
-                var result = _forge.StaticMethod.Invoke(_forge.TargetObject?.Value, args);
+                var target = _forge.TargetObject?.Value;
+                var argList = new List<object>(args);
+                if (_forge.StaticMethod.IsExtensionMethod()) {
+                    argList.Insert(0, target);
+                    target = null;
+                }
+                
+                var result = _forge.StaticMethod.Invoke(target, argList.ToArray());
 
                 result = ExprDotNodeUtility.EvaluateChainWithWrap(
                     _forge.ResultWrapLambda,

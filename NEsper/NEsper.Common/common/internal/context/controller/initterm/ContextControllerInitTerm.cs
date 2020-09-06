@@ -142,12 +142,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         {
             // compute correlated termination
             ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
-            if (!(start is ContextConditionDescriptorFilter)) {
-                return;
-            }
 
-            ContextConditionDescriptorFilter filter = (ContextConditionDescriptorFilter) start;
-            if (filter.OptionalFilterAsName == null) {
+            ContextConditionDescriptorFilter filter = start as ContextConditionDescriptorFilter;
+            if (filter?.OptionalFilterAsName == null) {
                 return;
             }
 

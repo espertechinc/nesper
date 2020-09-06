@@ -393,11 +393,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             var pair = writers.Get(propertyName);
-            if (pair == null) {
-                return null;
-            }
 
-            return pair.Second;
+            return pair?.Second;
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -407,11 +404,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             var pair = writers.Get(propertyName);
-            if (pair == null) {
-                return null;
-            }
 
-            return pair.First;
+            return pair?.First;
         }
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)

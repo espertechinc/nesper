@@ -378,11 +378,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
             foreach (var spec in specifications) {
                 var viewEnum = ViewEnumExtensions.ForName(spec.ObjectNamespace, spec.ObjectName);
-                if (viewEnum == null) {
-                    continue;
-                }
 
-                if (viewEnum.Value.GetMergeView() == null) {
+                if (viewEnum?.GetMergeView() == null) {
                     continue;
                 }
 

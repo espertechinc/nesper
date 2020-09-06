@@ -4,14 +4,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
     public partial class ExprDotForgeSumOf
     {
-        private class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod {
+        private class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod
+        {
             private int sum;
             private long cnt;
 
-            public void Enter(object @object) {
+            public void Enter(object @object)
+            {
                 if (@object == null) {
                     return;
                 }
+
                 cnt++;
                 sum += @object.AsInt32();
             }

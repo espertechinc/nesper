@@ -7,8 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
@@ -19,6 +22,8 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
     /// </summary>
     public class DispatchService
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IThreadLocal<ArrayDeque<Dispatchable>> dispatchStateThreadLocal =
             new SlimThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
 
@@ -44,13 +49,15 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
 
         private static void DispatchFromQueue(ArrayDeque<Dispatchable> dispatchQueue)
         {
-            while (true) {
-                var next = dispatchQueue.Poll();
-                if (next != null) {
-                    next.Execute();
-                }
-                else {
-                    break;
+            using (new Tracer(Log, "DispatchFromQueue")) {
+                while (true) {
+                    var next = dispatchQueue.Poll();
+                    if (next != null) {
+                        next.Execute();
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
         }

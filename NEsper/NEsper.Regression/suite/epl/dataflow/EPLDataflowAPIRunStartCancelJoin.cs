@@ -34,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            //execs.Add(new EPLDataflowNonBlockingJoinCancel());
-            //execs.Add(new EPLDataflowNonBlockingJoinException());
+            execs.Add(new EPLDataflowNonBlockingJoinCancel());
+            execs.Add(new EPLDataflowNonBlockingJoinException());
             execs.Add(new EPLDataflowNonBlockingException());
             execs.Add(new EPLDataflowBlockingException());
             execs.Add(new EPLDataflowBlockingCancel());

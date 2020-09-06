@@ -87,9 +87,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 }
             }
             else {
-                method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
+                method.Block
+                    .DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                     .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
-                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
+                    .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }

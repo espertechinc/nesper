@@ -44,10 +44,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='simpleEvent')" +
-                          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
-                          "@XMLSchemaField(name='nested1simple', xpath='/ss:simpleEvent/ss:nested1', type='node', eventTypeName='MyNestedEvent')" +
-                          "@XMLSchemaField(name='nested4array', xpath='//ss:nested4', type='nodeset', eventTypeName='MyNestedArrayEvent')" +
+                          "@XMLSchema(RootElementName='simpleEvent')" +
+                          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaField(Name='nested1simple', XPath='/ss:simpleEvent/ss:nested1', Type='any', EventTypeName='MyNestedEvent')" +
+                          "@XMLSchemaField(Name='nested4array', XPath='//ss:nested4', Type='nodeset', EventTypeName='MyNestedArrayEvent')" +
                           "create xml schema MyEventCreateSchema();\n";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);

@@ -29,11 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             if (exprNode is ExprTableAccessNode) {
                 HasTableAccess = true;
             }
-            if (exprNode is ExprSubselectNode) {
-                var subselect = (ExprSubselectNode) exprNode;
-                if (subselect.RawEventType != null) {
-                    HasTableAccess |= subselect.RawEventType.Metadata.TypeClass.IsTable();
-                }
+
+            var subselect = exprNode as ExprSubselectNode;
+            if (subselect?.RawEventType != null) {
+                HasTableAccess |= subselect.RawEventType.Metadata.TypeClass.IsTable();
             }
         }
     }

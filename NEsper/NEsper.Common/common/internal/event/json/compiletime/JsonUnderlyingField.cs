@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
         public FieldInfo OptionalField { get; }
 
-        public CodegenExpression ToExpression()
+        public CodegenExpression ToCodegenExpression()
         {
             var field = ConstantNull();
             if (OptionalField != null) {

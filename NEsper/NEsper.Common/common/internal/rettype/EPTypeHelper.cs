@@ -62,47 +62,27 @@ namespace com.espertech.esper.common.@internal.rettype
     {
         public static EventType GetEventTypeSingleValued(this EPType type)
         {
-            if (type is EventEPType) {
-                return ((EventEPType) type).EventType;
-            }
-
-            return null;
+            return (type as EventEPType)?.EventType;
         }
 
         public static EventType GetEventTypeMultiValued(this EPType type)
         {
-            if (type is EventMultiValuedEPType) {
-                return ((EventMultiValuedEPType) type).Component;
-            }
-
-            return null;
+            return (type as EventMultiValuedEPType)?.Component;
         }
 
         public static Type GetClassMultiValued(this EPType type)
         {
-            if (type is ClassMultiValuedEPType) {
-                return ((ClassMultiValuedEPType) type).Component;
-            }
-
-            return null;
+            return (type as ClassMultiValuedEPType)?.Component;
         }
 
         public static Type GetClassMultiValuedContainer(this EPType type)
         {
-            if (type is ClassMultiValuedEPType) {
-                return ((ClassMultiValuedEPType) type).Container;
-            }
-
-            return null;
+            return (type as ClassMultiValuedEPType)?.Container;
         }
 
         public static Type GetClassSingleValued(this EPType type)
         {
-            if (type is ClassEPType) {
-                return ((ClassEPType) type).Clazz;
-            }
-
-            return null;
+            return (type as ClassEPType)?.Clazz;
         }
 
         public static bool IsCarryEvent(this EPType epType)
@@ -116,11 +96,7 @@ namespace com.espertech.esper.common.@internal.rettype
                 return ((EventMultiValuedEPType) epType).Component;
             }
 
-            if (epType is EventEPType) {
-                return ((EventEPType) epType).EventType;
-            }
-
-            return null;
+            return (epType as EventEPType)?.EventType;
         }
 
         /// <summary>
@@ -143,7 +119,7 @@ namespace com.espertech.esper.common.@internal.rettype
         /// <summary>
         ///     Indicate that the expression return type is a single (non-enumerable) value of the given type.
         ///     The expression can still return an array or collection or events however
-        ///     since the runtimewould not know the type of such objects and may not use runtime reflection
+        ///     since the runtime would not know the type of such objects and may not use runtime reflection
         ///     it may not allow certain operations on expression results.
         /// </summary>
         /// <param name="singleValueType">
@@ -220,7 +196,8 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null event type");
             }
 
-            return new EventMultiValuedEPType(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
+            return new EventMultiValuedEPType(typeof(FlexCollection), eventTypeOfCollectionEvents);
+            //return new EventMultiValuedEPType(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
         }
 
         /// <summary>
@@ -286,27 +263,24 @@ namespace com.espertech.esper.common.@internal.rettype
                 return "event type '" + type.EventType.Name + "'";
             }
 
-            if (epType is EventMultiValuedEPType) {
-                var type = (EventMultiValuedEPType) epType;
-                if (type.Container == typeof(EventType[])) {
-                    return "array of events of type '" + type.Component.Name + "'";
+            if (epType is EventMultiValuedEPType eventMultiValuedEpType) {
+                if (eventMultiValuedEpType.Container == typeof(EventType[])) {
+                    return "array of events of type '" + eventMultiValuedEpType.Component.Name + "'";
                 }
 
-                return "collection of events of type '" + type.Component.Name + "'";
+                return "collection of events of type '" + eventMultiValuedEpType.Component.Name + "'";
             }
 
-            if (epType is ClassMultiValuedEPType) {
-                var type = (ClassMultiValuedEPType) epType;
-                if (type.Container.IsArray) {
-                    return "array of " + type.Component.Name;
+            if (epType is ClassMultiValuedEPType classMultiValuedEpType) {
+                if (classMultiValuedEpType.Container.IsArray) {
+                    return "array of " + classMultiValuedEpType.Component.CleanName();
                 }
 
-                return "collection of " + type.Component.Name;
+                return "collection of " + classMultiValuedEpType.Component.CleanName();
             }
 
-            if (epType is ClassEPType) {
-                var type = (ClassEPType) epType;
-                return "class " + type.Clazz.CleanName();
+            if (epType is ClassEPType classEpType) {
+                return "class " + classEpType.Clazz.CleanName();
             }
 
             if (epType is NullEPType) {
@@ -343,10 +317,9 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public static Type GetCodegenReturnType(this EPType theType)
         {
-            if (theType is EventMultiValuedEPType) {
+            if (theType is EventMultiValuedEPType eventMultiValuedEpType) {
                 // TBD - Please review, may need to be turned back to FlexCollection
-                return ((EventMultiValuedEPType) theType).Container;
-                return typeof(FlexCollection);
+                return eventMultiValuedEpType.Container;
                 //return typeof(ICollection<EventBean>);
             }
 
@@ -455,9 +428,11 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public delegate void AnnotationConsumer(Attribute annotation, Type type);
 
+#if false
         public static EPType CollectionOfSingleValue(Type collectionComponentType)
         {
             throw new NotImplementedException();
         }
+#endif
     }
 } // end of namespace

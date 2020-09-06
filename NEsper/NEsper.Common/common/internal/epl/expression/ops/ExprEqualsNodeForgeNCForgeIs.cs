@@ -37,14 +37,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     methodNode.Block
                         .DeclareVar<object>("left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                         .DeclareVar<object>("right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
-                    compare = ExprDotMethod(Ref("left"), "equals", Ref("right"));
+                    compare = StaticMethod<object>("Equals", Ref("left"), Ref("right"));
                 }
                 else {
                     methodNode.Block
                         .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
                         .DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
                     if (!MultiKeyPlanner.RequiresDeepEquals(lhsType.GetElementType())) {
-                        compare = StaticMethod(typeof(Arrays), "Equals", Ref("left"), Ref("right"));
+                        compare = StaticMethod(typeof(Arrays), "AreEqual", Ref("left"), Ref("right"));
                     }
                     else {
                         compare = StaticMethod(typeof(Arrays), "DeepEquals", Ref("left"), Ref("right"));

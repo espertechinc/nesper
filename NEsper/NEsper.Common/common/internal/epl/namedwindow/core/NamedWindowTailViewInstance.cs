@@ -152,16 +152,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
             // indicate to virtual data window that a consumer was added
             var virtualDWView = _rootViewInstance.VirtualDataWindow;
-            if (virtualDWView != null) {
-                virtualDWView.VirtualDataWindow.HandleEvent(
-                    new VirtualDataWindowEventConsumerAdd(
-                        TailView.EventType.Name,
-                        consumerView,
-                        consumerDesc.AgentInstanceContext.StatementName,
-                        consumerDesc.AgentInstanceContext.AgentInstanceId,
-                        consumerDesc.FilterEvaluator,
-                        AgentInstanceContext));
-            }
+            virtualDWView?.VirtualDataWindow.HandleEvent(
+                new VirtualDataWindowEventConsumerAdd(
+                    TailView.EventType.Name,
+                    consumerView,
+                    consumerDesc.AgentInstanceContext.StatementName,
+                    consumerDesc.AgentInstanceContext.AgentInstanceId,
+                    consumerDesc.FilterEvaluator,
+                    AgentInstanceContext));
 
             // Keep a list of consumer views per statement to accommodate joins and subqueries
             var viewsPerStatements =
@@ -170,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 viewsPerStatements = new CopyOnWriteList<NamedWindowConsumerView>();
 
                 // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
-                // without the runtimelock
+                // without the runtime lock
                 var newConsumers = NamedWindowUtil.CreateConsumerMap(TailView.IsPrioritized);
                 newConsumers.PutAll(_consumersInContext);
                 newConsumers.Put(consumerDesc.AgentInstanceContext.EpStatementAgentInstanceHandle, viewsPerStatements);

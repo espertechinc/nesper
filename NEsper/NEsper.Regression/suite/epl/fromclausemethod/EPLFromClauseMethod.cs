@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -30,6 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            
             execs.Add(new EPLFromClauseMethod2JoinHistoricalIndependentOuter());
             execs.Add(new EPLFromClauseMethod2JoinHistoricalSubordinateOuterMultiField());
             execs.Add(new EPLFromClauseMethod2JoinHistoricalSubordinateOuter());
@@ -388,12 +390,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
         internal class EPLFromClauseMethod2JoinEventItselfProvidesMethod : RegressionExecution {
             public void Run(RegressionEnvironment env) {
-                string epl = "import " + typeof(SupportEventWithStaticMethod).FullName + ";\n" +
-                             "@public @buseventtype create schema SupportEventWithStaticMethod as SupportEventWithStaticMethod;\n" +
-                             "@Name('s0') select * from SupportEventWithStaticMethod as e, " +
-                             "  method:SupportEventWithStaticMethod.ReturnLower() as lower,\n" +
-                             "  method:SupportEventWithStaticMethod.ReturnUpper() as upper\n" +
-                             "  where e.value in [lower.Value:upper.Value]";
+                string epl =
+                    $"import {typeof(SupportEventWithStaticMethod).MaskTypeName()};\n" +
+                    "@public @buseventtype create schema SupportEventWithStaticMethod as SupportEventWithStaticMethod;\n" +
+                    "@Name('s0') select * from SupportEventWithStaticMethod as e, " +
+                    "  method:SupportEventWithStaticMethod.ReturnLower() as lower,\n" +
+                    "  method:SupportEventWithStaticMethod.ReturnUpper() as upper\n" +
+                    "  where e.Value in [lower.Value:upper.Value]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, 9, false);

@@ -46,9 +46,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public object MakeUnderlying(object[] properties)
         {
-            var underlying = _jsonEventType.SerializationContext.NewUnderlying();
+            var underlying = _jsonEventType.AllocateComposite();
             for (var i = 0; i < properties.Length; i++) {
-                _jsonEventType.SerializationContext.SetValue(_nativeKeys[i], properties[i], underlying);
+                var propertyName = _nativeKeys[i];
+                var propertyValue = properties[i];
+                underlying[propertyName] = propertyValue;
             }
 
             return underlying;

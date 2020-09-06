@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                 AssertMessage(ex, message);
+                AssertMessage(ex, message);
             }
         }
 
@@ -98,7 +98,6 @@ namespace com.espertech.esper.regressionlib.framework
             if (message.Equals("skip")) {
                 return; // skip message validation
             }
-
 
             try {
                 StringAssert.StartsWith(message, ex.Message);

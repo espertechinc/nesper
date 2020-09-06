@@ -56,11 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
                 HasStreamSelect = true;
             }
 
-            if (exprNode is ExprDotNode) {
-                var streamRef = (ExprDotNode) exprNode;
-                if (streamRef.StreamReferencedIfAny != null) {
-                    HasStreamSelect = true;
-                }
+            var streamRef = exprNode as ExprDotNode;
+            if (streamRef?.StreamReferencedIfAny != null) {
+                HasStreamSelect = true;
             }
         }
     }

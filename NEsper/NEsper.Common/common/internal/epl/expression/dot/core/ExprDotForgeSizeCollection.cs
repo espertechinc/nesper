@@ -39,9 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 	    public ExprDotForge DotForge => this;
 
 	    public CodegenExpression Codegen(CodegenExpression inner, Type innerType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(typeof(int?), typeof(ExprDotForgeSizeCollection), classScope).AddParam(innerType, "target").Block
+	        var method = parent.MakeChild(typeof(int?), typeof(ExprDotForgeSizeCollection), classScope).AddParam(innerType, "target").Block
 	            .IfRefNullReturnNull("target")
-	            .MethodReturn(ExprDotMethod(Ref("target"), "size"));
+	            .MethodReturn(ExprDotName(Ref("target"), "Count"));
 	        return LocalMethodBuild(method).Pass(inner).Call();
 	    }
 	}

@@ -41,11 +41,8 @@ namespace com.espertech.esper.common.@internal.support
                         desc,
                         eventType) => {
                         var fragType = eventType.GetFragmentType(desc.PropertyName);
-                        if (fragType == null) {
-                            return null;
-                        }
 
-                        return fragType.FragmentType.Name;
+                        return fragType?.FragmentType.Name;
                     };
 
                 case SupportEventTypeAssertionEnum.FRAGMENT_IS_INDEXED:
@@ -53,11 +50,8 @@ namespace com.espertech.esper.common.@internal.support
                         desc,
                         eventType) => {
                         var fragType = eventType.GetFragmentType(desc.PropertyName);
-                        if (fragType == null) {
-                            return null;
-                        }
 
-                        return fragType.IsIndexed;
+                        return fragType?.IsIndexed;
                     };
             }
 

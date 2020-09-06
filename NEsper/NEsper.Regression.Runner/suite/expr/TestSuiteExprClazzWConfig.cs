@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprClazzWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLScriptExpressionDisable()
         {
             var session = RegressionRunner.Session();

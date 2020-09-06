@@ -30,11 +30,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            WithDispatchBackQueue(execs);
+            WithOrderedDeleteAndSelect(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrderedDeleteAndSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOrderedDeleteAndSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDispatchBackQueue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 execs.Add(new InfraDispatchBackQueue(rep));
             }
 
-            execs.Add(new InfraOrderedDeleteAndSelect());
             return execs;
         }
 
@@ -49,11 +63,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             public void Run(RegressionEnvironment env)
             {
-                string epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedStartValueEvent>() + " create schema StartValueEvent as (dummy string);\n";
-                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTestForwardEvent>() + " create schema TestForwardEvent as (prop1 string);\n";
-                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTestInputEvent>() + " create schema TestInputEvent as (dummy string);\n";
+                string epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedStartValueEvent>() +
+                             " create schema StartValueEvent as (dummy string);\n";
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTestForwardEvent>() +
+                       " create schema TestForwardEvent as (prop1 string);\n";
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTestInputEvent>() +
+                       " create schema TestInputEvent as (dummy string);\n";
                 epl += "insert into TestForwardEvent select'V1' as prop1 from TestInputEvent;\n";
-                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNamedWin>() + " create window NamedWin#unique(prop1) (prop1 string, prop2 string);\n";                epl += "insert into NamedWin select 'V1' as prop1, 'O1' as prop2 from StartValueEvent;\n";
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNamedWin>() +
+                       " create window NamedWin#unique(prop1) (prop1 string, prop2 string);\n";
+                epl += "insert into NamedWin select 'V1' as prop1, 'O1' as prop2 from StartValueEvent;\n";
                 epl += "on TestForwardEvent update NamedWin as work set prop2 = 'U1' where work.prop1 = 'V1';\n";
                 epl += "@Name('select') select irstream prop1, prop2 from NamedWin;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("select");

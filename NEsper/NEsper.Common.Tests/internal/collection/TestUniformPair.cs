@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.collection
         private UniformPair<string> pair4 = new UniformPair<string>(null, "b");
         private UniformPair<string> pair5 = new UniformPair<string>(null, null);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestHashCode()
         {
             Assert.IsTrue(pair1.GetHashCode() == ("a".GetHashCode() ^ "b".GetHashCode()));
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(pair1.GetHashCode() != pair5.GetHashCode());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             Assert.AreEqual(pair2, pair1);

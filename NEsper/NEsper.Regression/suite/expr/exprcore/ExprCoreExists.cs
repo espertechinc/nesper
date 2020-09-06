@@ -76,16 +76,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@Name('s0') select exists(item?.id) as t0, " +
-				          " exists(item?.id?) as t1, " +
-				          " exists(item?.item.IntBoxed) as t2, " +
-				          " exists(item?.indexed[0]?) as t3, " +
-				          " exists(item?.mapped('keyOne')?) as t4, " +
-				          " exists(item?.nested?) as t5, " +
-				          " exists(item?.nested.nestedValue?) as t6, " +
-				          " exists(item?.nested.nestedNested?) as t7, " +
-				          " exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
-				          " exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
-				          " exists(item?.nested.nestedNested.dummy?) as t10 " +
+				          " exists(item?.Id?) as t1, " +
+				          " exists(item?.Item.IntBoxed) as t2, " +
+				          " exists(item?.Indexed[0]?) as t3, " +
+				          " exists(item?.Mapped('keyOne')?) as t4, " +
+				          " exists(item?.Nested?) as t5, " +
+				          " exists(item?.Nested.NestedValue?) as t6, " +
+				          " exists(item?.Nested.NestedNested?) as t7, " +
+				          " exists(item?.Nested.NestedNested.NestedNestedValue?) as t8, " +
+				          " exists(item?.Nested.NestedNested.NestedNestedValue.Dummy?) as t9, " +
+				          " exists(item?.Nested.NestedNested.Dummy?) as t10 " +
 				          " from SupportMarkerInterface";
 				env.CompileDeploy(epl).AddListener("s0");
 

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			Type returnType = Boxing.GetBoxedType(collectionComponentType);
+			var returnType = collectionComponentType.GetBoxedType();
 			return EPTypeHelper.SingleValue(returnType);
 		}
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			Type collectionComponentType)
 		{
 			return lambda => {
-				Type returnType = Boxing.GetBoxedType(lambda.BodyForge.EvaluationType);
+				var returnType = lambda.BodyForge.EvaluationType.GetBoxedType();
 				return EPTypeHelper.SingleValue(returnType);
 			};
 		}

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.view;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -74,9 +75,10 @@ namespace com.espertech.esper.regressionrun.suite.view
                 typeof(ViewExpressionWindow.LocalUDF),
                 "EvaluateExpiryUDF");
 
-            configuration.Common.AddImportType(typeof(DefaultSupportSourceOp));
-            configuration.Common.AddImportType(typeof(DefaultSupportCaptureOp));
-
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOp));
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp));
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOpForge));
         }
 
         [Test, RunInApplicationDomain]
@@ -133,7 +135,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionRunner.Run(session, ViewFirstUnique.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestViewGroup()
         {
             RegressionRunner.Run(session, ViewGroup.Executions());
@@ -234,11 +236,70 @@ namespace com.espertech.esper.regressionrun.suite.view
         {
             RegressionRunner.Run(session, ViewUnique.Executions());
         }
-        [Test, RunInApplicationDomain]
-        public void TestViewMultikeyWArray()
-        {
-            RegressionRunner.Run(session, ViewMultikeyWArray.Executions());
-        }
 
+        /// <summary>
+        /// Auto-test(s): ViewMultikeyWArray
+        /// <code>
+        /// RegressionRunner.Run(_session, ViewMultikeyWArray.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestViewMultikeyWArray : AbstractTestBase
+        {
+            public TestViewMultikeyWArray() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueArrayKeyDataflow() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueArrayKeyDataflow());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueArrayKeySubqueryInFilter() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueArrayKeySubqueryInFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueArrayKeyNamedWindow() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueArrayKeyNamedWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueArrayKeySubquery() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueArrayKeySubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueArrayKeyUnion() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueArrayKeyUnion());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueArrayKeyIntersection() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueArrayKeyIntersection());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueTwoKeyAllArrayOfObject() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueTwoKeyAllArrayOfObject());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueTwoKeyAllArrayOfPrimitive() =>
+                RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueTwoKeyAllArrayOfPrimitive());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueOneKey2DimArray() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueOneKey2DimArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueOneKeyArrayOfObjectArray() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueOneKeyArrayOfObjectArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueOneKeyArrayOfLongPrimitive() => RegressionRunner.Run(
+                _session,
+                ViewMultikeyWArray.WithLastUniqueOneKeyArrayOfLongPrimitive());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueThreeKey() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueThreeKey());
+
+            [Test, RunInApplicationDomain]
+            public void WithRank() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithRank());
+
+            [Test, RunInApplicationDomain]
+            public void WithGroupWin() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithGroupWin());
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstUnique() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithFirstUnique());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastUniqueTwoKey() => RegressionRunner.Run(_session, ViewMultikeyWArray.WithLastUniqueTwoKey());
+        }
     }
 } // end of namespace

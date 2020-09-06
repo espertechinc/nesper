@@ -24,9 +24,8 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
         private readonly int _index;
 
         public JsonEventBeanPropertyWriterIndexedProp(
-            JsonSerializationContext serializationContext,
             JsonUnderlyingField propertyName,
-            int index) : base(serializationContext, propertyName)
+            int index) : base(propertyName)
         {
             _index = index;
         }

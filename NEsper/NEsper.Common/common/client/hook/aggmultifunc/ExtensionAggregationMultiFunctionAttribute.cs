@@ -24,6 +24,6 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             Names = names;
         }
 
-        public string Names { get; }
+        public string Names { get; set; }
     }
 } // end of namespace

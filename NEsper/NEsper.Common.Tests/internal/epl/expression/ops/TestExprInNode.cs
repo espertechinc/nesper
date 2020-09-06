@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             var otherInNodeNormal = supportExprNodeFactory.MakeInSetNode(false);
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse(inNodeNormal.EqualsNode(supportExprNodeFactory.MakeCaseSyntax1Node(), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             Assert.IsFalse((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(0), false, null));
@@ -79,21 +79,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), inNodeNormal.Forge.EvaluationType);
             Assert.AreEqual(typeof(bool?), inNodeNotIn.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             Assert.AreEqual("s0.IntPrimitive in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNormal));
             Assert.AreEqual("s0.IntPrimitive not in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNotIn));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             inNodeNormal = supportExprNodeFactory.MakeInSetNode(true);

@@ -103,6 +103,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             var runtimeSettingsService = MakeRuntimeSettingsService(configs);
 
+            var scriptCompiler = new ScriptCompilerImpl(container, configs.Common);
+            
             var timeAbacus = TimeAbacusFactory.Make(configs.Common.TimeSource.TimeUnit);
             var timeZone = configs.Runtime.Expression.TimeZone ?? TimeZoneInfo.Utc;
             var importServiceRuntime = new ImportServiceRuntime(
@@ -361,6 +363,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 rowRecogStatePoolEngineSvc,
                 schedulingService,
                 scriptPathRegistry,
+                scriptCompiler,
                 stageRecoveryService,
                 statementLifecycleService,
                 statementAgentInstanceLockFactory,
@@ -377,8 +380,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 viewableActivatorFactory,
                 viewFactoryService,
                 viewServicePreviousFactory,
-                xmlFragmentEventTypeFactory
-            );
+                xmlFragmentEventTypeFactory);
         }
 
         protected abstract EPServicesHA InitHA(

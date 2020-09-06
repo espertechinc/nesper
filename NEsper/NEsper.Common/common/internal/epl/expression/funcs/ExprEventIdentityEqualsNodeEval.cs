@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 .DeclareVar<EventBean>("right", ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndRight.StreamId)))
                 .IfCondition(Or(EqualsNull(Ref("left")), EqualsNull(Ref("right"))))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                .MethodReturn(StaticMethod<object>("Equals", Ref("left"), Ref("right")));
             return LocalMethod(method);
         }
     }

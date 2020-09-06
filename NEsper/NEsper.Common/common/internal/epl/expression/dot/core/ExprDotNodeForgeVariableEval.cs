@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(forge.Variable));
 
             Type variableType;
-            VariableMetaData metaData = forge.Variable;
+            var metaData = forge.Variable;
             if (metaData.EventType != null) {
                 variableType = typeof(EventBean);
             }
@@ -42,18 +42,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 variableType = metaData.Type;
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType,
                 typeof(ExprDotNodeForgeVariableEval),
                 classScope);
 
-            CodegenExpression typeInformation = ConstantNull();
+            var typeInformation = ConstantNull();
             if (classScope.IsInstrumented) {
                 typeInformation = classScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(new ClassEPType(variableType), classScope));
             }
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar(variableType, "result", Cast(variableType, ExprDotName(variableReader, "Value")))
                 .Apply(
                     InstrumentationCode.Instblock(
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         Ref("result"),
                         Constant(forge.ChainForge.Length)));
             
-            CodegenExpression chain = ExprDotNodeUtility.EvaluateChainCodegen(
+            var chain = ExprDotNodeUtility.EvaluateChainCodegen(
                 methodNode,
                 exprSymbol,
                 classScope,

@@ -78,9 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             using (_iLock.Acquire()) {
                 _current.Add(theEvent);
-                if (_numRowLatch != null) {
-                    _numRowLatch.CountDown();
-                }
+                _numRowLatch?.CountDown();
             }
         }
 

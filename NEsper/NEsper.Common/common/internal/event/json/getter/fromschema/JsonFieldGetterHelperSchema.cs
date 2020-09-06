@@ -48,6 +48,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             var und = (JsonEventObjectBase) @object;
             if (und.TryGetNativeValue(propertyName, out var value)) {
+                if (value == null) {
+                    return null;
+                }
                 if (value is Array array) {
                     return CollectionUtil.ArrayValueAtIndex(array, index);
                 }
@@ -65,6 +68,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             var und = (JsonEventObjectBase) @object;
             if (und.TryGetNativeValue(field.FieldName, out var value)) {
+                if (value == null) {
+                    return false;
+                }
                 if (value is Array array) {
                     return CollectionUtil.ArrayExistsAtIndex(array, index);
                 }

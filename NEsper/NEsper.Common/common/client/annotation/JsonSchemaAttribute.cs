@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.client.annotation
 	    ///     or whether to retain all JSON object properties (true, dynamic)
 	    /// </summary>
 	    /// <returns>dynamic flag</returns>
-	    public bool Dynamic { get; set; } = false;
+	    public virtual bool Dynamic { get; set; } = false;
 
-        public string ClassName { get; set; } = "";
+        public virtual string ClassName { get; set; } = "";
     }
 } // end of namespace

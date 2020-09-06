@@ -9,7 +9,7 @@ namespace com.espertech.esper.compat.collections.btree
     [TestFixture]
     public partial class BTreeDictionaryTests
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ConstructWithDefaultComparer()
         {
             BTreeDictionary<string, string> dictionary = null;
@@ -20,7 +20,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(dictionary.IsReadOnly, Is.False);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ConstructWithCustomComparer()
         {
             var myComparer = new MyComparer();
@@ -36,7 +36,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Contains & ContainsKey
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ContainsByKeyForValid()
         {
             var numKeys = 1024;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ContainsByKeyForInvalid()
         {
             var numKeys = 1024;
@@ -58,7 +58,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
         
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ContainsByKeyAndValue()
         {
             var numKeys = 1024;
@@ -85,7 +85,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Getters & Setters
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CanGetByKey()
         {
             var numKeys = 1024;
@@ -106,7 +106,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CanTryGetByKey()
         {
             var numKeys = 1024;
@@ -125,7 +125,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CanUpdateValues()
         {
             var numKeys = 1024;
@@ -146,7 +146,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Insert
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void InsertMustKeepCorrectCountAndHeight()
         {
             var random = new Random(1000); // consistent seed for testing
@@ -163,7 +163,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void AddByKeyValuePair()
         {
             var numKeys = 10000;
@@ -183,7 +183,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void AddByKeyAndValue()
         {
             var numKeys = 10000;
@@ -205,7 +205,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Clear & Remove
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CanClear()
         {
             var dictionary = CreateRandomDictionary(1024);
@@ -216,7 +216,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(dictionary.Count, Is.Zero);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void RemoveMustKeepCorrectCount()
         {
             var dictionary = CreateRandomDictionary(1024);
@@ -247,7 +247,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
             
-        [Test]
+        [Test, RunInApplicationDomain]
         public void RemoveByKeyValuePair()
         {
             var numKeys = 10000;
@@ -267,7 +267,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void RemoveByKey()
         {
             var numKeys = 10000;
@@ -287,7 +287,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Enumerator
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CanEnumerateInOrder()
         {
             var numKeys = 10000;
@@ -305,7 +305,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CanEnumerateGenericInOrder()
         {
             var numKeys = 10000;

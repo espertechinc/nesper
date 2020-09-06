@@ -268,10 +268,9 @@ namespace com.espertech.esper.common.@internal.@event.render
                                         buf.Append("null");
                                     }
                                     else {
-                                        var outRenderer =
-                                            OutputValueRendererFactory.GetOutputValueRenderer(
-                                                entry.Value.GetType(),
-                                                rendererOptions);
+                                        var outRenderer = OutputValueRendererFactory.GetOutputValueRenderer(
+                                            entry.Value.GetType(),
+                                            rendererOptions);
                                         if (rendererOptions.Renderer == null) {
                                             outRenderer.Render(entry.Value, buf);
                                         }

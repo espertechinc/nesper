@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                                         "Event type '" +
                                         streamEventType.Name +
                                         "' underlying type " +
-                                        streamEventType.UnderlyingType.Name +
+                                        streamEventType.UnderlyingType.CleanName() +
                                         " cannot be assigned a value of type " +
                                         returnType.CleanName());
                                 }
@@ -175,7 +175,8 @@ namespace com.espertech.esper.common.@internal.epl.contained
                                 }
                             }
                         }
-                        else if (returnType.IsGenericEnumerable()) {
+                        else if (GenericExtensions.IsGenericEnumerable(returnType) || 
+                                 TypeHelper.IsImplementsInterface<System.Collections.IEnumerable>(returnType)) {
                             // fine, assumed to return the right type
                         }
                         else {

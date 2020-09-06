@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				env.CompileDeploy(
-						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
+						"@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
 						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				env.CompileDeploy(
-						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent(a int);\n" +
+						"@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent(a int);\n" +
 						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				env.CompileDeploy(
-						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent(a int, b int);\n" +
+						"@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent(a int, b int);\n" +
 						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 

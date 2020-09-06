@@ -93,13 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             // Since the "previous" function does not post remove stream results, disallow when used with aggregations.
             if (whereClause != null || havingClause != null) {
                 var visitor = new ExprNodePreviousVisitorWParent();
-                if (whereClause != null) {
-                    whereClause.Accept(visitor);
-                }
+                whereClause?.Accept(visitor);
 
-                if (havingClause != null) {
-                    havingClause.Accept(visitor);
-                }
+                havingClause?.Accept(visitor);
 
                 if (visitor.Previous != null && !visitor.Previous.IsEmpty()) {
                     string funcname = visitor.Previous[0]
@@ -257,9 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         HookType.INTERNAL_AGGLOCALLEVEL,
                         typeof(AggregationLocalLevelHook),
                         importService);
-                    if (hook != null) {
-                        hook.Planned(localGroupDesc, localGroupByPlan);
-                    }
+                    hook?.Planned(localGroupDesc, localGroupByPlan);
                 }
                 catch (ExprValidationException) {
                     throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_AGGLOCALLEVEL);

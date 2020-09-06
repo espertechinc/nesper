@@ -18,15 +18,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
 	public class ExprClassTypeUse
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprClassTypeUseEnum());
-			executions.Add(new ExprClassTypeConst());
-			executions.Add(new ExprClassTypeInnerClass());
-			executions.Add(new ExprClassTypeNewKeyword());
-			return executions;
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			WithUseEnum(execs);
+			WithConst(execs);
+			WithInnerClass(execs);
+			WithNewKeyword(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNewKeyword(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassTypeNewKeyword());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInnerClass(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassTypeInnerClass());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithConst(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassTypeConst());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithUseEnum(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassTypeUseEnum());
+			return execs;
 		}
 
 		private class ExprClassTypeNewKeyword : RegressionExecution
@@ -34,9 +61,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			public void Run(RegressionEnvironment env)
 			{
 				string text = "public class MyResult {\n" +
-				              "  private final String id;\n" +
-				              "  public MyResult(String id) {this.id = id;}\n" +
-				              "  public String getId() {return id;}\n" +
+				              "  private readonly string _id;\n" +
+				              "  public MyResult(string id) {this._id = id;}\n" +
+				              "  public string Id => _id;\n" +
 				              "}";
 				string epl = EscapeClass(text) +
 				             "@Name('s0') select new MyResult(TheString) as c0 from SupportBean";
@@ -60,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			public void Run(RegressionEnvironment env)
 			{
 				string text = "public class MyConstants {\n" +
-				              "  public static class MyInnerClass {" +
-				              "    public final static String VALUE = \"abc\";\n" +
+				              "  public class MyInnerClass {" +
+				              "    public static readonly string VALUE = \"abc\";\n" +
 				              "  }" +
 				              "}";
 				string epl = EscapeClass(text) +
@@ -79,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			public void Run(RegressionEnvironment env)
 			{
 				string text = "public class MyConstants {\n" +
-				              "  public final static String VALUE = \"test\";\n" +
+				              "  public static readonly string VALUE = \"test\";\n" +
 				              "}";
 				string epl = EscapeClass(text) +
 				             "@Name('s0') select MyConstants.VALUE as c0 from SupportBean";
@@ -96,13 +123,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			public void Run(RegressionEnvironment env)
 			{
 				string text = "public enum MyLevel {\n" +
-				              "  HIGH(3), MEDIUM(2), LOW(1);\n" +
-				              "  final int levelCode;\n" +
-				              "  MyLevel(int levelCode) {this.levelCode = levelCode;}\n" +
-				              "  public int getLevelCode() {return levelCode;}\n" +
+				              "  HIGH, MEDIUM, LOW\n" +
+				              "}\n" +
+				              "public static class MyLevelExtensions {\n" +
+				              "  public static int GetLevelCode(this MyLevel value) {\n" +
+				              "    switch(value) {\n" +
+				              "        case MyLevel.HIGH: return 3;\n" +
+				              "        case MyLevel.MEDIUM: return 2;\n" +
+				              "        case MyLevel.LOW: return 1;\n" +
+				              "        default: throw new System.ArgumentException(nameof(value));\n" +
+				              "    }\n" +
+				              "  }\n" +
 				              "}";
 				string epl = EscapeClass(text) +
-				             "@Name('s0') select MyLevel.MEDIUM.getLevelCode() as c0 from SupportBean";
+				             "@Name('s0') select MyLevel.MEDIUM.GetLevelCode() as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, 2);

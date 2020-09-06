@@ -59,7 +59,7 @@ namespace com.espertech.esperio.regression.adapter
 			runtime.Initialize();
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestCSVZipFile()
 		{
 			var graph = "create dataflow ReadCSV " +
@@ -80,14 +80,14 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestCSVGraph()
 		{
 			RunAssertionCSVGraphSchema(EventRepresentationChoice.OBJECTARRAY);
 			RunAssertionCSVGraphSchema(EventRepresentationChoice.MAP);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestPropertyOrderWLoop()
 		{
 			var graph =
@@ -109,7 +109,7 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestAdditionalProperties()
 		{
 			var graph = "create dataflow ReadCSV " +
@@ -128,7 +128,7 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestConflictingPropertyOrderIgnoreTitle()
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (intOne int, intTwo int)");
@@ -148,7 +148,7 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestReorder()
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (p3 string, p1 int, p0 long, p2 double)");
@@ -168,7 +168,7 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestStringPropertyTypes()
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyStrRowEvent (myInt string, myDouble string, myString string)");
@@ -189,7 +189,7 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestEmptyFile()
 		{
 			var graph = "create dataflow ReadCSV " +
@@ -200,7 +200,7 @@ namespace com.espertech.esperio.regression.adapter
 			Assert.IsTrue(received[0].IsEmpty());
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestTitleRowOnlyFile()
 		{
 			var graph = "create dataflow ReadCSV " +
@@ -211,7 +211,7 @@ namespace com.espertech.esperio.regression.adapter
 			Assert.IsTrue(received[0].IsEmpty());
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestDateFormat()
 		{
 			// no date format specified
@@ -245,7 +245,7 @@ namespace com.espertech.esperio.regression.adapter
 			Assert.AreEqual(testtime, ((DateTimeEx) data[1]).UtcMillis);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestInvalid()
 		{
 			string graph;
@@ -363,7 +363,7 @@ namespace com.espertech.esperio.regression.adapter
 			return outputOp.GetAndReset();
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestLoopTitleRow()
 		{
 			var graph = "create dataflow ReadCSV " +
@@ -384,7 +384,7 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestCommentAndOtherProp()
 		{
 			var graph = "create dataflow ReadCSV " +

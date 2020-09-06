@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator first = InnerExpression.ExprEvaluator;
-				ExprEvaluator second = SecondExpression.ExprEvaluator;
+				var first = InnerExpression.ExprEvaluator;
+				var second = SecondExpression.ExprEvaluator;
 				return new ProxyEnumEval(
 					(
 						eventsLambda,
@@ -44,26 +44,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 						isNewData,
 						context) => {
 						if (enumcoll.IsEmpty()) {
-							return EmptyDictionary<object, ICollection<object>>.Instance;
+							return EmptyDictionary<object, object>.Instance;
 						}
 
-						IDictionary<object, ICollection<object>> result = new Dictionary<object, ICollection<object>>();
+						IDictionary<object, object> result = new NullableDictionary<object, object>();
 
-						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], ResultEventType);
-						object[] props = resultEvent.Properties;
+						var resultEvent = new ObjectArrayEventBean(new object[3], ResultEventType);
+						var props = resultEvent.Properties;
 						props[2] = enumcoll.Count;
 						eventsLambda[StreamNumLambda] = resultEvent;
-						ICollection<object> values = (ICollection<object>) enumcoll;
+						var values = (ICollection<object>) enumcoll;
 
-						int count = -1;
-						foreach (object next in values) {
+						var count = -1;
+						foreach (var next in values) {
 							count++;
 							props[1] = count;
 							props[0] = next;
-							object key = first.Evaluate(eventsLambda, isNewData, context);
-							object entry = second.Evaluate(eventsLambda, isNewData, context);
+							var key = first.Evaluate(eventsLambda, isNewData, context);
+							var entry = second.Evaluate(eventsLambda, isNewData, context);
 
-							ICollection<object> value = result.Get(key);
+							var value = (ICollection<object>) result.Get(key);
 							if (value == null) {
 								value = new List<object>();
 								result.Put(key, value);
@@ -79,12 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 
 		public override Type ReturnType()
 		{
-			return typeof(IDictionary<object, ICollection<object>>);
+			return typeof(IDictionary<object, object>);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
 		{
-			return StaticMethod(typeof(Collections), "emptyMap");
+			return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
 		}
 
 		public override void InitBlock(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar<IDictionary<object, ICollection<object>>>("result", NewInstance(typeof(Dictionary<object, ICollection<object>>)));
+			block.DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(NullableDictionary<object, object>)));
 		}
 
 		public override void ForEachBlock(
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 		{
 			block.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
 				.DeclareVar<object>("entry", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar<ICollection<object>>("value", Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "get", Ref("key"))))
+				.DeclareVar<ICollection<object>>("value", Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
 				.IfRefNull("value")
 				.AssignRef("value", NewInstance(typeof(List<object>)))
 				.Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))

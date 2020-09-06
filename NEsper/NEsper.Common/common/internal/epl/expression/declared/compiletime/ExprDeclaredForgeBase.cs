@@ -62,11 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public IDictionary<string, object> RowProperties {
             get {
-                if (InnerForge is ExprTypableReturnForge) {
-                    return ((ExprTypableReturnForge) InnerForge).RowProperties;
-                }
-
-                return null;
+                return (InnerForge as ExprTypableReturnForge)?.RowProperties;
             }
         }
 
@@ -156,11 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public Type ComponentTypeCollection {
             get {
-                if (InnerForge is ExprEnumerationForge) {
-                    return ((ExprEnumerationForge) InnerForge).ComponentTypeCollection;
-                }
-
-                return null;
+                return (InnerForge as ExprEnumerationForge)?.ComponentTypeCollection;
             }
         }
 
@@ -168,24 +160,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            if (InnerForge is ExprEnumerationForge) {
-                return ((ExprEnumerationForge) InnerForge).GetEventTypeCollection(
-                    statementRawInfo,
-                    compileTimeServices);
-            }
-
-            return null;
+            return (InnerForge as ExprEnumerationForge)?.GetEventTypeCollection(
+                statementRawInfo,
+                compileTimeServices);
         }
 
         public EventType GetEventTypeSingle(
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            if (InnerForge is ExprEnumerationForge) {
-                return ((ExprEnumerationForge) InnerForge).GetEventTypeSingle(statementRawInfo, compileTimeServices);
-            }
-
-            return null;
+            return (InnerForge as ExprEnumerationForge)?.GetEventTypeSingle(statementRawInfo, compileTimeServices);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -265,11 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public bool? IsMultirow {
             get {
-                if (InnerForge is ExprTypableReturnForge) {
-                    return ((ExprTypableReturnForge) InnerForge).IsMultirow;
-                }
-
-                return null;
+                return (InnerForge as ExprTypableReturnForge)?.IsMultirow;
             }
         }
 
@@ -345,7 +325,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
+            var evaluationType = DetermineEvaluationType(requiredType);
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprDeclaredForgeBase),
@@ -365,15 +345,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             return LocalMethod(methodNode);
         }
 
-        private CodegenMethod EvaluateCodegenRewritten(
-            Type requiredType,
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
+        private Type DetermineEvaluationType(Type requiredType)
         {
-            var nodeObject = GetNodeObject(codegenClassScope);
-            var evaluationType = requiredType == typeof(object) 
-                ? typeof(object)
-                : InnerForge.EvaluationType;
+            var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
             if (evaluationType != requiredType) {
                 if (evaluationType.GetBoxedType() == requiredType) {
                     evaluationType = evaluationType.GetBoxedType();
@@ -382,6 +356,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     throw new IllegalStateException("requiredType incompatible with evaluationType");
                 }
             }
+
+            return evaluationType;
+        }
+
+        private CodegenMethod EvaluateCodegenRewritten(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var nodeObject = GetNodeObject(codegenClassScope);
+            var evaluationType = DetermineEvaluationType(requiredType);
 
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
@@ -528,7 +513,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             .Get("AllocateDeclaredExprLastColl"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
                         "entry",
-                        ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
+                        ExprDotMethod(
+                            Ref("cache"),
+                            "GetDeclaredExpressionLastColl",
+                            nodeObject,
+                            refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(
                         Unwrap<object>(ExprDotName(Ref("entry"), "Result")))
@@ -539,7 +528,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             "SaveDeclaredExpressionLastColl",
                             nodeObject,
                             refEPS,
-                            Unwrap<EventBean>(Ref("result"))));
+                            FlexWrap(Unwrap<EventBean>(Ref("result")))));
             }
             else {
                 block.DeclareVar<ICollection<object>>("result", innerValue);

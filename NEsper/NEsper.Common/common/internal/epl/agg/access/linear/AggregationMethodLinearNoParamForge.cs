@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
     public class AggregationMethodLinearNoParamForge : AggregationMethodForge
     {
-        private readonly Type provider;
-        private readonly Type resultType;
+        private readonly Type _provider;
+        private readonly Type _resultType;
 
         public AggregationMethodLinearNoParamForge(
             Type provider,
             Type resultType)
         {
-            this.provider = provider;
-            this.resultType = resultType;
+            this._provider = provider;
+            this._resultType = resultType;
         }
 
         public CodegenExpression CodegenCreateReader(
@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return PublicConstValue(provider, "INSTANCE");
+            return PublicConstValue(_provider, "INSTANCE");
         }
 
-        public Type ResultType => resultType;
+        public Type ResultType => _resultType;
     }
 } // end of namespace

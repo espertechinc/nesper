@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             list.Add(minEvent);
             var theEvent = new SupportBean_ST0_Container(list);
 
-            // the "contained.min" inner lambda only depends on values within "contained" (a stream's value)
+            // the "Contained.min" inner lambda only depends on values within "contained" (a stream's value)
             // and not on the particular "x".
             var eplFragment =
                 "@Name('s0') select Contained.where(x => x.P00 = Contained.min(y -> y.P00)) as val from SupportBean_ST0_Container";

@@ -299,6 +299,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             CheckClosed();
+            IncludeMinStack(stackFrame => 
+                stackFrame.HasMethod() && 
+                stackFrame.GetMethod().Name != "DeclareVar");
             _statements.Add(new CodegenStatementDeclareVar(clazz, var, initializer));
             return this;
         }
@@ -314,6 +317,30 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
             CheckClosed();
             _statements.Add(new CodegenStatementDeclareVar(typeName, var, initializer));
+            return this;
+        }
+
+        private CodegenBlock IncludeMinStack(Predicate<StackFrame> stackFramePredicate)
+        {
+            var stackTrace = new StackTrace(true);
+            var stackFrames = stackTrace.GetFrames();
+
+            var stackFrameStart = 1;
+            while (stackFrameStart < stackFrames.Length && !stackFramePredicate.Invoke(stackFrames[stackFrameStart])) {
+                stackFrameStart++;
+            }
+
+            var stackFrameCount = Math.Min(stackFrames.Length, stackFrameStart + 3);
+            for (var ii = stackFrameStart; ii < stackFrameCount; ii++) {
+                var comment = string.Format(
+                    "#{3}: File: {0}, Line: {1}, Method: {2}",
+                    stackFrames[ii].GetFileName(),
+                    stackFrames[ii].GetFileLineNumber(),
+                    stackFrames[ii].GetMethod().Name,
+                    ii);
+                _statements.Add(new CodegenStatementCommentFullLine(comment));
+            }
+
             return this;
         }
 
@@ -458,7 +485,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-        public CodegenBlock InstanceMethod(
+        public CodegenBlock LocalMethod(
             CodegenMethod methodNode,
             params CodegenExpression[] parameters)
         {

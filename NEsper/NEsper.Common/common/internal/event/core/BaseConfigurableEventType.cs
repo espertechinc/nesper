@@ -110,11 +110,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public EventPropertyGetterMappedSPI GetGetterMappedSPI(string mappedProperty)
         {
             var getter = GetGetter(mappedProperty);
-            if (getter is EventPropertyGetterMappedSPI) {
-                return (EventPropertyGetterMappedSPI) getter;
-            }
-
-            return null;
+            return getter as EventPropertyGetterMappedSPI;
         }
 
         public EventPropertyGetterIndexedSPI GetGetterIndexedSPI(string propertyName)

@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
     public class SupportAggMFEventsAsListHandler : AggregationMultiFunctionHandler
     {
         private static readonly AggregationMultiFunctionStateKey AGGREGATION_STATE_KEY =
-            new ProxyAggregationMultiFunctionStateKey();
+            new InertAggregationMultiFunctionStateKey();
 
         public EPType ReturnType => EPTypeHelper.CollectionOfSingleValue(typeof(SupportBean), null);
 

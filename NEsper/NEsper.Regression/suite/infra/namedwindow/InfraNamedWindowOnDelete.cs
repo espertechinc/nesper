@@ -31,13 +31,62 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraFirstUnique());
-            execs.Add(new InfraStaggeredNamedWindow());
-            execs.Add(new InfraCoercionKeyMultiPropIndexes());
-            execs.Add(new InfraCoercionRangeMultiPropIndexes());
-            execs.Add(new InfraCoercionKeyAndRangeMultiPropIndexes());
-            execs.Add(new InfraNamedWindowSilentDeleteOnDelete());
+            WithFirstUnique(execs);
+            WithStaggeredNamedWindow(execs);
+            WithCoercionKeyMultiPropIndexes(execs);
+            WithCoercionRangeMultiPropIndexes(execs);
+            WithCoercionKeyAndRangeMultiPropIndexes(execs);
+            WithNamedWindowSilentDeleteOnDelete(execs);
+            WithNamedWindowSilentDeleteOnDeleteMany(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowSilentDeleteOnDeleteMany(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNamedWindowSilentDeleteOnDeleteMany());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowSilentDeleteOnDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowSilentDeleteOnDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercionKeyAndRangeMultiPropIndexes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCoercionKeyAndRangeMultiPropIndexes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercionRangeMultiPropIndexes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCoercionRangeMultiPropIndexes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercionKeyMultiPropIndexes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCoercionKeyMultiPropIndexes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaggeredNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraStaggeredNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFirstUnique());
             return execs;
         }
 
@@ -242,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string epl =
                     "@Name('create') create window MyWindow#length(2) as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean;\n" +
-                    "@Name('delete') @hint('silent_delete') on SupportBean_S0 delete from MyWindow where p00 = TheString;\n" +
+                    "@Name('delete') @hint('silent_delete') on SupportBean_S0 delete from MyWindow where P00 = TheString;\n" +
                     "@Name('count') select count(*) as cnt from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("delete").AddListener("count");
 

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
     [TestFixture]
     public class TestCalendarOpPlusFastAddHelper : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCompute()
         {
             long defaultCurrent = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:51:01.150");

@@ -20,22 +20,22 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 	[TestFixture]
 	public class TestEventRowRegexHelper : AbstractCompilerTest
 	{
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestVariableAnalysis()
 		{
 			var patternTests = new[] {
-				new[] {"A", "[A]", "[]"},
-				new[] {"A B", "[A, B]", "[]"},
-				new[] {"A B*", "[A]", "[B]"},
-				new[] {"A B B", "[A]", "[B]"},
-				new[] {"A B A", "[B]", "[A]"},
-				new[] {"A B+ C", "[A, C]", "[B]"},
-				new[] {"A B?", "[A, B]", "[]"},
-				new[] {"(A B)* C", "[C]", "[A, B]"},
-				new[] {"D (A B)+ (G H)? C", "[D, G, H, C]", "[A, B]"},
-				new[] {"A B | A C", "[A, B, C]", "[]"},
-				new[] {"(A B*) | (A+ C)", "[C]", "[B, A]"},
-				new[] {"(A | B) | (C | A)", "[A, B, C]", "[]"},
+				new[] {"A", "[\"A\"]", "[]"},
+				new[] {"A B", "[\"A\", \"B\"]", "[]"},
+				new[] {"A B*", "[\"A\"]", "[\"B\"]"},
+				new[] {"A B B", "[\"A\"]", "[\"B\"]"},
+				new[] {"A B A", "[\"B\"]", "[\"A\"]"},
+				new[] {"A B+ C", "[\"A\", \"C\"]", "[\"B\"]"},
+				new[] {"A B?", "[\"A\", \"B\"]", "[]"},
+				new[] {"(A B)* C", "[\"C\"]", "[\"A\", \"B\"]"},
+				new[] {"D (A B)+ (G H)? C", "[\"D\", \"G\", \"H\", \"C\"]", "[\"A\", \"B\"]"},
+				new[] {"A B | A C", "[\"A\", \"B\", \"C\"]", "[]"},
+				new[] {"(A B*) | (A+ C)", "[\"C\"]", "[\"B\", \"A\"]"},
+				new[] {"(A | B) | (C | A)", "[\"A\", \"B\", \"C\"]", "[]"},
 			};
 
 			for (var i = 0; i < patternTests.Length; i++) {
@@ -65,7 +65,7 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 			}
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestVisibilityAnalysis()
 		{
 			var patternTests = new[] {

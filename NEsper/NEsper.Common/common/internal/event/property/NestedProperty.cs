@@ -143,9 +143,11 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
+#if IRRELEVANT
                     if (result.IsArray || result.IsValueType || result.IsBuiltinDataType()) {
                         return null;
                     }
+#endif
 
                     var publicFields = eventType.Stem.IsPublicFields;
                     eventType = beanEventTypeFactory.GetCreateBeanType(result, publicFields);

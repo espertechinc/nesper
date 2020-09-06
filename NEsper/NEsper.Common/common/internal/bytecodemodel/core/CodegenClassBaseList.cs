@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Interfaces = new HashSet<CodegenTypeReference>();
         }
 
-        public void AssignType(Type baseType)
+        public CodegenClassBaseList AssignType(Type baseType)
         {
             if (baseType != null) {
                 if (baseType.IsInterface) {
@@ -37,20 +37,44 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                     BaseType = new CodegenTypeReference(baseType);
                 }
             }
+
+            return this;
         }
    
-        public void AssignBaseType(string baseTypeName)
+        public CodegenClassBaseList AssignBaseType(string baseTypeName)
         {
             if (!string.IsNullOrWhiteSpace(baseTypeName)) {
                 BaseType = new CodegenTypeReference(baseTypeName);
             }
+
+            return this;
         }
 
-        public void AddInterface(string interfaceName)
+        public CodegenClassBaseList AddInterface(Type interfaceType)
+        {
+            if (interfaceType == null) {
+                throw new ArgumentNullException(nameof(interfaceType));
+            }
+
+            if (!interfaceType.IsInterface) {
+                throw new ArgumentException("interfaceType type is not an interface", nameof(interfaceType));
+            }
+
+            var typeReference = new CodegenTypeReference(interfaceType);
+            if (!Interfaces.Contains(typeReference)) {
+                Interfaces.Add(typeReference);
+            }
+
+            return this;
+        }
+
+        public CodegenClassBaseList AddInterface(string interfaceName)
         {
             if (!string.IsNullOrWhiteSpace(interfaceName)) {
                 Interfaces.Add(new CodegenTypeReference(interfaceName));
             }
+
+            return this;
         }
 
         public void AddReferenced(ISet<Type> classes)

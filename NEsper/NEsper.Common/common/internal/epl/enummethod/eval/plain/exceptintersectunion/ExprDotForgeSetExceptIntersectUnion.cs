@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 type = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
             if (inputEventType != null) {

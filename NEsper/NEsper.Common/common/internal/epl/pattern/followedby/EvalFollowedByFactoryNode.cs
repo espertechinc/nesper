@@ -77,11 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         public int GetMax(int position)
         {
             var cachedExpr = maxPerChildEvals[position];
-            if (cachedExpr == null) {
-                return -1; // no limit defined for this sub-expression
-            }
 
-            var result = cachedExpr.Evaluate(null, true, null);
+            var result = cachedExpr?.Evaluate(null, true, null);
             if (result != null) {
                 return result.AsInt32();
             }

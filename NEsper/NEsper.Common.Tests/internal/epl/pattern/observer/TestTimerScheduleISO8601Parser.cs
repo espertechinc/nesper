@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalid()
         {
             // date-only tests
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 "Failed to parse 'R1/1997-07-16T19:20:30.12Z/PT1D': Invalid period 'PT1D'");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParse()
         {
             AssertParse("R3/2012-10-01T05:52:00Z/PT2S", 3L, "2012-10-01T05:52:00.000GMT-0:00", new TimePeriod().SetSeconds(2));
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     .SetSeconds(304394));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParseDateFormats()
         {
             // with timezone, without msec

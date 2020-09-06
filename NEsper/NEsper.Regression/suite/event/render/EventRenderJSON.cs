@@ -33,11 +33,46 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventRenderRenderSimple());
-            execs.Add(new EventRenderMapAndNestedArray());
-            execs.Add(new EventRenderEmptyMap());
-            execs.Add(new EventRenderEnquote());
+            WithRenderSimple(execs);
+            WithMapAndNestedArray(execs);
+            WithEmptyMap(execs);
+            WithEnquote(execs);
+            WithJsonEventType(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJsonEventType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventRenderJsonEventType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnquote(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderEnquote());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEmptyMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderEmptyMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapAndNestedArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderMapAndNestedArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRenderSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderRenderSimple());
             return execs;
         }
 
@@ -54,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 string epl = "@public @buseventtype create json schema MyJsonEvent(p0 string, p1 int);\n" +
                              "@Name('s0') select * from MyJsonEvent#keepall;\n";
                 env.CompileDeploy(epl).AddListener("s0");
-                
+
                 var jobject = new JObject(
                     new JProperty("p0", "abc"),
                     new JProperty("p1", 10));

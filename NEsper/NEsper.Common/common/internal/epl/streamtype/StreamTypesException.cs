@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             _optionalSuggestionGenerator = optionalSuggestionGenerator;
         }
 
-        protected StreamTypesException(SerializationInfo info,
+        protected StreamTypesException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }
@@ -35,7 +36,6 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         ///     Returns the optional suggestion for a matching name.
         /// </summary>
         /// <value>suggested match</value>
-        public Pair<int, string> OptionalSuggestion =>
-            _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Suggestion : null;
+        public Pair<int, string> OptionalSuggestion => _optionalSuggestionGenerator?.Suggestion;
     }
 } // end of namespace

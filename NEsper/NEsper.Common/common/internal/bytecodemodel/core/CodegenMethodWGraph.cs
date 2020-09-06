@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             {
                 // We found that there's an important distinction with internal classes between Java and C#.  In Java
                 // private methods in an inner class are still visible and callable between parent and child.  In C#
-                // this is not true.  We alleviate this by making the default method access intenral.
+                // this is not true.  We alleviate this by making the default method access internal.
                 builder.Append("internal ");
             }
 

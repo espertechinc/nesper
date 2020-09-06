@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     {
     }
 
-    public class ProxyAggregationMultiFunctionStateKey : AggregationMultiFunctionStateKey
+    public class InertAggregationMultiFunctionStateKey : AggregationMultiFunctionStateKey
     {
     }
 } // end of namespace

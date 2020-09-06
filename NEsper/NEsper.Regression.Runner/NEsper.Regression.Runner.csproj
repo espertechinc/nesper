@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj" />
+    <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
   </ItemGroup>
 
 </Project>

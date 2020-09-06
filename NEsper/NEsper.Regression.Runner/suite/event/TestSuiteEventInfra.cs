@@ -84,11 +84,9 @@ namespace com.espertech.esper.regressionrun.suite.@event
             eventTypeMeta.RootElementName = EventInfraGetterSimpleNoFragment.XMLTYPENAME;
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"" +
-                         EventInfraGetterSimpleNoFragment.XMLTYPENAME +
-                         "\">\n" +
+                         "\t<xs:element name=\"" + EventInfraGetterSimpleNoFragment.XMLTYPENAME + "\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"property\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"Property\" type=\"xs:string\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -458,7 +456,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var nestedName = EventInfraPropertyDynamicNestedRootedNonSimple.OA_TYPENAME + "_1";
             string[] namesNested = {"Indexed", "Mapped", "ArrayProperty", "MapProperty"};
             object[] typesNested = {
-                typeof(int[]), typeof(IDictionary<string, object>), typeof(int[]), typeof(IDictionary<string, object>)
+                typeof(int[]),
+                typeof(IDictionary<string, object>),
+                typeof(int[]),
+                typeof(IDictionary<string, object>)
             };
             configuration.Common.AddEventType(nestedName, namesNested, typesNested);
             string[] names = {"someprop", "Item"};
@@ -838,37 +839,37 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventTypeAvro(EventInfraManufacturer.AVRO_TYPENAME, new ConfigurationCommonEventTypeAvro(avroSchema));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyUnderlyingSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyUnderlyingSimple());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyMappedIndexed()
         {
             RegressionRunner.Run(session, new EventInfraPropertyMappedIndexed());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyDynamicSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicSimple());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyNestedSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedSimple());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyDynamicNonSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNonSimple());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyNestedIndexed()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedIndexed());
@@ -880,7 +881,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNested());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyDynamicNestedRootedSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNestedRootedSimple());
@@ -892,7 +893,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNestedDeep());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyDynamicNestedRootedNonSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNestedRootedNonSimple());
@@ -916,13 +917,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraSuperType());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyIndexedKeyExpr()
         {
             RegressionRunner.Run(session, new EventInfraPropertyIndexedKeyExpr());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraManufacturer()
         {
             RegressionRunner.Run(session, new EventInfraManufacturer());
@@ -934,13 +935,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraPropertyAccessPerformance());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterSimpleNoFragment()
         {
             RegressionRunner.Run(session, new EventInfraGetterSimpleNoFragment());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterSimpleFragment()
         {
             RegressionRunner.Run(session, new EventInfraGetterSimpleFragment());
@@ -965,9 +966,9 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraGetterDynamicIndexexPropertyPredefined()
+        public void TestEventInfraGetterDynamicIndexedPropertyPredefined()
         {
-            RegressionRunner.Run(session, new EventInfraGetterDynamicIndexexPropertyPredefined());
+            RegressionRunner.Run(session, new EventInfraGetterDynamicIndexedPropertyPredefined());
         }
 
         [Test, RunInApplicationDomain]
@@ -982,19 +983,19 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraGetterDynamicMapped());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterDynamicSimple()
         {
             RegressionRunner.Run(session, new EventInfraGetterDynamicSimple());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterDynamicNested()
         {
             RegressionRunner.Run(session, new EventInfraGetterDynamicNested());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterNestedSimpleNoFragment()
         {
             RegressionRunner.Run(session, new EventInfraGetterNestedSimple());
@@ -1006,13 +1007,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraGetterNestedArray());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterNestedSimpleDeep()
         {
             RegressionRunner.Run(session, new EventInfraGetterNestedSimpleDeep());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraGetterDynamicNestedDeep()
         {
             RegressionRunner.Run(session, new EventInfraGetterDynamicNestedDeep());
@@ -1042,13 +1043,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraContainedNestedArray());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyIndexedRuntimeIndex()
         {
             RegressionRunner.Run(session, new EventInfraPropertyIndexedRuntimeIndex());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventInfraPropertyMappedRuntimeKey()
         {
             RegressionRunner.Run(session, new EventInfraPropertyMappedRuntimeKey());

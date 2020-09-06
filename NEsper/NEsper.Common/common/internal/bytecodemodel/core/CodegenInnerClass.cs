@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenInnerClass
@@ -25,7 +27,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (optionalInterfaceImplemented != null) {
             }
             
-            ClassName = className;
+            ClassName = className.CodeInclusionTypeName();
             BaseList.AssignType(optionalInterfaceImplemented);
             Ctor = ctor;
             ExplicitMembers = explicitMembers;
@@ -40,7 +42,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenClassMethods methods,
             CodegenClassProperties properties)
         {
-            ClassName = className;
+            ClassName = className.CodeInclusionTypeName();
             BaseList = new CodegenClassBaseList();
             Ctor = ctor;
             ExplicitMembers = explicitMembers;

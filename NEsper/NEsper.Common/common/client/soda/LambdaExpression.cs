@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write(parameters[0]);
             }
 
-            writer.Write(" -> ");
+            writer.Write(" => ");
             Children[0].ToEPL(writer, Precedence);
         }
     }

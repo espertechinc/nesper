@@ -13,6 +13,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -35,16 +36,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				entries) => {
 				env.SendEventBean(new LocalEvent(entries));
 			};
-			var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+			var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
 			RunAssertion(env, beanepl, bean);
 
 			// Map
 			BiConsumer<EventType, IDictionary<string, string>> map = (
 				type,
 				entries) => {
-				env.SendEventMap(Collections.SingletonDataMap("mapped", entries), "LocalEvent");
+				env.SendEventMap(Collections.SingletonDataMap("Mapped", entries), "LocalEvent");
 			};
-			var mapepl = "@public @buseventtype create schema LocalEvent(mapped java.util.Map);\n";
+			var mapType = typeof(IDictionary<string, object>).CleanName();
+			var mapepl = $"@public @buseventtype create schema LocalEvent(Mapped `{mapType}`);\n";
 			RunAssertion(env, mapepl, map);
 
 			// Object-array
@@ -53,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				entries) => {
 				env.SendEventObjectArray(new object[] {entries}, "LocalEvent");
 			};
-			var oaepl = "@public @buseventtype create objectarray schema LocalEvent(mapped java.util.Map);\n";
+			var oaepl = $"@public @buseventtype create objectarray schema LocalEvent(Mapped `{mapType}`);\n";
 			RunAssertion(env, oaepl, oa);
 
 			// Json
@@ -65,16 +67,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					mapValues.Add(entry.Key, entry.Value);
 				}
 
-				var @event = new JObject(new JProperty("mapped", mapValues));
+				var @event = new JObject(new JProperty("Mapped", mapValues));
 				env.SendEventJson(@event.ToString(), "LocalEvent");
 			};
-			var jsonepl = "@public @buseventtype create json schema LocalEvent(mapped java.util.Map);\n";
+			var jsonepl = $"@public @buseventtype create json schema LocalEvent(Mapped `{mapType}`);\n";
 			RunAssertion(env, jsonepl, json);
 
 			// Json-Class-Provided
-			var jsonProvidedEpl = "@JsonSchema(className='" +
-			                      typeof(MyLocalJsonProvided).FullName +
-			                      "') @public @buseventtype create json schema LocalEvent();\n";
+			var jsonProvidedType = typeof(MyLocalJsonProvided).MaskTypeName();
+			var jsonProvidedEpl = $"@JsonSchema(ClassName='{jsonProvidedType}') @public @buseventtype create json schema LocalEvent();\n";
 			RunAssertion(env, jsonProvidedEpl, json);
 
 			// Avro
@@ -82,10 +83,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				type,
 				entries) => {
 				var @event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				@event.Put("mapped", entries);
+				@event.Put("Mapped", entries);
 				env.SendEventAvro(@event, "LocalEvent");
 			};
-			var avroepl = "@public @buseventtype create avro schema LocalEvent(mapped java.util.Map);\n";
+			var avroepl = $"@public @buseventtype create avro schema LocalEvent(Mapped `{mapType}`);\n";
 			RunAssertion(env, avroepl, avro);
 		}
 
@@ -98,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			env.CompileDeploy(
 					createSchemaEPL +
 					"create constant variable string keyChar = 'a';" +
-					"@Name('s0') select mapped(keyChar||'1') as c0, mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
+					"@Name('s0') select Mapped(keyChar||'1') as c0, Mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
 				)
 				.AddListener("s0");
 			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
@@ -127,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public IDictionary<string, string> mapped;
+			public IDictionary<string, string> Mapped;
 		}
 	}
 } // end of namespace

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 			        parent.HasFilter,
 			        parent.OptionalFilter);
 	        } else {
-		        aggregator = new AggregatorAvgNonBig(
+		        aggregator = new AggregatorAvgNumeric(
 			        this,
 			        col,
 			        rowCtor,

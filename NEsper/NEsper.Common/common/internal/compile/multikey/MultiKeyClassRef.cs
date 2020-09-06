@@ -15,11 +15,29 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 {
     public interface MultiKeyClassRef
     {
-        string ClassNameMK { get; }
+        NameOrType ClassNameMK { get; }
         Type[] MKTypes { get; }
 
         CodegenExpression GetExprMKSerde(
             CodegenMethod method,
             CodegenClassScope classScope);
+    }
+
+    public class NameOrType
+    {
+        public string Name { get; }
+        public Type Type { get; }
+
+        public NameOrType(string name)
+        {
+            Name = name;
+            Type = null;
+        }
+
+        public NameOrType(Type type)
+        {
+            Name = null;
+            Type = type;
+        }
     }
 } // end of namespace

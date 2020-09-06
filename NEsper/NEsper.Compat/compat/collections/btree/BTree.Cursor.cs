@@ -72,16 +72,16 @@ namespace com.espertech.esper.compat.collections.btree
                 //   be performing any checks on the key associated with the value.
                 set => Node.SetValue(Position, value);
             }
-
+            
             /// <summary>
             /// Returns true if the cursor represents the end of the tree.
             /// </summary>
-            public bool IsEnd => Node == null || Position == Node.Count;
+            public bool IsEnd => Node == null || Position >= Node.Count;
 
             /// <summary>
             /// Returns true if the cursor is not at the end (mostly for while loop convenience).
             /// </summary>
-            public bool IsNotEnd => Node != null && Position != Node.Count;
+            public bool IsNotEnd => Node != null && Position < Node.Count;
 
             /// <summary>
             /// Constructor.

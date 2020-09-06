@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 string epl =
                     "@Name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, thesum sum(int));\n" +
-                    "into table MyTable select IntOne, intTwo, sum(value) as thesum from SupportEventWithManyArray group by IntOne, intTwo;\n";
+                    "into table MyTable select IntOne, intTwo, sum(Value) as thesum from SupportEventWithManyArray group by IntOne, intTwo;\n";
                 env.CompileDeploy(epl);
 
                 SendEvent(env, "E1", 100, new int[] {10}, new int[] {1, 2});
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 string epl =
                     "@Name('tbl') create table MyTable(k int[primitive] primary key, thesum sum(int));\n" +
-                    "into table MyTable select IntOne, sum(value) as thesum from SupportEventWithManyArray group by IntOne;\n";
+                    "into table MyTable select IntOne, sum(Value) as thesum from SupportEventWithManyArray group by IntOne;\n";
                 env.CompileDeploy(epl);
 
                 SendEvent(env, "E1", 10, new int[] {1, 2});

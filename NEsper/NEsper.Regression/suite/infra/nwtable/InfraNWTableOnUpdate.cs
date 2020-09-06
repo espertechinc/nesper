@@ -28,18 +28,43 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var execs = new List<RegressionExecution>();
 
-            execs.Add(new InfraNWTableOnUpdateSceneOne(true));
-            execs.Add(new InfraNWTableOnUpdateSceneOne(false));
+            WithOnUpdateSceneOne(execs);
+            WithUpdateOrderOfFields(execs);
+            WithSubquerySelf(execs);
+            WithSubqueryMultikeyWArray(execs);
 
-            execs.Add(new InfraUpdateOrderOfFields(true));
-            execs.Add(new InfraUpdateOrderOfFields(false));
+            return execs;
+        }
 
-            execs.Add(new InfraSubquerySelf(true));
-            execs.Add(new InfraSubquerySelf(false));
-            
+        public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubqueryMultikeyWArray(true));
             execs.Add(new InfraSubqueryMultikeyWArray(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSubquerySelf(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubquerySelf(true));
+            execs.Add(new InfraSubquerySelf(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateOrderOfFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUpdateOrderOfFields(true));
+            execs.Add(new InfraUpdateOrderOfFields(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnUpdateSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNWTableOnUpdateSceneOne(true));
+            execs.Add(new InfraNWTableOnUpdateSceneOne(false));
             return execs;
         }
 
@@ -67,12 +92,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 RegressionPath path = new RegressionPath();
                 string stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall() as (value int)"
-                    : "@Name('create') create table MyInfra(value int)";
+                    ? "@Name('create') create window MyInfra#keepall() as (Value int)"
+                    : "@Name('create') create table MyInfra(Value int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
-                env.CompileExecuteFAF("insert into MyInfra select 0 as value", path);
+                env.CompileExecuteFAF("insert into MyInfra select 0 as Value", path);
 
-                string epl = "on SupportBean update MyInfra set value = (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array)";
+                string epl = "on SupportBean update MyInfra set Value = (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array)";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
@@ -100,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var enumerator = env.GetEnumerator("create");
                 Assert.That(enumerator.MoveNext(), Is.True);
                 Assert.That(enumerator.Current, Is.Not.Null);
-                Assert.That(enumerator.Current.Get("value"), Is.EqualTo(expected));
+                Assert.That(enumerator.Current.Get("Value"), Is.EqualTo(expected));
             }
         }
 

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestLongValue : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParseLong()
         {
             TryValid("0", 0);

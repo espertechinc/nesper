@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.runtime.client
 {
     /// <summary>
     /// Deploy exception to indicate that substitution parameter values have not been provided
     /// </summary>
+    [Serializable]
     public class EPDeploySubstitutionParameterException : EPDeployException
     {
         /// <summary>
@@ -38,6 +40,12 @@ namespace com.espertech.esper.runtime.client
             Exception cause,
             int rolloutItemNumber)
             : base("Substitution parameters have not been provided: " + message, cause, rolloutItemNumber)
+        {
+        }
+
+        protected EPDeploySubstitutionParameterException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

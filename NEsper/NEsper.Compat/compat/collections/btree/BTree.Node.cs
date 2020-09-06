@@ -228,7 +228,7 @@ namespace com.espertech.esper.compat.collections.btree
                         return ii;
                     } else if (cmp < 0) {
                         //isExactMatch = false;
-                        return ii;
+                        return ii - 1;
                     }
                 }
 

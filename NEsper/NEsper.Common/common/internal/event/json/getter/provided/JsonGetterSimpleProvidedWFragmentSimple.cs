@@ -78,10 +78,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 .IfRefNullReturnNull("value");
             string adapterMethod;
             if (FragmentType is BeanEventType) {
-                adapterMethod = "adapterForTypedBean";
+                adapterMethod = "AdapterForTypedObject";
             }
             else if (FragmentType is JsonEventType) {
-                adapterMethod = "adapterForTypedJson";
+                adapterMethod = "AdapterForTypedJson";
             }
             else {
                 throw new IllegalStateException("Unrecognized fragment event type " + FragmentType);

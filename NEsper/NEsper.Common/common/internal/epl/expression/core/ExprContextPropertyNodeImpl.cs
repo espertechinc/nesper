@@ -162,10 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ContextCompileTimeDescriptor contextDescriptor)
         {
             var eventType = (EventTypeSPI) contextDescriptor.ContextPropertyRegistry.ContextEventType;
-            if (eventType == null) {
-                return null;
-            }
-            var fragmentEventType = eventType.GetFragmentType(PropertyName);
+            var fragmentEventType = eventType?.GetFragmentType(PropertyName);
             if (fragmentEventType == null || fragmentEventType.IsIndexed) {
                 return null;
             }

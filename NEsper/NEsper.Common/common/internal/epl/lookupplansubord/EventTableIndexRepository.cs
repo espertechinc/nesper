@@ -207,11 +207,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         public EventTable GetIndexByDesc(IndexMultiKey indexKey)
         {
             EventTableIndexRepositoryEntry entry = tableIndexesRefCount.Get(indexKey);
-            if (entry == null) {
-                return null;
-            }
 
-            return entry.Table;
+            return entry?.Table;
         }
 
         private Pair<IndexMultiKey, EventTableAndNamePair> AddIndex(
@@ -298,9 +295,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         public void RemoveExplicitIndex(string indexName)
         {
             EventTable eventTable = explicitIndexes.Delete(indexName);
-            if (eventTable != null) {
-                eventTable.Destroy();
-            }
+            eventTable?.Destroy();
         }
     }
 } // end of namespace

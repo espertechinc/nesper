@@ -30,6 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public ImportService ImportService { get; set; }
 
+        public ScriptCompiler ScriptCompiler { get; set; }
+
         public ImportService ClasspathImportService {
             get => ImportService;
             set => ImportService = value;

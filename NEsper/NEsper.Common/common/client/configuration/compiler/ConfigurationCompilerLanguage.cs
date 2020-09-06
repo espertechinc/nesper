@@ -11,7 +11,7 @@ using System;
 namespace com.espertech.esper.common.client.configuration.compiler
 {
     /// <summary>
-    ///     Language settings in the runtimeare for string comparisons.
+    ///     Language settings in the runtime are for string comparisons.
     /// </summary>
     [Serializable]
     public class ConfigurationCompilerLanguage

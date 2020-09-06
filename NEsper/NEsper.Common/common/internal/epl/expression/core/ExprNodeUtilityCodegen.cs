@@ -74,12 +74,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return NewInstance<ProxyExprEvaluator>(lambda);
             }
             else if (forge.EvaluationType == typeof(void)) {
-                // TBD
-                CodegenMethod evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
-                lambda.Block.BlockReturn(
-                    LocalMethod(evalMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
-                    //MethodReturn(ConstantNull()));
-                
+                var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
+                lambda.Block
+                    .LocalMethod(
+                        evalMethod,
+                        LAMBDA_REF_EPS,
+                        LAMBDA_REF_ISNEWDATA,
+                        LAMBDA_REF_EXPREVALCONTEXT)
+                    .BlockReturn(ConstantNull());
             }
             else {
                 var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope, true);

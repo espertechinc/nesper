@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						    eventsLambda[StreamNumLambda] = next;
 
 						    object pass = inner.Evaluate(eventsLambda, isNewData, context);
-						    if (pass == null || (!(Boolean) pass)) {
+						    if (pass == null || false.Equals(pass)) {
 							    continue;
 						    }
 

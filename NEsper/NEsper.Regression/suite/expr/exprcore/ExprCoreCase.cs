@@ -62,7 +62,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) env.Listener("s0").AssertOneGetNewAndReset().Get("c1"), new int?[] {1, 2});
+				EPAssertionUtil.AssertEqualsExactOrder(
+					env.Listener("s0").AssertOneGetNewAndReset().Get("c1").UnwrapIntoArray<int>(), new int[] {1, 2});
 
 				env.UndeployAll();
 			}
@@ -306,25 +307,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
+				var compat = typeof(CompatExtensions).FullName;
+				
 				// Test of the various coercion user cases.
 				var epl = "@Name('s0') select case IntPrimitive" +
-				          " when 1 then Convert.ToString(BoolPrimitive) " +
-				          " when 2 then Convert.ToString(BoolBoxed) " +
-				          " when 3 then Convert.ToString(IntPrimitive) " +
-				          " when 4 then Convert.ToString(IntBoxed)" +
-				          " when 5 then Convert.ToString(LongPrimitive) " +
-				          " when 6 then Convert.ToString(LongBoxed) " +
-				          " when 7 then Convert.ToString(CharPrimitive) " +
-				          " when 8 then Convert.ToString(CharBoxed) " +
-				          " when 9 then Convert.ToString(ShortPrimitive) " +
-				          " when 10 then Convert.ToString(ShortBoxed) " +
-				          " when 11 then Convert.ToString(BytePrimitive) " +
-				          " when 12 then Convert.ToString(ByteBoxed) " +
-				          " when 13 then Convert.ToString(FloatPrimitive) " +
-				          " when 14 then Convert.ToString(FloatBoxed) " +
-				          " when 15 then Convert.ToString(DoublePrimitive) " +
-				          " when 16 then Convert.ToString(DoubleBoxed) " +
-				          " when 17 then TheString " +
+				          $" when 1 then {compat}.RenderAny(BoolPrimitive) " +
+				          $" when 2 then {compat}.RenderAny(BoolBoxed) " +
+				          $" when 3 then {compat}.RenderAny(IntPrimitive) " +
+				          $" when 4 then {compat}.RenderAny(IntBoxed)" +
+				          $" when 5 then {compat}.RenderAny(LongPrimitive) " +
+				          $" when 6 then {compat}.RenderAny(LongBoxed) " +
+				          $" when 7 then {compat}.RenderAny(CharPrimitive) " +
+				          $" when 8 then {compat}.RenderAny(CharBoxed) " +
+				          $" when 9 then {compat}.RenderAny(ShortPrimitive) " +
+				          $" when 10 then {compat}.RenderAny(ShortBoxed) " +
+				          $" when 11 then {compat}.RenderAny(BytePrimitive) " +
+				          $" when 12 then {compat}.RenderAny(ByteBoxed) " +
+				          $" when 13 then {compat}.RenderAny(FloatPrimitive) " +
+				          $" when 14 then {compat}.RenderAny(FloatBoxed) " +
+				          $" when 15 then {compat}.RenderAny(DoublePrimitive) " +
+				          $" when 16 then {compat}.RenderAny(DoubleBoxed) " +
+				          $" when 17 then TheString " +
 				          " else 'x' end as p1 " +
 				          " from SupportBean#length(1)";
 
@@ -445,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					null,
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("5", theEvent.Get("p1"));
+				Assert.AreEqual("5L", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -468,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					null,
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("6", theEvent.Get("p1"));
+				Assert.AreEqual("6L", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -491,7 +494,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					null,
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("A", theEvent.Get("p1"));
+				Assert.AreEqual("'A'", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -514,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					null,
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("a", theEvent.Get("p1"));
+				Assert.AreEqual("'a'", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -629,7 +632,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"testCoercion",
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("13.0", theEvent.Get("p1"));
+				Assert.AreEqual("13.0f", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -652,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"testCoercion",
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("14.0", theEvent.Get("p1"));
+				Assert.AreEqual("14.0f", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -675,7 +678,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"testCoercion",
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("15.0", theEvent.Get("p1"));
+				Assert.AreEqual("15.0d", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -698,7 +701,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"testCoercion",
 					SupportEnum.ENUM_VALUE_1);
 				theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-				Assert.AreEqual("16.0", theEvent.Get("p1"));
+				Assert.AreEqual("16.0d", theEvent.Get("p1"));
 
 				SendSupportBeanEvent(
 					env,
@@ -1018,7 +1021,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select case supportEnum " +
+				var epl = "@Name('s0') select case SupportEnum " +
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) then 1 " +
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) then 2 " +
 				          " end as p1 " +
@@ -1050,12 +1053,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var epl = "@Name('s0') select case IntPrimitive * 2 " +
 				          " when 2 then " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) " +
 				          " when 4 then " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) " +
-				          " else " + typeof(SupportEnumHelper).FullName + ".getValueForEnum(2) " +
+				          " else " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(2) " +
 				          " end as p1 " +
 				          " from SupportBean#length(10)";
 
 				env.CompileDeploy(epl).AddListener("s0");
-				Assert.AreEqual(typeof(SupportEnum), env.Statement("s0").EventType.GetPropertyType("p1"));
+				Assert.AreEqual(typeof(SupportEnum?), env.Statement("s0").EventType.GetPropertyType("p1"));
 
 				SendSupportBeanEvent(env, 1);
 				var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];

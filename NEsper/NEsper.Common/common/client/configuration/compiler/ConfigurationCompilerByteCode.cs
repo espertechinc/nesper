@@ -119,6 +119,25 @@ namespace com.espertech.esper.common.client.configuration.compiler
         }
 
         /// <summary>
+        /// Returns the indicator whether, for tools with access to pattern factories, the pattern subexpression text
+        /// will be available for the pattern.
+        /// The default is false and the compiler does not produce text for patterns for tooling.
+        /// When set to true the compiler does generate pattern subexpression text for pattern for use by tools.
+        /// </summary>
+        public bool IsAttachPatternEPL { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the indicator whether, for tools with access to pattern factories, the pattern subexpression text
+        /// will be available for the pattern.
+        /// The default is false and the compiler does not produce text for patterns for tooling.
+        /// When set to true the compiler does generate pattern subexpression text for pattern for use by tools.
+        /// </summary>
+        public bool AttachPatternEPL {
+            get => IsAttachPatternEPL;
+            set => IsAttachPatternEPL = value;
+        }
+        
+        /// <summary>
         ///     Returns indicator whether any statements allow subscribers or not (false by default).
         ///     The default is false which results in the runtime throwing an exception when an application calls {@code
         ///     setSubscriber}

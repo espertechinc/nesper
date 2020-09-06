@@ -134,14 +134,11 @@ namespace com.espertech.esper.common.client.soda
 
                 if (ParameterNames != null && !ParameterNames.IsEmpty())
                 {
-                    writer.Write(" -> ");
+                    writer.Write(" => ");
                 }
             }
 
-            if (Expression != null)
-            {
-                Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            }
+            Expression?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
             writer.Write("}");
         }

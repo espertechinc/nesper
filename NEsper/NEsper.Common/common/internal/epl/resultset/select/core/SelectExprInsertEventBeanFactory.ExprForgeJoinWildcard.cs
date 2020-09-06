@@ -40,11 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 ExprEvaluatorContext context)
             {
                 var bean = eventsPerStream[streamNum];
-                if (bean == null) {
-                    return null;
-                }
 
-                return bean.Underlying;
+                return bean?.Underlying;
             }
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;

@@ -56,13 +56,10 @@ namespace com.espertech.esper.common.client.collection
                 if (_objectCollection != null) {
                     return _objectCollection;
                 }
-                else if (_eventBeanCollection != null) {
+                else {
                     // Under type erasure, ICollection<EventBean> would be equivalent to ICollection<object>.  In the CLR
                     // this is not true and we must account for this.
-                    return _eventBeanCollection.Unwrap<object>();
-                }
-                else {
-                    return null;
+                    return _eventBeanCollection?.Unwrap<object>();
                 }
             }
         }
@@ -72,11 +69,8 @@ namespace com.espertech.esper.common.client.collection
                 if (_eventBeanCollection != null) {
                     return _eventBeanCollection;
                 }
-                else if (_objectCollection != null) {
-                    return _objectCollection;
-                }
                 else {
-                    return null;
+                    return _objectCollection;
                 }
             }
         }
@@ -133,8 +127,8 @@ namespace com.espertech.esper.common.client.collection
                 // yes, this is not efficient
                 asList.CopyTo(array, arrayIndex);
             }
-            else if (_objectCollection != null) {
-                _objectCollection.CopyTo(array, arrayIndex);
+            else {
+                _objectCollection?.CopyTo(array, arrayIndex);
             }
         }
 

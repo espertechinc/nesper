@@ -46,7 +46,7 @@ namespace com.espertech.esper.compat.collections
             }
 
             for (int ii = array1.Length - 1; ii >= 0; ii--) {
-                if (!Object.Equals(array1.GetValue(ii), array2.GetValue(ii))) {
+                if (!Equals(array1.GetValue(ii), array2.GetValue(ii))) {
                     return false;
                 }
             }
@@ -111,8 +111,8 @@ namespace com.espertech.esper.compat.collections
         }
 
         public static bool DeepEquals(
-            object[] left,
-            object[] right)
+            Array left,
+            Array right)
         {
             return CompatExtensions.DeepEquals(left, right);
         }

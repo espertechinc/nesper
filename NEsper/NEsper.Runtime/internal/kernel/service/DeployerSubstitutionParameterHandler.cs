@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client.option;
 
@@ -143,7 +144,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             return new EPException(
                 "Failed to set substitution parameter " + parameterName + ", expected a value of type '" +
-                SubstitutionParameterTypes[parameterIndex - 1].Name + "': " + message, ex);
+                SubstitutionParameterTypes[parameterIndex - 1].CleanName() + "': " + message, ex);
         }
     }
 } // end of namespace

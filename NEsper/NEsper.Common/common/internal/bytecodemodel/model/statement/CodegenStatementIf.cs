@@ -109,9 +109,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 pair.TraverseExpressions(consumer);
             }
 
-            if (_optionalElse != null) {
-                _optionalElse.TraverseExpressions(consumer);
-            }
+            _optionalElse?.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

@@ -34,20 +34,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			public void Run(RegressionEnvironment env)
 			{
 				var epl =
-					$"create schema CarOutputStream(status string, outputevent {typeof(SupportBean).MaskTypeName()});\n" +
-					$"create table StatusTable(theString string primary key, lastevent {typeof(SupportBean).MaskTypeName()});\n" +
+					$"create schema CarOutputStream(Status string, outputevent {typeof(SupportBean).MaskTypeName()});\n" +
+					$"create table StatusTable(TheString string primary key, lastevent {typeof(SupportBean).MaskTypeName()});\n" +
 					"on SupportBean as ce merge StatusTable as st where ce.TheString = st.TheString \n" +
 					"  when matched \n" +
 					"    then update set lastevent = ce \n" +
 					"  when not matched \n" +
 					"    then insert select ce.TheString as TheString, ce as lastevent\n" +
-					"    then insert into CarOutputStream select 'online' as status, ce as outputevent;\n" +
+					"    then insert into CarOutputStream select 'online' as Status, ce as outputevent;\n" +
 					"insert into CarTimeoutStream select e.* \n" +
 					"  from pattern[every e=SupportBean -> (timer:interval(1 minutes) and not SupportBean(TheString = e.TheString))];\n" +
 					"on CarTimeoutStream as cts merge StatusTable as st where cts.TheString = st.TheString \n" +
 					"  when matched \n" +
 					"    then delete \n" +
-					"    then insert into CarOutputStream select 'offline' as status, lastevent as outputevent;\n" +
+					"    then insert into CarOutputStream select 'offline' as Status, lastevent as outputevent;\n" +
 					"@Name('s0') select * from CarOutputStream";
 				env.AdvanceTime(0);
 				env.CompileDeploy(epl).AddListener("s0");
@@ -68,21 +68,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype create schema CarEvent(carId string, tracked boolean);\n" +
-				          "create table StatusTable(carId string primary key, lastevent CarEvent);\n" +
-				          "on CarEvent(tracked=true) as ce merge StatusTable as st where ce.carId = st.carId \n" +
-				          "  when matched \n" +
-				          "    then update set lastevent = ce \n" +
-				          "  when not matched \n" +
-				          "    then insert(carId, lastevent) select ce.carId, ce \n" +
-				          "    then insert into CarOutputStream select 'online' as status, ce as outputevent;\n" +
-				          "insert into CarTimeoutStream select e.* \n" +
-				          "  from pattern[every e=CarEvent(tracked=true) -> (timer:interval(1 minutes) and not CarEvent(carId = e.carId, tracked=true))];\n" +
-				          "on CarTimeoutStream as cts merge StatusTable as st where cts.carId = st.carId \n" +
-				          "  when matched \n" +
-				          "    then delete \n" +
-				          "    then insert into CarOutputStream select 'offline' as status, lastevent as outputevent;\n" +
-				          "@Name('s0') select * from CarOutputStream";
+				var epl =
+					"@public @buseventtype create schema CarEvent(carId string, tracked boolean);\n" +
+					"create table StatusTable(carId string primary key, lastevent CarEvent);\n" +
+					"on CarEvent(tracked=true) as ce merge StatusTable as st where ce.carId = st.carId \n" +
+					"  when matched \n" +
+					"    then update set lastevent = ce \n" +
+					"  when not matched \n" +
+					"    then insert(carId, lastevent) select ce.carId, ce \n" +
+					"    then insert into CarOutputStream select 'online' as Status, ce as outputevent;\n" +
+					"insert into CarTimeoutStream select e.* \n" +
+					"  from pattern[every e=CarEvent(tracked=true) -> (timer:interval(1 minutes) and not CarEvent(carId = e.carId, tracked=true))];\n" +
+					"on CarTimeoutStream as cts merge StatusTable as st where cts.carId = st.carId \n" +
+					"  when matched \n" +
+					"    then delete \n" +
+					"    then insert into CarOutputStream select 'offline' as Status, lastevent as outputevent;\n" +
+					"@Name('s0') select * from CarOutputStream";
 				env.AdvanceTime(0);
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -103,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			string status,
 			string carId)
 		{
-			Assert.AreEqual(status, received.Get("status"));
+			Assert.AreEqual(status, received.Get("Status"));
 			var got = received.Get("outputevent");
 			Assert.AreEqual(carId, received.Get("outputevent").AsStringDictionary().Get("carId"));
 		}
@@ -113,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			string status,
 			string carId)
 		{
-			Assert.AreEqual(status, received.Get("status"));
+			Assert.AreEqual(status, received.Get("Status"));
 			Assert.AreEqual(carId, ((SupportBean) received.Get("outputevent")).TheString);
 		}
 

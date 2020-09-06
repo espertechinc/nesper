@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             return new Rectangle2D<double>(x, y, width, height);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContainsPoint()
         {
             var bb = new BoundingBox(10, 20, 40, 60);
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             Assert.IsFalse(bb.ContainsPoint(100, 10));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFrom()
         {
             var bb = BoundingBox.From(10, 20, 4, 15);
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             Assert.AreEqual(35d, bb.MaxY);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIntersectsBoxIncludingEnd()
         {
             var @ref = Rect(1, 2, 4, 6);
@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             AssertIntersectsIncludingEnd(false, Rect(0, 0, 3, 1.99999), @ref);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestQuadrant()
         {
             var bb = new BoundingBox(10, 20, 40, 60);
@@ -229,7 +229,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             RunAssertionQuadrant(25, 39.9999, bb, bbNW, bbNE, bbSW, bbSE, QuadrantEnum.NE);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestQuadrantIfFits()
         {
             var bb = new BoundingBox(10, 20, 40, 60);
@@ -339,7 +339,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTreeForDepth()
         {
             var bb = new BoundingBox(0, 0, 100, 100);
@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             Assert.IsTrue(swNwNw.Equals(new BoundingBox(50, 50, 50 + 100 / 2 / 2 / 2.0, 50 + 100 / 2 / 2 / 2.0)));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTreeForPath()
         {
             var bb = new BoundingBox(0, 0, 100, 100);

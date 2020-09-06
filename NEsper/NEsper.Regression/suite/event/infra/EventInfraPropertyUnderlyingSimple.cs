@@ -47,9 +47,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var path = new RegressionPath();
 
 			var eplJson =
-				"@public @buseventtype @name('schema') create json schema " + JSON_TYPENAME + "(myInt int, myString string);\n" +
-				"@public @buseventtype @name('schema') @JsonSchema(className='" + nameof(MyLocalJsonProvided) + "') " +
-				" create json schema " + JSONPROVIDEDBEAN_TYPENAME + "();\n";
+				$"@public @buseventtype @name('schema') create json schema {JSON_TYPENAME}(MyInt int, MyString string);\n" +
+				$"@public @buseventtype @name('schema') @JsonSchema(ClassName='{typeof(MyLocalJsonProvided).CleanName()}') " +
+				$" create json schema {JSONPROVIDEDBEAN_TYPENAME}();\n";
 			env.CompileDeploy(eplJson, path);
 
 			var pairs = new Pair<string, FunctionSendEventIntString>[] {
@@ -63,6 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			};
 
 			foreach (var pair in pairs) {
+				Console.WriteLine("Asserting type " + pair.First);
 				log.Info("Asserting type " + pair.First);
 				RunAssertionPassUnderlying(env, pair.First, pair.Second, path);
 				RunAssertionPropertiesWGetter(env, pair.First, pair.Second, path);
@@ -82,10 +83,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var epl = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
-			var fields = "myInt,myString".SplitCsv();
+			var fields = "MyInt,MyString".SplitCsv();
 
-			Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(env.Statement("s0").EventType.GetPropertyType("myInt")));
-			Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("myString"));
+			Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("MyInt").GetBoxedType());
+			Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("MyString"));
 
 			var eventOne = send.Invoke(typename, env, 3, "some string");
 
@@ -124,16 +125,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEventIntString send,
 			RegressionPath path)
 		{
-			var epl = "@Name('s0') select myInt, exists(myInt) as exists_myInt, myString, exists(myString) as exists_myString from " + typename;
+			var epl = "@Name('s0') select MyInt, exists(MyInt) as exists_MyInt, MyString, exists(MyString) as exists_MyString from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
-			var fields = "myInt,exists_myInt,myString,exists_myString".SplitCsv();
+			var fields = "MyInt,exists_MyInt,MyString,exists_MyString".SplitCsv();
 
 			var eventType = env.Statement("s0").EventType;
-			Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("myInt")));
-			Assert.AreEqual(typeof(string), eventType.GetPropertyType("myString"));
-			Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myInt"));
-			Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myString"));
+			Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("MyInt")));
+			Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
+			Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyInt"));
+			Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyString"));
 
 			send.Invoke(typename, env, 3, "some string");
 
@@ -150,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 		private void RunAssertionEventInvalidProp(EventBean @event)
 		{
-			foreach (var prop in Arrays.AsList("xxxx", "myString[1]", "myString('a')", "x.y", "myString.x")) {
+			foreach (var prop in Arrays.AsList("xxxx", "MyString('a')", "x.y", "MyString.x")) {
 				SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
 				SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
 			}
@@ -166,19 +167,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				: env.Runtime.EventTypeService.GetEventType(env.DeploymentId("schema"), typeName);
 
 			var expectedType = new object[][] {
-				new object[] {"myInt", boxed ? typeof(int?) : typeof(int), null, null},
-				new object[] {"myString", typeof(string), null, null}
+				new object[] {"MyInt", boxed ? typeof(int?) : typeof(int), null, null},
+				new object[] {"MyString", typeof(string), null, null}
 			};
 			SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
-			EPAssertionUtil.AssertEqualsAnyOrder(new string[] {"myString", "myInt"}, eventType.PropertyNames);
+			EPAssertionUtil.AssertEqualsAnyOrder(new string[] {"MyString", "MyInt"}, eventType.PropertyNames);
 
-			Assert.IsNotNull(eventType.GetGetter("myInt"));
-			Assert.IsTrue(eventType.IsProperty("myInt"));
-			Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("myInt"));
+			Assert.IsNotNull(eventType.GetGetter("MyInt"));
+			Assert.IsTrue(eventType.IsProperty("MyInt"));
+			Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("MyInt"));
 			Assert.AreEqual(
-				new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false),
-				eventType.GetPropertyDescriptor("myString"));
+				new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
+				eventType.GetPropertyDescriptor("MyString"));
 		}
 
 		private void RunAssertionTypeInvalidProp(
@@ -188,15 +189,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
 
-			foreach (var prop in Arrays.AsList("xxxx", "myString[0]", "myString('a')", "myString.x", "myString.x.y", "myString.x")) {
+			foreach (var prop in Arrays.AsList("xxxx", "MyString('a')", "MyString.x", "MyString.x.y", "MyString.x")) {
 				Assert.AreEqual(false, eventType.IsProperty(prop));
 				Type expected = null;
 				if (xml) {
-					if (prop.Equals("myString[0]")) {
+					if (prop.Equals("MyString[0]")) {
 						expected = typeof(string);
 					}
 
-					if (prop.Equals("myString.x?")) {
+					if (prop.Equals("MyString.x?")) {
 						expected = typeof(XmlNode);
 					}
 				}
@@ -219,8 +220,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			a,
 			b) => {
 			IDictionary<string, object> map = new Dictionary<string, object>();
-			map.Put("myInt", a);
-			map.Put("myString", b);
+			map.Put("MyInt", a);
+			map.Put("MyString", b);
 			env.SendEventMap(map, eventTypeName);
 			return map;
 		};
@@ -251,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			a,
 			b) => {
 			var xml =
-				"<myevent myInt=\"XXXXXX\" myString=\"YYYYYY\">\n" +
+				"<myevent MyInt=\"XXXXXX\" MyString=\"YYYYYY\">\n" +
 				"</myevent>\n";
 			xml = xml.Replace("XXXXXX", a.ToString());
 			xml = xml.Replace("YYYYYY", b);
@@ -266,8 +267,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			b) => {
 			var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
 			var datum = new GenericRecord(avroSchema);
-			datum.Put("myInt", a);
-			datum.Put("myString", b);
+			datum.Put("MyInt", a);
+			datum.Put("MyString", b);
 			env.SendEventAvro(datum, eventTypeName);
 			return datum;
 		};
@@ -278,8 +279,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			a,
 			b) => {
 			var @object = new JObject();
-			@object.Add("myInt", a);
-			@object.Add("myString", b);
+			@object.Add("MyInt", a);
+			@object.Add("MyString", b);
 			var json = @object.ToString();
 			env.SendEventJson(json, eventTypeName);
 			return json;
@@ -288,8 +289,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public int? myInt;
-			public string myString;
+			public int? MyInt;
+			public string MyString;
 		}
 	}
 } // end of namespace

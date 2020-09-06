@@ -55,8 +55,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			// Map
 			var mapTests = new Pair<object, object>[] {
 				new Pair<object, object>(Collections.SingletonMap("somekey", "10"), NotExists()),
-				new Pair<object, object>(Collections.SingletonMap("id", "abc"), Exists("abc")),
-				new Pair<object, object>(Collections.SingletonMap("id", 10), Exists(10)),
+				new Pair<object, object>(Collections.SingletonMap("Id", "abc"), Exists("abc")),
+				new Pair<object, object>(Collections.SingletonMap("Id", 10), Exists(10)),
 			};
 			RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object), path);
 
@@ -80,9 +80,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
 			var datumEmpty = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
 			var datumOne = new GenericRecord(avroSchema);
-			datumOne.Put("id", 101);
+			datumOne.Put("Id", 101);
 			var datumTwo = new GenericRecord(avroSchema);
-			datumTwo.Put("id", null);
+			datumTwo.Put("Id", null);
 			var avroTests = new Pair<object, object>[] {
 				new Pair<object, object>(datumEmpty, NotExists()),
 				new Pair<object, object>(datumOne, Exists(101)),
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object), path);
 
 			// Json
-			env.CompileDeploy("@JsonSchema(dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()", path);
+			env.CompileDeploy("@JsonSchema(Dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()", path);
 			var jsonTests = new Pair<object, object>[] {
 				new Pair<object, object>("{}", NotExists()),
 				new Pair<object, object>("{\"id\": 10}", Exists(10)),

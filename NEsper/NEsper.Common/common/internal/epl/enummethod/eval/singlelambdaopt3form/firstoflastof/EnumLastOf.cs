@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.AssignRef("result", Ref("next"))
 				.BlockEnd()
-				.MethodReturn(Cast(type, Ref("result")));
+				.MethodReturn(FlexCast(type, Ref("result")));
 			return LocalMethod(method, args.Expressions);
 		}
 	}

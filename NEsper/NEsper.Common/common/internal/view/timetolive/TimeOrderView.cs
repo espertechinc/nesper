@@ -216,9 +216,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     postOldEventsArray = postOldEvents.ToArray();
                 }
 
-                if (optionalSortedRandomAccess != null) {
-                    optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, eventCount);
-                }
+                optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, eventCount);
             }
 
             // update child views
@@ -302,9 +300,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 }
             }
 
-            if (optionalSortedRandomAccess != null) {
-                optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, eventCount);
-            }
+            optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, eventCount);
 
             // If there are child views, do the update method
             if (Child != null) {

@@ -136,15 +136,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             var statementResourceService = statementContextCreateTable.StatementCPCacheService.StatementResourceService;
             if (metaData.OptionalContextName == null) {
                 var holder = statementResourceService.Unpartitioned;
-                if (holder != null && holder.TableInstance != null) {
-                    holder.TableInstance.IndexRepository.RemoveIndex(index);
-                }
+                holder?.TableInstance?.IndexRepository.RemoveIndex(index);
             }
             else {
                 foreach (var entry in statementResourceService.ResourcesPartitioned) {
-                    if (entry.Value.TableInstance != null) {
-                        entry.Value.TableInstance.IndexRepository.RemoveIndex(index);
-                    }
+                    entry.Value.TableInstance?.IndexRepository.RemoveIndex(index);
                 }
             }
         }

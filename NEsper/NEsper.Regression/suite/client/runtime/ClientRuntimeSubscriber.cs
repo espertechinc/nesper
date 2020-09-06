@@ -66,13 +66,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 				env.UndeployAll();
 
 				// nested
-				var stmtNested = env.CompileDeploy("@Name('s0') select nested, nested.nestedNested from SupportBeanComplexProps").Statement("s0");
+				var stmtNested = env.CompileDeploy("@Name('s0') select Nested, Nested.NestedNested from SupportBeanComplexProps").Statement("s0");
 				TryAssertionNested(env, stmtNested, new SupportSubscriberRowByRowSpecificNStmt());
 				TryAssertionNested(env, stmtNested, new SupportSubscriberRowByRowSpecificWStmt());
 				env.UndeployAll();
 
 				// enum
-				var stmtEnum = env.CompileDeploy("@Name('s0') select TheString, supportEnum from SupportBeanWithEnum").Statement("s0");
+				var stmtEnum = env.CompileDeploy("@Name('s0') select TheString, SupportEnum from SupportBeanWithEnum").Statement("s0");
 				TryAssertionEnum(env, stmtEnum, new SupportSubscriberRowByRowSpecificNStmt());
 				TryAssertionEnum(env, stmtEnum, new SupportSubscriberRowByRowSpecificWStmt());
 				env.UndeployAll();

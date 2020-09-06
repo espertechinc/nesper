@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
 		public IOrderedDictionary<string, V> PrefixMap(string key)
 		{
-			var result = new BTreeDictionary<string, V>();
+			var result = new OrderedListDictionary<string, V>();
 			foreach (var entry in simple) {
 				if (entry.Key.StartsWith(key)) {
 					result.Put(entry.Key, entry.Value);

@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "create context MyContext start SupportBean_S0 as s0;\n" +
-				             "@Name('s0') context MyContext select * from SupportBean(TheString = context.s0.p00 || context.s0.p01 or TheString = context.s0.p01 || context.s0.p00);\n";
+				             "@Name('s0') context MyContext select * from SupportBean(TheString = context.s0.P00 || context.s0.P01 or TheString = context.s0.P01 || context.s0.P00);\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(1, "a", "b"));
 				if (HasFilterIndexPlanAdvanced(env)) {
@@ -75,11 +75,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@Name('s0') select * from pattern [" +
-				             "a=SupportBean_S0 -> b=SupportBean_S1 -> every SupportBean(LongPrimitive in [a.id - 2 : b.id + 2])];\n";
+				             "a=SupportBean_S0 -> b=SupportBean_S1 -> every SupportBean(LongPrimitive in [a.Id - 2 : b.Id + 2])];\n";
 				RunAssertionInRange(env, epl, false);
 
 				epl = "@Name('s0') select * from pattern [" +
-				      "a=SupportBean_S0 -> b=SupportBean_S1 -> every SupportBean(LongPrimitive not in [a.id - 2 : b.id + 2])];\n";
+				      "a=SupportBean_S0 -> b=SupportBean_S1 -> every SupportBean(LongPrimitive not in [a.Id - 2 : b.Id + 2])];\n";
 				RunAssertionInRange(env, epl, true);
 			}
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@Name('s0') select * from pattern [" +
-				             "a=SupportBean_S0 -> b=SupportBean_S1 -> c=SupportBean_S2 -> every SupportBean(LongPrimitive in (a.id, b.id, c.id))];\n";
+				             "a=SupportBean_S0 -> b=SupportBean_S1 -> c=SupportBean_S2 -> every SupportBean(LongPrimitive in (a.Id, b.Id, c.Id))];\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(10));
 				env.SendEventBean(new SupportBean_S1(200));
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from pattern [a=SupportBean -> b=SupportBean(TheString=a.getTheString())]";
+				string epl = "@Name('s0') select * from pattern [a=SupportBean -> b=SupportBean(TheString=a.GetTheString())]";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean("E1", 1));
 				if (HasFilterIndexPlanAdvanced(env)) {
@@ -154,10 +154,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from SupportBean(Integer.parseInt('10') > DoublePrimitive)";
+				string epl = "@Name('s0') select * from SupportBean(Int32.Parse('10') > DoublePrimitive)";
 				RunAssertionRelOpCoercion(env, epl);
 
-				epl = "@Name('s0') select * from SupportBean(DoublePrimitive < Integer.parseInt('10'))";
+				epl = "@Name('s0') select * from SupportBean(DoublePrimitive < Int32.Parse('10'))";
 				RunAssertionRelOpCoercion(env, epl);
 			}
 		}
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from SupportBean(DoublePrimitive = Integer.parseInt('10') + Long.parseLong('20'))";
+				string epl = "@Name('s0') select * from SupportBean(DoublePrimitive = Int32.Parse('10') + Int64.Parse('20'))";
 				env.CompileDeploy(epl).AddListener("s0");
 				if (HasFilterIndexPlanAdvanced(env)) {
 					AssertFilterSvcSingle(env.Statement("s0"), "DoublePrimitive", EQUAL);
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from pattern[every a=SupportBean_S0 -> SupportBean(a.p00 || a.p01 = TheString)]";
+				string epl = "@Name('s0') select * from pattern[every a=SupportBean_S0 -> SupportBean(a.P00 || a.P01 = TheString)]";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(0, "a", "x"));
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from pattern[every s0=SupportBean_S0 -> s1=SupportBean_S1 -> SupportBean('a' || s1.p10 = TheString)]";
+				string epl = "@Name('s0') select * from pattern[every s0=SupportBean_S0 -> s1=SupportBean_S1 -> SupportBean('a' || s1.P10 = TheString)]";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(1));
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from pattern[every [2] a=SupportBean_S0 -> b=SupportBean_S1 -> SupportBean(TheString = a[0].p00 || b.p10)]";
+				string epl = "@Name('s0') select * from pattern[every [2] a=SupportBean_S0 -> b=SupportBean_S1 -> SupportBean(TheString = a[0].P00 || b.P10)]";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(1, "a"));
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "create context MyContext start SupportBean_S0 as s0;\n" +
-				             "@Name('s0') context MyContext select * from SupportBean(TheString = context.s0.p00 || context.s0.p01)";
+				             "@Name('s0') context MyContext select * from SupportBean(TheString = context.s0.P00 || context.s0.P01)";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(0, "a", "x"));
@@ -337,31 +337,36 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
+				string namespc = NamespaceGenerator.Create();
 				string objects = "@public create variable string MYVARIABLE_NONCONSTANT = 'abc';\n" +
 				                 "@public create table MyTable(tablecol string);\n" +
 				                 "@public create window MyWindow#keepall as SupportBean;\n" +
 				                 "@public create inlined_class \"\"\"\n" +
+				                 "namespace " + namespc + " {\n" +
 				                 "  public class Helper {\n" +
-				                 "    public static String doit(Object param) {\n" +
+				                 "    public static string Doit(object param) {\n" +
 				                 "      return null;\n" +
 				                 "    }\n" +
 				                 "  }\n" +
+				                 "}\n" +
 				                 "\"\"\";\n" +
 				                 "@public create expression MyDeclaredExpr { (select TheString from MyWindow) };\n" +
 				                 "@public create expression MyHandThrough {v => v};\n" +
 				                 "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
 				env.Compile(objects, path);
 
-				AssertDisqualified(env, path, "SupportBean", "TheString=Integer.toString(IntPrimitive)");
+				#if false
+				AssertDisqualified(env, path, "SupportBean", "TheString=Convert.ToString(IntPrimitive)");
 				AssertDisqualified(env, path, "SupportBean", "TheString=MYVARIABLE_NONCONSTANT");
 				AssertDisqualified(env, path, "SupportBean", "TheString=MyTable.tablecol");
 				AssertDisqualified(env, path, "SupportBean", "TheString=(select TheString from MyWindow)");
-				AssertDisqualified(env, path, "SupportBeanArrayCollMap", "id = SetOfString.where(v => v=id).firstOf()");
-				AssertDisqualified(env, path, "SupportBean", "TheString=Helper.doit(*)");
-				AssertDisqualified(env, path, "SupportBean", "TheString=Helper.doit(me)");
+				AssertDisqualified(env, path, "SupportBeanArrayCollMap", "Id = SetOfString.where(v => v=Id).firstOf()");
+				AssertDisqualified(env, path, "SupportBean", $"TheString={namespc}.Helper.Doit(*)");
+				AssertDisqualified(env, path, "SupportBean", $"TheString={namespc}.Helper.Doit(me)");
 				AssertDisqualified(env, path, "SupportBean", "BoolPrimitive=event_identity_equals(me, me)");
 				AssertDisqualified(env, path, "SupportBean", "TheString=MyDeclaredExpr()");
-				AssertDisqualified(env, path, "SupportBean", "IntPrimitive=TheString.length()");
+				#endif
+				AssertDisqualified(env, path, "SupportBean", "IntPrimitive=me.TheString.Length");
 				AssertDisqualified(env, path, "SupportBean", "IntPrimitive = funcOne('hello')");
 				AssertDisqualified(env, path, "SupportBean", "BoolPrimitive = exists(TheString)");
 				AssertDisqualified(env, path, "SupportBean", "TheString = MyJavaScript('a')");
@@ -404,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			string typeName,
 			string filters)
 		{
-			string hook = "@Hook(Type=HookType.INTERNAL_FILTERSPEC, hook='" + typeof(SupportFilterPlanHook).Name + "')";
+			string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
 			string epl = hook + "select * from " + typeName + "(" + filters + ") as me";
 			SupportFilterPlanHook.Reset();
 			env.Compile(epl, path);

@@ -23,7 +23,7 @@ namespace NEsper.Avro.Core
 {
     [TestFixture]
 	public class TestAvroEventBean  {
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestGet()
 	    {
 		    var schema = SchemaBuilder

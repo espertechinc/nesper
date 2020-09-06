@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@Name('oa') select * from " + OA_TYPENAME + ";\n" +
                     "@Name('xml') select * from " + XML_TYPENAME + ";\n" +
                     "@Name('avro') select * from " + AVRO_TYPENAME + ";\n" +
-                    "@public @buseventtype create json schema JsonEvent(ident string);\n" +
+                    "@public @buseventtype create json schema JsonEvent(Ident string);\n" +
                     "@Name('json') select * from JsonEvent;\n" +
                     "@Name('trigger') select * from SupportBean;";
                 env.CompileDeploy(epl)
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     datum.Put("Ident", ident);
                     processEvent.RouteEventAvro(datum, AVRO_TYPENAME);
 
-                    var jsonObject = new JObject(new JProperty("ident", ident));
+                    var jsonObject = new JObject(new JProperty("Ident", ident));
                     processEvent.RouteEventJson(jsonObject.ToString(), "JsonEvent");
                 };
 

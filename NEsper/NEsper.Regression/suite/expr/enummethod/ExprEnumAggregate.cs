@@ -34,11 +34,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.aggregate(0, (result, item) => result + item.p00)");
-				builder.WithExpression(fields[1], "contained.aggregate('', (result, item) => result || ', ' || item.id)");
-				builder.WithExpression(fields[2], "contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.id)");
-				builder.WithExpression(fields[3], "contained.aggregate(0, (result, item, i) => result + item.p00 + i*10)");
-				builder.WithExpression(fields[4], "contained.aggregate(0, (result, item, i, s) => result + item.p00 + i*10 + s*100)");
+				builder.WithExpression(fields[0], "Contained.aggregate(0, (result, item) => result + item.P00)");
+				builder.WithExpression(fields[1], "Contained.aggregate('', (result, item) => result || ', ' || item.Id)");
+				builder.WithExpression(fields[2], "Contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.Id)");
+				builder.WithExpression(fields[3], "Contained.aggregate(0, (result, item, i) => result + item.P00 + i*10)");
+				builder.WithExpression(fields[4], "Contained.aggregate(0, (result, item, i, s) => result + item.P00 + i*10 + s*100)");
 
 				builder.WithStatementConsumer(
 					stmt => LambdaAssertionUtil.AssertTypes(
@@ -68,11 +68,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.aggregate('', (result, item) => result || '+' || item)");
-				builder.WithExpression(fields[1], "strvals.aggregate('', (result, item, i) => result || '+' || item || '_' || Convert.ToString(i))");
+				builder.WithExpression(fields[0], "Strvals.aggregate('', (result, item) => result || '+' || item)");
+				builder.WithExpression(fields[1], "Strvals.aggregate('', (result, item, i) => result || '+' || item || '_' || Convert.ToString(i))");
 				builder.WithExpression(
 					fields[2],
-					"strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+					"Strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
 				builder.WithStatementConsumer(stmt => LambdaAssertionUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 

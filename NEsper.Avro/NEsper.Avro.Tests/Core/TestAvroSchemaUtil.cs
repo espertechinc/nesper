@@ -31,7 +31,7 @@ namespace NEsper.Avro.Core
 			ProcGetTypeByName = (typeName) => null,
 		};
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestAssemble()
 		{
 			var defaults = new ConfigurationCommonEventTypeMeta().AvroSettings;

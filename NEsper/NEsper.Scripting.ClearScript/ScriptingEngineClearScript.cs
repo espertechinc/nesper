@@ -13,11 +13,13 @@ using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.Windows;
@@ -29,12 +31,18 @@ namespace NEsper.Scripting.ClearScript
         public ScriptingEngineJScript()
         {
             Language = "jscript.net";
-            LanguagePrefix = "jscript";
+            LanguagePrefix = "js";
         }
 
         public string Language { get; private set; }
 
         public string LanguagePrefix { get; private set; }
+
+        public void Initialize(
+            IContainer container,
+            ConfigurationCommonScripting scriptingConfiguration)
+        {
+        }
 
         public void Verify(ExpressionScriptProvided expressionScript)
         {

@@ -93,8 +93,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                             block.BlockReturn(Ref("groupKey"));
                         }
                         else {
-                            block
-                                .DeclareVar(_allKeysMultikey.ClassNameMK, "mk", Cast(_allKeysMultikey.ClassNameMK, Ref("groupKey")));
+                            if (_allKeysMultikey.ClassNameMK.Type != null) {
+                                block.DeclareVar(
+                                    _allKeysMultikey.ClassNameMK.Type,
+                                    "mk",
+                                    Cast(_allKeysMultikey.ClassNameMK.Type, Ref("groupKey")));
+                            }
+                            else {
+                                block.DeclareVar(
+                                    _allKeysMultikey.ClassNameMK.Name,
+                                    "mk",
+                                    Cast(_allKeysMultikey.ClassNameMK.Name, Ref("groupKey")));
+                            }
+                            
                             if (RollupKeys.Length == 1 && (_subKeyMultikey == null || _subKeyMultikey.ClassNameMK == null)) {
                                 block.BlockReturn(ExprDotMethod(Ref("mk"), "GetKey", Constant(RollupKeys[0])));
                             }
@@ -106,7 +117,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                                     expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
                                 }
 
-                                block.BlockReturn(NewInstanceInner(_subKeyMultikey.ClassNameMK, expressions));
+                                var instance = _subKeyMultikey.ClassNameMK.Type != null
+                                    ? NewInstance(_subKeyMultikey.ClassNameMK.Type, expressions)
+                                    : NewInstanceInner(_subKeyMultikey.ClassNameMK.Name, expressions);
+                                
+                                block.BlockReturn(instance);
                             }
                         }
                     });

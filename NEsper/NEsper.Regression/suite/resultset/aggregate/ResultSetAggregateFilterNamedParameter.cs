@@ -23,32 +23,172 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetAggregateFirstAggSODA(false));
-            execs.Add(new ResultSetAggregateFirstAggSODA(true));
-            execs.Add(new ResultSetAggregateMethodAggSQLAll());
-            execs.Add(new ResultSetAggregateMethodAggSQLMixedFilter());
-            execs.Add(new ResultSetAggregateMethodAggLeaving());
-            execs.Add(new ResultSetAggregateMethodAggNth());
-            execs.Add(new ResultSetAggregateMethodAggRateUnbound());
-            execs.Add(new ResultSetAggregateMethodAggRateBound());
-            execs.Add(new ResultSetAggregateAccessAggLinearBound(false));
-            execs.Add(new ResultSetAggregateAccessAggLinearBound(true));
-            execs.Add(new ResultSetAggregateAccessAggLinearUnbound(false));
-            execs.Add(new ResultSetAggregateAccessAggLinearUnbound(true));
-            execs.Add(new ResultSetAggregateAccessAggLinearWIndex());
-            execs.Add(new ResultSetAggregateAccessAggLinearBoundMixedFilter());
-            execs.Add(new ResultSetAggregateAccessAggSortedBound(false));
-            execs.Add(new ResultSetAggregateAccessAggSortedBound(true));
-            execs.Add(new ResultSetAggregateAccessAggSortedUnbound(false));
-            execs.Add(new ResultSetAggregateAccessAggSortedUnbound(true));
-            execs.Add(new ResultSetAggregateAccessAggSortedMulticriteria());
-            execs.Add(new ResultSetAggregateAuditAndReuse());
-            execs.Add(new ResultSetAggregateFilterNamedParamInvalid());
-            execs.Add(new ResultSetAggregateMethodPlugIn());
-            execs.Add(new ResultSetAggregateAccessAggPlugIn());
+            WithFirstAggSODA(execs);
+            WithMethodAggSQLAll(execs);
+            WithMethodAggSQLMixedFilter(execs);
+            WithMethodAggLeaving(execs);
+            WithMethodAggNth(execs);
+            WithMethodAggRateUnbound(execs);
+            WithMethodAggRateBound(execs);
+            WithAccessAggLinearBound(execs);
+            WithAccessAggLinearUnbound(execs);
+            WithAccessAggLinearWIndex(execs);
+            WithAccessAggLinearBoundMixedFilter(execs);
+            WithAccessAggSortedBound(execs);
+            WithAccessAggSortedUnbound(execs);
+            WithAccessAggSortedMulticriteria(execs);
+            WithAuditAndReuse(execs);
+            WithFilterNamedParamInvalid(execs);
+            WithMethodPlugIn(execs);
+            WithAccessAggPlugIn(execs);
+            WithIntoTable(execs);
+            WithIntoTableCountMinSketch(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTableCountMinSketch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateIntoTableCountMinSketch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateIntoTable(false));
             execs.Add(new ResultSetAggregateIntoTable(true));
-            execs.Add(new ResultSetAggregateIntoTableCountMinSketch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggPlugIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggPlugIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodPlugIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodPlugIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterNamedParamInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateFilterNamedParamInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAuditAndReuse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAuditAndReuse());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggSortedMulticriteria(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggSortedMulticriteria());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggSortedUnbound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggSortedUnbound(false));
+            execs.Add(new ResultSetAggregateAccessAggSortedUnbound(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggSortedBound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggSortedBound(false));
+            execs.Add(new ResultSetAggregateAccessAggSortedBound(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggLinearBoundMixedFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggLinearBoundMixedFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggLinearWIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggLinearWIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggLinearUnbound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggLinearUnbound(false));
+            execs.Add(new ResultSetAggregateAccessAggLinearUnbound(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggLinearBound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateAccessAggLinearBound(false));
+            execs.Add(new ResultSetAggregateAccessAggLinearBound(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAggRateBound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAggRateBound());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAggRateUnbound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAggRateUnbound());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAggNth(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAggNth());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAggLeaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAggLeaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAggSQLMixedFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAggSQLMixedFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAggSQLAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAggSQLAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstAggSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateFirstAggSODA(false));
+            execs.Add(new ResultSetAggregateFirstAggSODA(true));
             return execs;
         }
 
@@ -156,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "ta","tb","wa","wb","sa","sb" },
+                new[] {"ta", "tb", "wa", "wb", "sa", "sb"},
                 new[] {ta, tb, wa, wb, sa, sb});
         }
 
@@ -168,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(new SupportBean_S0(0, p00));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "c0" },
+                new[] {"c0"},
                 new[] {expected});
         }
 
@@ -204,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var epl =
                     "@Name('s0') select concatMethodAgg(TheString, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -244,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var epl = "create table WordCountTable(wordcms countMinSketch());\n" +
                           "into table WordCountTable select countMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
-                          "@Name('s0') select WordCountTable.wordcms.countMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
+                          "@Name('s0') select WordCountTable.wordcms.CountMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "hello", 0);
@@ -267,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "myrate","myqtyrate" };
+                var fields = new[] {"myrate", "myqtyrate"};
                 var epl = "@Name('s0') select " +
                           "rate(LongPrimitive, filter:TheString like 'A%') as myrate, " +
                           "rate(LongPrimitive, IntPrimitive, filter:TheString like 'A%') as myqtyrate " +
@@ -338,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 env.AdvanceTime(0);
 
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var epl = "@Name('s0') select rate(1, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -388,7 +528,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var epl = "@Name('s0') select nth(IntPrimitive, 1, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -452,7 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "@Name('s0') select " +
                           "leaving(filter:IntPrimitive=1) as c0," +
                           "leaving(filter:IntPrimitive=2) as c1" +
@@ -618,7 +758,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 var epl = "@Name('s0') select " +
                           "first(IntPrimitive, 0, filter:TheString like 'A%') as c0," +
                           "first(IntPrimitive, 1, filter:TheString like 'A%') as c1," +
@@ -691,7 +831,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "aMaxby","aMinby","aSorted","bMaxby","bMinby","bSorted" };
+                var fields = new[] {"aMaxby", "aMinby", "aSorted", "bMaxby", "bMinby", "bSorted"};
                 var epl = "@Name('s0') select " +
                           "maxby(IntPrimitive, filter:TheString like 'A%').TheString as aMaxby," +
                           "minby(IntPrimitive, filter:TheString like 'A%').TheString as aMinby," +
@@ -773,7 +913,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "aSorted","bSorted" };
+                var fields = new[] {"aSorted", "bSorted"};
                 var epl = "@Name('s0') select " +
                           "sorted(IntPrimitive, DoublePrimitive, filter:TheString like 'A%') as aSorted," +
                           "sorted(IntPrimitive, DoublePrimitive, filter:TheString like 'B%') as bSorted" +
@@ -821,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "aMaxby","aMaxbyever","aMinby","aMinbyever" };
+                var fields = new[] {"aMaxby", "aMaxbyever", "aMinby", "aMinbyever"};
                 var epl = "@Name('s0') select " +
                           "maxby(IntPrimitive, filter:TheString like 'A%').TheString as aMaxby," +
                           "maxbyever(IntPrimitive, filter:TheString like 'A%').TheString as aMaxbyever," +
@@ -888,7 +1028,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "aFirst","aLast","aWindow","bFirst","bLast","bWindow" };
+                var fields = new[] {"aFirst", "aLast", "aWindow", "bFirst", "bLast", "bWindow"};
                 var epl = "@Name('s0') select " +
                           "first(IntPrimitive, filter:TheString like 'A%') as aFirst," +
                           "last(IntPrimitive, filter:TheString like 'A%') as aLast," +
@@ -993,7 +1133,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "aFirst","aFirstever","aLast","aLastever","aCountever" };
+                var fields = new[] {"aFirst", "aFirstever", "aLast", "aLastever", "aCountever"};
                 var epl = "@Name('s0') select " +
                           "first(IntPrimitive, filter:TheString like 'A%') as aFirst," +
                           "firstever(IntPrimitive, filter:TheString like 'A%') as aFirstever," +
@@ -1055,7 +1195,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "window(sb, filter:TheString like 'A%') as c0," +
                           "window(sb) as c1," +
@@ -1091,7 +1231,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "sum(IntPrimitive, filter:TheString like 'A%') as c0," +
                           "sum(IntPrimitive) as c1," +
@@ -1253,7 +1393,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "@Name('s0') select " +
                           "first(*,filter:IntPrimitive=1).TheString as c0, " +
                           "first(*,filter:IntPrimitive=2).TheString as c1" +

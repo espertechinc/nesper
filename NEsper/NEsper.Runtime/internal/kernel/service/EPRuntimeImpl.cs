@@ -64,7 +64,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <summary>
         ///     Constructor - initializes services.
         /// </summary>
-        /// <param name="configuration">is the runtimeconfiguration</param>
+        /// <param name="configuration">is the runtime configuration</param>
         /// <param name="runtimeURI">
         ///     is the runtime URI or "default" (or null which it assumes as "default") if this is the default
         ///     provider
@@ -115,7 +115,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <summary>
         ///     Sets runtime configuration information for use in the next initialize.
         /// </summary>
-        /// <param name="configuration">is the runtimeconfigs</param>
+        /// <param name="configuration">is the runtime configs</param>
         public void SetConfiguration(Configuration configuration)
         {
             _configLastProvided = TakeSnapshot(configuration);

@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             int value,
             int expected)
         {
-            var fields = new[] {"id", "thesum"};
+            var fields = new[] {"Id", "thesum"};
             env.SendEventBean(new SupportEventWithIntArray(id, array, value));
             EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {id, expected});
         }
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@Name('s0') select id, sum(value) as thesum from SupportEventWithIntArray group by array";
+                string epl = "@Name('s0') select Id, sum(Value) as thesum from SupportEventWithIntArray group by Array";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertIntArray(env, "E1", new int[] {1, 2}, 5, 5);
@@ -211,8 +211,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
+                //var epl = "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
+                var epl = "@Name('s0') select sb.LongPrimitive as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);

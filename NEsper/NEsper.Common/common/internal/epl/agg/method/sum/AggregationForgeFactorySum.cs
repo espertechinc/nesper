@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 		{
 			Type distinctValueType = !_parent.IsDistinct ? null : _inputValueType;
 			if (_resultType == typeof(BigInteger)) {
-				_aggregator = new AggregatorSumBig(
+				_aggregator = new AggregatorSumBigInteger(
 					this,
 					col,
 					rowCtor,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 					_resultType);
 			}
 			else {
-				_aggregator = new AggregatorSumNonBig(
+				_aggregator = new AggregatorSumNumeric(
 					this,
 					col,
 					rowCtor,

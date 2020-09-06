@@ -9,6 +9,8 @@
 using System;
 using System.Linq;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
     /// <summary>
@@ -34,22 +36,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
     public static class AggregationAccessorLinearTypeExtensions
     {
-        public static AggregationAccessorLinearType[] Values = new AggregationAccessorLinearType[] {
-            AggregationAccessorLinearType.FIRST,
-            AggregationAccessorLinearType.LAST,
-            AggregationAccessorLinearType.WINDOW
-        };
-
         /// <summary>
         /// Returns the enumeration value associated with the string text.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns></returns>
-        public static AggregationAccessorLinearType FromString(string text)
+        public static AggregationAccessorLinearType? FromString(string text)
         {
-            string compare = text.Trim().ToUpperInvariant();
-            return Values.FirstOrDefault(
-                type => string.Equals(text, type.GetName(), StringComparison.InvariantCultureIgnoreCase));
+            return EnumHelper.ParseBoxed<AggregationAccessorLinearType>(text, true);
         }
 
         /// <summary>

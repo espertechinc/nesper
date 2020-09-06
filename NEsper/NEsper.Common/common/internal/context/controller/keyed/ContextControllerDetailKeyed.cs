@@ -43,9 +43,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 FilterSpecActivatables.Add(item.FilterSpecActivatable);
             }
 
-            if (OptionalTermination != null) {
-                OptionalTermination.AddFilterSpecActivatable(FilterSpecActivatables);
-            }
+            OptionalTermination?.AddFilterSpecActivatable(FilterSpecActivatables);
 
             // determine whether we have named-partitioning-events
             foreach (var item in Items) {

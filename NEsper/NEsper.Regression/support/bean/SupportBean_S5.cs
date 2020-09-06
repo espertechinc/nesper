@@ -59,6 +59,11 @@ namespace com.espertech.esper.regressionlib.support.bean
             set => _p51 = value;
         }
 
+        public string P52 {
+            get => _p52;
+            set => _p52 = value;
+        }
+
         public string P53 {
             get => _p53;
             set => _p53 = value;

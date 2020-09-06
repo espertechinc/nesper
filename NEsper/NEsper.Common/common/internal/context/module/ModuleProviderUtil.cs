@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 throw new EPException(e);
             }
 
-            return new ModuleProviderCLPair(null, moduleResource);
+            return new ModuleProviderCLPair(classLoader, moduleResource);
         }
     }
 }

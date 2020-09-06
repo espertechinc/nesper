@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(typeof(void), GetType(), codegenClassScope);
-            method.Block.Expression(StaticMethod(typeof(ExprTableResetRowAggNode), "tableAggReset", Constant(StreamNum), symbols.GetAddEPS(method)));
+            method.Block.Expression(StaticMethod(typeof(ExprTableResetRowAggNode), "TableAggReset", Constant(StreamNum), symbols.GetAddEPS(method)));
             return LocalMethod(method);
         }
 

@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.epl.@join.queryplanouter;
+using com.espertech.esper.common.@internal.epl.join.queryplanouter;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Extensions;
 
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
         private RegressionSession _session;
 
-        private void Configure(Configuration configuration)
+        private static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -80,6 +81,8 @@ namespace com.espertech.esper.regressionrun.suite.client
                 ClientRuntimeListener.BEAN_TYPENAME,
                 typeof(ClientRuntimeListener.RoutedBeanEvent));
 
+            configuration.Common.AddImportNamespace(typeof(MyAnnotationNestedAttribute));
+            
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -165,12 +168,6 @@ namespace com.espertech.esper.regressionrun.suite.client
         }
 
         [Test, RunInApplicationDomain]
-        public void TestClientRuntimeStatementAnnotation()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestClientRuntimeStatementName()
         {
             RegressionRunner.Run(_session, ClientRuntimeStatementName.Executions());
@@ -192,6 +189,36 @@ namespace com.espertech.esper.regressionrun.suite.client
         public void TestClientRuntimeUnmatchedListener()
         {
             RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.Executions());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeStatementAnnotation
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeStatementAnnotation : AbstractTestBase
+        {
+            public TestClientRuntimeStatementAnnotation() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithRecursive() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithRecursive());
+
+            [Test, RunInApplicationDomain]
+            public void WithSpecificImport() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithSpecificImport());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithAppNested() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithAppNested());
+
+            [Test, RunInApplicationDomain]
+            public void WithAppSimple() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithAppSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithBuiltin() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithBuiltin());
         }
     }
 } // end of namespace

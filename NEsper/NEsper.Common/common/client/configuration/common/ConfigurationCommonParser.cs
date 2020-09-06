@@ -77,6 +77,10 @@ namespace com.espertech.esper.common.client.configuration.common
                         HandleLogging(common, element);
                         break;
 
+                    case "scripting":
+                        HandleScripting(common, element);
+                        break;
+
                     case "time-source":
                         HandleTimeSource(common, element);
                         break;
@@ -164,6 +168,20 @@ namespace com.espertech.esper.common.client.configuration.common
                         common.Logging.IsEnableADO = value;
                         break;
                     }
+                }
+            }
+        }
+        
+        private static void HandleScripting(
+            ConfigurationCommon common,
+            XmlElement element)
+        {
+            var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
+            while (nodeEnumerator.MoveNext()) {
+                var subElement = nodeEnumerator.Current;
+                if (subElement.Name == "engine") {
+                    var name = subElement.Attributes.GetNamedItem("type").InnerText;
+                    common.Scripting.AddEngine(name);
                 }
             }
         }

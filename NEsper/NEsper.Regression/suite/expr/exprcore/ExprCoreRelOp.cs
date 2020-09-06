@@ -20,6 +20,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	{
 		public void Run(RegressionEnvironment env)
 		{
+			var bigInteger = typeof(BigIntegerHelper).FullName;
+			
 			RunAssertion(env, "TheString", "'B'", bean => bean.TheString = "A", bean => bean.TheString = "B", bean => bean.TheString = "C");
 			RunAssertion(env, "IntPrimitive", "2", bean => bean.IntPrimitive = 1, bean => bean.IntPrimitive = 2, bean => bean.IntPrimitive = 3);
 			RunAssertion(env, "LongBoxed", "2L", bean => bean.LongBoxed = 1L, bean => bean.LongBoxed = 2L, bean => bean.LongBoxed = 3L);
@@ -29,21 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			RunAssertion(
 				env,
 				"IntPrimitive",
-				"BigDecimal.valueOf(2, 0)",
+				"2m",
 				bean => bean.IntPrimitive = 1,
 				bean => bean.IntPrimitive = 2,
 				bean => bean.IntPrimitive = 3);
 			RunAssertion(
 				env,
 				"BigInteger",
-				"BigInteger.valueOf(2)",
+				$"{bigInteger}.ValueOf(2)",
 				bean => bean.BigInteger = new BigInteger(1),
 				bean => bean.BigInteger = new BigInteger(2),
 				bean => bean.BigInteger = new BigInteger(3));
 			RunAssertion(
 				env,
 				"IntPrimitive",
-				"BigInteger.valueOf(2)",
+				$"{bigInteger}.ValueOf(2)",
 				bean => bean.IntPrimitive = 1,
 				bean => bean.IntPrimitive = 2,
 				bean => bean.IntPrimitive = 3);

@@ -28,22 +28,134 @@ namespace com.espertech.esper.regressionlib.suite.view
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ViewMultiKeyLastUniqueTwoKey());
-			execs.Add(new ViewMultiKeyFirstUnique());
-			execs.Add(new ViewMultiKeyGroupWin());
-			execs.Add(new ViewMultiKeyRank());
-			execs.Add(new ViewMultiKeyLastUniqueThreeKey());
-			execs.Add(new ViewMultiKeyLastUniqueOneKeyArrayOfLongPrimitive());
-			execs.Add(new ViewMultiKeyLastUniqueOneKeyArrayOfObjectArray());
-			execs.Add(new ViewMultiKeyLastUniqueOneKey2DimArray());
-			execs.Add(new ViewMultiKeyLastUniqueTwoKeyAllArrayOfPrimitive());
-			execs.Add(new ViewMultiKeyLastUniqueTwoKeyAllArrayOfObject());
-			execs.Add(new ViewMultiKeyLastUniqueArrayKeyIntersection());
-			execs.Add(new ViewMultiKeyLastUniqueArrayKeyUnion());
-			execs.Add(new ViewMultiKeyLastUniqueArrayKeySubquery());
-			execs.Add(new ViewMultiKeyLastUniqueArrayKeyNamedWindow());
-			execs.Add(new ViewMultiKeyLastUniqueArrayKeySubqueryInFilter());
+			WithLastUniqueTwoKey(execs);
+			WithFirstUnique(execs);
+			WithGroupWin(execs);
+			WithRank(execs);
+			WithLastUniqueThreeKey(execs);
+			WithLastUniqueOneKeyArrayOfLongPrimitive(execs);
+			WithLastUniqueOneKeyArrayOfObjectArray(execs);
+			WithLastUniqueOneKey2DimArray(execs);
+			WithLastUniqueTwoKeyAllArrayOfPrimitive(execs);
+			WithLastUniqueTwoKeyAllArrayOfObject(execs);
+			WithLastUniqueArrayKeyIntersection(execs);
+			WithLastUniqueArrayKeyUnion(execs);
+			WithLastUniqueArrayKeySubquery(execs);
+			WithLastUniqueArrayKeyNamedWindow(execs);
+			WithLastUniqueArrayKeySubqueryInFilter(execs);
+			WithLastUniqueArrayKeyDataflow(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueArrayKeyDataflow(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ViewMultiKeyLastUniqueArrayKeyDataflow());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueArrayKeySubqueryInFilter(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueArrayKeySubqueryInFilter());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueArrayKeyNamedWindow(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueArrayKeyNamedWindow());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueArrayKeySubquery(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueArrayKeySubquery());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueArrayKeyUnion(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueArrayKeyUnion());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueArrayKeyIntersection(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueArrayKeyIntersection());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueTwoKeyAllArrayOfObject(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueTwoKeyAllArrayOfObject());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueTwoKeyAllArrayOfPrimitive(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueTwoKeyAllArrayOfPrimitive());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueOneKey2DimArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueOneKey2DimArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueOneKeyArrayOfObjectArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueOneKeyArrayOfObjectArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueOneKeyArrayOfLongPrimitive(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueOneKeyArrayOfLongPrimitive());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueThreeKey(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueThreeKey());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithRank(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyRank());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithGroupWin(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyGroupWin());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithFirstUnique(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyFirstUnique());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLastUniqueTwoKey(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ViewMultiKeyLastUniqueTwoKey());
 			return execs;
 		}
 
@@ -51,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select window(id) as ids from SupportEventWithLongArray#rank(coll, 10, id)";
+				var epl = "@Name('s0') select window(Id) as ids from SupportEventWithLongArray#rank(Coll, 10, Id)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertLongArrayIdWindow(env, "E1", new long[] {1, 2}, "E1");
@@ -74,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select window(id) as ids from SupportEventWithLongArray#groupwin(coll)#lastevent";
+				var epl = "@Name('s0') select window(Id) as ids from SupportEventWithLongArray#groupwin(Coll)#lastevent";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertLongArrayIdWindow(env, "E1", new long[] {1, 2}, "E1");
@@ -97,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select irstream * from SupportEventWithLongArray#firstunique(coll)";
+				var epl = "@Name('s0') select irstream * from SupportEventWithLongArray#firstunique(Coll)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertLongArrayIStream(env, true, "E1", false, 1, 2);
@@ -129,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 				var graph = "@Name('flow') create dataflow MySelect\n" +
 				            "Emitter -> instream_s0<SupportEventWithLongArray>{name: 'emitterS0'}\n" +
 				            "Select(instream_s0) -> outstream {\n" +
-				            "  select: (select window(id) as ids from instream_s0#unique(coll))\n" +
+				            "  select: (select window(Id) as ids from instream_s0#unique(Coll))\n" +
 				            "}\n" +
 				            "DefaultSupportCaptureOp(outstream) {}\n";
 				env.CompileDeploy(graph);
@@ -157,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select * from SupportBean(2 = (select count(*) from SupportEventWithLongArray#unique(coll)))";
+				var epl = "@Name('s0') select * from SupportBean(2 = (select count(*) from SupportEventWithLongArray#unique(Coll)))";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssertFilter(env, false);
@@ -186,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create window MyWindow#unique(coll) as SupportEventWithLongArray;\n" +
+				var epl = "create window MyWindow#unique(Coll) as SupportEventWithLongArray;\n" +
 				          "insert into MyWindow select * from SupportEventWithLongArray;\n" +
 				          "@Name('s0') select irstream * from MyWindow;\n";
 				env.CompileDeploy(epl).AddListener("s0");
@@ -201,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select irstream (select window(id) from SupportEventWithLongArray#unique(coll)) as c0 from SupportBean";
+				var epl = "@Name('s0') select irstream (select window(Id) from SupportEventWithLongArray#unique(Coll)) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportEventWithLongArray("E0", new long[] {1, 2}));
@@ -230,10 +342,11 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype create schema EventTwoArrayOfPrimitive as " +
-				          typeof(EventTwoArrayOfPrimitive).FullName +
-				          ";\n" +
-				          "@Name('s0') select irstream * from EventTwoArrayOfPrimitive#unique(one)#unique(two) retain-union";
+				var epl =
+					"@public @buseventtype create schema EventTwoArrayOfPrimitive as " +
+					typeof(EventTwoArrayOfPrimitive).MaskTypeName() +
+					";\n" +
+					"@Name('s0') select irstream * from EventTwoArrayOfPrimitive#unique(One)#unique(Two) retain-union";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertTwoArrayIterate(env, "E0", new[] {1, 2}, new[] {3, 4}, "E0");
@@ -258,9 +371,9 @@ namespace com.espertech.esper.regressionlib.suite.view
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create schema EventTwoArrayOfPrimitive as " +
-				          typeof(EventTwoArrayOfPrimitive).FullName +
+				          typeof(EventTwoArrayOfPrimitive).MaskTypeName() +
 				          ";\n" +
-				          "@Name('s0') select irstream * from EventTwoArrayOfPrimitive#unique(one)#unique(two)";
+				          "@Name('s0') select irstream * from EventTwoArrayOfPrimitive#unique(One)#unique(Two)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertTwoArrayIterate(env, "E0", new[] {1, 2}, new[] {3, 4}, "E0");
@@ -286,9 +399,9 @@ namespace com.espertech.esper.regressionlib.suite.view
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create schema EventTwoArrayOfPrimitive as " +
-				          typeof(EventTwoArrayOfPrimitive).FullName +
+				          typeof(EventTwoArrayOfPrimitive).MaskTypeName() +
 				          ";\n" +
-				          "@Name('s0') select irstream * from EventTwoArrayOfPrimitive#unique(one, two)";
+				          "@Name('s0') select irstream * from EventTwoArrayOfPrimitive#unique(One, Two)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var b0 = SendAssertTwoArray(env, null, "E0", new[] {1, 2}, new[] {3, 4});
@@ -316,10 +429,10 @@ namespace com.espertech.esper.regressionlib.suite.view
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype create schema EventTwoArrayOfObject as " +
-				          typeof(EventTwoArrayOfObject).FullName +
-				          ";\n" +
-				          "@Name('s0') select irstream * from EventTwoArrayOfObject#unique(one, two)";
+				var eventTwoArrayOfObject = typeof(EventTwoArrayOfObject).MaskTypeName();
+				var epl =
+					$"@public @buseventtype create schema EventTwoArrayOfObject as {eventTwoArrayOfObject};\n" +
+					$"@Name('s0') select irstream * from EventTwoArrayOfObject#unique(One, Two)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var b0 = SendAssertTwoArray(env, null, "E0", new object[] {1, 2}, new object[] {new[] {"a", "b"}});
@@ -347,10 +460,11 @@ namespace com.espertech.esper.regressionlib.suite.view
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype create schema EventTwoDimArray as " +
-				          typeof(EventTwoDimArray).FullName +
-				          ";\n" +
-				          "@Name('s0') select irstream * from EventTwoDimArray#unique(array)";
+				var epl =
+					"@public @buseventtype create schema EventTwoDimArray as " +
+					typeof(EventTwoDimArray).MaskTypeName() +
+					";\n" +
+					"@Name('s0') select irstream * from EventTwoDimArray#unique(Array)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var b0 = SendAssertInt2DimArray(
@@ -439,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select irstream * from SupportObjectArrayOneDim#unique(arr)";
+				var epl = "@Name('s0') select irstream * from SupportObjectArrayOneDim#unique(Arr)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var b0 = SendAssertObjectArray(env, null, "E0", false, 1, ArrayOf("A", "B"));
@@ -453,7 +567,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 				var b5 = SendAssertObjectArray(env, null, "E5", false);
 				var b6 = SendAssertObjectArray(env, null, "E6", false, 1);
 				var b7 = SendAssertObjectArray(env, null, "E7", false, 1, 2);
-				var b8 = SendAssertObjectArray(env, null, "E8", true);
+				//var b8 = SendAssertObjectArray(env, null, "E8", true);
 
 				env.Milestone(1);
 
@@ -464,7 +578,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 				SendAssertObjectArray(env, b5, "E24", false);
 				SendAssertObjectArray(env, b6, "E25", false, 1);
 				SendAssertObjectArray(env, b7, "E26", false, 1, 2);
-				SendAssertObjectArray(env, b8, "E27", true);
+				//SendAssertObjectArray(env, b8, "E27", true);
 
 				env.UndeployAll();
 			}
@@ -475,7 +589,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select irstream * from SupportEventWithLongArray#unique(coll)";
+				var epl = "@Name('s0') select irstream * from SupportEventWithLongArray#unique(Coll)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				RunAssertionLongArray(env);
@@ -571,8 +685,10 @@ namespace com.espertech.esper.regressionlib.suite.view
 			params long[] array)
 		{
 			var @event = new SupportEventWithLongArray(id, isNull ? null : array);
+			Assert.That(env.Listener("s0").IsInvoked, Is.False);
 			env.SendEventBean(@event);
-			Assert.AreEqual(expected, env.Listener("s0").GetAndClearIsInvoked());
+			Assert.That(env.Listener("s0").GetAndClearIsInvoked(), Is.EqualTo(expected));
+			Assert.That(env.Listener("s0").IsInvoked, Is.False);
 			return @event;
 		}
 
@@ -680,7 +796,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 		{
 			var @event = new EventTwoArrayOfPrimitive(id, one, two);
 			env.SendEventBean(@event);
-			var ids = EPAssertionUtil.EnumeratorToObjectArr(env.GetEnumerator("s0"), "id");
+			var ids = EPAssertionUtil.EnumeratorToObjectArr(env.GetEnumerator("s0"), "Id");
 			EPAssertionUtil.AssertEqualsAnyOrder(iterateCSV.SplitCsv(), ids);
 		}
 

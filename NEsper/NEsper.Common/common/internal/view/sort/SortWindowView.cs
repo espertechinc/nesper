@@ -141,9 +141,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             }
 
             // If there are child views, fireStatementStopped update method
-            if (optionalSortedRandomAccess != null) {
-                optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, sortWindowSize);
-            }
+            optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, sortWindowSize);
 
             if (child != null) {
                 EventBean[] expiredArr = null;

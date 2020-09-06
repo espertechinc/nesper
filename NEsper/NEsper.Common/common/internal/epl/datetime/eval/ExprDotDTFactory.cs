@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             var message = "Date-time enumeration method '" +
                           dtMethodName +
                           "' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property";
-            if (inputType is EventEPType) {
-                if (((EventEPType) inputType).EventType.StartTimestampPropertyName == null) {
+            if (inputType is EventEPType eventEpType) {
+                if (eventEpType.EventType.StartTimestampPropertyName == null) {
                     throw new ExprValidationException(message);
                 }
             }
@@ -63,11 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         message + " but received " + inputType.ToTypeDescriptive());
                 }
 
-                if (inputType is ClassEPType) {
-                    var classEPType = (ClassEPType) inputType;
-                    if (!TypeHelper.IsDateTime(classEPType.Clazz)) {
+                if (inputType is ClassEPType classEpType) {
+                    if (!TypeHelper.IsDateTime(classEpType.Clazz)) {
                         throw new ExprValidationException(
-                            message + " but received " + classEPType.Clazz.CleanName());
+                            message + " but received " + classEpType.Clazz.CleanName());
                     }
                 }
             }
@@ -75,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             IList<CalendarForge> calendarForges = new List<CalendarForge>();
             ReformatForge reformatForge = null;
             IntervalForge intervalForge = null;
-            DatetimeMethodDesc currentMethod = dtMethod;
+            var currentMethod = dtMethod;
             var currentParameters = parameters;
             var currentMethodName = dtMethodName;
 
@@ -87,26 +86,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 var opFactory = currentMethod.ForgeFactory;
 
                 // compile parameter abstract for validation against available footprints
-                DotMethodFPProvided footprintProvided = DotMethodUtil.GetProvidedFootprint(currentParameters);
+                var footprintProvided = DotMethodUtil.GetProvidedFootprint(currentParameters);
 
                 // validate parameters
-                DotMethodFP footprintFound = DotMethodUtil.ValidateParametersDetermineFootprint(
+                var footprintFound = DotMethodUtil.ValidateParametersDetermineFootprint(
                     currentMethod.Footprints,
                     DotMethodTypeEnum.DATETIME,
                     currentMethodName,
                     footprintProvided,
                     DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
-                if (opFactory is CalendarForgeFactory) {
-                    var calendarForge = ((CalendarForgeFactory) currentMethod.ForgeFactory).GetOp(
+                if (opFactory is CalendarForgeFactory calendarForgeFactory) {
+                    var calendarForge = calendarForgeFactory.GetOp(
                         currentMethod,
                         currentMethodName,
                         currentParameters,
                         forges);
                     calendarForges.Add(calendarForge);
                 }
-                else if (opFactory is ReformatForgeFactory) {
-                    reformatForge = ((ReformatForgeFactory) opFactory).GetForge(
+                else if (opFactory is ReformatForgeFactory reformatForgeFactory) {
+                    reformatForge = reformatForgeFactory.GetForge(
                         inputType,
                         timeAbacus,
                         currentMethod,
@@ -125,8 +124,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         filterAnalyzerDesc = null;
                     }
                 }
-                else if (opFactory is IntervalForgeFactory) {
-                    intervalForge = ((IntervalForgeFactory) opFactory).GetForge(
+                else if (opFactory is IntervalForgeFactory intervalForgeFactory) {
+                    intervalForge = intervalForgeFactory.GetForge(
                         streamTypeService,
                         currentMethod,
                         currentMethodName,
@@ -142,36 +141,32 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             currentParameters,
                             inputDesc);
                     }
-                    else if (opFactory is DTMPluginForgeFactory) {
-                        DTMPluginForgeFactory plugIn = (DTMPluginForgeFactory) opFactory;
-                        DateTimeMethodValidateContext usageDesc = new DateTimeMethodValidateContext(
-                            footprintFound,
-                            streamTypeService,
-                            currentMethod,
-                            currentParameters,
-                            statementRawInfo);
-                        DateTimeMethodOps ops = plugIn.Validate(usageDesc);
-                        if (ops == null) {
-                            throw new ExprValidationException(
-                                "Plug-in datetime method provider " + plugIn.GetType() + " returned a null-value for the operations");
-                        }
+                }
+                else if (opFactory is DTMPluginForgeFactory dtmPluginForgeFactory) {
+                    var usageDesc = new DateTimeMethodValidateContext(
+                        footprintFound,
+                        streamTypeService,
+                        currentMethod,
+                        currentParameters,
+                        statementRawInfo);
+                    var ops = dtmPluginForgeFactory.Validate(usageDesc);
+                    if (ops == null) {
+                        throw new ExprValidationException(
+                            "Plug-in datetime method provider " + dtmPluginForgeFactory.GetType() + " returned a null-value for the operations");
+                    }
 
-                        var input = EPTypeHelper.GetClassSingleValued(inputType);
-                        if (ops is DateTimeMethodOpsModify) {
-                            calendarForges.Add(new DTMPluginValueChangeForge(input, (DateTimeMethodOpsModify) ops, usageDesc.CurrentParameters));
-                        }
-                        else if (ops is DateTimeMethodOpsReformat) {
-                            reformatForge = new DTMPluginReformatForge(input, (DateTimeMethodOpsReformat) ops, usageDesc.CurrentParameters);
-                        }
-                        else {
-                            throw new ExprValidationException("Plug-in datetime method ops " + ops.GetType() + " is not recognized");
-                        }
-
-                        // no action
+                    var input = EPTypeHelper.GetClassSingleValued(inputType);
+                    if (ops is DateTimeMethodOpsModify dateTimeMethodOpsModify) {
+                        calendarForges.Add(new DTMPluginValueChangeForge(input, dateTimeMethodOpsModify, usageDesc.CurrentParameters));
+                    }
+                    else if (ops is DateTimeMethodOpsReformat dateTimeMethodOpsReformat) {
+                        reformatForge = new DTMPluginReformatForge(input, dateTimeMethodOpsReformat, usageDesc.CurrentParameters);
                     }
                     else {
-                        filterAnalyzerDesc = null;
+                        throw new ExprValidationException("Plug-in datetime method ops " + ops.GetType() + " is not recognized");
                     }
+
+                    // no action
                 }
                 else {
                     throw new IllegalStateException("Invalid op factory class " + opFactory);
@@ -193,17 +188,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 }
             }
 
-            ExprDotForge dotForge;
-            EPType returnType;
-
-            dotForge = new ExprDotDTForge(
+            var dotForge = new ExprDotDTForge(
                 calendarForges,
                 timeAbacus,
                 reformatForge,
                 intervalForge,
                 inputType.GetClassSingleValued(),
                 inputType.GetEventTypeSingleValued());
-            returnType = dotForge.TypeInfo;
+            var returnType = dotForge.TypeInfo;
             return new ExprDotDTMethodDesc(dotForge, returnType, filterAnalyzerDesc);
         }
 
@@ -215,8 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 var inner = innerExpr.Forge;
 
                 // Time periods get special attention
-                if (innerExpr is ExprTimePeriod) {
-                    var timePeriod = (ExprTimePeriod) innerExpr;
+                if (innerExpr is ExprTimePeriod timePeriod) {
                     inputExpr[i] = new ProxyExprForge {
                         ProcExprEvaluator = () => {
                             return new ProxyExprEvaluator {

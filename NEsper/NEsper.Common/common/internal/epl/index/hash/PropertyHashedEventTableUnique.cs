@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public PropertyHashedEventTableUnique(PropertyHashedEventTableFactory factory)
             : base(factory)
         {
-            _propertyIndex = new Dictionary<object, EventBean>()
+            _propertyIndex = new Dictionary<object, EventBean>(AsymmetricEqualityComparer.Instance)
                 .WithNullKeySupport();
         }
 

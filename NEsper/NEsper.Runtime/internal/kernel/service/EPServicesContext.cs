@@ -94,7 +94,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    private readonly RuntimeEnvContext _runtimeEnvContext;
 	    private readonly RuntimeSettingsService _runtimeSettingsService;
 	    private readonly string _runtimeUri;
-	    private readonly ImportServiceRuntime _classpathImportServiceRuntime;
+	    private readonly ImportServiceRuntime _importServiceRuntime;
 	    private readonly EPStatementFactory _epStatementFactory;
 	    private readonly PathRegistry<string, ExpressionDeclItem> _exprDeclaredPathRegistry;
 	    private readonly IReaderWriterLock _eventProcessingRWLock;
@@ -132,6 +132,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    private readonly ResultSetProcessorHelperFactory _resultSetProcessorHelperFactory;
 	    private readonly RowRecogStateRepoFactory _rowRecogStateRepoFactory;
 	    private readonly RowRecogStatePoolRuntimeSvc _rowRecogStatePoolEngineSvc;
+	    private readonly ScriptCompiler _scriptCompiler;
 	    private readonly SchedulingServiceSPI _schedulingService;
 	    private readonly PathRegistry<NameAndParamNum, ExpressionScriptProvided> _scriptPathRegistry;
 	    private readonly StageRecoveryService _stageRecoveryService;
@@ -176,7 +177,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    RuntimeEnvContext runtimeEnvContext,
 		    RuntimeSettingsService runtimeSettingsService,
 		    string runtimeURI,
-		    ImportServiceRuntime classpathImportServiceRuntime,
+		    ImportServiceRuntime importServiceRuntime,
 		    EPStatementFactory epStatementFactory,
 		    PathRegistry<string, ExpressionDeclItem> exprDeclaredPathRegistry,
 		    IReaderWriterLock eventProcessingRWLock,
@@ -216,6 +217,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    RowRecogStatePoolRuntimeSvc rowRecogStatePoolEngineSvc,
 		    SchedulingServiceSPI schedulingService,
 		    PathRegistry<NameAndParamNum, ExpressionScriptProvided> scriptPathRegistry,
+		    ScriptCompiler scriptCompiler,
 		    StageRecoveryService stageRecoveryService,
 		    StatementLifecycleService statementLifecycleService,
 		    StatementAgentInstanceLockFactory statementAgentInstanceLockFactory,
@@ -253,7 +255,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	        _runtimeEnvContext = runtimeEnvContext;
 	        _runtimeSettingsService = runtimeSettingsService;
 	        _runtimeUri = runtimeURI;
-	        _classpathImportServiceRuntime = classpathImportServiceRuntime;
+	        _importServiceRuntime = importServiceRuntime;
 	        _epStatementFactory = epStatementFactory;
 	        _exprDeclaredPathRegistry = exprDeclaredPathRegistry;
 	        _eventProcessingRWLock = eventProcessingRWLock;
@@ -310,12 +312,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	        _viewFactoryService = viewFactoryService;
 	        _viewServicePreviousFactory = viewServicePreviousFactory;
 	        _xmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
+	        _scriptCompiler = scriptCompiler;
 	    }
 
-	    public void Destroy() {
-	        if (_epServicesHA != null) {
-	            _epServicesHA.Destroy();
-	        }
+	    public void Destroy()
+	    {
+		    _epServicesHA?.Destroy();
 	    }
 
 	    public void Initialize() {
@@ -341,7 +343,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					    _dataflowService,
 					    _runtimeUri,
 					    _runtimeEnvContext,
-					    _classpathImportServiceRuntime,
+					    _importServiceRuntime,
 					    _runtimeSettingsService,
 					    _epServicesHA.RuntimeExtensionServices,
 					    _epRuntime,
@@ -433,7 +435,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
 	    public RuntimeEnvContext RuntimeEnvContext => _runtimeEnvContext;
 
-	    public ImportServiceRuntime ImportServiceRuntime => _classpathImportServiceRuntime;
+	    public ImportServiceRuntime ImportServiceRuntime => _importServiceRuntime;
 
 	    public RuntimeSettingsService RuntimeSettingsService => _runtimeSettingsService;
 
@@ -521,6 +523,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    public SchedulingServiceSPI SchedulingServiceSPI => _schedulingService;
 	    
 	    public PathRegistry<NameAndParamNum, ExpressionScriptProvided> ScriptPathRegistry => _scriptPathRegistry;
+
+	    public ScriptCompiler ScriptCompiler => _scriptCompiler;
 
 	    public StageRecoveryService StageRecoveryService => _stageRecoveryService;
 

@@ -36,9 +36,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				var fields = "c0,c1,c2".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.where(x => p00 = 9)");
-				builder.WithExpression(fields[1], "contained.where((x, i) => x.p00 = 9 and i >= 1)");
-				builder.WithExpression(fields[2], "contained.where((x, i, s) => x.p00 = 9 and i >= 1 and s > 2)");
+				builder.WithExpression(fields[0], "Contained.where(x => P00 = 9)");
+				builder.WithExpression(fields[1], "Contained.where((x, i) => x.P00 = 9 and i >= 1)");
+				builder.WithExpression(fields[2], "Contained.where((x, i, s) => x.P00 = 9 and i >= 1 and s > 2)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -87,9 +87,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				var fields = "c0,c1,c2".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.where(x => x not like '%1%')");
-				builder.WithExpression(fields[1], "strvals.where((x, i) => x not like '%1%' and i >= 1)");
-				builder.WithExpression(fields[2], "strvals.where((x, i, s) => x not like '%1%' and i >= 1 and s >= 3)");
+				builder.WithExpression(fields[0], "Strvals.where(x => x not like '%1%')");
+				builder.WithExpression(fields[1], "Strvals.where((x, i) => x not like '%1%' and i >= 1)");
+				builder.WithExpression(fields[2], "Strvals.where((x, i, s) => x not like '%1%' and i >= 1 and s >= 3)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				var fields = "c0".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "boolvals.where(x => x)");
+				builder.WithExpression(fields[0], "Boolvals.where(x => x)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 

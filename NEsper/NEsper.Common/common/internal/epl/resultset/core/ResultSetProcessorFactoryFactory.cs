@@ -104,8 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             var optionalHavingNode = spec.HavingClause;
             var outputLimitSpec = spec.OptionalOutputLimitSpec;
             var groupByClauseExpressions = spec.GroupByClauseExpressions;
-            List<ExprDeclaredNode> declaredNodes = new List<ExprDeclaredNode>();
-            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            var declaredNodes = new List<ExprDeclaredNode>();
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // validate output limit spec
             ValidateOutputLimit(outputLimitSpec, statementRawInfo, services);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             IList<SelectClauseExprCompiledSpec> namedSelectionList = new List<SelectClauseExprCompiledSpec>();
             var allowRollup = groupByClauseExpressions != null && groupByClauseExpressions.GroupByRollupLevels != null;
             var resettableAggs = isUnidirectional || statementRawInfo.StatementType.IsOnTriggerInfra();
-            var intoTableName = spec.IntoTableSpec == null ? null : spec.IntoTableSpec.Name;
+            var intoTableName = spec.IntoTableSpec?.Name;
             var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, services)
                 .WithViewResourceDelegate(viewResourceDelegate)
                 .WithAllowRollupFunctions(allowRollup)
@@ -1007,9 +1007,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     HookType.INTERNAL_GROUPROLLUP_PLAN,
                     typeof(GroupByRollupPlanHook),
                     validationContext.ImportService);
-                if (hook != null) {
-                    hook.Query(new GroupByRollupPlanDesc(validated, rollup));
-                }
+                hook?.Query(new GroupByRollupPlanDesc(validated, rollup));
             }
             catch (ExprValidationException) {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);

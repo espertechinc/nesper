@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             return cursors.ToArray();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddResult()
         {
             var results = supportJoinResultNodeFactory.MakeEventSet(2);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
                 Throws.InstanceOf<NullReferenceException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             // Lookup from s0
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             Assert.AreEqual(12, cursors.Length);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetCursors()
         {
             // get cursor for root stream lookup

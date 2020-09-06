@@ -710,7 +710,7 @@ namespace com.espertech.esper.common.@internal.context.module
             }
 
             var method = parent.MakeChild(
-                typeof(IDictionary<object, object>),
+                typeof(IDictionary<StatementProperty, object>),
                 typeof(StatementInformationalsCompileTime),
                 classScope);
             method.Block
@@ -719,12 +719,13 @@ namespace com.espertech.esper.common.@internal.context.module
                     NewInstance(typeof(Dictionary<StatementProperty, object>)));
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
-                    Ref("Properties"),
+                    Ref("properties"),
                     "Put",
                     field.Invoke(entry.Key),
                     value.Invoke(entry.Value));
             }
 
+            method.Block.MethodReturn(Ref("properties"));
             return LocalMethod(method);
         }
 

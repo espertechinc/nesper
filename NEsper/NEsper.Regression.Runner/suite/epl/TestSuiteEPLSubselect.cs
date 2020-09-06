@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSubselectOrderOfEval.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectFilteredPerformance()
         {
             RegressionRunner.Run(session, EPLSubselectFilteredPerformance.Executions());
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSubselectIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectInKeywordPerformance()
         {
             RegressionRunner.Run(session, EPLSubselectInKeywordPerformance.Executions());

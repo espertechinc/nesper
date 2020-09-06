@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -47,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var sort = new BTreeDictionary<object, object>();
+						var sort = new OrderedListDictionary<object, ICollection<object>>();
 						var hasColl = false;
 
 						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
@@ -64,25 +66,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 							var comparable = (IComparable) inner.Evaluate(eventsLambda, isNewData, context);
 							var entry = sort.Get(comparable);
-
 							if (entry == null) {
-								sort.Put(comparable, next);
+								entry = new ArrayDeque<object>();
+								entry.Add(next);
+								sort.Put(comparable, entry);
 								continue;
 							}
 
-							if (entry is ICollection<object>) {
-								((ICollection<object>) entry).Add(next);
-								continue;
-							}
-
-							Deque<object> coll = new ArrayDeque<object>();
-							coll.Add(entry);
-							coll.Add(next);
-							sort.Put(comparable, coll);
+							entry.Add(next);
 							hasColl = true;
 						}
 
-						return EnumOrderByHelper.EnumOrderBySortEval(sort, hasColl, @descending);
+						return EnumOrderByHelper.EnumOrderBySortEval(sort, hasColl, descending);
 					},
 				};
 			}
@@ -90,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -105,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			block
-				.DeclareVar<SortedDictionary<object, object>>("sort", NewInstance(typeof(SortedDictionary<object, object>)))
+				.DeclareVar<IOrderedDictionary<object, ICollection<object>>>("sort", NewInstance(typeof(OrderedListDictionary<object, ICollection<object>>)))
 				.DeclareVar<bool>("hasColl", ConstantFalse());
 		}
 
@@ -115,12 +110,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			EnumOrderByHelper.SortingCode(block, innerBoxedType, InnerExpression, methodNode, scope, codegenClassScope);
+			EnumOrderByHelper.SortingCode<object>(block, innerBoxedType, InnerExpression, methodNode, scope, codegenClassScope);
 		}
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(StaticMethod(typeof(EnumOrderByHelper), "enumOrderBySortEval", Ref("sort"), Ref("hasColl"), Constant(descending)));
+			block.MethodReturn(FlexWrap(StaticMethod(typeof(EnumOrderByHelper), "EnumOrderBySortEval", Ref("sort"), Ref("hasColl"), Constant(descending))));
 		}
 	}
 } // end of namespace

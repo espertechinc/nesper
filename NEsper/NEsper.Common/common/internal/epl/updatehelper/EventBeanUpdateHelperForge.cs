@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -97,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 .DeclareVar<EventBean>("copy", ExprDotMethod(copyMethodField, "Copy", Ref("matchingEvent")))
                 .AssignArrayElement(REF_EPS, Constant(0), Ref("copy"))
                 .AssignArrayElement(REF_EPS, Constant(2), Ref("matchingEvent"))
-                .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))
+                .LocalMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))
                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("copy")))
                 .ReturnMethodOrBlock(Ref("copy"));
 
@@ -154,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                                         REF_EPS,
                                         Constant(UpdateItems.Length),
                                         ConstantFalse()))
-                                .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
+                                .LocalMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
                                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("matchingEvent")))));
 
             method.Block.MethodReturn(eventBeanUpdateHelper);
@@ -189,8 +190,8 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 types[i] = updateItems[i].Expression.EvaluationType;
             }
             
-            EventBeanUpdateItemForgeWExpressions[] forgeExpressions = new EventBeanUpdateItemForgeWExpressions[updateItems.Length];
-            for (int i = 0; i < updateItems.Length; i++) {
+            var forgeExpressions = new EventBeanUpdateItemForgeWExpressions[updateItems.Length];
+            for (var i = 0; i < updateItems.Length; i++) {
                 var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
                 forgeExpressions[i] = updateItems[i].ToExpression(targetType, exprMethod, exprSymbol, classScope);
             }
@@ -205,14 +206,14 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             for (var i = 0; i < updateItems.Length; i++) {
                 var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
                 var updateItem = updateItems[i];
-                CodegenExpression rhs = forgeExpressions[i].RhsExpression;
+                var rhs = forgeExpressions[i].RhsExpression;
                 if (updateItems[i].IsUseTriggeringEvent) {
                     rhs = ArrayAtIndex(Ref(NAME_EPS), Constant(1));
                 }
                 
                 method.Block.Apply(Instblock(classScope, "qInfraUpdateRHSExpr", Constant(i)));
                 
-                if (types[i] == null && updateItem.OptionalWriter != null && updateItem.OptionalArray == null) {
+                if (types[i] == null && updateItem.OptionalWriter != null) {
                     method.Block.Expression(
                         updateItem.OptionalWriter.WriteCodegen(
                             ConstantNull(),
@@ -223,7 +224,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     continue;
                 }
 
-                if (types[i] == typeof(void) || updateItem.OptionalWriter == null) {
+                if (types[i] == typeof(void) || (updateItem.OptionalWriter == null && updateItem.OptionalArray == null)) {
                     method.Block
                         .Expression(rhs)
                         .Apply(Instblock(classScope, "aInfraUpdateRHSExpr", ConstantNull()));
@@ -237,21 +238,18 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 if (updateItem.OptionalWidener != null) {
                     assigned = updateItem.OptionalWidener.WidenCodegen(@ref, method, classScope);
                 }
-                else {
-                    // Unbox the reference if applicable
-                    assigned = Unbox(assigned, types[i]);
-                }
 
                 if (updateItem.OptionalArray != null) {
                     // handle array value with array index expression
-                    CodegenExpressionRef index = Ref("i" + i);
-                    CodegenExpressionRef array = Ref("a" + i);
-                    EventBeanUpdateItemArray arraySet = updateItem.OptionalArray;
+                    var index = Ref("i" + i);
+                    var array = Ref("a" + i);
+                    var arraySet = updateItem.OptionalArray;
                     CodegenBlock arrayBlock;
 
                     var elementType = arraySet.ArrayType.GetElementType();
-                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (types[i] == null || !types[i].IsPrimitive);
+                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (types[i] == null || types[i].CanBeNull());
                     if (arrayOfPrimitiveNullRHS) {
+                        assigned = Unbox(assigned, types[i]);
                         arrayBlock = method.Block
                             .IfNull(@ref)
                             .StaticMethod(typeof(EventBeanUpdateHelperForge), "LogWarnWhenNullAndNotNullable", Constant(updateItem.OptionalPropertyName))
@@ -267,6 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         .DeclareVar(arraySet.ArrayType, array.Ref, forgeExpressions[i].OptionalArrayExpressions.ArrayGet)
                         .IfRefNotNull(array.Ref)
                         .IfCondition(Relational(index, CodegenExpressionRelational.CodegenRelational.LT, ArrayLength(array)))
+                        .CommentFullLine("MakeUpdateInternal//AssignArrayElement")
                         .AssignArrayElement(array, Cast<int>(index), assigned)
                         .IfElse()
                         .BlockThrow(
@@ -295,7 +294,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                             .IfElse()
                             .Expression(
                                 updateItem.OptionalWriter.WriteCodegen(
-                                    assigned,
+                                    Unbox(assigned, types[i]),
                                     Ref("und"),
                                     Ref("target"),
                                     method,

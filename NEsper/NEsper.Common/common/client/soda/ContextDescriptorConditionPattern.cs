@@ -59,10 +59,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write("pattern [");
-            if (Pattern != null)
-            {
-                Pattern.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
-            }
+            Pattern?.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
 
             writer.Write("]");
             if (IsInclusive)

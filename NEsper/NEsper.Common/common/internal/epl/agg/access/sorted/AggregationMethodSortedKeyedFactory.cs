@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			if (method == AggregationMethodSortedEnum.CEILINGKEY) {
 				return new AggregationMethodSortedKeyedEval(
 					keyEval,
-					(map, key) => map.GreaterThanOrEqualTo(key).Value.Key,
+					(map, key) => map.GreaterThanOrEqualTo(key)?.Key,
 					(map, key) => null,
 					(map, key) => null
 				);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			if (method == AggregationMethodSortedEnum.FLOORKEY) {
 				return new AggregationMethodSortedKeyedEval(
 					keyEval,
-					(map, key) => map.LessThanOrEqualTo(key).Value.Key,
+					(map, key) => map.LessThanOrEqualTo(key)?.Key,
 					(map, key) => null,
 					(map, key) => null
 				);
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			if (method == AggregationMethodSortedEnum.LOWERKEY) {
 				return new AggregationMethodSortedKeyedEval(
 					keyEval,
-					(map, key) => map.LessThan(key).Value.Key,
+					(map, key) => map.LessThan(key)?.Key,
 					(map, key) => null,
 					(map, key) => null
 				);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			if (method == AggregationMethodSortedEnum.HIGHERKEY) {
 				return new AggregationMethodSortedKeyedEval(
 					keyEval,
-					(map, key) => map.GreaterThan(key).Value.Key,
+					(map, key) => map.GreaterThan(key)?.Key,
 					(map, key) => null,
 					(map, key) => null
 				);
@@ -167,88 +167,78 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
 		internal static object FirstUnd(KeyValuePair<object, object>? entry)
 		{
-			if (entry == null)
-				throw new ArgumentException(nameof(entry));
-
-			var @event = AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value);
-			return @event.Underlying;
+			return entry != null
+				? AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value).Underlying
+				: null;
 		}
 
 		internal static object FirstUnd(object value)
 		{
-			if (value != null) {
-				var @event = AggregatorAccessSortedImpl.CheckedPayloadMayDeque(value);
-				return @event.Underlying;
-			}
-
-			return null;
+			return value != null 
+				? AggregatorAccessSortedImpl.CheckedPayloadMayDeque(value).Underlying 
+				: null;
 		}
 
 		internal static object EventsArrayUnd(
 			KeyValuePair<object, object>? entry,
 			Type underlyingClass)
 		{
-			if (entry == null)
-				throw new ArgumentException(nameof(entry));
-
-			return AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(
-				entry.Value.Value, underlyingClass);
+			return entry != null
+				? AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(
+					entry.Value.Value,
+					underlyingClass)
+				: null;
 		}
 
 		internal static object EventsArrayUnd(
 			object value,
 			Type underlyingClass)
 		{
-			return AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(value, underlyingClass);
+			return value != null
+				? AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(value, underlyingClass)
+				: null;
 		}
 
 		internal static EventBean FirstBean(KeyValuePair<object, object>? entry)
 		{
-			if (entry == null)
-				throw new ArgumentException(nameof(entry));
-
-			return AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value);
+			return entry != null
+				? AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value)
+				: null;
 		}
 
 		internal static EventBean FirstBean(object value)
 		{
-			if (value == null) {
-				return null;
-			}
-
-			return AggregatorAccessSortedImpl.CheckedPayloadMayDeque(value);
+			return value != null
+				? AggregatorAccessSortedImpl.CheckedPayloadMayDeque(value)
+				: null;
 		}
 
 		internal static ICollection<EventBean> FirstColl(KeyValuePair<object, object>? entry)
 		{
-			if (entry == null)
-				throw new ArgumentException(nameof(entry));
-			return Collections.SingletonList(AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value));
+			return entry != null
+				? Collections.SingletonList(AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value))
+				: null;
 		}
 
 		internal static ICollection<EventBean> FirstColl(object value)
 		{
-			if (value == null) {
-				return null;
-			}
-
-			return Collections.SingletonList(AggregatorAccessSortedImpl.CheckedPayloadMayDeque(value));
+			return value != null
+				? Collections.SingletonList(AggregatorAccessSortedImpl.CheckedPayloadMayDeque(value))
+				: null;
 		}
 
 		internal static ICollection<EventBean> EventsColl(KeyValuePair<object, object>? entry)
 		{
-			if (entry == null)
-				throw new ArgumentException(nameof(entry));
-			return AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(entry.Value.Value);
+			return entry != null
+				? AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(entry.Value.Value) 
+				: null;
 		}
 
 		internal static ICollection<EventBean> EventsColl(object value)
 		{
-			if (value == null) {
-				return null;
-			}
-
-			return AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(value);
+			return value != null
+				? AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(value) 
+				: null;
 		}
 	}
 } // end of namespace

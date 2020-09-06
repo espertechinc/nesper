@@ -38,14 +38,39 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ExprCoreTypeOfFragment());
-			execs.Add(new ExprCoreTypeOfNamedUnnamedPONO());
-			execs.Add(new ExprCoreTypeOfInvalid());
-			execs.Add(new ExprCoreTypeOfDynamicProps());
-			execs.Add(new ExprCoreTypeOfVariantStream());
+WithFragment(execs);
+WithNamedUnnamedPONO(execs);
+WithInvalid(execs);
+WithDynamicProps(execs);
+WithVariantStream(execs);
 			return execs;
 		}
-
+public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreTypeOfVariantStream());
+    return execs;
+}public static IList<RegressionExecution> WithDynamicProps(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreTypeOfDynamicProps());
+    return execs;
+}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreTypeOfInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithNamedUnnamedPONO(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreTypeOfNamedUnnamedPONO());
+    return execs;
+}public static IList<RegressionExecution> WithFragment(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreTypeOfFragment());
+    return execs;
+}
 		private class ExprCoreTypeOfInvalid : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
@@ -69,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var builder = new SupportEvalBuilder("MyDynoPropSchema").WithPath(path)
 					.WithExpressions(fields, "typeof(prop?)", "typeof(key)");
 
-				builder.WithAssertion(MakeSchemaEvent(1, "E1")).Expect(fields, "Integer", "String");
+				builder.WithAssertion(MakeSchemaEvent(1, "E1")).Expect(fields, "Int32", "String");
 
 				builder.WithAssertion(MakeSchemaEvent("test", "E2")).Expect(fields, "String", "String");
 
@@ -133,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedWKey>() +
 				" create schema EventTwo as (key string);\n" +
 				" create schema S0 as " +
-				typeof(SupportBean_S0).Name +
+				typeof(SupportBean_S0).FullName +
 				";\n" +
 				" create variant schema VarSchema as *;\n";
 			var path = new RegressionPath();
@@ -307,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.SendEventAvro(@event, "MySchema");
 			}
 			else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
-				var theEvent = new JObject("insidearr", new JArray(new JObject()));
+				var theEvent = new JObject(new JProperty("insidearr", new JArray(new JObject())));
 				env.SendEventJson(theEvent.ToString(), "MySchema");
 			}
 			else {

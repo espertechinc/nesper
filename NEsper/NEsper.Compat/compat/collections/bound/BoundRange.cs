@@ -50,7 +50,7 @@ namespace com.espertech.esper.compat.collections.bound
                 _upper.MergeUpper(otherRange.Upper, _comparer),
                 _comparer);
         }
-        
+
         /// <summary>
         /// Returns true if the value is within the lower and upper bound.
         /// </summary>
@@ -58,31 +58,21 @@ namespace com.espertech.esper.compat.collections.bound
         /// <returns></returns>
         public bool IsWithin(TK value)
         {
-            return IsGreaterThan(_lower, value) 
-                   && IsLessThan(_upper, value);
+            return IsGreaterThan(_lower, value) && IsLessThan(_upper, value);
         }
-        
+
         private bool IsLessThan(
             Bound<TK> bound,
             TK value)
         {
-            if (bound == null)
-                return true;
-            return bound.IsInclusive 
-                ? _comparer.Compare(value, bound.Value) <= 0
-                : _comparer.Compare(value, bound.Value) < 0;
+            return BoundExtensions.IsLessThan(bound, value, _comparer);
         }
 
         private bool IsGreaterThan(
             Bound<TK> bound,
             TK value)
         {
-            if (bound == null)
-                return true;
-            return bound.IsInclusive 
-                ? _comparer.Compare(value, bound.Value) >= 0
-                : _comparer.Compare(value, bound.Value) > 0;
+            return BoundExtensions.IsGreaterThan(bound, value, _comparer);
         }
-
     }
 }

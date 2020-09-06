@@ -632,7 +632,7 @@ namespace com.espertech.esper.common.@internal.util
             if (array == null) {
                 return null;
             }
-
+            
             if (array.Length <= index) {
                 return null;
             }
@@ -663,15 +663,15 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="map">the map / dictionary to be checked</param>
         /// <param name="key">the key to be tested</param>
         /// <returns>the value associated with the key or null</returns>
-        public static object MapValueForKey(
-            IDictionary<string, object> map,
+        public static T MapValueForKey<T>(
+            IDictionary<string, T> map,
             string key)
         {
             if ((map != null) && map.TryGetValue(key, out var value)) {
                 return value;
             }
 
-            return null;
+            return default;
         }
 
         /// <summary>
@@ -680,15 +680,11 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="map">the map / dictionary to be checked</param>
         /// <param name="key">the key to be tested</param>
         /// <returns>true if the key s contained in the map.</returns>
-        public static bool MapExistsForKey(
-            IDictionary<string, object> map,
+        public static bool MapExistsForKey<T>(
+            IDictionary<string, T> map,
             string key)
         {
-            if (map == null) {
-                return false;
-            }
-
-            return map.ContainsKey(key);
+            return map != null && map.ContainsKey(key);
         }
 
         public static ICollection<T> ArrayToCollectionAllowNull<T>(object array)
@@ -796,11 +792,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>array or null</returns>
         public static EventBean[] ToArrayMayNull(ICollection<EventBean> collection)
         {
-            if (collection != null) {
-                return collection.ToArray();
-            }
-
-            return null;
+            return collection?.ToArray();
         }
 
         /// <summary>
@@ -1154,7 +1146,7 @@ namespace com.espertech.esper.common.@internal.util
             object key)
         {
             if (candidate == null) {
-                return null;
+                return false;
             }
             else if (candidate is IDictionary<object, object> map) {
                 return map.ContainsKey(key);

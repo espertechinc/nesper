@@ -30,13 +30,48 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static ICollection<RegressionExecution> Executions()
 		{
-			IList<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprCoreInstanceofSimple());
-			executions.Add(new ExprCoreInstanceofStringAndNullOM());
-			executions.Add(new ExprCoreInstanceofStringAndNullCompile());
-			executions.Add(new ExprCoreDynamicPropertyJavaTypes());
-			executions.Add(new ExprCoreDynamicSuperTypeAndInterface());
-			return executions;
+			IList<RegressionExecution> execs = new List<RegressionExecution>();
+			WithInstanceofSimple(execs);
+			WithInstanceofStringAndNullOM(execs);
+			WithInstanceofStringAndNullCompile(execs);
+			WithDynamicPropertyNativeTypes(execs);
+			WithDynamicSuperTypeAndInterface(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithDynamicSuperTypeAndInterface(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreDynamicSuperTypeAndInterface());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithDynamicPropertyNativeTypes(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreDynamicPropertyNativeTypes());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInstanceofStringAndNullCompile(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInstanceofStringAndNullCompile());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInstanceofStringAndNullOM(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInstanceofStringAndNullOM());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInstanceofSimple(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInstanceofSimple());
+			return execs;
 		}
 
 		private class ExprCoreInstanceofSimple : RegressionExecution
@@ -78,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var stmtText = "select " + 
+				var stmtText = "select " +
 				               "instanceof(TheString,string) as t0, " +
 				               "instanceof(TheString,float,string,int) as t1 " +
 				               "from SupportBean";
@@ -131,25 +166,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			}
 		}
 
-		private class ExprCoreDynamicPropertyJavaTypes : RegressionExecution
+		private class ExprCoreDynamicPropertyNativeTypes : RegressionExecution
 		{
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select instanceof(item?, string) as t0, " +
-				          " instanceof(item?, int) as t1, " +
-				          " instanceof(item?, System.Single) as t2, " +
-				          " instanceof(item?, System.Single, char, byte) as t3, " +
-				          " instanceof(item?, System.Int32) as t4, " +
-				          " instanceof(item?, long) as t5, " +
-				          " instanceof(item?, long, long, System.Object) as t6, " +
-				          " instanceof(item?, long, float) as t7 " +
+				var epl = "@Name('s0') select " +
+				          " instanceof(Item?, string) as t0, " +
+				          " instanceof(Item?, int) as t1, " +
+				          " instanceof(Item?, System.Single) as t2, " +
+				          " instanceof(Item?, System.Single, char, byte) as t3, " +
+				          " instanceof(Item?, System.Int32) as t4, " +
+				          " instanceof(Item?, long) as t5, " +
+				          " instanceof(Item?, long, long, System.Object) as t6, " +
+				          " instanceof(Item?, long, float) as t7 " +
 				          " from SupportBeanDynRoot";
 
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBeanDynRoot("abc"));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {true, false, false, false, false, false, false, false});
+				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {true, false, false, false, false, false, true, false});
 
 				env.SendEventBean(new SupportBeanDynRoot(100f));
 				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, false, true, true, false, false, true, true});
@@ -172,14 +208,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@Name('s0') select" +
-				          " instanceof(item?, " + typeof(SupportMarkerInterface).Name + ") as t0, " +
-				          " instanceof(item?, " + typeof(ISupportA).Name + ") as t1, " +
-				          " instanceof(item?, " + typeof(ISupportBaseAB).Name + ") as t2, " +
-				          " instanceof(item?, " + typeof(ISupportBaseABImpl).Name + ") as t3, " +
-				          " instanceof(item?, " + typeof(ISupportA).Name + ", " + typeof(ISupportB).Name +") as t4, " +
-				          " instanceof(item?, " + typeof(ISupportBaseAB).Name + ", " + typeof(ISupportB).Name + ") as t5, " +
-				          " instanceof(item?, " + typeof(ISupportAImplSuperG).Name + ", " + typeof(ISupportB).Name + ") as t6, " +
-				          " instanceof(item?, " + typeof(ISupportAImplSuperGImplPlus).Name + ", " + typeof(SupportBeanAtoFBase).Name + ") as t7 " +
+				          " instanceof(Item?, " +
+				          typeof(SupportMarkerInterface).FullName +
+				          ") as t0, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportA).FullName +
+				          ") as t1, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportBaseAB).FullName +
+				          ") as t2, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportBaseABImpl).FullName +
+				          ") as t3, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportA).FullName +
+				          ", " +
+				          typeof(ISupportB).FullName +
+				          ") as t4, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportBaseAB).FullName +
+				          ", " +
+				          typeof(ISupportB).FullName +
+				          ") as t5, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportAImplSuperG).FullName +
+				          ", " +
+				          typeof(ISupportB).FullName +
+				          ") as t6, " +
+				          " instanceof(Item?, " +
+				          typeof(ISupportAImplSuperGImplPlus).FullName +
+				          ", " +
+				          typeof(SupportBeanAtoFBase).FullName +
+				          ") as t7 " +
 				          " from SupportBeanDynRoot";
 				env.CompileDeploy(epl).AddListener("s0");
 

@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -71,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -85,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>), ExprDotName(REF_ENUMCOLL, "Count")));
+			block.DeclareVar<ArrayDeque<object>>("result", NewInstance<ArrayDeque<object>>(ExprDotName(REF_ENUMCOLL, "Count")));
 		}
 
 		public override void ForEachBlock(
@@ -101,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(Ref("result"));
+			block.MethodReturn(FlexWrap(Ref("result")));
 		}
 	}
 } // end of namespace

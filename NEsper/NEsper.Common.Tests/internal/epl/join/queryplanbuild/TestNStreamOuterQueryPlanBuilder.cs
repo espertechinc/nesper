@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return result;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGraphOuterJoins()
         {
             var descList = new OuterJoinDesc[2];
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRecursiveBuild()
         {
             var streamNum = 2;
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             );
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestVerifyJoinedPerStream()
         {
             // stream relationships not filled

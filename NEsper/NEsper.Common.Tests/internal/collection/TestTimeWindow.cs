@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAdd()
         {
             Assert.IsTrue(window.OldestTimestamp == null);
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(window.OldestTimestamp == null);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddRemove()
         {
             Assert.IsTrue(windowRemovable.OldestTimestamp == null);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.AreEqual(0, windowRemovable.ReverseIndex.Count);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTimeWindowPerformance()
         {
             log.Info(".testTimeWindowPerformance Starting");

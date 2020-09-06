@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestRangeParameter : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsWildcard()
         {
             RangeParameter rangeParameter = new RangeParameter(10, 20);
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsTrue(rangeParameter.IsWildcard(11, 19));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetValues()
         {
             RangeParameter rangeParameter = new RangeParameter(0, 5);
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.type
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { }, values);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContainsPoint()
         {
             RangeParameter rangeParameter = new RangeParameter(10, 20);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsFalse(rangeParameter.ContainsPoint(21));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFormat()
         {
             RangeParameter rangeParameter = new RangeParameter(10, 20);

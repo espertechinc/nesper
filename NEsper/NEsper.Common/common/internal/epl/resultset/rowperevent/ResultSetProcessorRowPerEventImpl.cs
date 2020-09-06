@@ -144,11 +144,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     MEMBER_AGGREGATIONSVC,
                     REF_VIEWABLE)
                 .DeclareVar<IEnumerator<EventBean>>(
-                    "iterator",
+                    "enumerator",
                     LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method), REF_VIEWABLE))
                 .DeclareVar<ArrayDeque<EventBean>>(
                     "deque",
-                    StaticMethod(typeof(ResultSetProcessorUtil), METHOD_ITERATORTODEQUE, Ref("iterator")))
+                    StaticMethod(typeof(ResultSetProcessorUtil), METHOD_ITERATORTODEQUE, Ref("enumerator")))
                 .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
@@ -480,7 +480,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         // generate old events using having then select
                         if (!forge.IsSorting) {
                             var select = PopulateSelectJoinEventsHavingCodegen(classScope, instance);
-                            forEach.InstanceMethod(
+                            forEach.LocalMethod(
                                 select,
                                 MEMBER_SELECTEXPRPROCESSOR,
                                 REF_OLDDATA,
@@ -491,7 +491,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         }
                         else {
                             var select = PopulateSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
-                            forEach.InstanceMethod(
+                            forEach.LocalMethod(
                                 select,
                                 MEMBER_SELECTEXPRPROCESSOR,
                                 REF_ORDERBYPROCESSOR,
@@ -535,7 +535,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 else {
                     if (!forge.IsSorting) {
                         var select = PopulateSelectJoinEventsHavingCodegen(classScope, instance);
-                        forEach.InstanceMethod(
+                        forEach.LocalMethod(
                             select,
                             MEMBER_SELECTEXPRPROCESSOR,
                             REF_NEWDATA,
@@ -546,7 +546,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     }
                     else {
                         var select = PopulateSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
-                        forEach.InstanceMethod(
+                        forEach.LocalMethod(
                             select,
                             MEMBER_SELECTEXPRPROCESSOR,
                             REF_ORDERBYPROCESSOR,
@@ -750,7 +750,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         // generate old events using having then select
                         if (!forge.IsSorting) {
                             var select = PopulateSelectEventsHavingCodegen(classScope, instance);
-                            forEach.InstanceMethod(
+                            forEach.LocalMethod(
                                 select,
                                 MEMBER_SELECTEXPRPROCESSOR,
                                 REF_OLDDATA,
@@ -761,7 +761,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         }
                         else {
                             var select = PopulateSelectEventsHavingWithOrderByCodegen(classScope, instance);
-                            forEach.InstanceMethod(
+                            forEach.LocalMethod(
                                 select,
                                 MEMBER_SELECTEXPRPROCESSOR,
                                 REF_ORDERBYPROCESSOR,
@@ -806,7 +806,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 else {
                     if (!forge.IsSorting) {
                         var select = PopulateSelectEventsHavingCodegen(classScope, instance);
-                        forEach.InstanceMethod(
+                        forEach.LocalMethod(
                             select,
                             MEMBER_SELECTEXPRPROCESSOR,
                             REF_NEWDATA,
@@ -817,7 +817,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     }
                     else {
                         var select = PopulateSelectEventsHavingWithOrderByCodegen(classScope, instance);
-                        forEach.InstanceMethod(
+                        forEach.LocalMethod(
                             select,
                             MEMBER_SELECTEXPRPROCESSOR,
                             REF_ORDERBYPROCESSOR,

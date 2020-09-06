@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -33,15 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 using (var xmlStreamTwo = resourceManager.GetResourceAsStream("regression/mediaOrderTwo.xml")) {
                     var eventDocTwo = SupportXML.GetDocument(xmlStreamTwo);
-
-                    IList<RegressionExecution> execs = new List<RegressionExecution>();
+                    
+                    var execs = new List<RegressionExecution>();
                     execs.Add(new EPLContainedExample(eventDocOne));
                     execs.Add(new EPLContainedSolutionPattern());
                     execs.Add(new EPLContainedJoinSelfJoin(eventDocOne, eventDocTwo));
                     execs.Add(new EPLContainedJoinSelfLeftOuterJoin(eventDocOne, eventDocTwo));
                     execs.Add(new EPLContainedJoinSelfFullOuterJoin(eventDocOne, eventDocTwo));
                     execs.Add(new EPLContainedSolutionPatternFinancial());
-
                     return execs;
                 }
             }
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var pairs = symbolCsv.SplitCsv();
                 var companies = new IDictionary<string, object>[pairs.Length];
                 for (var i = 0; i < pairs.Length; i++) {
-                    var nameAndValue = pairs[i].Split(',');
+                    var nameAndValue = pairs[i].Split('=');
                     var symbol = nameAndValue[0];
                     var value = double.Parse(nameAndValue[1]);
                     companies[i] = CollectionUtil.BuildMap("symbol", symbol, "value", value);

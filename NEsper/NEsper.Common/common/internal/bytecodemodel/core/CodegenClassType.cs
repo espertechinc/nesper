@@ -18,8 +18,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         STATEMENTFIELDS,
         JSONNESTEDCLASSDELEGATEANDFACTORY,
         JSONEVENT,
-        JSONDELEGATE,
-        JSONDELEGATEFACTORY,
+        JSONDESERIALIZER,
+        JSONSERIALIZER,
         EVENTSERDE,
         RESULTSETPROCESSORFACTORYPROVIDER,
         OUTPUTPROCESSVIEWFACTORYPROVIDER,
@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                     case CodegenClassType.STATEMENTFIELDS: return 30;
                     case CodegenClassType.JSONNESTEDCLASSDELEGATEANDFACTORY: return 40;
                     case CodegenClassType.JSONEVENT: return 42;
-                    case CodegenClassType.JSONDELEGATE: return 43;
-                    case CodegenClassType.JSONDELEGATEFACTORY: return 44;
+                    case CodegenClassType.JSONDESERIALIZER: return 43;
+                    case CodegenClassType.JSONSERIALIZER: return 44;
                     case CodegenClassType.EVENTSERDE: return 50;
                     case CodegenClassType.RESULTSETPROCESSORFACTORYPROVIDER: return 60;
                     case CodegenClassType.OUTPUTPROCESSVIEWFACTORYPROVIDER: return 70;

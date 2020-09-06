@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             AggregationClassNames classNames)
         {
             if (enter) {
-                method.Block.InstanceMethod(HandleRemovedKeysCodegen(method, classScope));
+                method.Block.LocalMethod(HandleRemovedKeysCodegen(method, classScope));
             }
 
             method.Block.DeclareVar<object[]>(

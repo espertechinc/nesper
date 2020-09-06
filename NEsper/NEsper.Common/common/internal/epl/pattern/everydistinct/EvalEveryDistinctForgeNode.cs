@@ -38,8 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// <summary>
         ///     Ctor.
         /// </summary>
+        /// <param name="attachPatternText">whether to attach EPL subexpression text</param>
         /// <param name="expressions">distinct-value expressions</param>
-        public EvalEveryDistinctForgeNode(IList<ExprNode> expressions)
+        public EvalEveryDistinctForgeNode(bool attachPatternText, IList<ExprNode> expressions) : base(attachPatternText)
         {
             Expressions = expressions;
         }

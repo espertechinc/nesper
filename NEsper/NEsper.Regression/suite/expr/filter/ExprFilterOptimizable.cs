@@ -76,21 +76,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			{
 				var milestone = new AtomicLong();
 
-				TryInKeyword(env, "ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
-				TryInKeyword(env, "mapOfIntKey", new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")), milestone);
-				TryInKeyword(env, "collOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
+				TryInKeyword(env, "Ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
+				TryInKeyword(env, "MapOfIntKey", new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")), milestone);
+				TryInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
-				TryNotInKeyword(env, "ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
-				TryNotInKeyword(env, "mapOfIntKey", new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")), milestone);
-				TryNotInKeyword(env, "collOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
+				TryNotInKeyword(env, "Ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
+				TryNotInKeyword(env, "MapOfIntKey", new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")), milestone);
+				TryNotInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
 				TryInArrayContextProvided(env, milestone);
 
 				if (HasFilterIndexPlanBasicOrMore(env)) {
 					TryInvalidCompile(
 						env,
-						"select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.longs))]",
-						"Implicit conversion from datatype 'long' to 'Integer' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
+						"select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.Longs))]",
+						"Implicit conversion from datatype 'System.Int64' to 'System.Nullable<System.Int32>' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
 				}
 			}
 		}
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 
-				var epl = "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(MyCustomDecimalEquals(a.DecimalPrimitive, b.DecimalPrimitive))]";
+				var epl = "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomDecimalEquals(a.DecimalPrimitive, b.DecimalPrimitive))]";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var beanOne = new SupportBean("E1", 0);
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 					TryInvalidCompile(
 						env,
 						"select * from SupportBean(IntPrimitive=?:p0:long)",
-						"Implicit conversion from datatype 'Long' to 'Integer' for property 'IntPrimitive' is not allowed");
+						"Implicit conversion from datatype 'System.Nullable<System.Int64>' to 'System.Nullable<System.Int32>' for property 'IntPrimitive' is not allowed");
 				}
 
 				RunAssertionRelOpWSubs(env, "select * from SupportBean(IntPrimitive>?:p0:int)");
@@ -570,8 +570,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			AtomicLong milestone)
 		{
 			var epl = "create context MyContext initiated by SupportInKeywordBean as mie terminated after 24 hours;\n" +
-			          "@Name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.ints);\n" +
-			          "@Name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.ints));\n";
+			          "@Name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.Ints);\n" +
+			          "@Name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.Ints));\n";
 			env.CompileDeploy(epl).AddListener("s1").AddListener("s2");
 
 			env.SendEventBean(new SupportInKeywordBean(new[] {1, 2}));
@@ -622,7 +622,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			{
 				env.Runtime.VariableService.SetVariableValue(null, "myCheckServiceProvider", new MyCheckServiceProvider());
 
-				env.CompileDeploy("@Name('s0') select * from SupportBean(myCheckServiceProvider.check())").AddListener("s0");
+				env.CompileDeploy("@Name('s0') select * from SupportBean(myCheckServiceProvider.Check())").AddListener("s0");
 				var latch = new CountDownLatch(1);
 
 				var executorService = Executors.NewSingleThreadExecutor();

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
         public void ScheduledTrigger()
         {
-            AgentInstanceContext agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
+            var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverScheduledEval();
             agentInstanceContext.AuditProvider.ScheduleFire(
                 agentInstanceContext,
@@ -76,10 +76,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             scheduleHandle = new EPStatementHandleCallbackSchedule(
                 observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
                 this);
-            AgentInstanceContext agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
-            SchedulingService schedulingService = agentInstanceContext.SchedulingService;
-            ImportServiceRuntime importService = agentInstanceContext.ImportServiceRuntime;
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
+            var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
+            var schedulingService = agentInstanceContext.SchedulingService;
+            var importService = agentInstanceContext.ImportServiceRuntime;
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
                 scheduleSpec,
                 schedulingService.Time,
                 importService.TimeZone,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         public void StopObserve()
         {
             if (isTimerActive) {
-                AgentInstanceContext agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
+                var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
                     agentInstanceContext,
                     scheduleHandle,

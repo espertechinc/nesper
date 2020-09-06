@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             eventBean = new MapEventBean(testValuesMap, eventType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(eventType, eventBean.EventType);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCreateUnderlying()
         {
             SupportBean beanOne = new SupportBean();

@@ -249,7 +249,7 @@ namespace com.espertech.esper.compat.collections.btree
             BTree<TK, KeyValuePair<TK, TV>>.Cursor cursor,
             out TK result)
         {
-            if (cursor.IsEnd) {
+            if (cursor.IsEnd || (cursor.Position == -1)) {
                 result = default;
                 return false;
             }

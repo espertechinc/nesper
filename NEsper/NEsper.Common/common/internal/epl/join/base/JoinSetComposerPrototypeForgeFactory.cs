@@ -143,9 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             var indexSpecs = queryPlan.IndexSpecs;
             for (var streamNum = 0; streamNum < queryPlan.ExecNodeSpecs.Length; streamNum++) {
                 var planNode = queryPlan.ExecNodeSpecs[streamNum];
-                if (planNode != null) {
-                    planNode.AddIndexes(usedIndexes);
-                }
+                planNode?.AddIndexes(usedIndexes);
             }
 
             foreach (var indexSpec in indexSpecs) {
@@ -172,9 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                 compileTimeServices.ImportServiceCompileTime);
             if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
                 QUERY_PLAN_LOG.Info("Query plan: " + queryPlan.ToQueryPlan());
-                if (hook != null) {
-                    hook.Join(queryPlan);
-                }
+                hook?.Join(queryPlan);
             }
 
             var selectsRemoveStream =
@@ -356,12 +352,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
                 QUERY_PLAN_LOG.Info("historical lookup strategy: " + indexStrategies.LookupForge.ToQueryPlan());
                 QUERY_PLAN_LOG.Info("historical index strategy: " + indexStrategies.IndexingForge.ToQueryPlan());
-                if (hook != null) {
-                    hook.Historical(
-                        new QueryPlanIndexDescHistorical(
-                            indexStrategies.LookupForge.GetType().GetSimpleName(),
-                            indexStrategies.IndexingForge.GetType().GetSimpleName()));
-                }
+                hook?.Historical(
+                    new QueryPlanIndexDescHistorical(
+                        indexStrategies.LookupForge.GetType().GetSimpleName(),
+                        indexStrategies.IndexingForge.GetType().GetSimpleName()));
             }
 
             JoinSetComposerPrototypeHistorical2StreamForge forge = new JoinSetComposerPrototypeHistorical2StreamForge(

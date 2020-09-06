@@ -74,22 +74,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			return _factory;
 		}
 
-		public override string AggregationFunctionName {
-			get { return _functionName; }
-		}
+		public override string AggregationFunctionName => _functionName;
 
-		public override bool IsFilterExpressionAsLastParameter {
-			get { return false; }
-		}
+		public override bool IsFilterExpressionAsLastParameter => false;
 
 		public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 		{
 			return false;
 		}
 
-		public Type ComponentTypeCollection {
-			get { return _factory.ComponentTypeCollection; }
-		}
+		public Type ComponentTypeCollection => _factory.ComponentTypeCollection;
 
 		public EventType GetEventTypeCollection(
 			StatementRawInfo statementRawInfo,
@@ -135,13 +129,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			CodegenClassScope codegenClassScope)
 		{
 			CodegenExpression future = GetAggFuture(codegenClassScope);
-			return ExprDotMethod(
-				future,
-				"GetCollectionOfEvents",
-				Constant(column),
-				exprSymbol.GetAddEPS(parent),
-				exprSymbol.GetAddIsNewData(parent),
-				exprSymbol.GetAddExprEvalCtx(parent));
+			return FlexWrap(
+				ExprDotMethod(
+					future,
+					"GetCollectionOfEvents",
+					Constant(column),
+					exprSymbol.GetAddEPS(parent),
+					exprSymbol.GetAddIsNewData(parent),
+					exprSymbol.GetAddExprEvalCtx(parent)));
 		}
 
 		public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -174,12 +169,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				exprSymbol.GetAddExprEvalCtx(parent));
 		}
 
-		public ExprEnumerationEval ExprEvaluatorEnumeration {
-			get { return this; }
-		}
+		public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
-		public AggregationForgeFactory AggregationForgeFactory {
-			get { return _factory; }
-		}
+		public AggregationForgeFactory AggregationForgeFactory => _factory;
 	}
 } // end of namespace

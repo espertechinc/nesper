@@ -16,6 +16,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
+using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -87,8 +88,10 @@ namespace com.espertech.esper.regressionlib.support.json
 			Assert.AreEqual(expectedPrettyJson, und.ToString(optionsIndent));
 
 			var stream = new MemoryStream();
-			var jsonWriter = new Utf8JsonWriter(stream, optionsMinimal);;
-			und.WriteTo(jsonWriter);
+			var writer = new Utf8JsonWriter(stream, optionsMinimal);
+			var context = new JsonSerializationContext(writer);
+			
+			und.WriteTo(context);
 
 			Assert.AreEqual(expectedMinimalJson, Encoding.UTF8.GetString(stream.ToArray()));
 		}

@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
@@ -56,9 +58,23 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 			IDictionary<string, object> @object)
 		{
 			var value = @object.Get(propertyName);
-			if (value is object[] array) {
+			if (value == null) {
+				return null;
+			}
+			if (value is Array array) {
 				if (index < array.Length) {
-					return array[index];
+					return array.GetValue(index);
+				}
+			}
+			else if (value is IList<object> list) {
+				if (list.Count > index) {
+					list[index] = value;
+				}
+			}
+			else if (value.GetType().IsGenericList()) {
+				list = MagicMarker.SingletonInstance.GetList(value);
+				if (list.Count > index) {
+					list[index] = value;
 				}
 			}
 
@@ -79,8 +95,18 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 			IDictionary<string, object> @object)
 		{
 			var value = @object.Get(propertyName);
-			if (value is object[] array) {
+			if (value == null) {
+				return false;
+			}
+			if (value is Array array) {
 				return index < array.Length;
+			}
+			else if (value is IList<object> list) {
+				return index < list.Count;
+			}
+			else if (value.GetType().IsGenericList()) {
+				list = MagicMarker.SingletonInstance.GetList(value);
+				return index < list.Count;
 			}
 
 			return false;
@@ -100,8 +126,20 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 			IDictionary<string, object> @object)
 		{
 			var value = @object.Get(propertyName);
+			if (value == null) {
+				return null;
+			}
+			
 			if (value is IDictionary<string, object> map) {
 				return map.Get(key);
+			}
+			
+			var valueType = value.GetType();
+			if (valueType.IsGenericStringDictionary()) {
+				var magicMap = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(value);
+				if (magicMap != null) {
+					return magicMap;
+				}
 			}
 
 			return null;
@@ -121,8 +159,20 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 			IDictionary<string, object> @object)
 		{
 			var value = @object.Get(propertyName);
+			if (value == null) {
+				return false;
+			}
+			
 			if (value is IDictionary<string, object> map) {
 				return map.ContainsKey(key);
+			}
+			
+			var valueType = value.GetType();
+			if (valueType.IsGenericStringDictionary()) {
+				var magicMap = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(value);
+				if (magicMap != null) {
+					return magicMap.ContainsKey(key);
+				}
 			}
 
 			return false;

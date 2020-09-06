@@ -38,8 +38,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 			{
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
-				             typeof(SupportJoinResultIsArray).FullName +
-				             ".getResultTwoField(e.id, e.IntOne) as s";
+				             typeof(SupportJoinResultIsArray).MaskTypeName() +
+				             ".GetResultTwoField(e.id, e.IntOne) as s";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SupportBean sb1 = SendManyArrayGetSB(env, "MA1", new int[] {1, 2});
@@ -72,8 +72,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 			{
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
-				             typeof(SupportJoinResultIsArray).FullName +
-				             ".getResultIntArray(e.IntOne) as s";
+				             typeof(SupportJoinResultIsArray).MaskTypeName() +
+				             ".GetResultIntArray(e.IntOne) as s";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendManyArray(env, "E1", new int[] {1, 2});
@@ -101,9 +101,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 			{
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
-				             typeof(SupportJoinResultIsArray).FullName +
-				             ".getArray() as s " +
-				             "where s.doubleArray = e.DoubleOne and s.IntArray = e.IntOne and s.value > e.value";
+				             typeof(SupportJoinResultIsArray).MaskTypeName() +
+				             ".GetArray() as s " +
+				             "where s.DoubleArray = e.DoubleOne and s.IntArray = e.IntOne and s.Value > e.Value";
 
 				RunAssertion(env, epl);
 
@@ -120,9 +120,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 			{
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
-				             typeof(SupportJoinResultIsArray).FullName +
+				             typeof(SupportJoinResultIsArray).MaskTypeName() +
 				             ".GetArray() as s " +
-				             "where s.doubleArray = e.DoubleOne and s.IntArray = e.IntOne";
+				             "where s.DoubleArray = e.DoubleOne and s.IntArray = e.IntOne";
 
 				RunAssertion(env, epl);
 
@@ -139,9 +139,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 			{
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
-				             typeof(SupportJoinResultIsArray).FullName +
-				             ".getArray() as s " +
-				             "where s.doubleArray = e.DoubleOne";
+				             typeof(SupportJoinResultIsArray).MaskTypeName() +
+				             ".GetArray() as s " +
+				             "where s.DoubleArray = e.DoubleOne";
 
 				RunAssertion(env, epl);
 

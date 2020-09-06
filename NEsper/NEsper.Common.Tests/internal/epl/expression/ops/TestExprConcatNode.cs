@@ -98,14 +98,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(concatNode.EqualsNode(concatNode, false));
             Assert.IsFalse(concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             concatNode.AddChildNode(new SupportExprNode("x"));
@@ -119,14 +119,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("xyz", concatNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestThreading()
         {
             RunAssertionThreading(ThreadingProfile.LARGE);
             RunAssertionThreading(ThreadingProfile.NORMAL);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             concatNode = new ExprConcatNode();
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("\"a\"||\"b\"||\"c\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(concatNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // Must have 2 or more String subnodes

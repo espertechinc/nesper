@@ -56,9 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         {
             writer.Write(Tag);
             writer.Write(Type.GetOptionalPostfix());
-            if (OptionalRepeat != null) {
-                OptionalRepeat.ToExpressionString(writer);
-            }
+            OptionalRepeat?.ToExpressionString(writer);
         }
 
         public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)

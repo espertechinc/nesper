@@ -38,14 +38,32 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public object Get(EventBean eventBean)
         {
-            var map = (IDictionary<object, object>) eventBean.Underlying;
-            return map.Get(propertyName);
+            if (eventBean.Underlying is IDictionary<object, object> objectMap) {
+                return objectMap.Get(propertyName);
+            }
+
+            if (eventBean.Underlying is IDictionary<string, object> stringMap) {
+                return stringMap.Get(propertyName);
+            }
+
+            return eventBean.Underlying
+                .AsObjectDictionary()
+                .Get(propertyName);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            var map = (IDictionary<object, object>) eventBean.Underlying;
-            return map.ContainsKey(propertyName);
+            if (eventBean.Underlying is IDictionary<object, object> objectMap) {
+                return objectMap.ContainsKey(propertyName);
+            }
+
+            if (eventBean.Underlying is IDictionary<string, object> stringMap) {
+                return stringMap.ContainsKey(propertyName);
+            }
+
+            return eventBean.Underlying
+                .AsObjectDictionary()
+                .ContainsKey(propertyName);
         }
 
         public object GetFragment(EventBean eventBean)

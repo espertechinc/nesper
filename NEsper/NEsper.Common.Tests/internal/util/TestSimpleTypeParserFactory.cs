@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSimpleTypeParserFactory : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetParser()
         {
             object[][] tests = new object[][]{

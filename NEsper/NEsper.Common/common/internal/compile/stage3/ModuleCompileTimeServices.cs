@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             PatternObjectResolutionService patternObjectResolutionService,
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
-            ScriptServiceCompileTime scriptServiceCompileTime,
+            ScriptCompiler scriptCompiler,
             SerdeEventTypeCompileTimeRegistry serdeEventTypeRegistry,
             SerdeCompileTimeResolver serdeResolver, 
             TableCompileTimeRegistry tableCompileTimeRegistry,
@@ -107,9 +107,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             NamedWindowCompileTimeRegistry = namedWindowCompileTimeRegistry;
             ParentClassLoader = parentClassLoader;
             PatternObjectResolutionService = patternObjectResolutionService;
-            ScriptServiceCompileTime = scriptServiceCompileTime;
             ScriptCompileTimeRegistry = scriptCompileTimeRegistry;
             ScriptCompileTimeResolver = scriptCompileTimeResolver;
+            ScriptCompiler = scriptCompiler;
             TableCompileTimeRegistry = tableCompileTimeRegistry;
             TableCompileTimeResolver = tableCompileTimeResolver;
             VariableCompileTimeRegistry = variableCompileTimeRegistry;
@@ -151,9 +151,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             NamedWindowCompileTimeRegistry = null;
             ParentClassLoader = null;
             PatternObjectResolutionService = null;
-            ScriptServiceCompileTime = null;
             ScriptCompileTimeRegistry = null;
             ScriptCompileTimeResolver = null;
+            ScriptCompiler = null;
             TableCompileTimeRegistry = null;
             TableCompileTimeResolver = null;
             VariableCompileTimeRegistry = null;
@@ -212,11 +212,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public PatternObjectResolutionService PatternObjectResolutionService { get; }
 
         public ParentClassLoader ParentClassLoader { get; }
-        public ScriptServiceCompileTime ScriptServiceCompileTime { get; }
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry { get; }
 
         public ScriptCompileTimeResolver ScriptCompileTimeResolver { get; }
+
+        public ScriptCompiler ScriptCompiler { get; }
 
         public TableCompileTimeRegistry TableCompileTimeRegistry { get; }
 

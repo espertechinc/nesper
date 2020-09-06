@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             serviceRequireStreamName = new StreamTypeServiceImpl(streamTypes, true, true);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResolveByStreamAndPropNameInOne()
         {
             TryResolveByStreamAndPropNameInOne(serviceRegular);
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             TryResolveByStreamAndPropNameInOne(serviceRequireStreamName);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResolveByPropertyName()
         {
             TryResolveByPropertyName(serviceRegular);
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResolveByStreamAndPropNameBoth()
         {
             TryResolveByStreamAndPropNameBoth(serviceRegular);

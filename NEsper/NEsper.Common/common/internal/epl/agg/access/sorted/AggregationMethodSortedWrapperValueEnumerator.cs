@@ -14,10 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationMethodSortedWrapperValueEnumerator
     {
-        public static IEnumerator<ICollection<EventBean>> For(IEnumerator<object> iterator)
+        public static IEnumerator<ICollection<EventBean>> For(IEnumerator<object> enumerator)
         {
-            while (iterator.MoveNext()) {
-                yield return AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(iterator.Current);
+            while (enumerator.MoveNext()) {
+                yield return AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(enumerator.Current);
             }
         }
     }

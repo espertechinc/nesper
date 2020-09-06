@@ -349,22 +349,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 ExprEnumerationForgeDesc desc = provider.GetEnumerationForge(
                     validationContext.StreamTypeService,
                     validationContext.ContextDescriptor);
-                if (desc == null) {
-                    return false;
-                }
 
-                EventType eventType = desc.Forge.GetEventTypeSingle(validationContext.StatementRawInfo, validationContext.StatementCompileTimeService);
+                EventType eventType = desc?.Forge.GetEventTypeSingle(validationContext.StatementRawInfo, validationContext.StatementCompileTimeService);
                 return eventType != null;
             }
 
             ExprForge forge = parameter.Forge;
-            if (forge is ExprEnumerationForge) {
-                ExprEnumerationForge enumerationForge = (ExprEnumerationForge) forge;
-                return enumerationForge.GetEventTypeSingle(
-                    validationContext.StatementRawInfo, validationContext.StatementCompileTimeService) != null;
-            }
-
-            return false;
+            ExprEnumerationForge enumerationForge = forge as ExprEnumerationForge;
+            return enumerationForge?.GetEventTypeSingle(
+                validationContext.StatementRawInfo, validationContext.StatementCompileTimeService) != null;
         }
 
         public override bool EqualsNode(

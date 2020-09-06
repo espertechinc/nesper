@@ -43,12 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ClassOrPropertyName = classOrPropertyName;
             StaticMethod = staticMethod;
             ChildForges = childForges;
-            if (chainForges.Length > 0) {
-                IsConstantParameters = false;
-            }
-            else {
-                IsConstantParameters = isConstantParameters;
-            }
+            IsConstantParameters = chainForges.Length <= 0 && isConstantParameters;
 
             ChainForges = chainForges;
             ResultWrapLambda = resultWrapLambda;
@@ -84,7 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public string OptionalStatementName { get; }
 
-        public override ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+        public override ExprEvaluator ExprEvaluator {
+            get {
+                var childEvals = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildForges);
+                return new ExprDotNodeForgeStaticMethodEval(this, childEvals, ExprDotNodeUtility.GetEvaluators(ChainForges));
+            }
+        }
 
         public override bool IsLocalInlinedClass { get; }
 

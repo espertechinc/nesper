@@ -30,14 +30,41 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
 	public class EPLInsertIntoPopulateUndStreamSelect
 	{
-
 		public static IList<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLInsertIntoNamedWindowInheritsMap());
-			execs.Add(new EPLInsertIntoNamedWindowRep());
-			execs.Add(new EPLInsertIntoStreamInsertWWidenOA());
+			WithNamedWindowInheritsMap(execs);
+			WithNamedWindowRep(execs);
+			WithStreamInsertWWidenOA(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new EPLInsertIntoInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithStreamInsertWWidenOA(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLInsertIntoStreamInsertWWidenOA());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNamedWindowRep(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLInsertIntoNamedWindowRep());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNamedWindowInheritsMap(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLInsertIntoNamedWindowInheritsMap());
 			return execs;
 		}
 
@@ -220,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			// mismatch in type
 			env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE1>() + "create schema E1 as (myint long)", path);
 			string message = !rep.IsAvroEvent()
-				? "Type by name 'E1' in property 'myint' expected System.Int32 but receives System.Int64"
+				? "Type by name 'E1' in property 'myint' expected System.Nullable<System.Int32> but receives System.Nullable<System.Int64>"
 				: "Type by name 'E1' in property 'myint' expected schema '\"long\"' but received schema '\"int\"'";
 			SupportMessageAssertUtil.TryInvalidCompile(env, path, "insert into E1 select mysrc.* from Src as mysrc", message);
 

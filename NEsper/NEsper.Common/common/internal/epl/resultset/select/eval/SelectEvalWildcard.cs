@@ -27,7 +27,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             SelectExprForgeContext selectExprForgeContext,
             EventType resultEventType)
             : base(selectExprForgeContext, resultEventType)
-
         {
         }
 

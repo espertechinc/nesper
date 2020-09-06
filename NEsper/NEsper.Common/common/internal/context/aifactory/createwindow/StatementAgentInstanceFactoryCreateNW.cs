@@ -93,9 +93,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
         public void StatementDestroy(StatementContext statementContext)
         {
-            if (_viewFactories[0] is VirtualDWViewFactory) {
-                ((VirtualDWViewFactory) _viewFactories[0]).Destroy();
-            }
+            (_viewFactories[0] as VirtualDWViewFactory)?.Destroy();
 
             statementContext.NamedWindowManagementService.DestroyNamedWindow(
                 statementContext.DeploymentId,

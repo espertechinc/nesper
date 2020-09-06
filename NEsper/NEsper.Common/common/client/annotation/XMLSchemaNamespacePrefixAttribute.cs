@@ -19,12 +19,12 @@ namespace com.espertech.esper.common.client.annotation
 	    ///     Prefix
 	    /// </summary>
 	    /// <returns>prefix</returns>
-	    public string Prefix { get; set; }
+	    public virtual string Prefix { get; set; }
 
 	    /// <summary>
 	    ///     Namespace
 	    /// </summary>
 	    /// <returns>namespace</returns>
-	    public string Namespace { get; set; }
+	    public virtual string Namespace { get; set; }
     }
 } // end of namespace

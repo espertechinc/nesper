@@ -59,9 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 priorEvents[j] = newEvents.Get(priorIndex);
             }
 
-            if (priorEventMap != null) {
-                priorEventMap.Put(newEvent, priorEvents);
-            }
+            priorEventMap?.Put(newEvent, priorEvents);
 
             lastNew = priorEvents;
             getter.RandomAccess = this;
@@ -87,11 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <returns>event</returns>
         public EventBean GetPreviousEvent(int assignedRelativeIndex)
         {
-            if (lastNew == null) {
-                return null;
-            }
-
-            return lastNew[assignedRelativeIndex];
+            return lastNew?[assignedRelativeIndex];
         }
 
         /// <summary>
@@ -115,9 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <param name="oldEvent">to remove</param>
         public void Remove(EventBean oldEvent)
         {
-            if (priorEventMap != null) {
-                priorEventMap.Remove(oldEvent);
-            }
+            priorEventMap?.Remove(oldEvent);
         }
 
         /// <summary>
@@ -126,9 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <returns>indicator if empty</returns>
         public bool IsEmpty()
         {
-            if (priorEventMap != null) {
-                priorEventMap.IsEmpty();
-            }
+            priorEventMap?.IsEmpty();
 
             return true;
         }

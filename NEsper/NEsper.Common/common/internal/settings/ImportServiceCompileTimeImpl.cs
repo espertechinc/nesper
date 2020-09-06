@@ -191,9 +191,26 @@ namespace com.espertech.esper.common.@internal.settings
 			bool[] allowEventBeanType)
 		{
 			try {
-				return MethodResolver.ResolveMethod(clazz, methodName, paramTypes, true, allowEventBeanType, allowEventBeanType);
+				return MethodResolver.ResolveMethod(
+					clazz,
+					methodName,
+					paramTypes,
+					true,
+					allowEventBeanType,
+					allowEventBeanType);
 			}
 			catch (MethodResolverNoSuchMethodException e) {
+				var method = MethodResolver.ResolveExtensionMethod(
+					clazz,
+					methodName,
+					paramTypes,
+					true,
+					allowEventBeanType,
+					allowEventBeanType);
+				if (method != null) {
+					return method;
+				}
+				
 				throw Convert(clazz, methodName, paramTypes, e, true);
 			}
 		}

@@ -6,51 +6,30 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public sealed class MultiKeyArrayObject : MultiKeyArrayWrap
+    public sealed class MultiKeyArrayObject : MultiKeyArrayBase<object>
     {
-        public MultiKeyArrayObject(object[] keys)
+        public MultiKeyArrayObject(Array keys) : base(ArrayToObjectArray(keys))
         {
-            Keys = keys;
         }
 
-        public object[] Keys { get; }
-
-        public object Array => Keys;
-
-        public override bool Equals(object o)
+        public static object[] ArrayToObjectArray(Array input)
         {
-            if (this == o) {
-                return true;
+            if (input == null) {
+                return null;
+            }
+            if (input is object[] inputAsTypedArray) {
+                return inputAsTypedArray;
             }
 
-            if (o == null || GetType() != o.GetType()) {
-                return false;
-            }
-
-            var that = (MultiKeyArrayObject) o;
-
-            if (!Keys.DeepEquals(that.Keys)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            return CompatExtensions.Hash(Keys);
-        }
-
-        public override string ToString()
-        {
-            return "MultiKeyObject{" +
-                   "keys=" +
-                   Keys.RenderAny() +
-                   '}';
+            var target = new object[input.Length];
+            input.CopyTo(target, 0);
+            return target;
         }
     }
 } // end of namespace

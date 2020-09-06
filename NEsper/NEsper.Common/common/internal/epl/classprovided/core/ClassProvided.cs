@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 
         public IList<Type> ClassesMayNull { get; private set; }
 
-        public string ClassName { get; }
+        public string ClassName { get; set; }
 
         public void LoadClasses(ClassLoader parentClassLoader)
         {
@@ -79,10 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 
             method.Block
                 .DeclareVar<ClassProvided>("cp", NewInstance(typeof(ClassProvided)))
-                .ExprDotMethod(Ref("cp"), "Assembly", Ref("assembly"))
-                .ExprDotMethod(Ref("cp"), "ClassName", Constant(ClassName))
-                .ExprDotMethod(Ref("cp"), "ModuleName", Constant(ModuleName))
-                .ExprDotMethod(Ref("cp"), "Visibility", Constant(Visibility))
+                .SetProperty(Ref("cp"), "Assembly", Ref("assembly"))
+                .SetProperty(Ref("cp"), "ClassName", Constant(ClassName))
+                .SetProperty(Ref("cp"), "ModuleName", Constant(ModuleName))
+                .SetProperty(Ref("cp"), "Visibility", Constant(Visibility))
                 .MethodReturn(Ref("cp"));
             return LocalMethod(method);
         }

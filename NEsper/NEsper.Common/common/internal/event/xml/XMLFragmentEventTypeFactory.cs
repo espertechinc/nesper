@@ -119,9 +119,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 eventTypeNameResolver);
             derivedTypes.Put(derivedEventTypeName, eventType);
 
-            if (optionalCompileTimeRegistry != null) {
-                optionalCompileTimeRegistry.NewType(eventType);
-            }
+            optionalCompileTimeRegistry?.NewType(eventType);
 
             return eventType;
         }

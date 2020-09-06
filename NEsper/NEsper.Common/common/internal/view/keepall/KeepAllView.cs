@@ -80,9 +80,7 @@ namespace com.espertech.esper.common.@internal.view.keepall
             }
 
             // update event buffer for access by expressions, if any
-            if (_viewUpdatedCollection != null) {
-                _viewUpdatedCollection.Update(newData, oldData);
-            }
+            _viewUpdatedCollection?.Update(newData, oldData);
 
             _agentInstanceContext.InstrumentationProvider.QViewIndicate(_keepAllViewFactory, newData, oldData);
             child.Update(newData, oldData);

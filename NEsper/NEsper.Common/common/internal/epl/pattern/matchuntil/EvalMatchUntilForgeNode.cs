@@ -32,9 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public EvalMatchUntilForgeNode(
+            bool attachPatternText,
             ExprNode lowerBounds,
             ExprNode upperBounds,
-            ExprNode singleBound)
+            ExprNode singleBound) : base(attachPatternText)
         {
             if (singleBound != null && (lowerBounds != null || upperBounds != null)) {
                 throw new ArgumentException("Invalid bounds, specify either single bound or range bounds");

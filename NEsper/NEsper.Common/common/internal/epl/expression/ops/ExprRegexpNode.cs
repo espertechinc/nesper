@@ -75,6 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             if (constantPattern) {
                 var patternText = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
+                if (!patternText.StartsWith("^")) {
+                    patternText = "^" + patternText;
+                }
+
+                if (!patternText.EndsWith("$")) {
+                    patternText = patternText + "$";
+                }
+                
                 Regex pattern;
                 try {
                     pattern = new Regex(patternText);

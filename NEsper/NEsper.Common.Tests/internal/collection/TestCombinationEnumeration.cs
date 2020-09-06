@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.AreEqual(expected, resultStr);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEnumerate()
         {
             TryEnumerate("1A, 1B, 2A, 2B", new[] { new object[] { 1, 2 }, new object[] { "A", "B" } });

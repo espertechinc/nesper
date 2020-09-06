@@ -20,43 +20,63 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
 	public class ExprClassClassDependency
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprClassClassDependencyAllLocal());
-			executions.Add(new ExprClassClassDependencyInvalid());
-			executions.Add(new ExprClassClassDependencyClasspath());
-			return executions;
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			WithAllLocal(execs);
+			WithInvalid(execs);
+			WithClasspath(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithClasspath(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassClassDependencyClasspath());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassClassDependencyInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithAllLocal(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprClassClassDependencyAllLocal());
+			return execs;
 		}
 
 		private class ExprClassClassDependencyClasspath : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
+				var exprClassClassDependency = typeof(ExprClassClassDependency);
+				
 				string eplNoImport = "@Name('s0') " +
 				                     "inlined_class \"\"\"\n" +
-				                     "    public class MyUtil {\n" +
-				                     "        public static String DoIt(String parameter) {\n" +
-				                     "            return " + typeof(ExprClassClassDependency).FullName + ".SupportQuoteString(parameter);\n" +
+				                     "    public class MyUtilX {\n" +
+				                     "        public static string DoIt(string parameter) {\n" +
+				                     $"            return {exprClassClassDependency.FullName}.SupportQuoteString(parameter);\n" +
 				                     "        }\n" +
 				                     "    }\n" +
 				                     "\"\"\" \n" +
-				                     "select MyUtil.DoIt(TheString) as c0 from SupportBean\n";
+				                     "select MyUtilX.DoIt(TheString) as c0 from SupportBean\n";
 				RunAssertion(env, eplNoImport);
 
 				string eplImport = "@Name('s0') " +
 				                   "inlined_class \"\"\"\n" +
-				                   "    import " +
-				                   typeof(ExprClassClassDependency).FullName +
-				                   ";" +
-				                   "    public class MyUtil {\n" +
-				                   "        public static String DoIt(String parameter) {\n" +
-				                   "            return " + typeof(ExprClassClassDependency).Name + ".SupportQuoteString(parameter);\n" +
+				                   $"    using {exprClassClassDependency.Namespace};\n" +
+				                   "    public class MyUtilY {\n" +
+				                   "        public static string DoIt(string parameter) {\n" +
+				                   $"            return {exprClassClassDependency}.SupportQuoteString(parameter);\n" +
 				                   "        }\n" +
 				                   "    }\n" +
 				                   "\"\"\" \n" +
-				                   "select MyUtil.DoIt(TheString) as c0 from SupportBean\n";
+				                   "select MyUtilY.DoIt(TheString) as c0 from SupportBean\n";
 				RunAssertion(env, eplImport);
 			}
 
@@ -80,8 +100,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				// Class depending on create-class class
 				RegressionPath path = new RegressionPath();
 				string epl = "@public create inlined_class \"\"\"\n" +
-				             "    public class MyUtil {\n" +
-				             "        public static String SomeFunction(String parameter) {\n" +
+				             "    public class MyUtilX {\n" +
+				             "        public static string SomeFunction(string parameter) {\n" +
 				             "            return \"|\" + parameter + \"|\";\n" +
 				             "        }\n" +
 				             "    }\n" +
@@ -90,24 +110,36 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				path.Add(compiled);
 
 				string eplInvalid = "inlined_class \"\"\"\n" +
-				                    "    public class MyClass {\n" +
-				                    "        public static string DoIt(String parameter) {\n" +
+				                    "    public class MyClassY {\n" +
+				                    "        public static string DoIt(string parameter) {\n" +
 				                    "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
 				                    "        }\n" +
 				                    "    }\n" +
 				                    "\"\"\" \n" +
-				                    "select MyClass.DoIt(TheString) as c0 from SupportBean\n";
-				TryInvalidCompile(env, path, eplInvalid, "Failed to compile class: Line 4, Column 27: Unknown variable or type \"MyUtil\" for class");
+				                    "select MyClassY.DoIt(TheString) as c0 from SupportBean\n";
+				TryInvalidCompile(
+					env,
+					path,
+					eplInvalid,
+					"Exception processing statement: " +
+					"Failure during module compilation: " +
+					"[(4,20): error CS0103: The name 'MyUtil' does not exist in the current context]");
 
 				// create-class depending on create-class
 				eplInvalid = "create inlined_class \"\"\"\n" +
-				             "    public class MyClass {\n" +
-				             "        public static string DoIt(String parameter) {\n" +
+				             "    public class MyClassZ {\n" +
+				             "        public static string DoIt(string parameter) {\n" +
 				             "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
 				             "        }\n" +
 				             "    }\n" +
 				             "\"\"\"";
-				TryInvalidCompile(env, path, eplInvalid, "Failed to compile class: Line 4, Column 27: Unknown variable or type \"MyUtil\" for class");
+				TryInvalidCompile(
+					env,
+					path,
+					eplInvalid,
+					"Exception processing statement: " +
+					"Failure during module compilation: " +
+					"[(4,20): error CS0103: The name 'MyUtil' does not exist in the current context]");
 			}
 		}
 
@@ -118,14 +150,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				string epl = "@Name('s0') " +
 				             "inlined_class \"\"\"\n" +
 				             "    public class MyUtil {\n" +
-				             "        public static string SomeFunction(String parameter) {\n" +
+				             "        public static string SomeFunction(string parameter) {\n" +
 				             "            return \"|\" + parameter + \"|\";\n" +
 				             "        }\n" +
 				             "    }\n" +
 				             "\"\"\" \n" +
 				             "inlined_class \"\"\"\n" +
 				             "    public class MyClass {\n" +
-				             "        public static String DoIt(String parameter) {\n" +
+				             "        public static string DoIt(string parameter) {\n" +
 				             "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
 				             "        }\n" +
 				             "    }\n" +

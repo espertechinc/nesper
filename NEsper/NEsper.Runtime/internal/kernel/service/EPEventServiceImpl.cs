@@ -402,6 +402,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				try {
 					ProcessMatches(eventBean);
 				}
+				catch (EPException) {
+					tlEntry.MatchesArrayThreadLocal.Clear();
+					throw;
+				}
 				catch (Exception ex) {
 					tlEntry.MatchesArrayThreadLocal.Clear();
 					throw new EPException(ex);
@@ -963,8 +967,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
 			var handles = _threadLocals.GetOrCreate().ScheduleArrayThreadLocal;
 
-			// Evaluation of schedules is protected by an optional scheduling service lock and then the runtimelock
-			// We want to stay in this order for allowing the runtimelock as a second-order lock to the
+			// Evaluation of schedules is protected by an optional scheduling service lock and then the runtime lock
+			// We want to stay in this order for allowing the runtime lock as a second-order lock to the
 			// services own lock, if it has one.
 			using (_services.EventProcessingRWLock.AcquireReadLock()) {
 				_services.SchedulingService.Evaluate(handles);

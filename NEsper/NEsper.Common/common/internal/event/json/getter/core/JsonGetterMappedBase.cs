@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "mapValueForKey", ExprDotName(underlyingExpression, FieldName), Constant(Key));
+            return StaticMethod(typeof(CollectionUtil), "MapValueForKey", ExprDotName(underlyingExpression, FieldName), Constant(Key));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "mapExistsForKey", ExprDotName(underlyingExpression, FieldName), Constant(Key));
+            return StaticMethod(typeof(CollectionUtil), "MapExistsForKey", ExprDotName(underlyingExpression, FieldName), Constant(Key));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(

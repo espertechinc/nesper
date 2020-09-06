@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(StreamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    Cast(result, Getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                    FlexCast(result, Getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

@@ -94,7 +94,9 @@ namespace com.espertech.esper.compiler.@internal.util
 
             for (var ii = 0; ii < typeList.Count; ii++) {
                 var type = typeList[ii];
-                imports.Add(new ImportDecl(type.Namespace, null));
+                if (type.Namespace != null) {
+                    imports.Add(new ImportDecl(type.Namespace, null));
+                }
             }
 
             if (AssemblyIndices.Count == 0) {
@@ -111,9 +113,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 if (IsAmbiguous(type, imports, AssemblyIndices))
 #endif
                 {
-                    imports.Add(new ImportDecl(
-                        type.Namespace,
-                        type.CleanName(false)));
+                    if (type.Namespace != null) {
+                        imports.Add(
+                            new ImportDecl(
+                                type.Namespace,
+                                type.CleanName(false)));
+                    }
                 }
             }
 

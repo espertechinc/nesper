@@ -21,7 +21,7 @@ namespace com.espertech.esper.compiler.client
     ///     </para>
     ///     <para>
     ///         The compiler path provides information on the EPL-objects that are visible at compilation time.
-    ///         Add compiled modules and path information from runtimes to the path for modules to gain access to existing EPL
+    ///         Add compiled modules and path information from runtime s to the path for modules to gain access to existing EPL
     ///         objects.
     ///     </para>
     ///     <para>
@@ -77,18 +77,33 @@ namespace com.espertech.esper.compiler.client
         /// <returns>options</returns>
         public CompilerOptions Options { get; set; }
 
+        public CompilerPath GetPath()
+        {
+            return Path;
+        }
+        
         public CompilerArguments SetPath(CompilerPath value)
         {
             Path = value;
             return this;
         }
 
+        public Configuration GetConfiguration()
+        {
+            return Configuration;
+        }
+        
         public CompilerArguments SetConfiguration(Configuration value)
         {
             Configuration = value;
             return this;
         }
 
+        public CompilerOptions GetOptions()
+        {
+            return Options;
+        }
+        
         public CompilerArguments SetOptions(CompilerOptions value)
         {
             Options = value;

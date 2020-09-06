@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using XLR8.CGLib;
 
@@ -271,6 +272,18 @@ namespace com.espertech.esper.compat.collections
         {
             if (!dictionary.TryGetValue(key, out V returnValue)) {
                 return null;
+            }
+
+            return returnValue;
+        }
+        
+        public static V DebugGet<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default(V))
+        {
+            Debug.WriteLine("Dictionary.Get: Key = " + key);
+            
+            if (!dictionary.TryGetValue(key, out V returnValue))
+            {
+                returnValue = defaultValue;
             }
 
             return returnValue;

@@ -38,14 +38,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.firstOf()");
-				builder.WithExpression(fields[1], "strvals.lastOf()");
-				builder.WithExpression(fields[2], "strvals.firstOf(x => x like '%1%')");
-				builder.WithExpression(fields[3], "strvals.lastOf(x => x like '%1%')");
-				builder.WithExpression(fields[4], "strvals.firstOf((x, i) => x like '%1%' and i >= 1)");
-				builder.WithExpression(fields[5], "strvals.lastOf((x, i) => x like '%1%' and i >= 1)");
-				builder.WithExpression(fields[6], "strvals.firstOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
-				builder.WithExpression(fields[7], "strvals.lastOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
+				builder.WithExpression(fields[0], "Strvals.firstOf()");
+				builder.WithExpression(fields[1], "Strvals.lastOf()");
+				builder.WithExpression(fields[2], "Strvals.firstOf(x => x like '%1%')");
+				builder.WithExpression(fields[3], "Strvals.lastOf(x => x like '%1%')");
+				builder.WithExpression(fields[4], "Strvals.firstOf((x, i) => x like '%1%' and i >= 1)");
+				builder.WithExpression(fields[5], "Strvals.lastOf((x, i) => x like '%1%' and i >= 1)");
+				builder.WithExpression(fields[6], "Strvals.firstOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
+				builder.WithExpression(fields[7], "Strvals.lastOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
@@ -75,8 +75,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.firstOf().p00");
-				builder.WithExpression(fields[1], "contained.lastOf().p00");
+				builder.WithExpression(fields[0], "Contained.firstOf().P00");
+				builder.WithExpression(fields[1], "Contained.lastOf().P00");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.firstOf()");
-				builder.WithExpression(fields[1], "contained.lastOf()");
+				builder.WithExpression(fields[0], "Contained.firstOf()");
+				builder.WithExpression(fields[1], "Contained.lastOf()");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
 
@@ -125,12 +125,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.firstOf(x => p00 = 9)");
-				builder.WithExpression(fields[1], "contained.lastOf(x => p00 = 9)");
-				builder.WithExpression(fields[2], "contained.firstOf( (x, i) => p00 = 9 and i >= 1)");
-				builder.WithExpression(fields[3], "contained.lastOf( (x, i) => p00 = 9 and i >= 1)");
-				builder.WithExpression(fields[4], "contained.firstOf( (x, i, s) => p00 = 9 and i >= 1 and s > 2)");
-				builder.WithExpression(fields[5], "contained.lastOf((x, i, s) => p00 = 9 and i >= 1 and s > 2)");
+				builder.WithExpression(fields[0], "Contained.firstOf(x => P00 = 9)");
+				builder.WithExpression(fields[1], "Contained.lastOf(x => P00 = 9)");
+				builder.WithExpression(fields[2], "Contained.firstOf( (x, i) => P00 = 9 and i >= 1)");
+				builder.WithExpression(fields[3], "Contained.lastOf( (x, i) => P00 = 9 and i >= 1)");
+				builder.WithExpression(fields[4], "Contained.firstOf( (x, i, s) => P00 = 9 and i >= 1 and s > 2)");
+				builder.WithExpression(fields[5], "Contained.lastOf((x, i, s) => P00 = 9 and i >= 1 and s > 2)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
 

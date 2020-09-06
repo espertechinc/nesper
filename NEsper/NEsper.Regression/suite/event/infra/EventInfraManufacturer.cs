@@ -13,6 +13,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.@internal.kernel.service;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			// Bean
 			RunAssertion(
 				env,
-				"create schema BeanEvent as " + typeof(MyLocalBeanEvent).FullName,
+				"create schema BeanEvent as " + typeof(MyLocalBeanEvent).MaskTypeName(),
 				und => {
 					var bean = (MyLocalBeanEvent) und;
 					Assert.AreEqual("a", bean.P1);
@@ -77,11 +78,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			// Json-Class-Provided
 			RunAssertion(
 				env,
-				"@JsonSchema(className='" + typeof(MyLocalJsonProvided).FullName + "') create json schema JsonEvent()",
+				"@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') create json schema JsonEvent()",
 				und => {
 					var received = (MyLocalJsonProvided) und;
-					Assert.AreEqual("a", received.p1);
-					Assert.AreEqual(1, received.p2);
+					Assert.AreEqual("a", received.P1);
+					Assert.AreEqual(1, received.P2);
 				});
 		}
 
@@ -96,8 +97,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			var writables = EventTypeUtility.GetWriteableProperties(type, true, true);
 			var props = new WriteablePropertyDescriptor[2];
-			props[0] = FindProp(writables, "p1");
-			props[1] = FindProp(writables, "p2");
+			props[0] = FindProp(writables, "P1");
+			props[1] = FindProp(writables, "P2");
 
 			var spi = (EPRuntimeSPI) env.Runtime;
 			EventBeanManufacturer manufacturer;
@@ -130,31 +131,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				}
 			}
 
-			Assert.Fail();
+			Assert.Fail($"Unable to find property {propertyName}");
 			return null;
 		}
 
 		public class MyLocalBeanEvent
 		{
-			private string p1;
-			private int p2;
-
-			public string P1 {
-				get => p1;
-				set => p1 = value;
-			}
-
-			public int P2 {
-				get => p2;
-				set => p2 = value;
-			}
+			public string P1 { get; set; }
+			public int P2 { get; set; }
 		}
 
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public string p1;
-			public int p2;
+			public string P1;
+			public int P2;
 		}
 	}
 } // end of namespace

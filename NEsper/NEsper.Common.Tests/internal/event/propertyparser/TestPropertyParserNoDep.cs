@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
     [TestFixture]
     public class TestPropertyParserNoDep : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParse()
         {
             Property property;
@@ -72,13 +72,13 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             Assert.AreEqual("x..y", ((SimpleProperty) property).PropertyNameAtomic);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParseMapKey()
         {
             Assert.AreEqual("a", TryKey("a"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParseMappedProp()
         {
             MappedPropertyParseResult result = ParseMappedProperty("a.b('c')");
@@ -86,9 +86,9 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             Assert.AreEqual("b", result.MethodName);
             Assert.AreEqual("c", result.ArgString);
 
-            result = ParseMappedProperty("SupportStaticMethodLib.delimitPipe('POLYGON ((100.0 100, \", 100 100, 400 400))')");
+            result = ParseMappedProperty("SupportStaticMethodLib.DelimitPipe('POLYGON ((100.0 100, \", 100 100, 400 400))')");
             Assert.AreEqual("SupportStaticMethodLib", result.ClassName);
-            Assert.AreEqual("delimitPipe", result.MethodName);
+            Assert.AreEqual("DelimitPipe", result.MethodName);
             Assert.AreEqual("POLYGON ((100.0 100, \", 100 100, 400 400))", result.ArgString);
 
             result = ParseMappedProperty("a.b.c.d.e('f.g.h,u.h')");

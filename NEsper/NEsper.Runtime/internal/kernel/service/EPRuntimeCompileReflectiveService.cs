@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -24,8 +25,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		private const string CLASSNAME_COMPILER_ARGUMENTS = "com.espertech.esper.compiler.client.CompilerArguments";
 		private const string CLASSNAME_COMPILER_PATH = "com.espertech.esper.compiler.client.CompilerPath";
 		private const string CLASSNAME_COMPILER_PROVIDER = "com.espertech.esper.compiler.client.EPCompilerProvider";
-		private const string CLASSNAME_COMPILER = "com.espertech.esper.compiler.@internal.util.EPCompilerSPI";
-		private const string CLASSNAME_COMPILER_EXPRESSIONS = "com.espertech.esper.compiler.@internal.util.EPCompilerSPIExpression";
+		private const string CLASSNAME_COMPILER = "com.espertech.esper.compiler.internal.util.EPCompilerSPI";
+		private const string CLASSNAME_COMPILER_EXPRESSIONS = "com.espertech.esper.compiler.internal.util.EPCompilerSPIExpression";
 
 		private bool _available;
 		private string _message;
@@ -268,7 +269,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		private Type FindClassByName(string className)
 		{
 			try {
-				return Type.GetType(className, true);
+				return TypeHelper.ResolveType(className, true);
 			}
 			catch (TypeLoadException ex) {
 				_message = "Failed to find class " + className + ": " + ex.Message;
@@ -299,12 +300,27 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			var method = clazz.GetMethod(name, args);
 			if (method == null) {
-				_message = "Failed to find method '" +
-				          name +
-				          "' of class " +
-				          clazz.Name +
-				          " taking parameters " +
-				          TypeHelper.GetParameterAsString(args);
+				var baseType = clazz.BaseType;
+				if (baseType != null) {
+					method = FindMethod(baseType, name, args);
+				}
+
+				if (method == null) {
+					method = clazz.GetInterfaces()
+						.Select(_ => FindMethod(_, name, args))
+						.FirstOrDefault(_ => _ != null);
+				}
+				
+				if (method == null) {
+					_message = "Failed to find method '" +
+					           name +
+					           "' of class " +
+					           clazz.Name +
+					           " taking parameters " +
+					           TypeHelper.GetParameterAsString(args);
+
+					return null;
+				}
 			}
 
 			return method;

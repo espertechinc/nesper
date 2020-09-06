@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            //execs.Add(new EPLDataflowTypeEvent());
+            execs.Add(new EPLDataflowTypeEvent());
             execs.Add(new EPLDataflowFlowGraphSource());
             execs.Add(new EPLDataflowFlowGraphOperator());
             return execs;

@@ -22,13 +22,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
         public enum FilterOptimizableEnum
         {
             /// <summary>
-            ///     The runtimedoes not consider the single-row function for optimizing evaluation: The function gets evaluated for
+            ///     The runtime does not consider the single-row function for optimizing evaluation: The function gets evaluated for
             ///     each event possibly multiple times.
             /// </summary>
             DISABLED,
 
             /// <summary>
-            ///     The runtimeconsiders the single-row function for optimizing evaluation: The function gets evaluated only once per
+            ///     The runtime considers the single-row function for optimizing evaluation: The function gets evaluated only once per
             ///     event.
             /// </summary>
             ENABLED
@@ -45,13 +45,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
             DISABLED,
 
             /// <summary>
-            ///     Causes the runtimeto not actually invoke the single-row function and instead return a cached precomputed value
+            ///     Causes the runtime to not actually invoke the single-row function and instead return a cached precomputed value
             ///     when all parameters are constants or there are no parameters.
             /// </summary>
             ENABLED,
 
             /// <summary>
-            ///     Causes the runtimeto follow the runtime-wide policy as configured for user-defined functions.
+            ///     Causes the runtime to follow the runtime-wide policy as configured for user-defined functions.
             /// </summary>
             CONFIGURED
         }
@@ -122,9 +122,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         public FilterOptimizableEnum FilterOptimizable { get; set; } = FilterOptimizableEnum.ENABLED;
 
         /// <summary>
-        ///     Returns indicator whether the runtimere-throws exceptions
+        ///     Returns indicator whether the runtime re-throws exceptions
         ///     thrown by the single-row function. The default is false
-        ///     therefore the runtimeby default does not rethrow exceptions.
+        ///     therefore the runtime by default does not rethrow exceptions.
         /// </summary>
         /// <value>indicator</value>
         public bool RethrowExceptions { get; set; }

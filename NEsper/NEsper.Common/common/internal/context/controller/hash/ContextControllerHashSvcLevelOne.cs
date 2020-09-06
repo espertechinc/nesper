@@ -139,9 +139,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public void Destroy()
         {
-            if (optionalHashes != null) {
-                optionalHashes.Clear();
-            }
+            optionalHashes?.Clear();
 
             subpathOrCPIdsPreallocate = null;
             filterEntries = null;

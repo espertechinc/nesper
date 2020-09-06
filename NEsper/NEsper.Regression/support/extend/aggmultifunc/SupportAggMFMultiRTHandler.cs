@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
                 }
 
                 // never share anything else
-                return new ProxyAggregationMultiFunctionStateKey();
+                return new InertAggregationMultiFunctionStateKey();
             }
         }
 

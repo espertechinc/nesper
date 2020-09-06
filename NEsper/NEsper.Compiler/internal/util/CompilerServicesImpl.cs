@@ -22,6 +22,8 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
+using XLR8.CGLib;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
     public class CompilerServicesImpl : CompilerServices
@@ -78,7 +80,13 @@ namespace com.espertech.esper.compiler.@internal.util
             // this mechanism is not fully baked, we need a better mechanism that allows us to output
             // the contents of the assembly that we are generating items into.
 
-            throw new NotImplementedException();
+            var classNameFull = namespaceScope.Namespace + '.' + classNameSimple;
+            var capsuleClass = CapsuleEmitter.CreateCapsule(
+                classNameFull,
+                new CapsuleField[] {
+                });
+
+            return capsuleClass.TargetType;
         }
 
         public CompileResponse Compile(CompileRequest request)

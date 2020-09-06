@@ -244,11 +244,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                     var indexedProp = (IndexedProperty) property;
                     var descriptor = PropertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
-                    if (descriptor == null) {
-                        return null;
-                    }
 
-                    return descriptor.PropertyType;
+                    return descriptor?.PropertyType;
                 }
             }
 

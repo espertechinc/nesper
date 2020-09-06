@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.hook.enummethod;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -73,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 			CodegenClassScope codegenClassScope)
 		{
 			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope.MakeChildWithScope(_expectedStateReturnType, typeof(EnumForgePlugin), scope, codegenClassScope)
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(_expectedStateReturnType, typeof(EnumForgePlugin), scope, codegenClassScope)
 				.AddParam(PARAMS);
 			methodNode.Block.DeclareVar(_mode.StateClass, "state", NewInstance(_mode.StateClass));
 
@@ -94,16 +96,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 					var lambda = (ExprDotEvalParamLambda) param;
 					for (var i = 0; i < lambda.LambdaDesc.Types.Length; i++) {
 						var eventType = lambda.LambdaDesc.Types[i];
-						EnumMethodLambdaParameterType lambdaParameterType =
+						var lambdaParameterType =
 							_mode.LambdaParameters.Invoke(new EnumMethodLambdaParameterDescriptor(indexParameter, i));
 
 						if (eventType != _inputEventType) {
 							var type = codegenClassScope.AddDefaultFieldUnshared(
 								true,
 								typeof(ObjectArrayEventType),
-								Cast(
-									typeof(ObjectArrayEventType),
-									EventTypeUtility.ResolveTypeCodegen(lambda.LambdaDesc.Types[i], EPStatementInitServicesConstants.REF)));
+								Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(lambda.LambdaDesc.Types[i], EPStatementInitServicesConstants.REF)));
 							var eventName = GetNameExt("resultEvent", indexParameter, i);
 							var propName = GetNameExt("props", indexParameter, i);
 							methodNode.Block
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 							if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter) {
 								var getter = (EnumMethodLambdaParameterTypeStateGetter) lambdaParameterType;
 								methodNode.Block
-									.AssignArrayElement(propName, Constant(0), ExprDotMethod(Ref("state"), getter.GetterMethodName));
+									.AssignArrayElement(propName, Constant(0), ExprDotName(Ref("state"), getter.PropertyName));
 							}
 						}
 					}
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 							}
 							else if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter) {
 								var getter = (EnumMethodLambdaParameterTypeStateGetter) lambdaParameterType;
-								forEach.AssignArrayElement(propName, Constant(0), ExprDotMethod(Ref("state"), getter.GetterMethodName));
+								forEach.AssignArrayElement(propName, Constant(0), ExprDotName(Ref("state"), getter.PropertyName));
 							}
 							else if (lambdaParameterType is EnumMethodLambdaParameterTypeSize) {
 								// no action needed
@@ -188,11 +188,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 				forEach.Expression(StaticMethod(_mode.ServiceClass, _mode.MethodName, paramsNext.ToArray()));
 
 				if (_mode.IsEarlyExit) {
-					forEach.IfCondition(ExprDotName(Ref("state"), "Completed")).BreakLoop();
+					forEach.IfCondition(ExprDotName(Ref("state"), "IsCompleted")).BreakLoop();
 				}
 			}
 
-			methodNode.Block.MethodReturn(Cast(_expectedStateReturnType, ExprDotName(Ref("state"), "State")));
+			methodNode.Block.MethodReturn(
+				FlexCast(_expectedStateReturnType, ExprDotName(Ref("state"), "State")));
+
 			return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
 		}
 

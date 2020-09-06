@@ -237,9 +237,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 if (inner is DataWindowViewForgeUniqueCandidate && !disableUniqueImplicit) {
                     var uniqueFactory = (DataWindowViewForgeUniqueCandidate) inner;
                     var uniqueCandidates = uniqueFactory.UniquenessCandidatePropertyNames;
-                    if (uniqueCandidates != null) {
-                        uniqueCandidates.AddAll(groupedCriteria);
-                    }
+                    uniqueCandidates?.AddAll(groupedCriteria);
 
                     return uniqueCandidates;
                 }
@@ -252,12 +250,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 return uniqueFactory.UniquenessCandidatePropertyNames;
             }
 
-            if (forges[0] is VirtualDWViewFactoryForge) {
-                var vdw = (VirtualDWViewFactoryForge) forges[0];
-                return vdw.UniqueKeys;
-            }
-
-            return null;
+            var vdw = forges[0] as VirtualDWViewFactoryForge;
+            return vdw?.UniqueKeys;
         }
     }
 } // end of namespace

@@ -8,8 +8,11 @@
 
 using System;
 
+using com.espertech.esper.common.client.annotation;
+
 namespace com.espertech.esper.regressionlib.support.client
 {
+    [Public, BusEventType]
     public class MyAnnotationAPIEventTypeAttribute : Attribute
     {
     }

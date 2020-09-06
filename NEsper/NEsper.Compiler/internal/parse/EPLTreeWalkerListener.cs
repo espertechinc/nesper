@@ -393,7 +393,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             var obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx, 2, _astExprNodeMap);
 
             var observerSpec = new PatternObserverSpec(objectNamespace, objectName, obsParameters);
-            EvalForgeNode observerNode = new EvalObserverForgeNode(observerSpec);
+            EvalForgeNode observerNode = new EvalObserverForgeNode(_mapEnv.IsAttachPatternText, observerSpec);
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(observerNode, ctx, _astPatternNodeMap);
         }
 
@@ -1201,7 +1201,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             var rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, _propertyEvalSpec);
             _propertyEvalSpec = null;
-            var filterNode = new EvalFilterForgeNode(rawFilterSpec, optionalPatternTagName, consumption);
+            var filterNode = new EvalFilterForgeNode(_mapEnv.IsAttachPatternText, rawFilterSpec, optionalPatternTagName, consumption);
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(filterNode, ctx, _astPatternNodeMap);
         }
 
@@ -1731,7 +1731,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            EvalForgeNode andNode = new EvalAndForgeNode();
+            EvalForgeNode andNode = new EvalAndForgeNode(_mapEnv.IsAttachPatternText);
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(andNode, ctx, _astPatternNodeMap);
         }
 
@@ -1756,7 +1756,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 expressions = maxExpressions; // can contain null elements as max/no-max can be mixed
             }
 
-            EvalForgeNode fbNode = new EvalFollowedByForgeNode(expressions);
+            EvalForgeNode fbNode = new EvalFollowedByForgeNode(_mapEnv.IsAttachPatternText, expressions);
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(fbNode, ctx, _astPatternNodeMap);
         }
 
@@ -1766,7 +1766,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            EvalForgeNode orNode = new EvalOrForgeNode();
+            EvalForgeNode orNode = new EvalOrForgeNode(_mapEnv.IsAttachPatternText);
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(orNode, ctx, _astPatternNodeMap);
         }
 
@@ -1785,16 +1785,16 @@ namespace com.espertech.esper.compiler.@internal.parse
             EvalForgeNode theNode;
             if (ctx.e != null)
             {
-                theNode = new EvalEveryForgeNode();
+                theNode = new EvalEveryForgeNode(_mapEnv.IsAttachPatternText);
             }
             else if (ctx.n != null)
             {
-                theNode = new EvalNotForgeNode();
+                theNode = new EvalNotForgeNode(_mapEnv.IsAttachPatternText);
             }
             else if (ctx.d != null)
             {
                 var exprNodes = ASTExprHelper.ExprCollectSubNodes(ctx.distinctExpressionList(), 0, _astExprNodeMap);
-                theNode = new EvalEveryDistinctForgeNode(exprNodes);
+                theNode = new EvalEveryDistinctForgeNode(_mapEnv.IsAttachPatternText, exprNodes);
             }
             else
             {
@@ -1816,7 +1816,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                node = new EvalMatchUntilForgeNode(null, null, null);
+                node = new EvalMatchUntilForgeNode(_mapEnv.IsAttachPatternText, null, null, null);
             }
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(node, ctx, _astPatternNodeMap);
         }
@@ -1848,7 +1848,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
 
             var guardSpec = new PatternGuardSpec(objectNamespace, objectName, obsParameters);
-            EvalForgeNode guardNode = new EvalGuardForgeNode(guardSpec);
+            EvalForgeNode guardNode = new EvalGuardForgeNode(_mapEnv.IsAttachPatternText, guardSpec);
             ASTExprHelper.PatternCollectAddSubnodesAddParentNode(guardNode, ctx, _astPatternNodeMap);
         }
 
@@ -3902,7 +3902,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 low = ASTExprHelper.ExprCollectSubNodes(range.low, 0, _astExprNodeMap)[0];
                 high = ASTExprHelper.ExprCollectSubNodes(range.high, 0, _astExprNodeMap)[0];
             }
-            return new EvalMatchUntilForgeNode(low, high, single);
+            return new EvalMatchUntilForgeNode(_mapEnv.IsAttachPatternText, low, high, single);
         }
 
         private PatternLevelAnnotationFlags GetPatternFlags(IList<EsperEPL2GrammarParser.AnnotationEnumContext> ctxList)

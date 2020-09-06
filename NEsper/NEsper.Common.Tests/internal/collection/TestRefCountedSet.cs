@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.collection
             refSet = new RefCountedSet<string>();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAdd()
         {
             Assert.IsTrue(refSet.Add("a"));
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.AreEqual(3, refSet.Count);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRemove()
         {
             refSet.Add("a");

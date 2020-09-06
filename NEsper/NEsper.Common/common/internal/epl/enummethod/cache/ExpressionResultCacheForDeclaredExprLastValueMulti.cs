@@ -42,11 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             EventBean[] eventsPerStream)
         {
             var cacheRef = cache.Get(node);
-            if (cacheRef == null) {
-                return null;
-            }
 
-            var entry = cacheRef.Get();
+            var entry = cacheRef?.Get();
             if (entry == null) {
                 return null;
             }

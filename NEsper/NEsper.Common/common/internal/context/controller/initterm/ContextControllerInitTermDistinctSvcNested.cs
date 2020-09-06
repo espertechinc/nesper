@@ -42,11 +42,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             object key)
         {
             ISet<object> keys = distinctContexts.Get(controllerPath);
-            if (keys == null) {
-                return;
-            }
 
-            keys.Remove(key);
+            keys?.Remove(key);
         }
 
         public void Clear(IntSeqKey path)

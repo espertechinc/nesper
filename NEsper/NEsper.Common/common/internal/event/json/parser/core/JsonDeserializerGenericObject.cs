@@ -17,10 +17,6 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     {
         private IDictionary<string, object> _result;
 
-        public JsonDeserializerGenericObject() : base()
-        {
-        }
-
         public override object GetResult()
         {
             return _result;

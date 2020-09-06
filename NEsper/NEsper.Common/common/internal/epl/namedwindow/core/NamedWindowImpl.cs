@@ -128,16 +128,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 statementContext.StatementCPCacheService.StatementResourceService;
             if (rootView.ContextName == null) {
                 StatementResourceHolder holder = statementResourceService.Unpartitioned;
-                if (holder != null && holder.NamedWindowInstance != null) {
-                    holder.NamedWindowInstance.RemoveIndex(index);
-                }
+                holder?.NamedWindowInstance?.RemoveIndex(index);
             }
             else {
                 foreach (KeyValuePair<int, StatementResourceHolder> entry in statementResourceService
                     .ResourcesPartitioned) {
-                    if (entry.Value.NamedWindowInstance != null) {
-                        entry.Value.NamedWindowInstance.RemoveIndex(index);
-                    }
+                    entry.Value.NamedWindowInstance?.RemoveIndex(index);
                 }
             }
         }

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
+using com.espertech.esper.common.@internal.@event.json.forge;
 using com.espertech.esper.common.@internal.@event.json.parser.forge;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
 	public class JsonEventTypeUtilityReflective
 	{
-		public static IDictionary<Type, JsonApplicationClassDelegateDesc> ComputeClassesDeep(
+		public static IDictionary<Type, JsonApplicationClassSerializationDesc> ComputeClassesDeep(
 			Type clazz,
 			string eventTypeName,
 			Attribute[] annotations,
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			return AssignDelegateClassNames(eventTypeName, deepClassesWFields);
 		}
 
-		public static IDictionary<Type, JsonApplicationClassDelegateDesc> ComputeClassesDeep(
+		public static IDictionary<Type, JsonApplicationClassSerializationDesc> ComputeClassesDeep(
 			IDictionary<string, object> fields,
 			string eventTypeName,
 			Attribute[] annotations,
@@ -54,18 +55,24 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			return AssignDelegateClassNames(eventTypeName, deepClassesWFields);
 		}
 
-		private static IDictionary<Type, JsonApplicationClassDelegateDesc> AssignDelegateClassNames(
+		private static IDictionary<Type, JsonApplicationClassSerializationDesc> AssignDelegateClassNames(
 			string eventTypeName,
-			IDictionary<Type, IList<FieldInfo>> deepClassesWFields)
+			IDictionary<Type, IList<FieldInfo>> classesWFields)
 		{
-			var classes = new LinkedHashMap<Type, JsonApplicationClassDelegateDesc>();
-			foreach (var classEntry in deepClassesWFields) {
+			var classes = new LinkedHashMap<Type, JsonApplicationClassSerializationDesc>();
+			foreach (var classEntry in classesWFields) {
 				var replaced = classEntry.Key.Name
 					.RegexReplaceAll("\\.", "_")
 					.RegexReplaceAll("\\$", "_");
-				var delegateClassName = eventTypeName + "_Delegate_" + replaced;
-				var delegateFactoryClassName = eventTypeName + "_Factory_" + replaced;
-				classes.Put(classEntry.Key, new JsonApplicationClassDelegateDesc(delegateClassName, delegateFactoryClassName, classEntry.Value));
+
+				var serializerClassName = eventTypeName + "_Serializer_" + replaced;
+				var deserializerClassName = eventTypeName + "_Deserializer_" + replaced;
+				classes.Put(
+					classEntry.Key,
+					new JsonApplicationClassSerializationDesc(
+						serializerClassName,
+						deserializerClassName,
+						classEntry.Value));
 			}
 
 			return classes;
@@ -135,11 +142,11 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			try {
-				JsonForgeFactoryBuiltinClassTyped.Forge(
+				JsonForgeFactoryBuiltinClassTyped.INSTANCE.Forge(
 					genericType,
 					fieldName,
 					optionalField,
-					EmptyDictionary<Type, JsonApplicationClassDelegateDesc>.Instance,
+					EmptyDictionary<Type, JsonApplicationClassSerializationDesc>.Instance,
 					annotations,
 					services);
 				return false;

@@ -17,7 +17,7 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     [TestFixture]
 	public class TestSQLLexer  {
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestLexSampleSQL()
 	    {
 		    string[][] testcases = new string[][] {
@@ -71,11 +71,18 @@ namespace com.espertech.esper.compiler.@internal.util
 	            string result = null;
 	            try {
 	                result = SQLLexer.LexSampleSQL(testcases[i][0]).Trim();
-	            } catch (Exception) {
+	            } catch (Exception e) {
+		            while (e != null) {
+			            Console.WriteLine($"Exception: {e.GetType().Name}");
+			            Console.WriteLine(e.StackTrace);
+			            Console.WriteLine("----------------------------------------");
+			            e = e.InnerException;
+		            }
+		            
 	                Assert.Fail("failed case with exception:" + testcases[i][0]);
 	            }
 	            string expected = testcases[i][1].Trim();
-	            Assert.AreEqual("failed case " + i + " :" + testcases[i][0], expected, result);
+	            Assert.AreEqual(expected, result, "failed case " + i + " :" + testcases[i][0]);
 	        }
 	    }
 	}

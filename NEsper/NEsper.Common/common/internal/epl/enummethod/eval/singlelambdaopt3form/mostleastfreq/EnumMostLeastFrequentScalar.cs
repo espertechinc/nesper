@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar<IDictionary<object,object>>("items", NewInstance(typeof(LinkedHashMap<object,object>)));
+			block.DeclareVar<IDictionary<object,int>>("items", NewInstance(typeof(LinkedHashMap<object,int>)));
 		}
 
 		public override void ForEachBlock(
@@ -109,13 +109,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			block
 				.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar<int?>("existing", Cast(typeof(int?), ExprDotMethod(Ref("items"), "Get", Ref("key"))))
+				.DeclareVar<int?>("existing", ExprDotMethod(ExprDotMethod(Ref("items"), "Get", Ref("key")), "AsBoxedInt32"))
 				.IfCondition(EqualsNull(Ref("existing")))
 				.AssignRef("existing", Constant(1))
 				.IfElse()
 				.IncrementRef("existing")
 				.BlockEnd()
-				.ExprDotMethod(Ref("items"), "Put", Ref("key"), Ref("existing"));
+				.ExprDotMethod(Ref("items"), "Put", Ref("key"), Unbox(Ref("existing")));
 		}
 
 		public override void ReturnResult(CodegenBlock block)

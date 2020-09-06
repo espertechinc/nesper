@@ -40,7 +40,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	[TestFixture]
 	public class TestEPLTreeWalker : AbstractCompilerTest
 	{
-		private static string CLASSNAME = typeof(SupportBean).Name;
+		private static string CLASSNAME = typeof(SupportBean).FullName;
 
 		private static string EXPRESSION = "select * from " +
 		                                   CLASSNAME +
@@ -48,7 +48,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		                                   CLASSNAME +
 		                                   "(string='b')#length(10)#lastevent as win2 ";
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkGraph()
 		{
 			var expression = "create dataflow MyGraph MyOp((s0, s1) as ST1, s2) -> out1, out2 {}";
@@ -116,7 +116,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			return graph.Operators[0].Output.Items[0].TypeInfo[0];
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkCreateSchema()
 		{
 			var expression = "create schema MyName as com.company.SupportBean";
@@ -160,7 +160,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(isArray, clazz.ArrayDimensions > 0);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkCreateIndex()
 		{
 			var expression = "create index A_INDEX on B_NAMEDWIN (c, d btree)";
@@ -176,10 +176,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(CreateIndexType.BTREE.GetName().ToLowerInvariant(), createIndex.Columns[1].IndexType);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkViewExpressions()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).FullName;
 			var expression = "select * from " + className + ".win:x(intPrimitive, a.nested)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
@@ -189,10 +189,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("a.nested", ((ExprIdentNode) parameters[1]).FullUnresolvedName);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkJoinMethodStatement()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).FullName;
 			var expression = "select distinct * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
@@ -212,10 +212,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(methodSpec.Expressions[1] is ExprMathNode);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkRetainKeywords()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).FullName;
 			var expression = "select * from " + className + " retain-union";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
@@ -233,7 +233,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkCreateVariable()
 		{
 			var expression = "create constant variable sometype var1 = 1";
@@ -247,7 +247,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(createVarDesc.IsConstant);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkOnUpdate()
 		{
 			var expression = "on com.MyClass as myevent update MyWindow as mw set prop1 = 'a', prop2=a.b*c where a=b";
@@ -270,7 +270,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("a=b", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(raw.WhereClause));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkOnSelectNoInsert()
 		{
 			var expression = "on com.MyClass(myval != 0) as myevent select *, mywin.* as abc, myevent.* from MyNamedWindow as mywin where a=b";
@@ -299,7 +299,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(raw.WhereClause is ExprEqualsNode);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkOnSelectInsert()
 		{
 			var expression = "on pattern [com.MyClass] as pat insert into MyStream(a, b) select c, d from MyNamedWindow as mywin " +
@@ -330,7 +330,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(1, raw.OrderByList.Count);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkOnSelectMultiInsert()
 		{
 			var expression = "on Bean as pat " +
@@ -369,7 +369,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsNull(splitStream.WhereClause);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkOnDelete()
 		{
 			// try a filter
@@ -398,7 +398,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(patternSpec.EvalForgeNode is EvalEveryForgeNode);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkCreateWindow()
 		{
 			var expression = "create window MyWindow#groupwin(symbol)#length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
@@ -428,7 +428,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("length", raw.CreateWindowDesc.ViewSpecs[1].ObjectName);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkMatchRecognize()
 		{
 			var patternTests = new string[] {
@@ -455,7 +455,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			}
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkSubstitutionParams()
 		{
 			// try EPL
@@ -470,7 +470,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			equalsFilter = (ExprEqualsNode) streamSpec.RawFilterSpec.FilterExpressions[1];
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPatternMatchUntil()
 		{
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[A until (B or C)]");
@@ -528,7 +528,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			return (EvalMatchUntilForgeNode) a.EvalForgeNode;
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkSimpleWhere()
 		{
 			var expression = EXPRESSION + "where win1.f1=win2.f2";
@@ -539,7 +539,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var streamSpec = (FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
 			Assert.AreEqual(2, streamSpec.ViewSpecs.Length);
-			Assert.AreEqual(typeof(SupportBean).Name, streamSpec.RawFilterSpec.EventTypeName);
+			Assert.AreEqual(typeof(SupportBean).FullName, streamSpec.RawFilterSpec.EventTypeName);
 			Assert.AreEqual("length", streamSpec.ViewSpecs[0].ObjectName);
 			Assert.AreEqual("lastevent", streamSpec.ViewSpecs[1].ObjectName);
 			Assert.AreEqual("win1", streamSpec.OptionalStreamName);
@@ -560,7 +560,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("f2", identNode.UnresolvedPropertyName);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkWhereWithAnd()
 		{
 			var expression = "select * from " +
@@ -582,7 +582,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var streamSpec = (FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[2];
 			Assert.AreEqual(2, streamSpec.ViewSpecs.Length);
-			Assert.AreEqual(typeof(SupportBean).Name, streamSpec.RawFilterSpec.EventTypeName);
+			Assert.AreEqual(typeof(SupportBean).FullName, streamSpec.RawFilterSpec.EventTypeName);
 			Assert.AreEqual("length", streamSpec.ViewSpecs[0].ObjectName);
 			Assert.AreEqual("lastevent", streamSpec.ViewSpecs[1].ObjectName);
 
@@ -611,7 +611,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(10, (int) walker.StatementSpec.RowLimitSpec.OptionalOffset);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPerRowFunctions()
 		{
 			Assert.AreEqual(9, TryExpression("max(6, 9)"));
@@ -628,7 +628,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(2, TryExpression("(case 1 when 1 then 2 end)"));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkMath()
 		{
 			Assert.AreEqual(32.0, TryExpression("5*6-3+15/3"));
@@ -644,7 +644,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(10.1 % 3, TryExpression("10.1%3"));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkRelationalOp()
 		{
 			Assert.AreEqual(true, TryRelationalOp("3>2"));
@@ -661,7 +661,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(true, TryRelationalOp("not (not 3>2)"));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkInsertInto()
 		{
 			var expression = "insert into MyAlias select * from " +
@@ -701,16 +701,16 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(0, desc.ColumnNames.Count);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkView()
 		{
-			var text = "select * from " + typeof(SupportBean).Name + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(price, false)";
+			var text = "select * from " + typeof(SupportBean).FullName + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(price, false)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var filterSpec = ((FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0]).RawFilterSpec;
 
 			// Check filter spec properties
-			Assert.AreEqual(typeof(SupportBean).Name, filterSpec.EventTypeName);
+			Assert.AreEqual(typeof(SupportBean).FullName, filterSpec.EventTypeName);
 			Assert.AreEqual(1, filterSpec.FilterExpressions.Count);
 
 			// Check views
@@ -733,10 +733,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(false, ((ExprConstantNode) specTwo.ObjectParameters[1]).ConstantValue);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPropertyExpr()
 		{
-			var text = "select * from " + typeof(SupportBean).Name + "[a.b][select c,d.*,* from e as f where g]";
+			var text = "select * from " + typeof(SupportBean).FullName + "[a.b][select c,d.*,* from e as f where g]";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var filterSpec = ((FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0]).RawFilterSpec;
@@ -755,11 +755,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(list[2] is SelectClauseElementWildcard);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestSelectList()
 		{
 			var text = "select intPrimitive, 2 * intBoxed, 5 as myConst, stream0.string as theString from " +
-			           typeof(SupportBean).Name +
+			           typeof(SupportBean).FullName +
 			           "().win:lenght(10) as stream0";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var selectExpressions = walker.StatementSpec.SelectClauseSpec.SelectExprList;
@@ -780,39 +780,39 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("theString", rawSpec.OptionalAsName);
 			Assert.IsNull(walker.StatementSpec.InsertIntoDesc);
 
-			text = "select * from " + typeof(SupportBean).Name + "().win:lenght(10)";
+			text = "select * from " + typeof(SupportBean).FullName + "().win:lenght(10)";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			Assert.AreEqual(1, walker.StatementSpec.SelectClauseSpec.SelectExprList.Count);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestArrayViewParams()
 		{
 			// Check a list of integer as a view parameter
-			var text = "select * from " + typeof(SupportBean).Name + "().win:lenght({10, 11, 12})";
+			var text = "select * from " + typeof(SupportBean).FullName + "().win:lenght({10, 11, 12})";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
 			var node = viewSpecs[0].ObjectParameters[0];
 			node.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-			var intParams = (object[]) ((ExprArrayNode) node).Forge.ExprEvaluator.Evaluate(null, true, null);
+			var intParams = ((ExprArrayNode) node).Forge.ExprEvaluator.Evaluate(null, true, null).UnwrapIntoArray<int>();
 			Assert.AreEqual(10, intParams[0]);
 			Assert.AreEqual(11, intParams[1]);
 			Assert.AreEqual(12, intParams[2]);
 
 			// Check a list of objects
-			text = "select * from " + typeof(SupportBean).Name + "().win:lenght({false, 11.2, 's'})";
+			text = "select * from " + typeof(SupportBean).FullName + "().win:lenght({false, 11.2, 's'})";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
 			var param = viewSpecs[0].ObjectParameters[0];
 			param.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-			var objParams = (object[]) ((ExprArrayNode) param).Forge.ExprEvaluator.Evaluate(null, true, null);
+			var objParams = ((ExprArrayNode) param).Forge.ExprEvaluator.Evaluate(null, true, null).UnwrapIntoArray<int>();
 			Assert.AreEqual(false, objParams[0]);
 			Assert.AreEqual(11.2, objParams[1]);
 			Assert.AreEqual("s", objParams[2]);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestOuterJoin()
 		{
 			TryOuterJoin("left", OuterJoinType.LEFT);
@@ -820,17 +820,17 @@ namespace com.espertech.esper.compiler.@internal.parse
 			TryOuterJoin("full", OuterJoinType.FULL);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestNoPackageName()
 		{
 			var text = "select intPrimitive from SupportBean_N().win:lenght(10) as win1";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestAggregateFunction()
 		{
-			var fromClause = "from " + typeof(SupportBean_N).Name + "().win:lenght(10) as win1";
+			var fromClause = "from " + typeof(SupportBean_N).FullName + "().win:lenght(10) as win1";
 			var text = "select max(distinct intPrimitive) " + fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 
@@ -862,7 +862,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestGroupBy()
 		{
 			var text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
@@ -884,7 +884,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(node is ExprMinMaxRowNode);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestHaving()
 		{
 			var text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
@@ -905,7 +905,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(havingNode is ExprRelationalOpNode);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestDistinct()
 		{
 			var text = "select sum(distinct intPrimitive) from SupportBean_N().win:lenght(10) as win1";
@@ -917,7 +917,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(aggrNode.IsDistinct);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestComplexProperty()
 		{
 			var text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x, nested.abcdef? " +
@@ -950,10 +950,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(null, identNode.StreamOrPropertyName);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestBitWise()
 		{
-			var text = "select intPrimitive & intBoxed from " + typeof(SupportBean).Name + "().win:lenght(10) as stream0";
+			var text = "select intPrimitive & intBoxed from " + typeof(SupportBean).FullName + "().win:lenght(10) as stream0";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var selectExpressions = walker.StatementSpec.SelectClauseSpec.SelectExprList;
 			Assert.AreEqual(1, selectExpressions.Count);
@@ -964,10 +964,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(8, TryBitWise("10^2"));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestPatternsOnly()
 		{
-			var patternOne = "a=" + typeof(SupportBean).Name + " -> b=" + typeof(SupportBean).Name;
+			var patternOne = "a=" + typeof(SupportBean).FullName + " -> b=" + typeof(SupportBean).FullName;
 
 			// Test simple case, one pattern and no "as streamName"
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern [" + patternOne + "]");
@@ -983,7 +983,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("s0", patternStreamSpec.OptionalStreamName);
 
 			// Test case with multiple patterns
-			var patternTwo = "c=" + typeof(SupportBean).Name + " or " + typeof(SupportBean).Name;
+			var patternTwo = "c=" + typeof(SupportBean).FullName + " or " + typeof(SupportBean).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern [" + patternOne + "] as s0, pattern [" + patternTwo + "] as s1");
 			Assert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
@@ -1003,7 +1003,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				patternTwo +
 				"] as s1," +
 				"pattern[x=" +
-				typeof(SupportBean_S2).Name +
+				typeof(SupportBean_S2).FullName +
 				"] as s2");
 			Assert.AreEqual(3, walker.StatementSpec.StreamSpecs.Count);
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[2];
@@ -1023,30 +1023,30 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("lastevent", patternStreamSpec.ViewSpecs[1].ObjectName);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestIfThenElseCase()
 		{
 			string text;
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end from " + typeof(SupportBean).Name + "().win:lenght(10) as win";
+			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end as p1 from " +
-			       typeof(SupportBean).Name +
+			       typeof(SupportBean).FullName +
 			       "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) else shortPrimitive end from " +
-			       typeof(SupportBean).Name +
+			       typeof(SupportBean).FullName +
 			       "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 			text =
 				"select case when intPrimitive > shortPrimitive then count(intPrimitive) when longPrimitive > intPrimitive then count(longPrimitive) else shortPrimitive end from " +
-				typeof(SupportBean).Name +
+				typeof(SupportBean).FullName +
 				"().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case intPrimitive  when 1 then count(intPrimitive) end from " + typeof(SupportBean).Name + "().win:lenght(10) as win";
+			text = "select case intPrimitive  when 1 then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 			text = "select case intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end" +
 			       " from " +
-			       typeof(SupportBean).Name +
+			       typeof(SupportBean).FullName +
 			       "#length(3)";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
@@ -1056,11 +1056,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 			OuterJoinType typeExpected)
 		{
 			var text = "select intPrimitive from " +
-			           typeof(SupportBean_A).Name +
+			           typeof(SupportBean_A).FullName +
 			           "().win:lenght(10) as win1 " +
 			           outerType +
 			           " outer join " +
-			           typeof(SupportBean_A).Name +
+			           typeof(SupportBean_A).FullName +
 			           "().win:lenght(10) as win2 " +
 			           "on win1.f1 = win2.f2[1]";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
@@ -1075,16 +1075,16 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("win2", desc.OptRightNode.StreamOrPropertyName);
 
 			text = "select intPrimitive from " +
-			       typeof(SupportBean_A).Name +
+			       typeof(SupportBean_A).FullName +
 			       "().win:lenght(10) as win1 " +
 			       outerType +
 			       " outer join " +
-			       typeof(SupportBean_A).Name +
+			       typeof(SupportBean_A).FullName +
 			       "().win:lenght(10) as win2 " +
 			       "on win1.f1 = win2.f2 " +
 			       outerType +
 			       " outer join " +
-			       typeof(SupportBean_A).Name +
+			       typeof(SupportBean_A).FullName +
 			       "().win:lenght(10) as win3 " +
 			       "on win1.f1 = win3.f3 and win1.f11 = win3.f31";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
@@ -1114,7 +1114,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("win3", desc.AdditionalRightNodes[0].StreamOrPropertyName);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestOnMerge()
 		{
 			var text = "on MyEvent ev " +
@@ -1161,10 +1161,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(2, second.Actions.Count);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPattern()
 		{
-			var text = "every g=" + typeof(SupportBean).Name + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";
+			var text = "every g=" + typeof(SupportBean).FullName + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + text + "]");
 
@@ -1189,48 +1189,48 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(2, equalsNode.ChildNodes.Length);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPropertyPatternCombination()
 		{
-			var EVENT = typeof(SupportBeanComplexProps).Name;
-			var property = TryWalkGetPropertyPattern(EVENT + "(mapped ( 'key' )  = 'value')");
-			Assert.AreEqual("mapped('key')", property);
+			var EVENT = typeof(SupportBeanComplexProps).FullName;
+			var property = TryWalkGetPropertyPattern(EVENT + "(Mapped ( 'key' )  = 'value')");
+			Assert.AreEqual("Mapped('key')", property);
 
-			property = TryWalkGetPropertyPattern(EVENT + "(indexed [ 1 ]  = 1)");
-			Assert.AreEqual("indexed[1]", property);
-			property = TryWalkGetPropertyPattern(EVENT + "(nested . nestedValue  = 'value')");
-			Assert.AreEqual("nestedValue", property);
+			property = TryWalkGetPropertyPattern(EVENT + "(Indexed [ 1 ]  = 1)");
+			Assert.AreEqual("Indexed[1]", property);
+			property = TryWalkGetPropertyPattern(EVENT + "(Nested . NestedValue  = 'value')");
+			Assert.AreEqual("NestedValue", property);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPatternUseResult()
 		{
-			var EVENT = typeof(SupportBean_N).Name;
+			var EVENT = typeof(SupportBean_N).FullName;
 			var text = "na=" + EVENT + "() -> every nb=" + EVENT + "(doublePrimitive in [0:na.doublePrimitive])";
 			SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + text + "]");
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkIStreamRStreamSelect()
 		{
-			var text = "select rstream 'a' from " + typeof(SupportBean_N).Name;
+			var text = "select rstream 'a' from " + typeof(SupportBean_N).FullName;
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			Assert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
 
-			text = "select istream 'a' from " + typeof(SupportBean_N).Name;
+			text = "select istream 'a' from " + typeof(SupportBean_N).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			Assert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
 
-			text = "select 'a' from " + typeof(SupportBean_N).Name;
+			text = "select 'a' from " + typeof(SupportBean_N).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			Assert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
 
-			text = "select irstream 'a' from " + typeof(SupportBean_N).Name;
+			text = "select irstream 'a' from " + typeof(SupportBean_N).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			Assert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, walker.StatementSpec.SelectStreamSelectorEnum);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPatternIntervals()
 		{
 			object[][] intervals = {
@@ -1293,10 +1293,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			TryIntervalInvalid(
 				"1.5 month",
-				"Time period expressions with month or year component require integer values, received a double value");
+				"Time period expressions with month or year component require integer values, received a Double value");
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkInAndBetween()
 		{
 			Assert.IsTrue((Boolean) TryRelationalOp("1 between 0 and 2"));
@@ -1309,7 +1309,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue((Boolean) TryRelationalOp("1 not in (2,3)"));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkLikeRegex()
 		{
 			Assert.IsTrue((Boolean) TryRelationalOp("'abc' like 'a__'"));
@@ -1325,10 +1325,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue((Boolean) TryRelationalOp("'a' not like 'ab'"));
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkDBJoinStatement()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).FullName;
 			var sql = "select a from b where $x.id=c.d";
 			var expression = "select * from " + className + ", sql:mydb ['" + sql + "']";
 
@@ -1350,10 +1350,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("select * from B", dbSpec.MetadataSQL);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestRangeBetweenAndIn()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).FullName;
 			var expression = "select * from " + className + "(intPrimitive in [1:2], intBoxed in (1,2), doubleBoxed between 2 and 3)";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 
@@ -1361,7 +1361,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestSubselect()
 		{
 			var expression = "select (select a from B(id=1) where cox=mox) from C";
@@ -1383,13 +1383,13 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(spec.WhereClause is ExprEqualsNode);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWalkPatternObject()
 		{
-			var expression = "select * from pattern [" + typeof(SupportBean).Name + " -> timer:interval(100)]";
+			var expression = "select * from pattern [" + typeof(SupportBean).FullName + " -> timer:interval(100)]";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 
-			expression = "select * from pattern [" + typeof(SupportBean).Name + " where timer:within(100)]";
+			expression = "select * from pattern [" + typeof(SupportBean).FullName + " where timer:within(100)]";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 		}
 
@@ -1408,7 +1408,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		private double TryInterval(string interval)
 		{
-			var text = "select * from " + typeof(SupportBean).Name + "#win:time(" + interval + ")";
+			var text = "select * from " + typeof(SupportBean).FullName + "#win:time(" + interval + ")";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var viewSpec = walker.StatementSpec.StreamSpecs[0].ViewSpecs[0];

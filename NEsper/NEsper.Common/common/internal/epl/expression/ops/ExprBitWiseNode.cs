@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (!childType.IsBoolean() && !childType.IsNumeric()) {
                 throw new ExprValidationException(
                     "Invalid datatype for binary operator, " +
-                    childType.Name +
+                    childType.CleanName() +
                     " is not allowed");
             }
         }

@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 				}
 			}
 
-			block.MethodReturn(Ref("und"));
+			block.BlockReturn(Ref("und"));
 		}
 	}
 } // end of namespace

@@ -67,7 +67,7 @@ namespace NEsper.Avro.Writer
             string key,
             string index)
         {
-            object val = record.Get(index);
+            var val = record.Get(index);
             if (val != null && val is IDictionary<string, object> map) {
                 map.Put(key, value);
             }

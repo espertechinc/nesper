@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -109,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var primitiveConversionLib = typeof(PrimitiveConversionLib).Name;
+                var primitiveConversionLib = typeof(PrimitiveConversionLib).MaskTypeName();
                 env.CompileDeploy(
                         "@Name('s0') select " +
                         $"{primitiveConversionLib}.PassIntAsObject(IntPrimitive) as c0," +
@@ -134,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 string epl =
-                    "create map schema MyEvent(someDate Date, dateFrom string, dateTo string, minutesOfDayFrom int, minutesOfDayTo int, daysOfWeek string);\n" +
+                    "create map schema MyEvent(someDate DateTime, dateFrom string, dateTo string, minutesOfDayFrom int, minutesOfDayTo int, daysOfWeek string);\n" +
                     "select " +
                     "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isAfter(cast(dateFrom||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c0,\n" +
                     "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isBefore(cast(dateTo||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c1,\n" +
@@ -277,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 var statementText = "@Name('s0') select * from pattern [Myevent=SupportBean(" +
                                     className +
                                     ".DelimitPipe(TheString) = '|a|')]";
@@ -305,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 var statementText = "@Name('s0') select Price, " +
                                     className +
                                     ".ThrowException() as value " +

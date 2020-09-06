@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                         REF_EVALUATIONFUNCTIONFREQUENCY,
                         timeAbacus))
                 .AssignRef(REF_NEXTSWEEPTIME, Op(Ref("currentTime"), "+", REF_CURRENTRECLAIMFREQUENCY))
-                .InstanceMethod(SweepCodegen(method, classScope, classNames), Ref("currentTime"), REF_CURRENTMAXAGE);
+                .LocalMethod(SweepCodegen(method, classScope, classNames), Ref("currentTime"), REF_CURRENTMAXAGE);
         }
 
         /// <summary>

@@ -405,10 +405,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 string epl = join
-                    ? "@Name('s0') select sum(value) as thesum from SupportEventWithIntArray#keepall, SupportBean#keepall group by array"
+                    ? "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray#keepall, SupportBean#keepall group by Array"
                     : (unbound
-                        ? "@Name('s0') select sum(value) as thesum from SupportEventWithIntArray group by array"
-                        : "@Name('s0') select sum(value) as thesum from SupportEventWithIntArray#keepall group by array"
+                        ? "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray group by Array"
+                        : "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray#keepall group by Array"
                     );
 
                 env.CompileDeploy(epl).AddListener("s0");

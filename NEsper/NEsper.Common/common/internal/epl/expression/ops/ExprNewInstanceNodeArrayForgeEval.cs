@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprNewInstanceNodeArrayForgeEval(ExprNewInstanceNodeArrayForge forge)
         {
-            this._forge = forge;
+            _forge = forge;
         }
 
         public object Evaluate(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return _forge.Parent.ChildNodes[0].Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            ExprNode[] children = _forge.Parent.ChildNodes;
+            var children = _forge.Parent.ChildNodes;
             var dimensions = new int[children.Length];
             for (var i = 0; i < children.Length; i++) {
                 var size = (int?) _forge.Parent.ChildNodes[i].Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             var dimValue = new CodegenExpression[dimensions.Length];
             for (var i = 0; i < dimensions.Length; i++) {
-                ExprForge dimForge = forge.Parent.ChildNodes[i].Forge;
+                var dimForge = forge.Parent.ChildNodes[i].Forge;
                 var dimExpr = dimForge.EvaluateCodegen(typeof(int?), method, symbols, classScope);
                 if (dimForge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                     dimValue[i] = dimExpr;
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .DeclareVar(typeof(int?), name, dimExpr)
                         .IfRefNull(name)
                         .BlockThrow(NewInstance(typeof(EPException), Constant(NULL_MSG)));
-                    dimValue[i] = Ref(name);
+                    dimValue[i] = Unbox(Ref(name));
                 }
             }
 
@@ -94,9 +94,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var @params = new CodegenExpression[dimValue.Length + 1];
                 @params[0] = Clazz(forge.TargetClass);
                 Array.Copy(dimValue, 0, @params, 1, dimValue.Length);
-                make = StaticMethod(typeof(Array), "newInstance", @params);
+                make = StaticMethod(typeof(Array), "CreateInstance", @params);
             }
-
+            
             method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(requiredType, make));
             return LocalMethod(method);
         }

@@ -249,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         protected void ApplyEvalLeaveNonNull(CodegenMethod method)
         {
             method.Block.IfCondition(Relational(Constant(_factory.SizeOfBuf), GT, _numDataPoints))
-                .DeclareVar<int>("diff", Op(Constant(_factory.SizeOfBuf), "-", Cast(typeof(int), _numDataPoints)))
+                .DeclareVar<int>("diff", Op(Constant(_factory.SizeOfBuf), "-", ExprDotMethod(_numDataPoints, "AsInt32")))
                 .DeclareVar<int>(
                     "index",
                     Op(

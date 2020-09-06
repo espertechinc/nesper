@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.extend.vdw;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -142,12 +143,6 @@ namespace com.espertech.esper.regressionrun.suite.context
         }
 
         [Test, RunInApplicationDomain]
-        public void TestContextHashSegmented()
-        {
-            RegressionRunner.Run(session, ContextHashSegmented.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestContextInitTerm()
         {
             RegressionRunner.Run(session, ContextInitTerm.Executions());
@@ -223,6 +218,45 @@ namespace com.espertech.esper.regressionrun.suite.context
         public void TestContextWDeclaredExpression()
         {
             RegressionRunner.Run(session, ContextWDeclaredExpression.Executions());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ContextHashSegmented
+        /// <code>
+        /// RegressionRunner.Run(_session, ContextHashSegmented.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestContextHashSegmented : AbstractTestBase
+        {
+            public TestContextHashSegmented() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ContextHashSegmented.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithPartitionSelection() => RegressionRunner.Run(_session, ContextHashSegmented.WithPartitionSelection());
+
+            [Test, RunInApplicationDomain]
+            public void WithScoringUseCase() => RegressionRunner.Run(_session, ContextHashSegmented.WithScoringUseCase());
+
+            [Test, RunInApplicationDomain]
+            public void WithSegmentedBySingleRowFunc() => RegressionRunner.Run(_session, ContextHashSegmented.WithSegmentedBySingleRowFunc());
+
+            [Test, RunInApplicationDomain]
+            public void WithSegmentedMulti() => RegressionRunner.Run(_session, ContextHashSegmented.WithSegmentedMulti());
+
+            [Test, RunInApplicationDomain]
+            public void WithSegmentedManyArg() => RegressionRunner.Run(_session, ContextHashSegmented.WithSegmentedManyArg());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoPreallocate() => RegressionRunner.Run(_session, ContextHashSegmented.WithNoPreallocate());
+
+            [Test, RunInApplicationDomain]
+            public void WithSegmentedFilter() => RegressionRunner.Run(_session, ContextHashSegmented.WithSegmentedFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithSegmentedBasic() => RegressionRunner.Run(_session, ContextHashSegmented.WithSegmentedBasic());
         }
     }
 } // end of namespace

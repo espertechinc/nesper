@@ -17,13 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             {
             }
 
-            public ExprDotEvalSumMethod SumAggregator {
-                get { return new ExprDotEvalSumMethodDouble(); }
-            }
+            public ExprDotEvalSumMethod SumAggregator => new ExprDotEvalSumMethodDouble();
 
-            public Type ValueType {
-                get { return typeof(double?); }
-            }
+            public Type ValueType => typeof(double?);
 
             public void CodegenDeclare(CodegenBlock block)
             {
@@ -36,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 CodegenExpressionRef value)
             {
                 block.IncrementRef("cnt");
-                block.AssignCompound("sum", "+", value);
+                block.AssignCompound("sum", "+", ExprDotMethod(value, "AsDouble"));
             }
 
             public void CodegenEnterObjectTypedNonNull(

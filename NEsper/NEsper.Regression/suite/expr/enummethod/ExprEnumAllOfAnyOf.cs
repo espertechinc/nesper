@@ -35,12 +35,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.allof(v => p00 = 7)");
-				builder.WithExpression(fields[1], "contained.anyof(v => p00 = 7)");
-				builder.WithExpression(fields[2], "contained.allof((v, i) => p00 = (7 + i*10))");
-				builder.WithExpression(fields[3], "contained.anyof((v, i) => p00 = (7 + i*10))");
-				builder.WithExpression(fields[4], "contained.allof((v, i, s) => p00 = (7 + i*10 + s*100))");
-				builder.WithExpression(fields[5], "contained.anyof((v, i, s) => p00 = (7 + i*10 + s*100))");
+				builder.WithExpression(fields[0], "Contained.allof(v => P00 = 7)");
+				builder.WithExpression(fields[1], "Contained.anyof(v => P00 = 7)");
+				builder.WithExpression(fields[2], "Contained.allof((v, i) => P00 = (7 + i*10))");
+				builder.WithExpression(fields[3], "Contained.anyof((v, i) => P00 = (7 + i*10))");
+				builder.WithExpression(fields[4], "Contained.allof((v, i, s) => P00 = (7 + i*10 + s*100))");
+				builder.WithExpression(fields[5], "Contained.anyof((v, i, s) => P00 = (7 + i*10 + s*100))");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
@@ -75,12 +75,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.allof(v => v='A')");
-				builder.WithExpression(fields[1], "strvals.anyof(v => v='A')");
-				builder.WithExpression(fields[2], "strvals.allof((v, i) => (v='A' and i < 2) or (v='C' and i >= 2))");
-				builder.WithExpression(fields[3], "strvals.anyof((v, i) => (v='A' and i < 2) or (v='C' and i >= 2))");
-				builder.WithExpression(fields[4], "strvals.allof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
-				builder.WithExpression(fields[5], "strvals.anyof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
+				builder.WithExpression(fields[0], "Strvals.allof(v => v='A')");
+				builder.WithExpression(fields[1], "Strvals.anyof(v => v='A')");
+				builder.WithExpression(fields[2], "Strvals.allof((v, i) => (v='A' and i < 2) or (v='C' and i >= 2))");
+				builder.WithExpression(fields[3], "Strvals.anyof((v, i) => (v='A' and i < 2) or (v='C' and i >= 2))");
+				builder.WithExpression(fields[4], "Strvals.allof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
+				builder.WithExpression(fields[5], "Strvals.anyof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 

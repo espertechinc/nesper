@@ -27,6 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public AggregatorMethod Aggregator => throw new IllegalStateException("Not applicable for access-aggregations");
 
+        public virtual MathContext OptionalMathContext => null;
+
         public ExprForge[] GetMethodAggregationForge(
             bool join,
             EventType[] typesPerStream)

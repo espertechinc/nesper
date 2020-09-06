@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         ///     Constructor.
         /// </summary>
         /// <param name="patternObserverSpec">is the factory to use to get an observer instance</param>
-        public EvalObserverForgeNode(PatternObserverSpec patternObserverSpec)
+        public EvalObserverForgeNode(bool attachPatternText, PatternObserverSpec patternObserverSpec) : base(attachPatternText)
         {
             PatternObserverSpec = patternObserverSpec;
         }

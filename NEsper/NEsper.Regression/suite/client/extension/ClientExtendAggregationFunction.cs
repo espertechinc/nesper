@@ -197,13 +197,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(textTwo).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("d", -1));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "val".SplitCsv(), new object[] {"SupportBean(d, -1)"});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "val".SplitCsv(), new object[] {"SupportBean(\"d\", -1)"});
 
 				env.SendEventBean(new SupportBean("e", 2));
 				EPAssertionUtil.AssertProps(
 					env.Listener("s0").AssertOneGetNewAndReset(),
 					"val".SplitCsv(),
-					new object[] {"SupportBean(d, -1) SupportBean(e, 2)"});
+					new object[] {"SupportBean(\"d\", -1) SupportBean(\"e\", 2)"});
 
 				TryInvalidCompile(
 					env,
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				// test dot-method
 				SupportSupportBeanAggregationFunctionFactory.InstanceCount = 0;
 				string[] fields = "val0,val1".SplitCsv();
-				env.CompileDeploy("@Name('s0') select (myagg(id)).getTheString() as val0, (myagg(id)).getIntPrimitive() as val1 from SupportBean_A")
+				env.CompileDeploy("@Name('s0') select (myagg(Id)).GetTheString() as val0, (myagg(Id)).GetIntPrimitive() as val1 from SupportBean_A")
 					.AddListener("s0");
 
 				env.SendEventBean(new SupportBean_A("A1"));
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				TryInvalidCompile(
 					env,
 					"select * from SupportBean group by invalidAggFuncForge(1)",
-					"Error resolving aggregation: Class by name 'System.String' does not implement the AggregationFunctionForge interface");
+					"Error resolving aggregation: Class by name 'System.TimeSpan' does not implement the AggregationFunctionForge interface");
 
 				TryInvalidCompile(
 					env,

@@ -77,7 +77,8 @@ namespace com.espertech.esper.common.client.hook.forgeinject
             SAIFFInitializeBuilder builder;
             CodegenMethod init;
             if (Clazz != null) {
-                init = classScope.NamespaceScope.InitMethod.MakeChildWithScope(Clazz, GetType(), symbols, classScope)
+                init = classScope.NamespaceScope.InitMethod
+                    .MakeChildWithScope(Clazz, GetType(), symbols, classScope)
                     .AddParam(
                         typeof(EPStatementInitServices),
                         EPStatementInitServicesConstants.REF.Ref);
@@ -98,9 +99,7 @@ namespace com.espertech.esper.common.client.hook.forgeinject
                     classScope);
             }
 
-            if (BuilderConsumer != null) {
-                BuilderConsumer.Invoke(builder);
-            }
+            BuilderConsumer?.Invoke(builder);
 
             foreach (var constantEntry in _constants) {
                 builder.Constant(constantEntry.Key, constantEntry.Value);

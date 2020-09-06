@@ -68,11 +68,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
 
             var @object = _getter.Get(exprEvaluatorContext.ContextProperties);
-            if (@object == null) {
-                return null;
-            }
 
-            return @object.AsDouble();
+            return @object?.AsDouble();
         }
 
         public double? GetFilterValueDouble(

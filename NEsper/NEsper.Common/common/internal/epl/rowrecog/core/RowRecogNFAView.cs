@@ -125,9 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         public void Stop(AgentInstanceStopServices services)
         {
-            if (_scheduler != null) {
-                _scheduler.RemoveSchedule();
-            }
+            _scheduler?.RemoveSchedule();
 
             if (_factory.IsTrackMaxStates) {
                 var size = _regexPartitionStateRepo.StateCount;
@@ -153,9 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 if (newData != null) {
                     foreach (var newEvent in newData) {
                         var partitionState = _regexPartitionStateRepo.GetState(newEvent, true);
-                        if (partitionState?.RandomAccess != null) {
-                            partitionState.RandomAccess.NewEventPrepare(newEvent);
-                        }
+                        partitionState?.RandomAccess?.NewEventPrepare(newEvent);
                     }
                 }
 

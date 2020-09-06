@@ -252,9 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             }
             else {
                 // handle run
-                if (_runCurrentThread != null) {
-                    _runCurrentThread.Interrupt();
-                }
+                _runCurrentThread?.Interrupt();
 
                 _runCurrentThread = null;
             }

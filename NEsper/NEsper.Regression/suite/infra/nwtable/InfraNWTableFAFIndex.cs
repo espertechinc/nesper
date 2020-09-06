@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             String faf = "@Hint('index(MyInfraIndex, bust)') select * from MyInfra where " + epl;
             EPFireAndForgetQueryResult result = env.CompileExecuteFAF(faf, path);
             Assert.AreEqual(1, result.Array.Length);
-            Assert.AreEqual(expectedId, result.Array[0].Get("id"));
+            Assert.AreEqual(expectedId, result.Array[0].Get("Id"));
         }
 
         private static void AssertFAFNot(
@@ -133,10 +133,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 RegressionPath path = new RegressionPath();
                 string epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, arrayOne string[], arrayTwo string[], value int);\n"
-                    : "@public create table MyInfra(id string primary key, arrayOne string[], arrayTwo string[], value int);\n";
-                epl += "insert into MyInfra select id, stringOne as arrayOne, stringTwo as arrayTwo, value from SupportEventWithManyArray;\n" +
-                       "create index MyInfraIndex on MyInfra(arrayOne, arrayTwo, value btree);\n";
+                    ? "@public create window MyInfra#keepall as (Id string, ArrayOne string[], ArrayTwo string[], Value int);\n"
+                    : "@public create table MyInfra(Id string primary key, ArrayOne string[], ArrayTwo string[], Value int);\n";
+                epl += "insert into MyInfra select Id, StringOne as ArrayOne, StringTwo as ArrayTwo, Value from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(ArrayOne, ArrayTwo, Value btree);\n";
                 env.CompileDeploy(epl, path);
 
                 SendManyArray(env, "E1", new string[] {"a", "b"}, new string[] {"c", "d"}, 100);
@@ -145,12 +145,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.Milestone(0);
 
-                AssertFAF(env, path, "arrayOne = {'a', 'b'} and arrayTwo = {'e', 'f'} and value > 150", "E2");
-                AssertFAF(env, path, "arrayOne = {'a'} and arrayTwo = {'b'} and value > 150", "E3");
-                AssertFAF(env, path, "arrayOne = {'a', 'b'} and arrayTwo = {'c', 'd'} and value > 90", "E1");
-                AssertFAFNot(env, path, "arrayOne = {'a', 'b'} and arrayTwo = {'c', 'd'} and value > 200");
-                AssertFAFNot(env, path, "arrayOne = {'a', 'b'} and arrayTwo = {'c', 'e'} and value > 90");
-                AssertFAFNot(env, path, "arrayOne = {'ax', 'b'} and arrayTwo = {'c', 'd'} and value > 90");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'e', 'f'} and Value > 150", "E2");
+                AssertFAF(env, path, "ArrayOne = {'a'} and ArrayTwo = {'b'} and Value > 150", "E3");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'd'} and Value > 90", "E1");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'd'} and Value > 200");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'e'} and Value > 90");
+                AssertFAFNot(env, path, "ArrayOne = {'ax', 'b'} and ArrayTwo = {'c', 'd'} and Value > 90");
 
                 env.UndeployAll();
             }
@@ -179,10 +179,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 RegressionPath path = new RegressionPath();
                 string epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, arrayOne string[], value int);\n"
-                    : "@public create table MyInfra(id string primary key, arrayOne string[], value int);\n";
-                epl += "insert into MyInfra select id, stringOne as arrayOne, value from SupportEventWithManyArray;\n" +
-                       "create index MyInfraIndex on MyInfra(arrayOne, value btree);\n";
+                    ? "@public create window MyInfra#keepall as (Id string, ArrayOne string[], Value int);\n"
+                    : "@public create table MyInfra(Id string primary key, ArrayOne string[], Value int);\n";
+                epl += "insert into MyInfra select Id, StringOne as ArrayOne, Value from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(ArrayOne, Value btree);\n";
                 env.CompileDeploy(epl, path);
 
                 SendManyArray(env, "E1", new string[] {"a", "b"}, 100);
@@ -191,11 +191,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.Milestone(0);
 
-                AssertFAF(env, path, "arrayOne = {'a', 'b'} and value < 150", "E1");
-                AssertFAF(env, path, "arrayOne = {'a', 'b'} and value > 150", "E2");
-                AssertFAF(env, path, "arrayOne = {'a'} and value > 200", "E3");
-                AssertFAFNot(env, path, "arrayOne = {'a'} and value > 400");
-                AssertFAFNot(env, path, "arrayOne = {'a', 'c'} and value < 150");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and Value < 150", "E1");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and Value > 150", "E2");
+                AssertFAF(env, path, "ArrayOne = {'a'} and Value > 200", "E3");
+                AssertFAFNot(env, path, "ArrayOne = {'a'} and Value > 400");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'c'} and Value < 150");
 
                 env.UndeployAll();
             }
@@ -223,10 +223,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 RegressionPath path = new RegressionPath();
                 string epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, arrayOne string[], arrayTwo string[]);\n"
-                    : "@public create table MyInfra(id string primary key, arrayOne string[], arrayTwo string[]);\n";
-                epl += "insert into MyInfra select id, stringOne as arrayOne, stringTwo as arrayTwo from SupportEventWithManyArray;\n" +
-                       "create index MyInfraIndex on MyInfra(arrayOne, arrayTwo);\n";
+                    ? "@public create window MyInfra#keepall as (Id string, ArrayOne string[], ArrayTwo string[]);\n"
+                    : "@public create table MyInfra(Id string primary key, ArrayOne string[], ArrayTwo string[]);\n";
+                epl += "insert into MyInfra select Id, StringOne as ArrayOne, StringTwo as ArrayTwo from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(ArrayOne, ArrayTwo);\n";
                 env.CompileDeploy(epl, path);
 
                 SendManyArray(env, "E1", new string[] {"a", "b"}, new string[] {"c", "d"});
@@ -234,10 +234,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.Milestone(0);
 
-                AssertFAF(env, path, "arrayOne = {'a', 'b'} and arrayTwo = {'c', 'd'}", "E1");
-                AssertFAF(env, path, "arrayOne = {'a'} and arrayTwo = {'b'}", "E2");
-                AssertFAFNot(env, path, "arrayOne = {'a', 'b', 'c'} and arrayTwo = {'c', 'd'}");
-                AssertFAFNot(env, path, "arrayOne = {'a', 'b'} and arrayTwo = {'c', 'c'}");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'd'}", "E1");
+                AssertFAF(env, path, "ArrayOne = {'a'} and ArrayTwo = {'b'}", "E2");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b', 'c'} and ArrayTwo = {'c', 'd'}");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'c'}");
 
                 env.UndeployAll();
             }
@@ -265,10 +265,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 RegressionPath path = new RegressionPath();
                 string epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, array string[]);\n"
-                    : "@public create table MyInfra(id string primary key, array string[]);\n";
-                epl += "insert into MyInfra select id, stringOne as array from SupportEventWithManyArray;\n" +
-                       "create index MyInfraIndex on MyInfra(array);\n";
+                    ? "@public create window MyInfra#keepall as (Id string, Array string[]);\n"
+                    : "@public create table MyInfra(Id string primary key, Array string[]);\n";
+                epl += "insert into MyInfra select Id, StringOne as Array from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(Array);\n";
                 env.CompileDeploy(epl, path);
 
                 SendManyArray(env, "E1", new string[] {"a", "b"});
@@ -277,10 +277,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.Milestone(0);
 
-                AssertFAF(env, path, "array = {'a', 'b'}", "E1");
-                AssertFAF(env, path, "array = {'a'}", "E2");
-                AssertFAF(env, path, "array is null", "E3");
-                AssertFAFNot(env, path, "array = {'b'}");
+                AssertFAF(env, path, "Array = {'a', 'b'}", "E1");
+                AssertFAF(env, path, "Array = {'a'}", "E2");
+                AssertFAF(env, path, "Array is null", "E3");
+                AssertFAFNot(env, path, "Array = {'b'}");
 
                 env.UndeployAll();
             }

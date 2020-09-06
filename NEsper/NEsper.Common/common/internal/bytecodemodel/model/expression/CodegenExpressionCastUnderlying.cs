@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression expression)
         {
             _clazz = null;
-            _clazzName = clazzName;
+            _clazzName = clazzName?.CodeInclusionTypeName();
             _expression = expression;
         }
 

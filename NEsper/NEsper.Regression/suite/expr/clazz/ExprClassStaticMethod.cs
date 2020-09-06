@@ -6,12 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -20,341 +18,420 @@ using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUti
 
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
-	public class ExprClassStaticMethod
-	{
+    public class ExprClassStaticMethod
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithStaticMethodLocal(execs);
+            WithStaticMethodCreate(execs);
+            WithStaticMethodCreateCompileVsRuntime(execs);
+            WithStaticMethodLocalFAFQuery(execs);
+            WithStaticMethodCreateFAFQuery(execs);
+            WithStaticMethodLocalWithPackageName(execs);
+            WithStaticMethodCreateClassWithPackageName(execs);
+            WithStaticMethodLocalAndCreateClassTogether(execs);
+            WithInvalidCompile(execs);
+            WithDocSamples(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprClassStaticMethodLocal(false));
-			executions.Add(new ExprClassStaticMethodLocal(true));
-			executions.Add(new ExprClassStaticMethodCreate(false));
-			executions.Add(new ExprClassStaticMethodCreate(true));
-			executions.Add(new ExprClassStaticMethodCreateCompileVsRuntime());
-			executions.Add(new ExprClassStaticMethodLocalFAFQuery());
-			executions.Add(new ExprClassStaticMethodLocalFAFQuery());
-			executions.Add(new ExprClassStaticMethodCreateFAFQuery());
-			executions.Add(new ExprClassStaticMethodLocalWithPackageName());
-			executions.Add(new ExprClassStaticMethodCreateClassWithPackageName());
-			executions.Add(new ExprClassStaticMethodLocalAndCreateClassTogether());
-			executions.Add(new ExprClassInvalidCompile());
-			executions.Add(new ExprClassDocSamples());
-			return executions;
-		}
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassDocSamples());
+            return execs;
+        }
 
-		private class ExprClassDocSamples : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string epl = "inlined_class \"\"\"\n" +
-				             "  public class MyUtility {\n" +
-				             "    public static double fib(int n) {\n" +
-				             "      if (n <= 1)\n" +
-				             "        return n;\n" +
-				             "      return fib(n-1) + fib(n-2);\n" +
-				             "    }\n" +
-				             "  }\n" +
-				             "\"\"\"\n" +
-				             "select MyUtility.fib(IntPrimitive) from SupportBean";
-				env.Compile(epl);
+        public static IList<RegressionExecution> WithInvalidCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassInvalidCompile());
+            return execs;
+        }
 
-				RegressionPath path = new RegressionPath();
-				string eplCreate = "create inlined_class \"\"\" \n" +
-				                   "  public class MyUtility {\n" +
-				                   "    public static double midPrice(double buy, double sell) {\n" +
-				                   "      return (buy + sell) / 2;\n" +
-				                   "    }\n" +
-				                   "  }\n" +
-				                   "\"\"\"";
-				env.Compile(eplCreate, path);
-				env.Compile("select MyUtility.midPrice(DoublePrimitive, DoubleBoxed) from SupportBean", path);
-			}
-		}
+        public static IList<RegressionExecution> WithStaticMethodLocalAndCreateClassTogether(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodLocalAndCreateClassTogether());
+            return execs;
+        }
 
-		private class ExprClassStaticMethodLocalAndCreateClassTogether : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				RegressionPath path = new RegressionPath();
-				string eplClass = "inlined_class \"\"\"\n" +
-				                  "    public class MyUtil {\n" +
-				                  "        public static String returnBubba() {\n" +
-				                  "            return \"bubba\";\n" +
-				                  "        }\n" +
-				                  "    }\n" +
-				                  "\"\"\" \n" +
-				                  "@public create inlined_class \"\"\"\n" +
-				                  "    public class MyClass {\n" +
-				                  "        public static String doIt() {\n" +
-				                  "            return \"|\" + MyUtil.returnBubba() + \"|\";\n" +
-				                  "        }\n" +
-				                  "    }\n" +
-				                  "\"\"\"\n";
-				env.CompileDeploy(eplClass, path);
+        public static IList<RegressionExecution> WithStaticMethodCreateClassWithPackageName(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodCreateClassWithPackageName());
+            return execs;
+        }
 
-				string epl = "@Name('s0') select MyClass.doIt() as c0 from SupportBean\n";
-				env.CompileDeploy(epl, path).AddListener("s0");
+        public static IList<RegressionExecution> WithStaticMethodLocalWithPackageName(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodLocalWithPackageName());
+            return execs;
+        }
 
-				SendSBAssert(env, "E1", 1, "|bubba|");
+        public static IList<RegressionExecution> WithStaticMethodCreateFAFQuery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodCreateFAFQuery());
+            return execs;
+        }
 
-				env.UndeployAll();
-			}
-		}
+        public static IList<RegressionExecution> WithStaticMethodLocalFAFQuery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodLocalFAFQuery());
+            return execs;
+        }
 
-		private class ExprClassStaticMethodLocalWithPackageName : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string epl = "@Name('s0') inlined_class \"\"\"\n" +
-				             "    package mypackage;" +
-				             "    public class MyUtil {\n" +
-				             "        public static String doIt() {\n" +
-				             "            return \"test\";\n" +
-				             "        }\n" +
-				             "    }\n" +
-				             "\"\"\" \n" +
-				             "select mypackage.MyUtil.doIt() as c0 from SupportBean\n";
-				env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithStaticMethodCreateCompileVsRuntime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodCreateCompileVsRuntime());
+            return execs;
+        }
 
-				SendSBAssert(env, "E1", 1, "test");
+        public static IList<RegressionExecution> WithStaticMethodCreate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodCreate(false));
+            execs.Add(new ExprClassStaticMethodCreate(true));
+            return execs;
+        }
 
-				env.UndeployAll();
-			}
-		}
+        public static IList<RegressionExecution> WithStaticMethodLocal(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodLocal(false));
+            execs.Add(new ExprClassStaticMethodLocal(true));
+            return execs;
+        }
 
-		private class ExprClassStaticMethodCreateClassWithPackageName : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string epl =
-					"create inlined_class \"\"\"\n" +
-					"    package mypackage;" +
-					"    public class MyUtil {\n" +
-					"        public static String doIt(String TheString, int IntPrimitive) {\n" +
-					"            return TheString + Convert.ToString(IntPrimitive);\n" +
-					"        }\n" +
-					"    }\n" +
-					"\"\"\";\n" +
-					"@Name('s0') select mypackage.MyUtil.doIt(TheString, IntPrimitive) as c0 from SupportBean;\n";
-				env.CompileDeploy(epl).AddListener("s0");
+        private class ExprClassDocSamples : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "inlined_class \"\"\"\n" +
+                          "  public class MyUtilityA {\n" +
+                          "    public static double Fib(int n) {\n" +
+                          "      if (n <= 1)\n" +
+                          "        return n;\n" +
+                          "      return Fib(n-1) + Fib(n-2);\n" +
+                          "    }\n" +
+                          "  }\n" +
+                          "\"\"\"\n" +
+                          "select MyUtilityA.Fib(IntPrimitive) from SupportBean";
+                env.Compile(epl);
+                
+                var path = new RegressionPath();
+                var eplCreate = "create inlined_class \"\"\" \n" +
+                                "  public class MyUtilityB {\n" +
+                                "    public static double MidPrice(double buy, double sell) {\n" +
+                                "      return (buy + sell) / 2;\n" +
+                                "    }\n" +
+                                "  }\n" +
+                                "\"\"\"";
+                env.Compile(eplCreate, path);
+                env.Compile("select MyUtilityB.MidPrice(DoublePrimitive, DoubleBoxed) from SupportBean", path);
+            }
+        }
 
-				SendSBAssert(env, "E1", 1, "E11");
+        private class ExprClassStaticMethodLocalAndCreateClassTogether : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var eplClass = "inlined_class \"\"\"\n" +
+                               "    public class MyUtil {\n" +
+                               "        public static string ReturnBubba() {\n" +
+                               "            return \"bubba\";\n" +
+                               "        }\n" +
+                               "    }\n" +
+                               "\"\"\" \n" +
+                               "@public create inlined_class \"\"\"\n" +
+                               "    public class MyClass {\n" +
+                               "        public static string DoIt() {\n" +
+                               "            return \"|\" + MyUtil.ReturnBubba() + \"|\";\n" +
+                               "        }\n" +
+                               "    }\n" +
+                               "\"\"\"\n";
+                env.CompileDeploy(eplClass, path);
+                var epl = "@Name('s0') select MyClass.DoIt() as c0 from SupportBean\n";
+                env.CompileDeploy(epl, path).AddListener("s0");
+                SendSBAssert(env, "E1", 1, "|bubba|");
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ExprClassStaticMethodLocalWithPackageName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@Name('s0') inlined_class \"\"\"\n" +
+                          "namespace mypackage {" +
+                          "    public class MyUtil {\n" +
+                          "        public static string DoIt() {\n" +
+                          "            return \"test\";\n" +
+                          "        }\n" +
+                          "    }\n" +
+                          "}\n" +
+                          "\"\"\" \n" +
+                          "select mypackage.MyUtil.DoIt() as c0 from SupportBean\n";
+                env.CompileDeploy(epl).AddListener("s0");
+                SendSBAssert(env, "E1", 1, "test");
+                env.UndeployAll();
+            }
+        }
 
-		private class ExprClassStaticMethodCreateFAFQuery : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				RegressionPath path = new RegressionPath();
-				string eplWindow =
-					"@public create inlined_class \"\"\"\n" +
-					"    public class MyClass {\n" +
-					"        public static String doIt(String parameter) {\n" +
-					"            return \"abc\";\n" +
-					"        }\n" +
-					"    }\n" +
-					"\"\"\";\n" +
-					"create window MyWindow#keepall as (TheString string);\n" +
-					"on SupportBean merge MyWindow insert select TheString;\n";
-				env.CompileDeploy(eplWindow, path);
+        private class ExprClassStaticMethodCreateClassWithPackageName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create inlined_class \"\"\"\n" +
+                          "namespace mypackage {" +
+                          "    public class MyUtil {\n" +
+                          "        public static string DoIt(string TheString, int IntPrimitive) {\n" +
+                          "            return TheString + System.Convert.ToString(IntPrimitive);\n" +
+                          "        }\n" +
+                          "    }\n" +
+                          "}\n" +
+                          "\"\"\";\n" +
+                          "@Name('s0') select mypackage.MyUtil.DoIt(TheString, IntPrimitive) as c0 from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+                SendSBAssert(env, "E1", 1, "E11");
+                env.UndeployAll();
+            }
+        }
 
-				env.SendEventBean(new SupportBean("E1", 1));
+        private class ExprClassStaticMethodCreateFAFQuery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var eplWindow = "@public create inlined_class \"\"\"\n" +
+                                "    public class MyClass {\n" +
+                                "        public static string DoIt(string parameter) {\n" +
+                                "            return \"abc\";\n" +
+                                "        }\n" +
+                                "    }\n" +
+                                "\"\"\";\n" +
+                                "create window MyWindow#keepall as (TheString string);\n" +
+                                "on SupportBean merge MyWindow insert select TheString;\n";
+                env.CompileDeploy(eplWindow, path);
+                env.SendEventBean(new SupportBean("E1", 1));
+                var eplFAF = "select MyClass.DoIt(TheString) as c0 from MyWindow";
+                var result = env.CompileExecuteFAF(eplFAF, path);
+                Assert.AreEqual("abc", result.Array[0].Get("c0"));
+                env.Milestone(0);
+                result = env.CompileExecuteFAF(eplFAF, path);
+                Assert.AreEqual("abc", result.Array[0].Get("c0"));
+                env.UndeployAll();
+            }
+        }
 
-				string eplFAF = "select MyClass.doIt(TheString) as c0 from MyWindow";
-				EPFireAndForgetQueryResult result = env.CompileExecuteFAF(eplFAF, path);
-				Assert.AreEqual("abc", result.Array[0].Get("c0"));
+        private class ExprClassStaticMethodLocalFAFQuery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var eplWindow = "create window MyWindow#keepall as (TheString string);\n" + "on SupportBean merge MyWindow insert select TheString;\n";
+                env.CompileDeploy(eplWindow, path);
+                env.SendEventBean(new SupportBean("E1", 1));
+                var eplFAF = "inlined_class \"\"\"\n" +
+                             "namespace ${NAMESPACE} {\n" +
+                             "    public class MyClass {\n" +
+                             "        public static string DoIt(string parameter) {\n" +
+                             "            return '>' + parameter + '<';\n" +
+                             "        }\n" +
+                             "    }\n" +
+                             "}\n" +
+                             "\"\"\"\n select ${NAMESPACE}.MyClass.DoIt(TheString) as c0 from MyWindow";
+                var result = env.CompileExecuteFAF(
+                    eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()),
+                    path);
+                Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                env.Milestone(0);
 
-				env.Milestone(0);
+                result = env.CompileExecuteFAF(
+                    eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()),
+                    path);
+                Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                env.UndeployAll();
+            }
+        }
 
-				result = env.CompileExecuteFAF(eplFAF, path);
-				Assert.AreEqual("abc", result.Array[0].Get("c0"));
+        private class ExprClassInvalidCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // we allow empty class text
+                env.Compile("inlined_class \"\"\" \"\"\" select * from SupportBean");
+                // invalid class
+                TryInvalidCompile(
+                    env,
+                    "inlined_class \"\"\" x \"\"\" select * from SupportBean",
+                    "Exception processing statement: " +
+                    "Failure during module compilation: " +
+                    "[(1,2): error CS0116:");
+                //"Failed to compile class: Line 1, Column 2: One of 'class enum interface @' expected instead of 'x' for class [\"\"\" x \"\"\"]");
 
-				env.UndeployAll();
-			}
-		}
+                // invalid already deployed
+                var path = new RegressionPath();
+                var createClassEPL = "create inlined_class \"\"\" public class MyClass {}\"\"\"";
+                env.Compile(createClassEPL, path);
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    path,
+                    createClassEPL,
+                    "Class 'MyClass' has already been declared");
 
-		private class ExprClassStaticMethodLocalFAFQuery : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				RegressionPath path = new RegressionPath();
-				string eplWindow = "create window MyWindow#keepall as (TheString string);\n" +
-				                   "on SupportBean merge MyWindow insert select TheString;\n";
-				env.CompileDeploy(eplWindow, path);
+                // duplicate local class
+                var eplDuplLocal =
+                    "inlined_class \"\"\" class MyDuplicate{} \"\"\" inlined_class \"\"\" class MyDuplicate{} \"\"\" select * from SupportBean";
+                TryInvalidCompile(
+                    env,
+                    eplDuplLocal,
+                    "Exception processing statement: " +
+                    "Failure during module compilation: " +
+                    "[(1,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'MyDuplicate']");
 
-				env.SendEventBean(new SupportBean("E1", 1));
+                // duplicate local class and create-class class
+                var eplDuplLocalAndCreate = "inlined_class \"\"\" class MyDuplicate{} \"\"\" create inlined_class \"\"\" class MyDuplicate{} \"\"\"";
+                TryInvalidCompile(
+                    env,
+                    eplDuplLocalAndCreate,
+                    "Exception processing statement: " +
+                    "Failure during module compilation: " +
+                    "[(1,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'MyDuplicate']");
 
-				string eplFAF = "inlined_class \"\"\"\n" +
-				                "    public class MyClass {\n" +
-				                "        public static String doIt(String parameter) {\n" +
-				                "            return '>' + parameter + '<';\n" +
-				                "        }\n" +
-				                "    }\n" +
-				                "\"\"\"\n select MyClass.doIt(TheString) as c0 from MyWindow";
-				EPFireAndForgetQueryResult result = env.CompileExecuteFAF(eplFAF, path);
-				Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                // duplicate create-class class
+                var eplDuplCreate =
+                    "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n" +
+                    "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n";
+                TryInvalidCompile(
+                    env,
+                    eplDuplCreate,
+                    "Class 'MyDuplicate' has already been declared");
+            }
+        }
 
-				env.Milestone(0);
+        private class ExprClassStaticMethodCreateCompileVsRuntime : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eplTemplate =
+                    "@public create inlined_class \"\"\"\n" +
+                    "namespace ${NAMESPACE} {\n" +
+                    "    public class MyClass {\n" +
+                    "        public static int DoIt(int parameter) {\n" +
+                    "            return ${REPLACE};\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}\n" +
+                    "\"\"\"\n";
 
-				result = env.CompileExecuteFAF(eplFAF, path);
-				Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                var ns1 = NamespaceGenerator.Create();
+                var ns2 = NamespaceGenerator.Create();
+                var compiledReturnZero = env.Compile(
+                    eplTemplate
+                        .Replace("${REPLACE}", "0")
+                        .Replace("${NAMESPACE}", ns1));
+                var compiledReturnPlusOne = env.Compile(
+                    eplTemplate
+                        .Replace("${REPLACE}", "parameter+1")
+                        .Replace("${NAMESPACE}", ns2));
+                var path = new RegressionPath();
+                path.Add(compiledReturnZero);
+                
+                var compiledQuery = env.Compile($"@Name('s0') select {ns2}.MyClass.DoIt(IntPrimitive) as c0 from SupportBean;\n", path);
+                env.Deploy(compiledReturnPlusOne);
+                env.Deploy(compiledQuery).AddListener("s0");
+                SendSBAssert(env, "E1", 10, 11);
+                env.Milestone(0);
+                SendSBAssert(env, "E2", 20, 21);
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ExprClassStaticMethodCreate : RegressionExecution
+        {
+            private readonly bool _soda;
 
-		private class ExprClassInvalidCompile : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				// we allow empty class text
-				env.Compile("inlined_class \"\"\" \"\"\" select * from SupportBean");
+            public ExprClassStaticMethodCreate(bool soda)
+            {
+                this._soda = soda;
+            }
 
-				// invalid class
-				TryInvalidCompile(
-					env,
-					"inlined_class \"\"\" x \"\"\" select * from SupportBean",
-					"Failed to compile class: Line 1, Column 2: One of 'class enum interface @' expected instead of 'x' for class [\"\"\" x \"\"\"]");
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var namespc = NamespaceGenerator.Create();
+                var eplClass = "@public create inlined_class \"\"\"\n" +
+                               $"namespace {namespc} {{\n" +
+                               "    public class MyClass {\n" +
+                               "        public static string DoIt(string parameter) {\n" +
+                               "            return \"|\" + parameter + \"|\";\n" +
+                               "        }\n" +
+                               "    }\n" +
+                               "}\n" +
+                               "\"\"\"\n";
+                env.CompileDeploy(_soda, eplClass, path);
+                env.CompileDeploy(_soda, $"@Name('s0') select {namespc}.MyClass.DoIt(TheString) as c0 from SupportBean", path);
+                env.AddListener("s0");
+                SendSBAssert(env, "E1", 0, "|E1|");
+                env.Milestone(0);
+                SendSBAssert(env, "E2", 0, "|E2|");
+                env.UndeployAll();
+            }
+        }
 
-				// invalid already deployed
-				RegressionPath path = new RegressionPath();
-				string createClassEPL = "create inlined_class \"\"\" public class MyClass {}\"\"\"";
-				env.Compile(createClassEPL, path);
-				SupportMessageAssertUtil.TryInvalidCompile(
-					env,
-					path,
-					createClassEPL,
-					"Class 'MyClass' has already been declared");
+        private class ExprClassStaticMethodLocal : RegressionExecution
+        {
+            private readonly bool _soda;
 
-				// duplicate local class
-				string eplDuplLocal =
-					"inlined_class \"\"\" class MyDuplicate{} \"\"\" inlined_class \"\"\" class MyDuplicate{} \"\"\" select * from SupportBean";
-				TryInvalidCompile(env, eplDuplLocal, "Duplicate class by name 'MyDuplicate'");
+            public ExprClassStaticMethodLocal(bool soda)
+            {
+                this._soda = soda;
+            }
 
-				// duplicate local class and create-class class
-				string eplDuplLocalAndCreate = "inlined_class \"\"\" class MyDuplicate{} \"\"\" create inlined_class \"\"\" class MyDuplicate{} \"\"\"";
-				TryInvalidCompile(env, eplDuplLocalAndCreate, "Duplicate class by name 'MyDuplicate'");
+            public void Run(RegressionEnvironment env)
+            {
+                var nsp = NamespaceGenerator.Create();
+                var epl = "@Name('s0') inlined_class \"\"\"\n" +
+                          $"namespace {nsp} {{\n" +
+                          "    public class MyClass {\n" +
+                          "        public static string DoIt(string parameter) {\n" +
+                          "            return \"|\" + parameter + \"|\";\n" +
+                          "        }\n" +
+                          "    }\n" +
+                          "}\n" +
+                          "\"\"\" " +
+                          $"select {nsp}.MyClass.DoIt(TheString) as c0 from SupportBean\n";
+                env.CompileDeploy(_soda, epl).AddListener("s0");
+                SendSBAssert(env, "E1", 0, "|E1|");
+                env.Milestone(0);
+                SendSBAssert(env, "E2", 0, "|E2|");
+                env.UndeployAll();
+            }
+        }
 
-				// duplicate create-class class
-				string eplDuplCreate = "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n" +
-				                       "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n";
-				TryInvalidCompile(env, eplDuplCreate, "Class 'MyDuplicate' has already been declared");
-			}
-		}
+        private static void SendSBAssert(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive,
+            object expected)
+        {
+            env.SendEventBean(new SupportBean(theString, intPrimitive));
+            Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+        }
 
-		private class ExprClassStaticMethodCreateCompileVsRuntime : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string eplTemplate = "@public create inlined_class \"\"\"\n" +
-				                     "    public class MyClass {\n" +
-				                     "        public static int doIt(int parameter) {\n" +
-				                     "            return %REPLACE%;\n" +
-				                     "        }\n" +
-				                     "    }\n" +
-				                     "\"\"\"\n";
-				EPCompiled compiledReturnZero = env.Compile(eplTemplate.Replace("%REPLACE%", "0"));
-				EPCompiled compiledReturnPlusOne = env.Compile(eplTemplate.Replace("%REPLACE%", "parameter+1"));
-
-				RegressionPath path = new RegressionPath();
-				path.Add(compiledReturnZero);
-				EPCompiled compiledQuery = env.Compile("@Name('s0') select MyClass.doIt(IntPrimitive) as c0 from SupportBean;\n", path);
-				env.Deploy(compiledReturnPlusOne);
-				env.Deploy(compiledQuery).AddListener("s0");
-
-				SendSBAssert(env, "E1", 10, 11);
-
-				env.Milestone(0);
-
-				SendSBAssert(env, "E2", 20, 21);
-
-				env.UndeployAll();
-			}
-		}
-
-		private class ExprClassStaticMethodCreate : RegressionExecution
-		{
-			private readonly bool _soda;
-
-			public ExprClassStaticMethodCreate(bool soda)
-			{
-				this._soda = soda;
-			}
-
-			public void Run(RegressionEnvironment env)
-			{
-				RegressionPath path = new RegressionPath();
-				string eplClass = "@public create inlined_class \"\"\"\n" +
-				                  "    public class MyClass {\n" +
-				                  "        public static String doIt(String parameter) {\n" +
-				                  "            return \"|\" + parameter + \"|\";\n" +
-				                  "        }\n" +
-				                  "    }\n" +
-				                  "\"\"\"\n";
-				env.CompileDeploy(_soda, eplClass, path);
-				env.CompileDeploy(_soda, "@Name('s0') select MyClass.doIt(TheString) as c0 from SupportBean", path);
-				env.AddListener("s0");
-
-				SendSBAssert(env, "E1", 0, "|E1|");
-
-				env.Milestone(0);
-
-				SendSBAssert(env, "E2", 0, "|E2|");
-
-				env.UndeployAll();
-			}
-		}
-
-		private class ExprClassStaticMethodLocal : RegressionExecution
-		{
-			private readonly bool _soda;
-
-			public ExprClassStaticMethodLocal(bool soda)
-			{
-				this._soda = soda;
-			}
-
-			public void Run(RegressionEnvironment env)
-			{
-				string epl = "@Name('s0') inlined_class \"\"\"\n" +
-				             "    public class MyClass {\n" +
-				             "        public static String doIt(String parameter) {\n" +
-				             "            return \"|\" + parameter + \"|\";\n" +
-				             "        }\n" +
-				             "    }\n" +
-				             "\"\"\" " +
-				             "select MyClass.doIt(TheString) as c0 from SupportBean\n";
-				env.CompileDeploy(_soda, epl).AddListener("s0");
-
-				SendSBAssert(env, "E1", 0, "|E1|");
-
-				env.Milestone(0);
-
-				SendSBAssert(env, "E2", 0, "|E2|");
-
-				env.UndeployAll();
-			}
-		}
-
-		private static void SendSBAssert(
-			RegressionEnvironment env,
-			string theString,
-			int intPrimitive,
-			object expected)
-		{
-			env.SendEventBean(new SupportBean(theString, intPrimitive));
-			Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
-		}
-
-		private class MyClass
-		{
-			public string DoIt(string parameter)
-			{
-				return "|" + parameter + "|";
-			}
-		}
-	}
+        private class MyClass
+        {
+            public string DoIt(string parameter)
+            {
+                return "|" + parameter + "|";
+            }
+        }
+    }
 } // end of namespace

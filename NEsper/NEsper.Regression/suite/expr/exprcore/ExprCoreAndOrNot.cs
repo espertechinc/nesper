@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				var epl =
 					"create variable string thing = \"Hello World\";" +
-					"@Name('s0') select not thing.contains(TheString) as c0 from SupportBean;\n";
+					"@Name('s0') select not thing.Contains(TheString) as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendBeanAssert(env, "World", false);

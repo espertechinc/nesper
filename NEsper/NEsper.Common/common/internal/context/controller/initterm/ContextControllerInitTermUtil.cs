@@ -100,13 +100,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             identifier.EndTime = key.ExpectedEndTime;
 
             var start = controller.InitTermFactory.InitTermSpec.StartCondition;
-            if (start is ContextConditionDescriptorFilter) {
-                var filter = (ContextConditionDescriptorFilter) start;
-                if (filter.OptionalFilterAsName != null) {
-                    identifier.Properties = Collections.SingletonDataMap(
-                        filter.OptionalFilterAsName,
-                        key.TriggeringEvent);
-                }
+            var filter = start as ContextConditionDescriptorFilter;
+            if (filter?.OptionalFilterAsName != null) {
+                identifier.Properties = Collections.SingletonDataMap(
+                    filter.OptionalFilterAsName,
+                    key.TriggeringEvent);
             }
 
             if (controller.Factory.FactoryEnv.IsLeaf) {

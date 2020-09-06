@@ -164,9 +164,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 baseStatisticsBean.XStandardDeviationPop);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.GetName(), baseStatisticsBean.XVariance);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.GetName(), baseStatisticsBean.XAverage);
-            if (additionalProps != null) {
-                additionalProps.AddProperties(result, lastNewValues);
-            }
+            additionalProps?.AddProperties(result, lastNewValues);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
         }

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -18,10 +19,17 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     /// should be encapsulated within the deserializer implementation.  What is exposed through
     /// the API is an object deserializer.
     /// </summary>
-    public abstract class JsonDeserializerBase
+    public abstract class JsonDeserializerBase : IJsonDeserializer
     {
         public JsonDeserializerBase()
         {
+        }
+
+        /// <summary>
+        /// Allocates a vanilla json composite object.
+        /// </summary>
+        public Func<object> Allocator {
+            get => throw new NotImplementedException();
         }
 
         public JsonElement JsonValue { get; set; }
@@ -87,17 +95,5 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
             }
         }
 #endif
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="event">event</param>
-        /// <param name="name">name</param>
-        public void AddGeneralJson(
-            IDictionary<string, object> @event,
-            string name)
-        {
-            @event.Put(name, JsonValue.ElementToValue());
-        }
     }
 } // end of namespace

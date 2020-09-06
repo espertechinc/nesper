@@ -45,15 +45,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
             var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             var size = sorted.SizeCodegen();
-            var iterator = max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
+            var enumerator = max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
 
             context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .DeclareVar(TypeHelper.GetArrayType(componentType), "array", NewArrayByLength(componentType, size))
                 .DeclareVar<int>("count", Constant(0))
-                .DeclareVar<IEnumerator<EventBean>>("it", iterator)
-                .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
+                .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
+                .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
                 .AssignArrayElement(
                     Ref("array"),
                     Ref("count"),

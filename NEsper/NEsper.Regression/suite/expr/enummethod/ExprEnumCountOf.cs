@@ -34,10 +34,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.countof()");
-				builder.WithExpression(fields[1], "contained.countof(x => x.p00 = 9)");
-				builder.WithExpression(fields[2], "contained.countof((x, i) => x.p00 + i = 10)");
-				builder.WithExpression(fields[3], "contained.countof((x, i, s) => x.p00 + i + s = 100)");
+				builder.WithExpression(fields[0], "Contained.countof()");
+				builder.WithExpression(fields[1], "Contained.countof(x => x.P00 = 9)");
+				builder.WithExpression(fields[2], "Contained.countof((x, i) => x.P00 + i = 10)");
+				builder.WithExpression(fields[3], "Contained.countof((x, i, s) => x.P00 + i + s = 100)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
@@ -65,10 +65,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.countof()");
-				builder.WithExpression(fields[1], "strvals.countof(x => x = 'E1')");
-				builder.WithExpression(fields[2], "strvals.countof((x, i) => x = 'E1' and i >= 1)");
-				builder.WithExpression(fields[3], "strvals.countof((x, i, s) => x = 'E1' and i >= 1 and s > 2)");
+				builder.WithExpression(fields[0], "Strvals.countof()");
+				builder.WithExpression(fields[1], "Strvals.countof(x => x = 'E1')");
+				builder.WithExpression(fields[2], "Strvals.countof((x, i) => x = 'E1' and i >= 1)");
+				builder.WithExpression(fields[3], "Strvals.countof((x, i, s) => x = 'E1' and i >= 1 and s > 2)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 

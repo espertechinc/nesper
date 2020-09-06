@@ -30,11 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             var index = multimatchStreamNumToVariable[stream];
             var multiMatches = state.OptionalMultiMatches[index];
-            if (multiMatches == null) {
-                return null;
-            }
 
-            return multiMatches.GetShrinkEventArray();
+            return multiMatches?.GetShrinkEventArray();
         }
 
         protected internal static string PrintStates(

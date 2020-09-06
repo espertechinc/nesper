@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprCoreWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreBigNumberSupportMathContext()
         {
             var session = RegressionRunner.Session();
@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreConcatThreadingProfileLarge()
         {
             var session = RegressionRunner.Session();
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreDotExpressionDuckTyping()
         {
             var session = RegressionRunner.Session();
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreMathDivisionRules()
         {
             var session = RegressionRunner.Session();

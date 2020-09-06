@@ -3473,49 +3473,51 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 throw new ArgumentException("Null expression parameter");
             }
 
+            var attachPatternText = mapContext.IsAttachPatternText;
             if (eval is PatternAndExpr) {
-                return new EvalAndForgeNode();
+                return new EvalAndForgeNode(attachPatternText);
             }
             else if (eval is PatternFilterExpr) {
                 var filterExpr = (PatternFilterExpr) eval;
                 var filterSpec = MapFilter(filterExpr.Filter, mapContext);
-                return new EvalFilterForgeNode(filterSpec, filterExpr.TagName, filterExpr.OptionalConsumptionLevel);
+                return new EvalFilterForgeNode(attachPatternText, filterSpec, filterExpr.TagName, filterExpr.OptionalConsumptionLevel);
             }
             else if (eval is PatternEveryExpr) {
-                return new EvalEveryForgeNode();
+                return new EvalEveryForgeNode(attachPatternText);
             }
             else if (eval is PatternOrExpr) {
-                return new EvalOrForgeNode();
+                return new EvalOrForgeNode(attachPatternText);
             }
             else if (eval is PatternNotExpr) {
-                return new EvalNotForgeNode();
+                return new EvalNotForgeNode(attachPatternText);
             }
             else if (eval is PatternFollowedByExpr) {
                 var fb = (PatternFollowedByExpr) eval;
                 var maxExpr = MapExpressionDeep(fb.OptionalMaxPerSubexpression, mapContext);
-                return new EvalFollowedByForgeNode(maxExpr);
+                return new EvalFollowedByForgeNode(attachPatternText, maxExpr);
             }
 
             if (eval is PatternObserverExpr) {
                 var observer = (PatternObserverExpr) eval;
                 var expressions = MapExpressionDeep(observer.Parameters, mapContext);
                 return new EvalObserverForgeNode(
+                    attachPatternText,
                     new PatternObserverSpec(observer.Namespace, observer.Name, expressions));
             }
             else if (eval is PatternGuardExpr) {
                 var guard = (PatternGuardExpr) eval;
                 var expressions = MapExpressionDeep(guard.Parameters, mapContext);
-                return new EvalGuardForgeNode(new PatternGuardSpec(guard.Namespace, guard.Name, expressions));
+                return new EvalGuardForgeNode(attachPatternText, new PatternGuardSpec(guard.Namespace, guard.Name, expressions));
             }
             else if (eval is PatternMatchUntilExpr until) {
                 var low = until.Low != null ? MapExpressionDeep(until.Low, mapContext) : null;
                 var high = until.High != null ? MapExpressionDeep(until.High, mapContext) : null;
                 var single = until.Single != null ? MapExpressionDeep(until.Single, mapContext) : null;
-                return new EvalMatchUntilForgeNode(low, high, single);
+                return new EvalMatchUntilForgeNode(attachPatternText, low, high, single);
             }
             else if (eval is PatternEveryDistinctExpr everyDist) {
                 var expressions = MapExpressionDeep(everyDist.Expressions, mapContext);
-                return new EvalEveryDistinctForgeNode(expressions);
+                return new EvalEveryDistinctForgeNode(attachPatternText, expressions);
             }
 
             throw new ArgumentException(

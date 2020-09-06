@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				TryInvalidCompile(
 					env,
 					"create json schema InvalidDecl(int fieldname)",
-					"Nestable type configuration encountered an unexpected property type name 'fieldname' for property 'int', expected System.Type or Map or the name of a previously-declared event type");
+					"Nestable type configuration encountered an unexpected property type name 'fieldname' for property 'System.Int32', expected System.Type or Map or the name of a previously-declared event type");
 
 				TryInvalidCompile(
 					env,

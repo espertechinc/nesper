@@ -119,11 +119,11 @@ namespace com.espertech.esper.common.client.configuration.common
                 var typeExpr = CodegenExpressionBuilder.EnumValue(typeof(XPathResultType), Type.GetName());
                 
                 return new CodegenSetterBuilder(typeof(XPathPropertyDesc), typeof(XPathPropertyDesc), "desc", parent, scope)
-                    .Constant("name", Name)
-                    .Expression("type", typeExpr)
-                    .Constant("xpath", XPath)
-                    .Constant("optionalEventTypeName", OptionalEventTypeName)
-                    .Constant("optionalCastToType", OptionalCastToType)
+                    .Constant("Name", Name)
+                    .Expression("Type", typeExpr)
+                    .Constant("XPath", XPath)
+                    .Constant("OptionalEventTypeName", OptionalEventTypeName)
+                    .Constant("OptionalCastToType", OptionalCastToType)
                     .Build();
             }
         }

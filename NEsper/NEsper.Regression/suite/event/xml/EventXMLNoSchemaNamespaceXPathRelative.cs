@@ -44,9 +44,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             {
                 var epl =
                     "@public @buseventtype " +
-                    "@XMLSchema(rootElementName='getQuote', defaultNamespace='http://services.samples/xsd', rootElementNamespace='http://services.samples/xsd', xpathResolvePropertiesAbsolute=false," +
-                    "  xpathPropertyExpr=true)" +
-                    "@XMLSchemaNamespacePrefix(prefix='m0', namespace='http://services.samples/xsd')" +
+                    "@XMLSchema(RootElementName='getQuote', DefaultNamespace='http://services.samples/xsd', RootElementNamespace='http://services.samples/xsd', XPathResolvePropertiesAbsolute=false," +
+                    "  XPathPropertyExpr=true)" +
+                    "@XMLSchemaNamespacePrefix(Prefix='m0', Namespace='http://services.samples/xsd')" +
                     "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);

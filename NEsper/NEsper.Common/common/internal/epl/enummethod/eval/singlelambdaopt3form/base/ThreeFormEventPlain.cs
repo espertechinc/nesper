@@ -53,12 +53,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-			CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
+			var scope = new ExprForgeCodegenSymbol(false, null);
+			var returnType = ReturnType();
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(returnType, GetType(), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
-			CodegenBlock block = methodNode.Block;
+			var block = methodNode.Block;
 
-			CodegenExpression returnEmpty = ReturnIfEmptyOptional();
+			var returnEmpty = ReturnIfEmptyOptional();
 			if (returnEmpty != null) {
 				block.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 					.BlockReturn(returnEmpty);
@@ -67,13 +69,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			InitBlock(block, methodNode, scope, codegenClassScope);
 
 			if (HasForEachLoop()) {
-				CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+				var forEach = block
+					.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
 				ForEachBlock(forEach, methodNode, scope, codegenClassScope);
 			}
 
 			ReturnResult(block);
-			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
+			return LocalMethod(
+				methodNode, 
+				premade.Eps,
+				premade.Enumcoll,
+				premade.IsNewData,
+				premade.ExprCtx);
 		}
 	}
 } // end of namespace

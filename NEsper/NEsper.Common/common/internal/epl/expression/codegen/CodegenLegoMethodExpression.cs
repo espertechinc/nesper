@@ -60,14 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             exprMethod.Block.DebugStack();
-            
-            var expression = CodegenLegoCast.CastSafeFromObjectType(
-                evaluationType,
-                forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope));
+
+            var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
 
             if (evaluationType != typeof(void)) {
-                exprMethod.Block.MethodReturn(expression);
+                exprMethod.Block.MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression));
             }
             else {
                 exprMethod.Block.Expression(expression);

@@ -149,11 +149,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         private void AddProperties(IDictionary<string, object> newDataMap)
         {
-            if (additionalProps == null) {
-                return;
-            }
-
-            additionalProps.AddProperties(newDataMap, lastValuesEventNew);
+            additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
         }
     }
 } // end of namespace

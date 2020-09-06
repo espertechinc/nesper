@@ -28,6 +28,7 @@ namespace com.espertech.esper.regressionrun.Runner
         public void Destroy()
         {
             Runtime?.Destroy();
+            Runtime = null;
         }
     }
 } // end of namespace

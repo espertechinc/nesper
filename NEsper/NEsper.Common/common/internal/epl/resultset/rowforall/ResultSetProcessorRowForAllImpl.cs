@@ -130,9 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     MEMBER_AGENTINSTANCECONTEXT,
                     MEMBER_AGGREGATIONSVC,
                     REF_VIEWABLE)
-                .DeclareVar<IEnumerator<EventBean>>("iterator", LocalMethod(obtainMethod))
+                .DeclareVar<IEnumerator<EventBean>>("enumerator", LocalMethod(obtainMethod))
                 .Expression(ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT))
-                .MethodReturn(Ref("iterator"));
+                .MethodReturn(Ref("enumerator"));
         }
 
         public static void GetEnumeratorJoinCodegen(
@@ -326,7 +326,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 }
 
                 if (forge.IsSelectRStream) {
-                    forEach.InstanceMethod(
+                    forEach.LocalMethod(
                         getSelectListEventAddList,
                         ConstantFalse(),
                         REF_ISSYNTHESIZE,
@@ -351,7 +351,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     MEMBER_AGENTINSTANCECONTEXT,
                     ExprDotName(Ref("pair"), "First"),
                     ExprDotName(Ref("pair"), "Second"));
-                forEach.InstanceMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
+                forEach.LocalMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
                 if (forge.IsSorting) {
                     forEach.ExprDotMethod(
                         Ref("newEventsSortKey"),
@@ -476,7 +476,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
             {
                 if (forge.IsSelectRStream) {
-                    forEach.InstanceMethod(
+                    forEach.LocalMethod(
                         getSelectListEventAddList,
                         ConstantFalse(),
                         REF_ISSYNTHESIZE,
@@ -502,7 +502,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     ExprDotName(Ref("pair"), "First"),
                     ExprDotName(Ref("pair"), "Second"),
                     Ref("eventsPerStream"));
-                forEach.InstanceMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
+                forEach.LocalMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
                 if (forge.IsSorting) {
                     forEach.ExprDotMethod(
                         Ref("newEventsSortKey"),

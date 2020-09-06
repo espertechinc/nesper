@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.render;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -41,24 +42,78 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session = null;
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEventRender()
+        /// <summary>
+        /// Auto-test(s): EventRenderJSON
+        /// <code>
+        /// RegressionRunner.Run(_session, EventRenderJSON.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventRenderJSON : AbstractTestBase
         {
-            RegressionRunner.Run(session, EventRender.Executions());
+            public TestEventRenderJSON() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithJsonEventType() => RegressionRunner.Run(_session, EventRenderJSON.WithJsonEventType());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnquote() => RegressionRunner.Run(_session, EventRenderJSON.WithEnquote());
+
+            [Test, RunInApplicationDomain]
+            public void WithEmptyMap() => RegressionRunner.Run(_session, EventRenderJSON.WithEmptyMap());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapAndNestedArray() => RegressionRunner.Run(_session, EventRenderJSON.WithMapAndNestedArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithRenderSimple() => RegressionRunner.Run(_session, EventRenderJSON.WithRenderSimple());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEventRenderJSON()
-        {
-            RegressionRunner.Run(session, EventRenderJSON.Executions());
-        }
+        /// <summary>
+        /// Auto-test(s): EventRender
+        /// <code>
+        /// RegressionRunner.Run(_session, EventRender.Executions());
+        /// </code>
+        /// </summary>
 
-        [Test, RunInApplicationDomain]
-        public void TestEventRenderXML()
+        public class TestEventRender : AbstractTestBase
         {
-            RegressionRunner.Run(session, EventRenderXML.Executions());
-        }
+            public TestEventRender() : base(Configure) { }
 
+            [Test, RunInApplicationDomain]
+            public void WithPONOMap() => RegressionRunner.Run(_session, EventRender.WithPONOMap());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArray() => RegressionRunner.Run(_session, EventRender.WithObjectArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithPropertyCustomRenderer() => RegressionRunner.Run(_session, EventRender.WithPropertyCustomRenderer());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EventRenderXML
+        /// <code>
+        /// RegressionRunner.Run(_session, EventRenderXML.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventRenderXML : AbstractTestBase
+        {
+            public TestEventRenderXML() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithEnquote() => RegressionRunner.Run(_session, EventRenderXML.WithEnquote());
+
+            [Test, RunInApplicationDomain]
+            public void WithSQLDate() => RegressionRunner.Run(_session, EventRenderXML.WithSQLDate());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapAndNestedArray() => RegressionRunner.Run(_session, EventRenderXML.WithMapAndNestedArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithRenderSimple() => RegressionRunner.Run(_session, EventRenderXML.WithRenderSimple());
+        }
+        
         private static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{typeof(SupportBean), typeof(EventRender.MyRendererEvent),

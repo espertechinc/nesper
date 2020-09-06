@@ -1386,31 +1386,16 @@ namespace com.espertech.esper.common.@internal.util
             return type.FullName;
         }
 
-        /// <summary>
-        ///     Returns the boxed class for the given type name, recognizing all primitive and abbreviations,
-        ///     uppercase and lowercase.
-        ///     <para />
-        ///     Recognizes "int" as System.Int32 and "strIng" as System.String, and "Integer" as System.Int32,
-        ///     and so on.
-        /// </summary>
-        /// <param name="typeName">is the name to recognize</param>
-        /// <param name="classForNameProvider">the class for name provider</param>
-        /// <param name="boxed">if set to <c>true</c> [boxed].</param>
-        /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
-        /// <returns>
-        ///     class
-        /// </returns>
-        /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
-        public static Type GetTypeForSimpleName(
+        public static Type GetTypeForBuiltin(
             string typeName,
-            ClassForNameProvider classForNameProvider,
-            bool boxed = false,
-            bool throwOnError = false)
+            bool boxed = false)
         {
             typeName = typeName.Trim();
 
-            switch (typeName.ToLower())
-            {
+            switch (typeName.ToLower()) {
+                case "object":
+                    return typeof(object);
+                
                 case "string":
                 case "varchar":
                 case "varchar2":
@@ -1518,6 +1503,37 @@ namespace com.espertech.esper.common.@internal.util
                     return typeof(IDictionary<string, object>);
             }
 
+            return null;
+        }
+
+        /// <summary>
+        ///     Returns the boxed class for the given type name, recognizing all primitive and abbreviations,
+        ///     uppercase and lowercase.
+        ///     <para />
+        ///     Recognizes "int" as System.Int32 and "strIng" as System.String, and "Integer" as System.Int32,
+        ///     and so on.
+        /// </summary>
+        /// <param name="typeName">is the name to recognize</param>
+        /// <param name="classForNameProvider">the class for name provider</param>
+        /// <param name="boxed">if set to <c>true</c> [boxed].</param>
+        /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
+        /// <returns>
+        ///     class
+        /// </returns>
+        /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
+        public static Type GetTypeForSimpleName(
+            string typeName,
+            ClassForNameProvider classForNameProvider,
+            bool boxed = false,
+            bool throwOnError = false)
+        {
+            typeName = typeName.Trim();
+
+            var builtin = GetTypeForBuiltin(typeName, boxed);
+            if (builtin != null) {
+                return builtin;
+            }
+            
             if (classForNameProvider != null)
             {
                 try {
@@ -1990,11 +2006,12 @@ namespace com.espertech.esper.common.@internal.util
                     }
 
                     var genericTypeArgs = identifiers
-                        .Select(
-                            genericArg => {
+                        .Select(_ => _.GetText())
+                        .Select(_ => {
                                 // TBD: Consider the need for handling escaped arguments.  In ASTUtil, there is some handling for unescaping these
-                                // values.  We need to move the content into NESper.Grammar so that it is usable across multiple projects.
-                                return ResolveType(genericArg.GetText(), assemblySearchPath, throwOnError);
+                                // values.  We need to move the content into NEsper.Grammar so that it is usable across multiple projects.
+                                var result = GetTypeForBuiltin(_, false);
+                                return result != null ? result : ResolveType(_, assemblySearchPath, throwOnError);
                             })
                         .ToArray();
 
@@ -2505,63 +2522,55 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public static bool IsFragmentableType(this Type propertyType)
         {
-            if (propertyType == null)
-            {
+            if (propertyType == null) {
                 return false;
             }
 
-            if (propertyType.IsArray)
-            {
+            if (propertyType.IsArray) {
                 return IsFragmentableType(propertyType.GetElementType());
             }
 
-            if (propertyType.IsNullable())
-            {
+            if (propertyType.IsNullable()) {
                 propertyType = Nullable.GetUnderlyingType(propertyType);
             }
 
-            if (IsBuiltinDataType(propertyType))
-            {
+            if (IsBuiltinDataType(propertyType)) {
                 return false;
             }
 
-            if (propertyType.IsEnum)
-            {
+            if (propertyType.IsEnum) {
                 return false;
             }
 
-            if (propertyType.IsGenericDictionary())
-            {
+            if (propertyType.IsGenericDictionary()) {
                 return false;
             }
 
-            if (propertyType == typeof(XmlNode))
-            {
+            if (propertyType == typeof(XmlNode)) {
                 return false;
             }
 
-            if (propertyType == typeof(XmlNodeList))
-            {
+            if (propertyType == typeof(XmlNodeList)) {
                 return false;
             }
 
-            if (propertyType == typeof(object))
-            {
+            if (propertyType == typeof(object)) {
                 return false;
             }
 
-            if (propertyType == typeof(DateTimeOffset))
-            {
+            if (propertyType == typeof(DateTimeEx)) {
                 return false;
             }
 
-            if (propertyType == typeof(DateTime))
-            {
+            if (propertyType == typeof(DateTimeOffset)) {
                 return false;
             }
 
-            if (propertyType.FullName == AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME)
-            {
+            if (propertyType == typeof(DateTime)) {
+                return false;
+            }
+
+            if (propertyType.FullName == AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME) {
                 return false;
             }
 

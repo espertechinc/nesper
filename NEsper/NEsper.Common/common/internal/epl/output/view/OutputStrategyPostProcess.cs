@@ -49,11 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             // route first
             if (_parent.IsRoute) {
-                if (newEvents != null && _parent.InsertIntoStreamSelector.IsSelectsIStream()) {
+                if (newEvents != null && _parent.InsertIntoStreamSelector.Value.IsSelectsIStream()) {
                     Route(newEvents, _agentInstanceContext);
                 }
 
-                if (oldEvents != null && _parent.InsertIntoStreamSelector.IsSelectsRStream()) {
+                if (oldEvents != null && _parent.InsertIntoStreamSelector.Value.IsSelectsRStream()) {
                     Route(oldEvents, _agentInstanceContext);
                 }
             }

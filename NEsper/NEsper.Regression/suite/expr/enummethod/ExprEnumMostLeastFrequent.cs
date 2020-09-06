@@ -36,12 +36,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.mostFrequent(x => p00)");
-				builder.WithExpression(fields[1], "contained.leastFrequent(x => p00)");
-				builder.WithExpression(fields[2], "contained.mostFrequent( (x, i) => p00 + i*2)");
-				builder.WithExpression(fields[3], "contained.leastFrequent( (x, i) => p00 + i*2)");
-				builder.WithExpression(fields[4], "contained.mostFrequent( (x, i, s) => p00 + i*2 + s*4)");
-				builder.WithExpression(fields[5], "contained.leastFrequent( (x, i, s) => p00 + i*2 + s*4)");
+				builder.WithExpression(fields[0], "Contained.mostFrequent(x => P00)");
+				builder.WithExpression(fields[1], "Contained.leastFrequent(x => P00)");
+				builder.WithExpression(fields[2], "Contained.mostFrequent( (x, i) => P00 + i*2)");
+				builder.WithExpression(fields[3], "Contained.leastFrequent( (x, i) => P00 + i*2)");
+				builder.WithExpression(fields[4], "Contained.mostFrequent( (x, i, s) => P00 + i*2 + s*4)");
+				builder.WithExpression(fields[5], "Contained.leastFrequent( (x, i, s) => P00 + i*2 + s*4)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
@@ -71,8 +71,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.mostFrequent()");
-				builder.WithExpression(fields[1], "strvals.leastFrequent()");
+				builder.WithExpression(fields[0], "Strvals.mostFrequent()");
+				builder.WithExpression(fields[1], "Strvals.leastFrequent()");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
@@ -94,12 +94,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.mostFrequent(v => extractNum(v))");
-				builder.WithExpression(fields[1], "strvals.leastFrequent(v => extractNum(v))");
-				builder.WithExpression(fields[2], "strvals.mostFrequent( (v, i) => extractNum(v) + i*10)");
-				builder.WithExpression(fields[3], "strvals.leastFrequent( (v, i) => extractNum(v) + i*10)");
-				builder.WithExpression(fields[4], "strvals.mostFrequent( (v, i, s) => extractNum(v) + i*10 + s*100)");
-				builder.WithExpression(fields[5], "strvals.leastFrequent( (v, i, s) => extractNum(v) + i*10 + s*100)");
+				builder.WithExpression(fields[0], "Strvals.mostFrequent(v => extractNum(v))");
+				builder.WithExpression(fields[1], "Strvals.leastFrequent(v => extractNum(v))");
+				builder.WithExpression(fields[2], "Strvals.mostFrequent( (v, i) => extractNum(v) + i*10)");
+				builder.WithExpression(fields[3], "Strvals.leastFrequent( (v, i) => extractNum(v) + i*10)");
+				builder.WithExpression(fields[4], "Strvals.mostFrequent( (v, i, s) => extractNum(v) + i*10 + s*100)");
+				builder.WithExpression(fields[5], "Strvals.leastFrequent( (v, i, s) => extractNum(v) + i*10 + s*100)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 

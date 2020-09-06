@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationAccessorForgeGetCodegenContext context)
         {
             var size = accessStateFactory.AggregatorLinear.SizeCodegen();
-            var iterator = accessStateFactory.AggregatorLinear.EnumeratorCodegen(
+            var enumerator = accessStateFactory.AggregatorLinear.EnumeratorCodegen(
                 context.ClassScope,
                 context.Method,
                 context.NamedMethods);
@@ -51,11 +51,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .DeclareVar(TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar<int>("count", Constant(0))
-                .DeclareVar<IEnumerator<EventBean>>("it", iterator)
+                .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .DebugStack()
                 .DeclareVar<EventBean[]>("eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
-                .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
+                .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .AssignArrayElement(Ref("array"), Ref("count"), invokeChild)
                 .IncrementRef("count")
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .DeclareVar<IList<object>>("values", NewInstance<List<object>>(Ref("size")))
                 .DeclareVar<IEnumerator<EventBean>>(
-                    "it",
+                    "enumerator",
                     stateForge.AggregatorLinear.EnumeratorCodegen(
                         context.ClassScope,
                         context.Method,
@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
-                .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
+                .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .DeclareVar(
                     forge.ChildNode.EvaluationType.GetBoxedType(),

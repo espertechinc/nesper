@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -55,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public object GetBeanProp(object @object)
         {
-            return PropertyGetterHelper.GetPropertyArray(_prop, @object, _index);
+            return GetBeanPropInternal(@object, _index);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -68,12 +69,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return GetBeanProp(obj.Underlying);
         }
 
-        public override Type BeanPropType => _prop.PropertyType.GetElementType().GetBoxedType();
-
         public override bool IsExistsProperty(EventBean eventBean)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            var underlying = eventBean.Underlying;
+            return GetBeanPropInternalExists(underlying, _index);
         }
+
+        public override Type BeanPropType => _prop.PropertyType.GetElementType().GetBoxedType();
 
         public override Type TargetType => _prop.DeclaringType;
 
@@ -93,7 +95,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return UnderlyingExistsCodegen(
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -102,7 +107,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
+                GetBeanPropInternalCode(codegenMethodScope, _prop, codegenClassScope),
                 underlyingExpression,
                 Constant(_index));
         }
@@ -112,29 +117,108 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return LocalMethod(GetBeanPropInternalExistsCode(codegenMethodScope, _prop, codegenClassScope), underlyingExpression, Constant(_index));
         }
 
         public object Get(
             EventBean eventBean,
             int index)
         {
-            return PropertyGetterHelper.GetPropertyArray(_prop, eventBean.Underlying, index);
+            return GetBeanPropInternal(eventBean.Underlying, index);
         }
 
-        private CodegenMethod GetBeanPropInternalCodegen(
+        private object GetBeanPropInternal(
+            object @object,
+            int index)
+        {
+            try {
+                var value = (Array) _prop.GetValue(@object);
+                return CollectionUtil.ArrayValueAtIndex(value, index);
+            }
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(_prop, @object, e);
+            }
+            catch (TargetException e) {
+                throw PropertyUtility.GetTargetException(_prop, e);
+            }
+            catch (TargetInvocationException e) {
+                throw PropertyUtility.GetTargetException(_prop, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(_prop, e);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(_prop, e);
+            }
+        }
+        
+        private bool GetBeanPropInternalExists(
+            object @object,
+            int index)
+        {
+            try {
+                var value = (Array) _prop.GetValue(@object);
+                return CollectionUtil.ArrayExistsAtIndex(value, index);
+            }
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(_prop, @object, e);
+            }
+            catch (TargetException e) {
+                throw PropertyUtility.GetTargetException(_prop, e);
+            }
+            catch (TargetInvocationException e) {
+                throw PropertyUtility.GetTargetException(_prop, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(_prop, e);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(_prop, e);
+            }
+        }
+
+        internal static CodegenMethod GetBeanPropInternalCode(
             CodegenMethodScope codegenMethodScope,
+            PropertyInfo property,
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope
-                .MakeChild(BeanPropType, GetType(), codegenClassScope)
-                .AddParam(TargetType, "@object")
+                .MakeChild(property.PropertyType.GetElementType().GetBoxedType(), typeof(ArrayMethodPropertyGetter), codegenClassScope)
+                .AddParam(property.DeclaringType, "obj")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar(_prop.PropertyType, "value", ExprDotName(Ref("@object"), _prop.Name))
-                .MethodReturn(Cast(BeanPropType, StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", Ref("value"), Ref("index"))));
+                .DeclareVar(property.PropertyType, "array", ExprDotName(Ref("obj"), property.Name))
+                .IfRefNullReturnNull("array")
+                .IfConditionReturnConst(
+                    Relational(
+                        ArrayLength(Ref("array")),
+                        LE,
+                        Ref("index")),
+                    null)
+                .MethodReturn(ArrayAtIndex(Ref("array"), Ref("index")));
         }
-
+        
+        internal static CodegenMethod GetBeanPropInternalExistsCode(
+            CodegenMethodScope codegenMethodScope,
+            PropertyInfo property,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope
+                .MakeChild(typeof(bool), typeof(ArrayMethodPropertyGetter), codegenClassScope)
+                .AddParam(property.DeclaringType, "obj")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar(property.PropertyType, "array", ExprDotName(Ref("obj"), property.Name))
+                .IfRefNullReturnFalse("array")
+                .IfConditionReturnConst(
+                    Relational(
+                        ArrayLength(Ref("array")),
+                        LE,
+                        Ref("index")),
+                    false)
+                .MethodReturn(ConstantTrue());
+        }
+        
         public override string ToString()
         {
             return $"ArrayPropertyPropertyGetter property={_prop} index={_index}";
@@ -147,7 +231,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenExpression key)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
+                GetBeanPropInternalCode(codegenMethodScope, _prop, codegenClassScope),
                 CastUnderlying(TargetType, beanExpression),
                 key);
         }

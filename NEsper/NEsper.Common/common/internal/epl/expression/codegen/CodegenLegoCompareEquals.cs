@@ -36,11 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return Op(rhs, "==", lhs);
             }
 
-            if (lhsType.IsValueType) {
-                return ExprDotMethod(rhs, "Equals", lhs);
-            }
-
-            return ExprDotMethod(lhs, "Equals", rhs);
+            return StaticMethod<object>("Equals", lhs, rhs);
         }
     }
 } // end of namespace

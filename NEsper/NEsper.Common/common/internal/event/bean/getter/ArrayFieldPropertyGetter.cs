@@ -131,8 +131,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .AddParam(TargetType, "@object")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar(_field.FieldType, "value", ExprDotName(Ref("@object"), _field.Name))
-                .MethodReturn(Cast(BeanPropType, StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", Ref("value"), Ref("index"))));
+                //.DeclareVar(_field.FieldType, "value", ExprDotName(Ref("@object"), _field.Name))
+                .DeclareVar<Array>("value", ExprDotName(Ref("@object"), _field.Name))
+                .MethodReturn(
+                    Cast(
+                        BeanPropType,
+                        StaticMethod(
+                            typeof(CollectionUtil),
+                            "ArrayValueAtIndex",
+                            Cast<Array>(Ref("value")),
+                            Ref("index"))));
         }
 
         public override string ToString()

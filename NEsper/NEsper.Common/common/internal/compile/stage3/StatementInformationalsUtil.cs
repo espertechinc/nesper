@@ -210,11 +210,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             var visitor = new ExprNodeSummaryVisitor();
             foreach (var expr in expressions) {
-                if (expr == null) {
-                    continue;
-                }
-
-                expr.Accept(visitor);
+                expr?.Accept(visitor);
             }
 
             return !visitor.HasAggregation && !visitor.HasPreviousPrior && !visitor.HasSubselect;

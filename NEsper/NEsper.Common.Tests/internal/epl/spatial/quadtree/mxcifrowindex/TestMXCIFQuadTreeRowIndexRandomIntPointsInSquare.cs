@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
     [TestFixture]
     public class TestMxcifQuadTreeRowIndexRandomIntPointsInSquare : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRandomIntPoints()
         {
             SupportQuadTreeToolUnique<MXCIFQuadTree> tools = new SupportQuadTreeToolUnique<MXCIFQuadTree>(

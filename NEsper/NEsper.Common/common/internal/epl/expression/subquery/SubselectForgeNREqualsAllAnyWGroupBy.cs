@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     else {
                         ifRightNotNull.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                             .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
+                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
                     }
 
                     if (isNot) {

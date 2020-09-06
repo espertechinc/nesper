@@ -58,11 +58,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             props.Put(ContextPropertyEventType.PROP_CTX_STARTTIME, key.StartTime);
             props.Put(ContextPropertyEventType.PROP_CTX_ENDTIME, key.ExpectedEndTime);
 
-            if (initTermSpec.StartCondition is ContextConditionDescriptorFilter) {
-                var filter = (ContextConditionDescriptorFilter) initTermSpec.StartCondition;
-                if (filter.OptionalFilterAsName != null) {
-                    props.Put(filter.OptionalFilterAsName, key.TriggeringEvent);
-                }
+            var filter = initTermSpec.StartCondition as ContextConditionDescriptorFilter;
+            if (filter?.OptionalFilterAsName != null) {
+                props.Put(filter.OptionalFilterAsName, key.TriggeringEvent);
             }
 
             if (initTermSpec.StartCondition is ContextConditionDescriptorPattern) {
@@ -90,11 +88,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ident.StartTime = key.StartTime;
             ident.EndTime = key.ExpectedEndTime;
 
-            if (initTermSpec.StartCondition is ContextConditionDescriptorFilter) {
-                var filter = (ContextConditionDescriptorFilter) initTermSpec.StartCondition;
-                if (filter.OptionalFilterAsName != null) {
-                    ident.Properties = Collections.SingletonDataMap(filter.OptionalFilterAsName, key.TriggeringEvent);
-                }
+            var filter = initTermSpec.StartCondition as ContextConditionDescriptorFilter;
+            if (filter?.OptionalFilterAsName != null) {
+                ident.Properties = Collections.SingletonDataMap(filter.OptionalFilterAsName, key.TriggeringEvent);
             }
 
             return ident;

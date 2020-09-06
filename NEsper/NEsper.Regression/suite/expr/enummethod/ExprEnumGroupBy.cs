@@ -23,14 +23,41 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumGroupBy
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumGroupByOneParamEvent());
-			execs.Add(new ExprEnumGroupByOneParamScalar());
-			execs.Add(new ExprEnumGroupByTwoParamEvent());
+			WithOneParamEvent(execs);
+			WithOneParamScalar(execs);
+			WithTwoParamEvent(execs);
+			WithTwoParamScalar(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTwoParamScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumGroupByTwoParamScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTwoParamEvent(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumGroupByTwoParamEvent());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithOneParamScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumGroupByOneParamScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithOneParamEvent(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumGroupByOneParamEvent());
 			return execs;
 		}
 
@@ -40,11 +67,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.groupBy(c => id)");
-				builder.WithExpression(fields[1], "contained.groupBy((c, i) => id || '_' || Convert.ToString(i))");
-				builder.WithExpression(fields[2], "contained.groupBy((c, i, s) => id || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+				builder.WithExpression(fields[0], "Contained.groupBy(c => Id)");
+				builder.WithExpression(fields[1], "Contained.groupBy((c, i) => Id || '_' || Convert.ToString(i))");
+				builder.WithExpression(fields[2], "Contained.groupBy((c, i, s) => Id || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, object>)));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
 
 				EPAssertionUtil.AssertionCollectionValueString extractorEvents = collectionItem => {
 					int p00 = ((SupportBean_ST0) collectionItem).P00;
@@ -76,13 +103,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.groupBy(c => extractAfterUnderscore(c))");
-				builder.WithExpression(fields[1], "strvals.groupBy((c, i) => extractAfterUnderscore(c) || '_' || Convert.ToString(i))");
+				builder.WithExpression(fields[0], "Strvals.groupBy(c => extractAfterUnderscore(c))");
+				builder.WithExpression(fields[1], "Strvals.groupBy((c, i) => extractAfterUnderscore(c) || '_' || Convert.ToString(i))");
 				builder.WithExpression(
 					fields[2],
-					"strvals.groupBy((c, i, s) => extractAfterUnderscore(c) || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+					"Strvals.groupBy((c, i, s) => extractAfterUnderscore(c) || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, object>)));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1_2,E2_1,E3_2"))
 					.Verify("c0", val => CompareMaps(val, "2,1", new[] {"E1_2,E3_2", "E2_1"}, GetExtractorScalar()))
@@ -109,13 +136,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.groupBy(k => id, v => p00)");
-				builder.WithExpression(fields[1], "contained.groupBy((k, i) => id || '_' || Convert.ToString(i), (v, i) => p00 + i*10)");
+				builder.WithExpression(fields[0], "Contained.groupBy(k => Id, v => P00)");
+				builder.WithExpression(fields[1], "Contained.groupBy((k, i) => Id || '_' || Convert.ToString(i), (v, i) => P00 + i*10)");
 				builder.WithExpression(
 					fields[2],
-					"contained.groupBy((k, i, s) => id || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, i, s) => p00 + i*10 + s*100)");
+					"Contained.groupBy((k, i, s) => Id || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, i, s) => P00 + i*10 + s*100)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, object>)));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
 
 				EPAssertionUtil.AssertionCollectionValueString extractor = collectionItem => {
 					int p00 = collectionItem.AsInt32();
@@ -147,15 +174,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.groupBy(k => extractAfterUnderscore(k), v => v)");
+				builder.WithExpression(fields[0], "Strvals.groupBy(k => extractAfterUnderscore(k), v => v)");
 				builder.WithExpression(
 					fields[1],
-					"strvals.groupBy((k, i) => extractAfterUnderscore(k) || '_' || Convert.ToString(i), (v, i) => v || '_' || Convert.ToString(i))");
+					"Strvals.groupBy((k, i) => extractAfterUnderscore(k) || '_' || Convert.ToString(i), (v, i) => v || '_' || Convert.ToString(i))");
 				builder.WithExpression(
 					fields[2],
-					"strvals.groupBy((k, i, s) => extractAfterUnderscore(k) || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+					"Strvals.groupBy((k, i, s) => extractAfterUnderscore(k) || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, object>)));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1_2,E2_1,E3_2"))
 					.Verify("c0", val => CompareMaps(val, "2,1", new[] {"E1_2,E3_2", "E2_1"}, GetExtractorScalar()))
@@ -198,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			EPAssertionUtil.AssertionCollectionValueString extractorEvents)
 		{
 			string[] keys = string.IsNullOrWhiteSpace(keyCSV) ? new string[0] : keyCSV.SplitCsv();
-			EPAssertionUtil.AssertMapOfCollection((IDictionary<string, object>) val, keys, values, extractorEvents);
+			EPAssertionUtil.AssertMapOfCollection((IDictionary<object, object>) val, keys, values, extractorEvents);
 		}
 	}
 } // end of namespace

@@ -432,7 +432,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             AggregationClassNames classNames)
         {
             if (enter) {
-                method.Block.InstanceMethod(HandleRemovedKeysCodegen(method, classScope));
+                method.Block.LocalMethod(HandleRemovedKeysCodegen(method, classScope));
             }
 
             if (localGroupByPlan.OptionalLevelTopForge != null) {

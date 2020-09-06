@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 					var conversion = methodNode.MakeChild(fieldClassBoxed, this.GetType(), codegenClassScope).AddParam(typeof(object), "value");
 					conversion.Block
 						.IfRefNullReturnNull("value")
-						.MethodReturn(Cast(fieldClassBoxed, ExprDotMethod(Cast(typeof(EventBean), Ref("value")), "getUnderlying")));
+						.MethodReturn(Cast(fieldClassBoxed, ExprDotName(Cast(typeof(EventBean), Ref("value")), "Underlying")));
 					rhs = LocalMethod(
 						conversion,
 						CodegenLegoMayVoid.ExpressionMayVoid(typeof(EventBean), _selectContext.ExprForges[i], methodNode, exprSymbol, codegenClassScope));
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 						methodNode.Block
 							.DeclareVar(fieldClassBoxed, tmp, rhs)
 							.IfRefNotNull(tmp)
-							.AssignRef(ExprDotName(Ref("und"), field.FieldName), Ref(tmp))
+							.AssignRef(ExprDotName(Ref("und"), field.FieldName), Unbox(Ref(tmp), fieldClassBoxed))
 							.BlockEnd();
 					}
 					else {
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 				}
 			}
 
-			methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedJson", Ref("und"), resultEventType));
+			methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
 			return methodNode;
 		}
 

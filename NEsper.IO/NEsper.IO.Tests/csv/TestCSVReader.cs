@@ -32,7 +32,7 @@ namespace com.espertech.esperio.csv
             _container = SupportContainer.Reset();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClose()
         {
             var path = "regression/parseTests.csv";
@@ -55,7 +55,7 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLooping()
         {
             AssertLooping("regression/endOnNewline.csv");
@@ -63,7 +63,7 @@ namespace com.espertech.esperio.csv
             AssertLooping("regression/endOnCommentedEOF.csv");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNonLooping()
         {
             AssertNonLooping("regression/endOnNewline.csv");
@@ -71,7 +71,7 @@ namespace com.espertech.esperio.csv
             AssertNonLooping("regression/endOnCommentedEOF.csv");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParsing()
         {
             var path = "regression/parseTests.csv";
@@ -118,7 +118,7 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestReset()
         {
             var reader = new CSVReader(new AdapterInputSource(_container, "regression/endOnNewline.csv"));
@@ -138,7 +138,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(expected, nextRecord);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTitleRow()
         {
             var reader = new CSVReader(new AdapterInputSource(_container, "regression/titleRow.csv"));
@@ -193,7 +193,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(expected, nextRecord);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNestedProperties()
         {
             var container = ContainerExtensions.CreateDefaultContainer();
@@ -218,7 +218,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(1, f.Point.X);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNestedMapProperties()
         {
             var configuration = new Configuration(_container);

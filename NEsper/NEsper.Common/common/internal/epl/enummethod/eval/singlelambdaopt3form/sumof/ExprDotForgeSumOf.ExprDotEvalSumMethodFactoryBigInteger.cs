@@ -18,20 +18,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             {
             }
 
-            public ExprDotEvalSumMethod SumAggregator {
-                get { return new ExprDotEvalSumMethodBigInteger(); }
-            }
+            public ExprDotEvalSumMethod SumAggregator => new ExprDotEvalSumMethodBigInteger();
 
-            public Type ValueType {
-                get { return typeof(BigInteger); }
-            }
+            public Type ValueType => typeof(BigInteger?);
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(
-                    typeof(BigInteger),
-                    "sum",
-                    EnumValue(typeof(BigInteger), "Zero"));
+                block.DeclareVar<BigInteger>("sum", EnumValue(typeof(BigInteger), "Zero"));
                 block.DeclareVar<long>("cnt", Constant(0));
             }
 
@@ -39,21 +32,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 CodegenBlock block,
                 CodegenExpressionRef value)
             {
-                block.IncrementRef("cnt")
-                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", value));
+                block.IncrementRef("cnt");
+                block.AssignCompound("sum", "+", ExprDotMethod(value, "AsBigInteger"));
             }
 
             public void CodegenEnterObjectTypedNonNull(
                 CodegenBlock block,
                 CodegenExpressionRef value)
             {
-                block.IncrementRef("cnt")
-                    .AssignRef(
-                        "sum",
-                        ExprDotMethod(
-                            Ref("sum"),
-                            "Add",
-                            ExprDotMethod(value, "AsBigInteger")));
+                block.IncrementRef("cnt");
+                block.AssignCompound("sum", "+", ExprDotMethod(value, "AsBigInteger"));
             }
 
             public void CodegenReturn(CodegenBlock block)

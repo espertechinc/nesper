@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            var epl = "@Name('s0') select " +
 	                      "current_evaluation_context() as c0, " +
 	                      "current_evaluation_context(), " +
-	                      "current_evaluation_context().getRuntimeURI() as c2 from SupportBean";
+	                      "current_evaluation_context().GetRuntimeURI() as c2 from SupportBean";
 	            var resolver = new StatementUserObjectOption(_ => "my_user_object");
 	            var arguments = new CompilerArguments(new Configuration());
 	            arguments.Options.StatementUserObject = resolver;

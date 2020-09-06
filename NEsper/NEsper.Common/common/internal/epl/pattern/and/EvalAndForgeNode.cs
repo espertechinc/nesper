@@ -29,6 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
 
         public bool IsStateful => true;
 
+        public EvalAndForgeNode(bool attachPatternText) : base(attachPatternText)
+        {
+        }
+
         public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.AND;
 
         public override string ToString()

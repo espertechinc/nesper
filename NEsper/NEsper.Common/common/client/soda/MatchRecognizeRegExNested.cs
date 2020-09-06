@@ -84,10 +84,7 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(")");
             writer.Write(type.GetText());
-            if (optionalRepeat != null)
-            {
-                optionalRepeat.WriteEPL(writer);
-            }
+            optionalRepeat?.WriteEPL(writer);
         }
     }
 } // end of namespace

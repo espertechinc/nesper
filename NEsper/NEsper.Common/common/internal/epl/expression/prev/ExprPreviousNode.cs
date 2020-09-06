@@ -202,7 +202,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     codegenClassScope,
                     true);
 
-                methodX.Block.DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
+                methodX.Block
+                    .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                     .DeclareVar<ICollection<object>>("result", NewInstance<ArrayDeque<object>>(Ref("size")))
                     .ForLoopIntSimple("i", Ref("size"))
                     .AssignArrayElement(

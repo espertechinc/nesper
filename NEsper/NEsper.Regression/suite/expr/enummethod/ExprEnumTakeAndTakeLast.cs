@@ -36,12 +36,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.take(2)");
-				builder.WithExpression(fields[1], "contained.take(1)");
-				builder.WithExpression(fields[2], "contained.take(0)");
-				builder.WithExpression(fields[3], "contained.take(-1)");
-				builder.WithExpression(fields[4], "contained.takeLast(2)");
-				builder.WithExpression(fields[5], "contained.takeLast(1)");
+				builder.WithExpression(fields[0], "Contained.take(2)");
+				builder.WithExpression(fields[1], "Contained.take(1)");
+				builder.WithExpression(fields[2], "Contained.take(0)");
+				builder.WithExpression(fields[3], "Contained.take(-1)");
+				builder.WithExpression(fields[4], "Contained.takeLast(2)");
+				builder.WithExpression(fields[5], "Contained.takeLast(1)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -89,10 +89,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.take(2)");
-				builder.WithExpression(fields[1], "strvals.take(1)");
-				builder.WithExpression(fields[2], "strvals.takeLast(2)");
-				builder.WithExpression(fields[3], "strvals.takeLast(1)");
+				builder.WithExpression(fields[0], "Strvals.take(2)");
+				builder.WithExpression(fields[1], "Strvals.take(1)");
+				builder.WithExpression(fields[2], "Strvals.takeLast(2)");
+				builder.WithExpression(fields[3], "Strvals.takeLast(1)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 

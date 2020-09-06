@@ -27,10 +27,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             PatternExpr patternExpr = Children[0];
-            if (patternExpr != null)
-            {
-                patternExpr.ToEPL(writer, Precedence, formatter);
-            }
+            patternExpr?.ToEPL(writer, Precedence, formatter);
         }
 
         public override PatternExprPrecedenceEnum Precedence

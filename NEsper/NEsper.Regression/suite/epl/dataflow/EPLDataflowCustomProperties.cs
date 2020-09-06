@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
-                    "  TheString = 'a'," +
+                    "  theString = 'a'," +
                     "  theInt: 1," +
                     "  theBool: true," +
                     "  theLongOne: 1L," +

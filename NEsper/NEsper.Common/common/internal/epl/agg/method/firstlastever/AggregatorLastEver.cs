@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             method.Block
                 .AssignRef(RowDotMember(row, _lastValue), 
-                    Cast(_childType, ReadNullable(_serde, input, unitKey, classScope)));
+                    FlexCast(_childType, ReadNullable(_serde, input, unitKey, classScope)));
         }
     }
 } // end of namespace

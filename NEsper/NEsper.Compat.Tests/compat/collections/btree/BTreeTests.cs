@@ -14,7 +14,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Constructors
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ConstructorWithValidSettings()
         {
             var accessor = new Func<string, string>(_ => _);
@@ -24,7 +24,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(btree.KeyAccessor, Is.SameAs(accessor));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ConstructorRequiresNonNullValues()
         {
             Assert.Throws<ArgumentNullException>(() => new BTree<string, string>(null, Comparer<string>.Default));
@@ -35,7 +35,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Insert
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void InsertUniqueNoRepeat()
         {
             var btree = new BTree<string, string>(_ => _, Comparer<string>.Default);
@@ -49,7 +49,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void InsertUniqueWithRepeat()
         {
             var btree = new BTree<string, string>(_ => _, Comparer<string>.Default);
@@ -76,7 +76,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Erase
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TryEraseSucceedsForExistingKeys()
         {
             var testKey = "000100";
@@ -86,7 +86,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(existingValue, Is.EqualTo(testKey));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TryEraseAllKeys()
         {
             var numKeys = 65536;
@@ -101,7 +101,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(btree.Count, Is.Zero);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TryEraseInsideOut()
         {
             var numKeys = 0x10000;
@@ -128,7 +128,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TryEraseInRounds()
         {
             var rounds = 7;
@@ -145,7 +145,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TryEraseRandom()
         {
             var numKeys = 65536;
@@ -170,7 +170,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Locate
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ContainsWhenInTree()
         {
             var btree = CreateKVTree(65536);
@@ -183,7 +183,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void ContainsWhenNotInTree()
         {
             var btree = CreateKVTree(65536);
@@ -198,7 +198,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Cursor
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void HasRootCursor()
         {
             var btree = CreateKVTree(0);
@@ -207,7 +207,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(cursor.IsEnd, Is.True);
         }
         
-        [Test]
+        [Test, RunInApplicationDomain]
         public void HasBeginCursor()
         {
             var btree = CreateKVTree(1);
@@ -217,7 +217,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(cursor.IsNotEnd, Is.True);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void HasEndCursor()
         {
             var btree = CreateKVTree(1);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.compat.collections.btree
             Assert.That(cursor.IsNotEnd, Is.False);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CursorVisitsAllInOrder()
         {
             var btree = CreateKVTree(65536);
@@ -242,7 +242,7 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
         
-        [Test]
+        [Test, RunInApplicationDomain]
         public void CursorVisitsAllInReverse()
         {
             var btree = CreateKVTree(65536);
@@ -264,7 +264,7 @@ namespace com.espertech.esper.compat.collections.btree
         // Dump
         // --------------------------------------------------------------------------------
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void DumpExportsAllKeys()
         {
             var numKeys = 256;

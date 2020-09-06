@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestDatabaseTypeEnum : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLookup()
         {
             object[][] types = {
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTypes()
         {
             object[][] types = {

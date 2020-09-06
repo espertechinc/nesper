@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -54,7 +55,8 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 			public Type GetClass(string typeName)
 			{
-				throw new NotImplementedException();
+				names.Add(typeName);
+				return TypeHelper.ResolveType(typeName);
 			}
 
 			public IList<string> Names => names;

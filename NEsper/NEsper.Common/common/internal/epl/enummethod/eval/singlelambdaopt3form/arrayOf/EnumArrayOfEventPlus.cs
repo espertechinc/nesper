@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			block
 				.DeclareVar<object>("item", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.AssignArrayElement(Ref("result"), Ref("count"), Cast(_arrayComponentType, Ref("item")));
+				.AssignArrayElement(Ref("result"), Ref("count"), FlexCast(_arrayComponentType, Ref("item")));
 		}
 
 		public override void ReturnResult(CodegenBlock block)

@@ -43,66 +43,351 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraKeepAllSimple());
-            execs.Add(new InfraKeepAllSceneTwo());
-            execs.Add(new InfraBeanBacked());
-            execs.Add(new InfraTimeWindow());
-            execs.Add(new InfraTimeWindowSceneTwo());
-            execs.Add(new InfraTimeFirstWindow());
-            execs.Add(new InfraExtTimeWindow());
-            execs.Add(new InfraExtTimeWindowSceneTwo());
-            execs.Add(new InfraExtTimeWindowSceneThree());
-            execs.Add(new InfraTimeOrderWindow());
-            execs.Add(new InfraTimeOrderSceneTwo());
-            execs.Add(new InfraLengthWindow());
-            execs.Add(new InfraLengthWindowSceneTwo());
-            execs.Add(new InfraLengthFirstWindow());
-            execs.Add(new InfraTimeAccum());
-            execs.Add(new InfraTimeAccumSceneTwo());
-            execs.Add(new InfraTimeBatch());
-            execs.Add(new InfraTimeBatchSceneTwo());
-            execs.Add(new InfraTimeBatchLateConsumer());
-            execs.Add(new InfraLengthBatch());
-            execs.Add(new InfraLengthBatchSceneTwo());
-            execs.Add(new InfraSortWindow());
-            execs.Add(new InfraSortWindowSceneTwo());
-            execs.Add(new InfraTimeLengthBatch());
-            execs.Add(new InfraTimeLengthBatchSceneTwo());
-            execs.Add(new InfraLengthWindowSceneThree());
-            execs.Add(new InfraLengthWindowPerGroup());
-            execs.Add(new InfraTimeBatchPerGroup());
-            execs.Add(new InfraDoubleInsertSameWindow());
-            execs.Add(new InfraLastEvent());
-            execs.Add(new InfraLastEventSceneTwo());
-            execs.Add(new InfraFirstEvent());
-            execs.Add(new InfraUnique());
-            execs.Add(new InfraUniqueSceneTwo());
-            execs.Add(new InfraFirstUnique());
-            execs.Add(new InfraBeanContained());
-            execs.Add(new InfraIntersection());
-            execs.Add(new InfraBeanSchemaBacked());
-            execs.Add(new InfraDeepSupertypeInsert());
-            execs.Add(new InfraWithDeleteUseAs());
-            execs.Add(new InfraWithDeleteFirstAs());
-            execs.Add(new InfraWithDeleteSecondAs());
-            execs.Add(new InfraWithDeleteNoAs());
-            execs.Add(new InfraFilteringConsumer());
-            execs.Add(new InfraSelectGroupedViewLateStart());
-            execs.Add(new InfraFilteringConsumerLateStart());
-            execs.Add(new InfraInvalid());
-            execs.Add(new InfraNamedWindowInvalidAlreadyExists());
-            execs.Add(new InfraNamedWindowInvalidConsumerDataWindow());
-            execs.Add(new InfraPriorStats());
-            execs.Add(new InfraLateConsumer());
-            execs.Add(new InfraLateConsumerJoin());
-            execs.Add(new InfraPattern());
-            execs.Add(new InfraExternallyTimedBatch());
-            execs.Add(new InfraSelectStreamDotStarInsert());
-            execs.Add(new InfraSelectGroupedViewLateStartVariableIterate());
-            execs.Add(new InfraOnInsertPremptiveTwoWindow());
+WithKeepAllSimple(execs);
+WithKeepAllSceneTwo(execs);
+WithBeanBacked(execs);
+WithTimeWindow(execs);
+WithTimeWindowSceneTwo(execs);
+WithTimeFirstWindow(execs);
+WithExtTimeWindow(execs);
+WithExtTimeWindowSceneTwo(execs);
+WithExtTimeWindowSceneThree(execs);
+WithTimeOrderWindow(execs);
+WithTimeOrderSceneTwo(execs);
+WithLengthWindow(execs);
+WithLengthWindowSceneTwo(execs);
+WithLengthFirstWindow(execs);
+WithTimeAccum(execs);
+WithTimeAccumSceneTwo(execs);
+WithTimeBatch(execs);
+WithTimeBatchSceneTwo(execs);
+WithTimeBatchLateConsumer(execs);
+WithLengthBatch(execs);
+WithLengthBatchSceneTwo(execs);
+WithSortWindow(execs);
+WithSortWindowSceneTwo(execs);
+WithTimeLengthBatch(execs);
+WithTimeLengthBatchSceneTwo(execs);
+WithLengthWindowSceneThree(execs);
+WithLengthWindowPerGroup(execs);
+WithTimeBatchPerGroup(execs);
+WithDoubleInsertSameWindow(execs);
+WithLastEvent(execs);
+WithLastEventSceneTwo(execs);
+WithFirstEvent(execs);
+WithUnique(execs);
+WithUniqueSceneTwo(execs);
+WithFirstUnique(execs);
+WithBeanContained(execs);
+WithIntersection(execs);
+WithBeanSchemaBacked(execs);
+WithDeepSupertypeInsert(execs);
+WithWithDeleteUseAs(execs);
+WithWithDeleteFirstAs(execs);
+WithWithDeleteSecondAs(execs);
+WithWithDeleteNoAs(execs);
+WithFilteringConsumer(execs);
+WithSelectGroupedViewLateStart(execs);
+WithFilteringConsumerLateStart(execs);
+WithInvalid(execs);
+WithNamedWindowInvalidAlreadyExists(execs);
+WithNamedWindowInvalidConsumerDataWindow(execs);
+WithPriorStats(execs);
+WithLateConsumer(execs);
+WithLateConsumerJoin(execs);
+WithPattern(execs);
+WithExternallyTimedBatch(execs);
+WithSelectStreamDotStarInsert(execs);
+WithSelectGroupedViewLateStartVariableIterate(execs);
+WithOnInsertPremptiveTwoWindow(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithOnInsertPremptiveTwoWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraOnInsertPremptiveTwoWindow());
+    return execs;
+}public static IList<RegressionExecution> WithSelectGroupedViewLateStartVariableIterate(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraSelectGroupedViewLateStartVariableIterate());
+    return execs;
+}public static IList<RegressionExecution> WithSelectStreamDotStarInsert(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraSelectStreamDotStarInsert());
+    return execs;
+}public static IList<RegressionExecution> WithExternallyTimedBatch(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraExternallyTimedBatch());
+    return execs;
+}public static IList<RegressionExecution> WithPattern(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraPattern());
+    return execs;
+}public static IList<RegressionExecution> WithLateConsumerJoin(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLateConsumerJoin());
+    return execs;
+}public static IList<RegressionExecution> WithLateConsumer(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLateConsumer());
+    return execs;
+}public static IList<RegressionExecution> WithPriorStats(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraPriorStats());
+    return execs;
+}public static IList<RegressionExecution> WithNamedWindowInvalidConsumerDataWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraNamedWindowInvalidConsumerDataWindow());
+    return execs;
+}public static IList<RegressionExecution> WithNamedWindowInvalidAlreadyExists(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraNamedWindowInvalidAlreadyExists());
+    return execs;
+}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithFilteringConsumerLateStart(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraFilteringConsumerLateStart());
+    return execs;
+}public static IList<RegressionExecution> WithSelectGroupedViewLateStart(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraSelectGroupedViewLateStart());
+    return execs;
+}public static IList<RegressionExecution> WithFilteringConsumer(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraFilteringConsumer());
+    return execs;
+}public static IList<RegressionExecution> WithWithDeleteNoAs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraWithDeleteNoAs());
+    return execs;
+}public static IList<RegressionExecution> WithWithDeleteSecondAs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraWithDeleteSecondAs());
+    return execs;
+}public static IList<RegressionExecution> WithWithDeleteFirstAs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraWithDeleteFirstAs());
+    return execs;
+}public static IList<RegressionExecution> WithWithDeleteUseAs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraWithDeleteUseAs());
+    return execs;
+}public static IList<RegressionExecution> WithDeepSupertypeInsert(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraDeepSupertypeInsert());
+    return execs;
+}public static IList<RegressionExecution> WithBeanSchemaBacked(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraBeanSchemaBacked());
+    return execs;
+}public static IList<RegressionExecution> WithIntersection(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraIntersection());
+    return execs;
+}public static IList<RegressionExecution> WithBeanContained(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraBeanContained());
+    return execs;
+}public static IList<RegressionExecution> WithFirstUnique(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraFirstUnique());
+    return execs;
+}public static IList<RegressionExecution> WithUniqueSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraUniqueSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithUnique(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraUnique());
+    return execs;
+}public static IList<RegressionExecution> WithFirstEvent(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraFirstEvent());
+    return execs;
+}public static IList<RegressionExecution> WithLastEventSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLastEventSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithLastEvent(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLastEvent());
+    return execs;
+}public static IList<RegressionExecution> WithDoubleInsertSameWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraDoubleInsertSameWindow());
+    return execs;
+}public static IList<RegressionExecution> WithTimeBatchPerGroup(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeBatchPerGroup());
+    return execs;
+}public static IList<RegressionExecution> WithLengthWindowPerGroup(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthWindowPerGroup());
+    return execs;
+}public static IList<RegressionExecution> WithLengthWindowSceneThree(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthWindowSceneThree());
+    return execs;
+}public static IList<RegressionExecution> WithTimeLengthBatchSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeLengthBatchSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithTimeLengthBatch(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeLengthBatch());
+    return execs;
+}public static IList<RegressionExecution> WithSortWindowSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraSortWindowSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithSortWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraSortWindow());
+    return execs;
+}public static IList<RegressionExecution> WithLengthBatchSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthBatchSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithLengthBatch(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthBatch());
+    return execs;
+}public static IList<RegressionExecution> WithTimeBatchLateConsumer(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeBatchLateConsumer());
+    return execs;
+}public static IList<RegressionExecution> WithTimeBatchSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeBatchSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithTimeBatch(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeBatch());
+    return execs;
+}public static IList<RegressionExecution> WithTimeAccumSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeAccumSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithTimeAccum(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeAccum());
+    return execs;
+}public static IList<RegressionExecution> WithLengthFirstWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthFirstWindow());
+    return execs;
+}public static IList<RegressionExecution> WithLengthWindowSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthWindowSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithLengthWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraLengthWindow());
+    return execs;
+}public static IList<RegressionExecution> WithTimeOrderSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeOrderSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithTimeOrderWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeOrderWindow());
+    return execs;
+}public static IList<RegressionExecution> WithExtTimeWindowSceneThree(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraExtTimeWindowSceneThree());
+    return execs;
+}public static IList<RegressionExecution> WithExtTimeWindowSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraExtTimeWindowSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithExtTimeWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraExtTimeWindow());
+    return execs;
+}public static IList<RegressionExecution> WithTimeFirstWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeFirstWindow());
+    return execs;
+}public static IList<RegressionExecution> WithTimeWindowSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeWindowSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithTimeWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraTimeWindow());
+    return execs;
+}public static IList<RegressionExecution> WithBeanBacked(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraBeanBacked());
+    return execs;
+}public static IList<RegressionExecution> WithKeepAllSceneTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraKeepAllSceneTwo());
+    return execs;
+}public static IList<RegressionExecution> WithKeepAllSimple(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new InfraKeepAllSimple());
+    return execs;
+}
         private static SupportBean SendSupportBean(
             RegressionEnvironment env,
             string theString,

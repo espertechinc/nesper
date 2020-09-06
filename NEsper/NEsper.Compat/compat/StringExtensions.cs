@@ -98,5 +98,10 @@ namespace com.espertech.esper.compat
         {
             return Encoding.Unicode.GetBytes(input);
         }
+
+        public static string RemoveWhitespace(this string input)
+        {
+            return Regex.Replace(input, @"\s", "");
+        }
     }
 }

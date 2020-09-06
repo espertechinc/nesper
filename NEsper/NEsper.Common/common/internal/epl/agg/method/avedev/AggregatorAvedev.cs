@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method)
         {
             method.Block
-                .DeclareVar<double>("d", ExprDotMethod(Cast(typeof(double), value), "AsDouble"))
+                .DeclareVar<double>("d", ExprDotMethod(value, "AsDouble"))
                 .ExprDotMethod(valueSet, enter ? "Add" : "Remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
         }

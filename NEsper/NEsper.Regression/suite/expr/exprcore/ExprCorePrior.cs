@@ -634,7 +634,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    public class ExprCorePriorLengthWindowSceneTwo : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var text = "@Name('s0') select prior(1, symbol) as prior1, prior(2, Symbol) as prior2 from SupportMarketDataBean#length(3)";
+	            var text = "@Name('s0') select prior(1, Symbol) as prior1, prior(2, Symbol) as prior2 from SupportMarketDataBean#length(3)";
 	            env.CompileDeploy(text).AddListener("s0");
 
 	            env.SendEventBean(MakeMarketDataEvent("E0"));

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override Type ReturnType()
 		{
-			return typeof(double?);
+			return typeof(decimal?);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()

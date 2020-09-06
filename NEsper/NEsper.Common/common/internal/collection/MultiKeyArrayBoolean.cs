@@ -6,51 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.@internal.collection
 {
-    public sealed class MultiKeyArrayBoolean : MultiKeyArrayWrap
+    public sealed class MultiKeyArrayBoolean : MultiKeyArrayBase<bool>
     {
-        public MultiKeyArrayBoolean(bool[] keys)
+        public MultiKeyArrayBoolean(bool[] keys) : base(keys)
         {
-            Keys = keys;
-        }
-
-        public bool[] Keys { get; }
-
-        public object Array => Keys;
-
-        public override bool Equals(object o)
-        {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || GetType() != o.GetType()) {
-                return false;
-            }
-
-            var that = (MultiKeyArrayBoolean) o;
-
-            if (!Equals(Keys, that.Keys)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            return CompatExtensions.HashAll(Keys);
-        }
-
-        public override string ToString()
-        {
-            return "MultiKeyBoolean{" +
-                   "keys=" +
-                   Keys.RenderAny() +
-                   '}';
         }
     }
 } // end of namespace

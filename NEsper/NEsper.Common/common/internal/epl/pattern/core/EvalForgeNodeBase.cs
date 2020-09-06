@@ -23,15 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     public abstract class EvalForgeNodeBase : EvalForgeNode
     {
-        protected bool audit;
-        protected short factoryNodeId;
+        private bool _audit;
+        private short _factoryNodeId;
+        private bool _attachPatternText;
 
         /// <summary>
         ///     Constructor creates a list of child nodes.
         /// </summary>
-        public EvalForgeNodeBase()
+        public EvalForgeNodeBase(bool attachPatternText)
         {
             ChildNodes = new List<EvalForgeNode>();
+            _attachPatternText = attachPatternText;
         }
 
         public abstract PatternExpressionPrecedenceEnum Precedence { get; }
@@ -61,13 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         public IList<EvalForgeNode> ChildNodes { get; }
 
         public short FactoryNodeId {
-            get => factoryNodeId;
-            set => factoryNodeId = value;
+            get => _factoryNodeId;
+            set => _factoryNodeId = value;
         }
 
         public bool IsAudit {
-            get => audit;
-            set => audit = value;
+            get => _audit;
+            set => _audit = value;
         }
 
         public void ToEPL(
@@ -97,8 +99,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
                         .Add(NameOfFactory()))
-                .SetProperty(Ref("node"), "FactoryNodeId", Constant(factoryNodeId));
-            if (audit || classScope.IsInstrumented) {
+                .SetProperty(Ref("node"), "FactoryNodeId", Constant(_factoryNodeId));
+            if (_audit || classScope.IsInstrumented || _attachPatternText) {
                 var writer = new StringWriter();
                 ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
                 var expressionText = writer.ToString();

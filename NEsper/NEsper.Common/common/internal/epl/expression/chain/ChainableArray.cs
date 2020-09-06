@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
 
             ExprNode node = indexes[0];
             var evaluationType = node.Forge.EvaluationType;
-            if (evaluationType.IsInt32()) {
+            if (!evaluationType.IsInt32()) {
                 throw new ExprValidationException(
                     "Incorrect index expression for array operation, expected an expression returning an integer value but the expression '" +
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(node) +

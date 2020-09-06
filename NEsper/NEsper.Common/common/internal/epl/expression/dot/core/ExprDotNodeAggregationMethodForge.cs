@@ -158,21 +158,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 		public void Accept(ExprNodeVisitor visitor)
 		{
-			foreach (ExprNode parameter in parameters) {
+			foreach (var parameter in parameters) {
 				parameter.Accept(visitor);
 			}
 		}
 
 		public void Accept(ExprNodeVisitorWithParent visitor)
 		{
-			foreach (ExprNode parameter in parameters) {
+			foreach (var parameter in parameters) {
 				parameter.Accept(visitor);
 			}
 		}
 
 		public void AcceptChildnodes(ExprNodeVisitorWithParent visitor)
 		{
-			foreach (ExprNode parameter in parameters) {
+			foreach (var parameter in parameters) {
 				parameter.AcceptChildnodes(visitor, parent);
 			}
 		}

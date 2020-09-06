@@ -34,27 +34,167 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumProperty());
-            execs.Add(new ExprEnumSubstitutionParameter());
-            execs.Add(new ExprEnumEnumObject());
-            execs.Add(new ExprEnumSortedMaxMinBy());
-            execs.Add(new ExprEnumJoin());
-            execs.Add(new ExprEnumPrevWindowSorted());
-            execs.Add(new ExprEnumNamedWindow());
-            execs.Add(new ExprEnumSubselect());
-            execs.Add(new ExprEnumAccessAggregation());
-            execs.Add(new ExprEnumPrevFuncs());
-            execs.Add(new ExprEnumUDFStaticMethod());
-            execs.Add(new ExprEnumPropertySchema());
-            execs.Add(new ExprEnumPropertyInsertIntoAtEventBean());
-            execs.Add(new ExprEnumPatternInsertIntoAtEventBean());
-            execs.Add(new ExprEnumPatternFilter());
-            execs.Add(new ExprEnumVariable());
-            execs.Add(new ExprEnumTableRow());
-            execs.Add(new ExprEnumMatchRecognizeDefine());
+            WithProperty(execs);
+            WithSubstitutionParameter(execs);
+            WithEnumObject(execs);
+            WithSortedMaxMinBy(execs);
+            WithJoin(execs);
+            WithPrevWindowSorted(execs);
+            WithNamedWindow(execs);
+            WithSubselect(execs);
+            WithAccessAggregation(execs);
+            WithPrevFuncs(execs);
+            WithUDFStaticMethod(execs);
+            WithPropertySchema(execs);
+            WithPropertyInsertIntoAtEventBean(execs);
+            WithPatternInsertIntoAtEventBean(execs);
+            WithPatternFilter(execs);
+            WithVariable(execs);
+            WithTableRow(execs);
+            WithMatchRecognizeDefine(execs);
+            WithMatchRecognizeMeasures(execs);
+            WithCast(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumCast());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMatchRecognizeMeasures(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumMatchRecognizeMeasures(false));
             execs.Add(new ExprEnumMatchRecognizeMeasures(true));
-            execs.Add(new ExprEnumCast());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMatchRecognizeDefine(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMatchRecognizeDefine());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableRow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumTableRow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPatternFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternInsertIntoAtEventBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPatternInsertIntoAtEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyInsertIntoAtEventBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPropertyInsertIntoAtEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertySchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPropertySchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUDFStaticMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumUDFStaticMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevFuncs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPrevFuncs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAccessAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSubselect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevWindowSorted(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPrevWindowSorted());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSortedMaxMinBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSortedMaxMinBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumObject(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumEnumObject());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstitutionParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSubstitutionParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumProperty());
             return execs;
         }
 
@@ -62,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             RegressionEnvironment env,
             string epl)
         {
-            var fields = new [] { "flag" };
+            var fields = new[] {"flag"};
             env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
 
             env.SendEventBean(new SupportSelectorWithListEvent("1"));
@@ -140,13 +280,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@public @buseventtype create schema MyLocalEvent as " +
-                             typeof(MyLocalEvent).Name +
-                             ";\n" +
-                             "@Name('s0') select cast(value.someCollection?, java.util.Collection).countOf() as cnt from MyLocalEvent";
+                string epl =
+                    "@public @buseventtype create schema MyLocalEvent as " +
+                    typeof(MyLocalEvent).MaskTypeName() +
+                    ";\n" +
+                    "@Name('s0') select cast(Value.SomeCollection?, `System.Collections.Generic.ICollection<object>`).countOf() as cnt from MyLocalEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(new MyLocalEvent(new MyLocalWithCollection(new object[] { "a", "b" })));
+                env.SendEventBean(new MyLocalEvent(new MyLocalWithCollection(new object[] {"a", "b"})));
                 Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("cnt"));
 
                 env.UndeployAll();
@@ -229,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 var ticksLargeLess = theEvent.Get("ticksLargeLess200");
                 var ticksLargeLessContainer = FlexCollection.Of(ticksLargeLess);
-                
+
                 Assert.AreEqual(1, ticksLargeLessContainer.Count);
 
                 env.UndeployAll();
@@ -332,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new SupportBean("E4", 16));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a[0].Id","a[1].Id","b.TheString" },
+                    new[] {"a[0].Id", "a[1].Id", "b.TheString"},
                     new object[] {"E1", "E2", "E4"});
                 env.UndeployAll();
 
@@ -349,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new SupportBean("E14", 26));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a[0].Id","a[1].Id","b.TheString","c.TheString" },
+                    new[] {"a[0].Id", "a[1].Id", "b.TheString", "c.TheString"},
                     new object[] {"E10", "E11", "E12", "E14"});
 
                 env.UndeployAll();
@@ -361,7 +502,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 // try define-clause
-                var fieldsOne = new [] { "a_array[0].TheString","a_array[1].TheString","b.TheString" };
+                var fieldsOne = new[] {"a_array[0].TheString", "a_array[1].TheString", "b.TheString"};
                 var textOne = "@Name('s0') select * from SupportBean " +
                               "match_recognize (" +
                               " measures A as a_array, B as b " +
@@ -391,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // try measures-clause
-                var fieldsTwo = new [] { "c0" };
+                var fieldsTwo = new[] {"c0"};
                 var textTwo = "@Name('s0') select * from SupportBean " +
                               "match_recognize (" +
                               " measures A.anyOf(v-> v.IntPrimitive = B.IntPrimitive) as c0 " +
@@ -427,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "@Name('s0') select " +
                           "SupportEnumTwo.ENUM_VALUE_1.GetMystrings().anyOf(v -> v = Id) as c0, " +
                           "Value.GetMystrings().anyOf(v -> v = '2') as c1 " +
@@ -454,7 +595,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
+                var fields = new[] {"c0", "c1", "c2", "c3", "c4"};
 
                 var eplWindowAgg = "@Name('s0') select " +
                                    "sorted(TheString).allOf(x -> x.IntPrimitive < 5) as c0," +
@@ -502,7 +643,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    new [] { "val0", "val1" },
+                    new[] {"val0", "val1"},
                     new[] {typeof(SupportBean_ST0[]), typeof(ICollection<object>)});
 
                 env.SendEventBean(new SupportBean_ST0("E1", 5));
@@ -568,7 +709,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    new [] { "allOfX" },
+                    new[] {"allOfX"},
                     new[] {typeof(bool?)});
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -785,7 +926,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 string eplFragment;
-                
+
                 // test fragment type - collection inside
                 eplFragment = "@Name('s0') select Contained.allOf(x -> x.P00 < 5) as allOfX from SupportBean_ST0_Container#keepall";
                 env.CompileDeploy(eplFragment).AddListener("s0");
@@ -798,7 +939,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test array and iterable
-                var fields = new [] { "val0", "val1" };
+                var fields = new[] {"val0", "val1"};
                 eplFragment = "@Name('s0') select Intarray.sumof() as val0, " +
                               "Intiterable.sumOf() as val1 " +
                               " from SupportCollection#keepall";
@@ -827,7 +968,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventMap(@event, "MySchema");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "mymax" },
+                    new[] {"mymax"},
                     new object[] {1.0});
 
                 env.UndeployAll();
@@ -939,7 +1080,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val1","val2","val3","val4" };
+                var fields = new[] {"val1", "val2", "val3", "val4"};
                 var epl = "@Name('s0') select " +
                           "SupportBean_ST0_Container.MakeSampleList().where(x -> x.P00 < 5) as val1, " +
                           "SupportBean_ST0_Container.MakeSampleArray().where(x -> x.P00 < 5) as val2, " +
@@ -983,7 +1124,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test UDF returning scalar values collection
-                fields = new [] { "val0","val1","val2","val3" };
+                fields = new[] {"val0", "val1", "val2", "val3"};
                 var eplScalar = "@Name('s0') select " +
                                 "SupportCollection.MakeSampleListString().where(x -> x != 'E1') as val0, " +
                                 "SupportCollection.MakeSampleArrayString().where(x -> x != 'E1') as val1, " +

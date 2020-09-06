@@ -19,51 +19,52 @@ namespace com.espertech.esper.common.client.annotation
 	    ///     The root element name (required).
 	    /// </summary>
 	    /// <returns>root element name</returns>
-	    public string RootElementName { get; set; }
+	    public virtual string RootElementName { get; set; }
 
 	    /// <summary>
 	    ///     The schema resource URL
 	    /// </summary>
 	    /// <returns>url</returns>
-	    public string SchemaResource { get; set; } = "";
+	    public virtual string SchemaResource { get; set; } = "";
 
 	    /// <summary>
 	    ///     The schema text
 	    /// </summary>
 	    /// <returns>schema</returns>
-	    public string SchemaText { get; set; } = "";
+	    public virtual string SchemaText { get; set; } = "";
 
 	    /// <summary>
 	    ///     Set to false (the default) to indicate that property expressions are evaluated by the DOM-walker
 	    ///     implementation (the default), or set to true to indicate that property expressions are rewritten into XPath expressions.
 	    /// </summary>
 	    /// <returns>xpath property use</returns>
-	    public bool XPathPropertyExpr { get; set; } = false;
+	    public virtual bool XPathPropertyExpr { get; set; } = false;
 
 	    /// <summary>
 	    ///     When set to true (the default), indicates that when properties are compiled to XPath expressions that the
 	    ///     compilation should generate an absolute XPath expression such as "/getQuote/request" for the
 	    ///     simple request property, or "/getQuote/request/symbol" for a "request.symbol" nested property,
 	    ///     wherein the root element node is "getQuote".
-	    ///     <para />
-	    ///     When set to false, indicates that when properties are compiled to XPath expressions that the
-	    ///     compilation should generate a deep XPath expression such as "//symbol" for the
-	    ///     simple symbol property, or "//request/symbol" for a "request.symbol" nested property.
+	    ///     <para>
+	    ///         When set to false, indicates that when properties are compiled to XPath expressions that the
+	    ///         compilation should generate a deep XPath expression such as "//symbol" for the
+	    ///         simple symbol property, or "//request/symbol" for a "request.symbol" nested property.
+	    ///     </para>
 	    /// </summary>
 	    /// <returns>xpath resolve properties absolute flag</returns>
-	    public bool XPathResolvePropertiesAbsolute { get; set; } = true;
+	    public virtual bool XPathResolvePropertiesAbsolute { get; set; } = true;
 
 	    /// <summary>
 	    ///     The default namespace
 	    /// </summary>
 	    /// <returns>default namespace</returns>
-	    public string DefaultNamespace { get; set; } = "";
+	    public virtual string DefaultNamespace { get; set; } = "";
 
 	    /// <summary>
 	    ///     The root element namespace
 	    /// </summary>
 	    /// <returns>root element namespace</returns>
-	    public string RootElementNamespace { get; set; } = "";
+	    public virtual string RootElementNamespace { get; set; } = "";
 
 	    /// <summary>
 	    ///     Set to true (the default) to indicate that an <seealso cref="EventSender" /> returned for this event type validates
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.client.annotation
 	    ///     element name as configured.
 	    /// </summary>
 	    /// <returns>flag</returns>
-	    public bool EventSenderValidatesRoot { get; set; } = true;
+	    public virtual bool EventSenderValidatesRoot { get; set; } = true;
 
 	    /// <summary>
 	    ///     Set to true (the default) to look up or create event types representing fragments of an XML document
@@ -79,20 +80,20 @@ namespace com.espertech.esper.common.client.annotation
 	    ///     properties may return fragments.
 	    /// </summary>
 	    /// <returns>flag</returns>
-	    public bool AutoFragment { get; set; } = true;
+	    public virtual bool AutoFragment { get; set; } = true;
 
 	    /// <summary>
 	    ///     Sets the class name of the XPath function resolver to be assigned to the XPath factory instance
 	    ///     upon type initialization.
 	    /// </summary>
 	    /// <returns>class name</returns>
-	    public string XPathFunctionResolver { get; set; } = "";
+	    public virtual string XPathFunctionResolver { get; set; } = "";
 
 	    /// <summary>
 	    ///     Sets the class name of the XPath variable resolver to be assigned to the XPath factory instance
 	    ///     upon type initialization.
 	    /// </summary>
 	    /// <returns>class name</returns>
-	    public string XPathVariableResolver { get; set; } = "";
+	    public virtual string XPathVariableResolver { get; set; } = "";
     }
 } // end of namespace

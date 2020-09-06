@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				var sdf = new SimpleDateFormat("dd-M-yyyy");
 				var date = sdf.Parse("22-09-2018");
 
-				var epl = "@public @buseventtype @JsonSchemaField(name=myDate, adapter='" +
+				var epl = "@public @buseventtype @JsonSchemaField(Name=myDate, adapter='" +
 				          typeof(MyDateJSONParser).FullName +
 				          "')\n" +
 				          "create json schema JsonEvent(myDate Date);\n" +
@@ -68,22 +68,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
-					"@JsonSchemaField(name=mydate, adapter=x) create json schema JsonEvent(mydate Date)",
+					"@JsonSchemaField(Name=mydate, adapter=x) create json schema JsonEvent(mydate Date)",
 					"Failed to resolve Json schema field adapter class: Could not load class by name 'x', please check imports");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
-					"@JsonSchemaField(name=mydate, adapter='System.String') create json schema JsonEvent(mydate Date)",
+					"@JsonSchemaField(Name=mydate, adapter='System.String') create json schema JsonEvent(mydate Date)",
 					"Json schema field adapter class does not implement interface 'JsonFieldAdapterString");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
-					"@JsonSchemaField(name=mydate, adapter='" + typeof(InvalidAdapterJSONDate).FullName + "') create json schema JsonEvent(mydate Date)",
+					"@JsonSchemaField(Name=mydate, adapter='" + typeof(InvalidAdapterJSONDate).FullName + "') create json schema JsonEvent(mydate Date)",
 					"Json schema field adapter class 'InvalidAdapterJSONDate' does not have a default constructor");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
-					"@JsonSchemaField(name=mydate, adapter='" + nameof(SupportJsonFieldAdapterStringDate) + "') create json schema JsonEvent(mydate String)",
+					"@JsonSchemaField(Name=mydate, adapter='" + nameof(SupportJsonFieldAdapterStringDate) + "') create json schema JsonEvent(mydate String)",
 					"Json schema field adapter class 'SupportJsonFieldAdapterStringDate' mismatches the return type of the parse method, expected 'String' but found 'Date'");
 			}
 		}
@@ -94,8 +94,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var epl =
 					"@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n" +
-					"@JsonSchemaField(name=mydate, adapter=" + nameof(SupportJsonFieldAdapterStringDate) + ") " +
-					"@JsonSchemaField(name=point, adapter=" + nameof(SupportJsonFieldAdapterStringPoint) + ") " +
+					"@JsonSchemaField(Name=mydate, adapter=" + nameof(SupportJsonFieldAdapterStringDate) + ") " +
+					"@JsonSchemaField(Name=point, adapter=" + nameof(SupportJsonFieldAdapterStringPoint) + ") " +
 					EventRepresentationChoice.JSON.GetAnnotationText() +
 					" insert into JsonEvent select point, mydate from LocalEvent;\n" +
 					"@Name('s0') select point, mydate from JsonEvent;\n" +
@@ -124,16 +124,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype " +
-				          "@JsonSchemaField(name=point, adapter=" +
-				          nameof(SupportJsonFieldAdapterStringPoint) +
-				          ") " +
-				          "@JsonSchemaField(name=mydate, adapter=" +
-				          nameof(SupportJsonFieldAdapterStringDate) +
-				          ") " +
-				          "create json schema JsonEvent(point java.awt.Point, mydate Date);\n" +
-				          "@Name('s0') select point, mydate from JsonEvent;\n" +
-				          "@Name('s1') select * from JsonEvent;\n";
+				var point = typeof(Point);
+				var epl =
+					"@public @buseventtype " +
+				    "@JsonSchemaField(Name=point, adapter=" + nameof(SupportJsonFieldAdapterStringPoint) + ") " +
+				    "@JsonSchemaField(Name=mydate, adapter=" + nameof(SupportJsonFieldAdapterStringDate) + ") " +
+				    "create json schema JsonEvent(point " + point + ", mydate DateTime);\n" +
+				    "@Name('s0') select point, mydate from JsonEvent;\n" +
+				    "@Name('s1') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
 				var jsonFilled = "{\"point\":\"7,14\",\"mydate\":\"2002-05-01T08:00:01.999\"}";

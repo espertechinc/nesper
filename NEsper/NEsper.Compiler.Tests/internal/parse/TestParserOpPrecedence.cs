@@ -37,7 +37,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	[TestFixture]
 	public class TestParserOpPrecedence : AbstractCompilerTest
 	{
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestEquivalency()
 		{
 			AssertEquivalent(
@@ -110,7 +110,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertEquivalent(original, original);
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestNotEquivalent()
 		{
 			AssertNotEquivalent("a()", "every a()");

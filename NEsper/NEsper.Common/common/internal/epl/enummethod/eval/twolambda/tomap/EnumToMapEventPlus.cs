@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 							return EmptyDictionary<object, object>.Instance;
 						}
 
-						IDictionary<object, object> map = new Dictionary<object, object>();
+						IDictionary<object, object> map = new NullableDictionary<object, object>();
 						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
 						var props = indexEvent.Properties;
 						props[1] = enumcoll.Count;
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 
 		public override CodegenExpression ReturnIfEmptyOptional()
 		{
-			return StaticMethod(typeof(Collections), "emptyMap");
+			return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
 		}
 
 		public override void InitBlock(
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)));
+			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(NullableDictionary<object, object>)));
 		}
 
 		public override void ForEachBlock(
@@ -98,12 +98,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 		{
 			block.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
 				.DeclareVar<object>("value", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.Expression(ExprDotMethod(@Ref("map"), "Put", @Ref("key"), @Ref("value")));
+				.Expression(ExprDotMethod(Ref("map"), "Put", Ref("key"), Ref("value")));
 		}
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(@Ref("map"));
+			block.MethodReturn(Ref("map"));
 		}
 	}
 } // end of namespace

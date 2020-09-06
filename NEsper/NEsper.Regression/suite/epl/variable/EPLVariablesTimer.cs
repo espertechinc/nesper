@@ -19,17 +19,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
     {
         public void Run(RegressionEnvironment env)
         {
-            var startTime = PerformanceObserver.MilliTime;
-            var stmtTextSet =
-                "@Name('s0') on pattern [every timer:interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
+            var startTime = DateTimeHelper.CurrentTimeMillis;
+            var stmtTextSet = "@Name('s0') on pattern [every timer:interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
             env.CompileDeploy(stmtTextSet).AddListener("s0");
 
-            try {
-                Thread.Sleep(1000);
-            }
-            catch (ThreadInterruptedException e) {
-                Assert.Fail(e.Message);
-            }
+            Thread.Sleep(1000);
 
             var received = env.Listener("s0").NewDataListFlattened;
             Assert.IsTrue(received.Length >= 5, "received : " + received.Length);

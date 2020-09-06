@@ -125,11 +125,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
         private static CronParameter GetOptionalSpecialOp(object unitParameter)
         {
-            if (!(unitParameter is CronParameter)) {
-                return null;
-            }
-
-            return (CronParameter) unitParameter;
+            return unitParameter as CronParameter;
         }
 
         private static ICollection<int> ComputeValues(

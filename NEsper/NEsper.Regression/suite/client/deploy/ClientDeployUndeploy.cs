@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
@@ -337,17 +338,20 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
+                var namespc = NamespaceGenerator.Create();
                 env.CompileDeploy(
                     "@Name('clazz') create inlined_class \"\"\" " +
-                    "public class MyClass {" +
-                    "  public static String DoIt() {" +
-                    "    return \"def\";" +
+                    "namespace " + namespc + " {" +
+                    "  public class MyClass {" +
+                    "    public static string DoIt() {" +
+                    "      return \"def\";" +
+                    "    }" +
                     "  }" +
                     "}\"\"\"",
                     path);
 
                 var text = "Application-inlined class 'MyClass'";
-                TryDeployInvalidUndeploy(env, path, "clazz", "@Name('A') select MyClass.doIt() as col from SupportBean", "A", text);
+                TryDeployInvalidUndeploy(env, path, "clazz", $"@Name('A') select {namespc}.MyClass.DoIt() as col from SupportBean", "A", text);
 
                 env.UndeployModuleContaining("clazz");
             }

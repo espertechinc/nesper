@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
@@ -29,26 +28,22 @@ namespace com.espertech.esper.common.@internal.collection
         /// Initializes a new instance of the <see cref="SortedDoubleVector"/> class.
         /// </summary>
         /// <param name="values">The values.</param>
-        public SortedDoubleVector(List<double> values)
+        public SortedDoubleVector(IList<double> values)
         {
-            _values = values;
+            _values = new List<double>(values);
         }
 
         /// <summary> Returns the number of items in the collection.</summary>
         /// <returns> size
         /// </returns>
-        public virtual int Count {
-            get { return _values.Count; }
-        }
+        public virtual int Count => _values.Count;
 
         /// <summary> Returns the value at a given index.</summary>
         /// <param name="index">for which to return value for
         /// </param>
         /// <returns> value at index
         /// </returns>
-        public virtual double this[int index] {
-            get { return _values[index]; }
-        }
+        public virtual double this[int index] => _values[index];
 
         /// <summary> Add a value to the collection.</summary>
         /// <param name="val">is the double-type value to add
@@ -59,7 +54,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return;
             }
 
-            int index = FindInsertIndex(val);
+            var index = FindInsertIndex(val);
 
             if (index == -1) {
                 _values.Add(val);
@@ -79,7 +74,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return;
             }
 
-            int index = FindInsertIndex(val);
+            var index = FindInsertIndex(val);
             if (index == -1) {
                 return;
             }
@@ -105,9 +100,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <returns>vector with double values</returns>
 
-        public IList<double> Values {
-            get { return _values; }
-        }
+        public IList<double> Values => _values;
 
         /// <summary> Returns the index into which to insert to.</summary>
         /// <param name="val">to find insert index
@@ -117,9 +110,9 @@ namespace com.espertech.esper.common.@internal.collection
         public virtual int FindInsertIndex(double val)
         {
             if (_values.Count > 2) {
-                int startIndex = _values.Count >> 1;
-                double startValue = _values[startIndex];
-                int insertAt = -1;
+                var startIndex = _values.Count >> 1;
+                var startValue = _values[startIndex];
+                var insertAt = -1;
 
                 if (val < startValue) {
                     // find in lower half
@@ -172,7 +165,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             while (true) {
                 if (upperBound == lowerBound) {
-                    double valueLowerBound = _values[lowerBound];
+                    var valueLowerBound = _values[lowerBound];
                     if (val <= valueLowerBound) {
                         return lowerBound;
                     }
@@ -182,12 +175,12 @@ namespace com.espertech.esper.common.@internal.collection
                 }
 
                 if (upperBound - lowerBound == 1) {
-                    double valueLowerBound = _values[lowerBound];
+                    var valueLowerBound = _values[lowerBound];
                     if (val <= valueLowerBound) {
                         return lowerBound;
                     }
 
-                    double valueUpperBound = _values[upperBound];
+                    var valueUpperBound = _values[upperBound];
                     if (val > valueUpperBound) {
                         return upperBound + 1;
                     }
@@ -195,8 +188,8 @@ namespace com.espertech.esper.common.@internal.collection
                     return upperBound;
                 }
 
-                int nextMiddle = lowerBound + ((upperBound - lowerBound) >> 1);
-                double valueAtMiddle = _values[nextMiddle];
+                var nextMiddle = lowerBound + ((upperBound - lowerBound) >> 1);
+                var valueAtMiddle = _values[nextMiddle];
 
                 if (val < valueAtMiddle) {
                     // find in lower half

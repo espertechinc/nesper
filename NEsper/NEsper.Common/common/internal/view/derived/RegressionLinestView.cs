@@ -86,9 +86,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             result.Put(ViewFieldEnum.REGRESSION__SUMXY.GetName(), baseStatisticsBean.SumXY);
             result.Put(ViewFieldEnum.REGRESSION__SUMY.GetName(), baseStatisticsBean.SumY);
             result.Put(ViewFieldEnum.REGRESSION__SUMYSQ.GetName(), baseStatisticsBean.SumYSq);
-            if (additionalProps != null) {
-                additionalProps.AddProperties(result, decoration);
-            }
+            additionalProps?.AddProperties(result, decoration);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
         }

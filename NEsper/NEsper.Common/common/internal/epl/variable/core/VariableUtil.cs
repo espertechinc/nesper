@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         variableName +
                         "', type '" +
                         variableTypeWArray.ClassIdentifier +
-                        "' cannot be declared as an array type",
+                        "' cannot be declared as an array type as it is an event type",
                         lastException);
                 }
             }
@@ -307,9 +307,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "' of declared event type '" +
                         eventType.Name +
                         "' underlying type '" +
-                        eventType.UnderlyingType.Name +
+                        eventType.UnderlyingType.CleanName() +
                         "' cannot be assigned a value of type '" +
-                        value.GetType().Name +
+                        value.GetType().CleanName() +
                         "'");
                 }
 

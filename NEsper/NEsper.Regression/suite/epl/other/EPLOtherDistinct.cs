@@ -33,30 +33,130 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherOutputSimpleColumn());
-            execs.Add(new EPLOtherBatchWindow());
-            execs.Add(new EPLOtherBatchWindowJoin());
-            execs.Add(new EPLOtherBatchWindowInsertInto());
-            execs.Add(new EPLOtherOnDemandAndOnSelect());
-            execs.Add(new EPLOtherSubquery());
-            execs.Add(new EPLOtherBeanEventWildcardThisProperty());
-            execs.Add(new EPLOtherBeanEventWildcardSODA());
-            execs.Add(new EPLOtherBeanEventWildcardPlusCols());
-            execs.Add(new EPLOtherMapEventWildcard());
-            execs.Add(new EPLOtherOutputLimitEveryColumn());
-            execs.Add(new EPLOtherOutputRateSnapshotColumn());
-            execs.Add(new EPLOtherDistinctWildcardJoinPatternOne());
-            execs.Add(new EPLOtherDistinctWildcardJoinPatternTwo());
-            execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArraySingleArray());
-            execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArrayTwoArray());
-            execs.Add(new EPLOtherDistinctFireAndForgetMultikeyWArray());
-            execs.Add(new EPLOtherDistinctIterateMultikeyWArray());
-            execs.Add(new EPLOtherDistinctOnSelectMultikeyWArray());
-            execs.Add(new EPLOtherDistinctVariantStream());
+WithOutputSimpleColumn(execs);
+WithBatchWindow(execs);
+WithBatchWindowJoin(execs);
+WithBatchWindowInsertInto(execs);
+WithOnDemandAndOnSelect(execs);
+WithSubquery(execs);
+WithBeanEventWildcardThisProperty(execs);
+WithBeanEventWildcardSODA(execs);
+WithBeanEventWildcardPlusCols(execs);
+WithMapEventWildcard(execs);
+WithOutputLimitEveryColumn(execs);
+WithOutputRateSnapshotColumn(execs);
+WithDistinctWildcardJoinPatternOne(execs);
+WithDistinctWildcardJoinPatternTwo(execs);
+WithDistinctOutputLimitMultikeyWArraySingleArray(execs);
+WithDistinctOutputLimitMultikeyWArrayTwoArray(execs);
+WithDistinctFireAndForgetMultikeyWArray(execs);
+WithDistinctIterateMultikeyWArray(execs);
+WithDistinctOnSelectMultikeyWArray(execs);
+WithDistinctVariantStream(execs);
 
             return execs;
         }
-
+public static IList<RegressionExecution> WithDistinctVariantStream(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctVariantStream());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctOnSelectMultikeyWArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctOnSelectMultikeyWArray());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctIterateMultikeyWArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctIterateMultikeyWArray());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctFireAndForgetMultikeyWArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctFireAndForgetMultikeyWArray());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctOutputLimitMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArrayTwoArray());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctOutputLimitMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArraySingleArray());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctWildcardJoinPatternTwo(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctWildcardJoinPatternTwo());
+    return execs;
+}public static IList<RegressionExecution> WithDistinctWildcardJoinPatternOne(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherDistinctWildcardJoinPatternOne());
+    return execs;
+}public static IList<RegressionExecution> WithOutputRateSnapshotColumn(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherOutputRateSnapshotColumn());
+    return execs;
+}public static IList<RegressionExecution> WithOutputLimitEveryColumn(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherOutputLimitEveryColumn());
+    return execs;
+}public static IList<RegressionExecution> WithMapEventWildcard(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherMapEventWildcard());
+    return execs;
+}public static IList<RegressionExecution> WithBeanEventWildcardPlusCols(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherBeanEventWildcardPlusCols());
+    return execs;
+}public static IList<RegressionExecution> WithBeanEventWildcardSODA(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherBeanEventWildcardSODA());
+    return execs;
+}public static IList<RegressionExecution> WithBeanEventWildcardThisProperty(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherBeanEventWildcardThisProperty());
+    return execs;
+}public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherSubquery());
+    return execs;
+}public static IList<RegressionExecution> WithOnDemandAndOnSelect(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherOnDemandAndOnSelect());
+    return execs;
+}public static IList<RegressionExecution> WithBatchWindowInsertInto(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherBatchWindowInsertInto());
+    return execs;
+}public static IList<RegressionExecution> WithBatchWindowJoin(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherBatchWindowJoin());
+    return execs;
+}public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherBatchWindow());
+    return execs;
+}public static IList<RegressionExecution> WithOutputSimpleColumn(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLOtherOutputSimpleColumn());
+    return execs;
+}
         private static void TryAssertionOutputEvery(
             RegressionEnvironment env,
             string[] fields)
@@ -252,14 +352,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             int[] intOne,
             int[] intTwo)
         {
-            env.SendEventBean(new SupportEventWithManyArray("id").WithIntOne(intOne).WithIntTwo(intTwo));
+            env.SendEventBean(new SupportEventWithManyArray("Id").WithIntOne(intOne).WithIntTwo(intTwo));
         }
 
         private static void SendManyArray(
             RegressionEnvironment env,
             int[] ints)
         {
-            env.SendEventBean(new SupportEventWithManyArray("id").WithIntOne(ints));
+            env.SendEventBean(new SupportEventWithManyArray("Id").WithIntOne(ints));
         }
 
         internal class EPLOtherDistinctVariantStream : RegressionExecution
@@ -270,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                              "insert into MyVariant select * from SupportEventWithManyArray;\n" +
                              "@Name('s0') select distinct * from MyVariant#keepall;\n" +
                              "@Name('s1') select distinct IntOne from MyVariant#keepall;\n" +
-                             "@Name('s2') select distinct IntOne, intTwo from MyVariant#keepall;\n";
+                             "@Name('s2') select distinct IntOne, IntTwo from MyVariant#keepall;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -294,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string epl = "create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                              "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                              "@Name('s0') on SupportBean_S0 select distinct IntOne from MyWindow;\n" +
-                             "@Name('s1') on SupportBean_S1 select distinct IntOne, intTwo from MyWindow;\n";
+                             "@Name('s1') on SupportBean_S1 select distinct IntOne, IntTwo from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -314,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S1(0));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s1").GetAndResetLastNewData(),
-                    "IntOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                          
                         new object[] {new int[] {1, 2}, new int[] {3, 4}},  
@@ -332,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string epl =
                     "@Name('s0') select distinct IntOne from SupportEventWithManyArray#keepall;\n" +
-                    "@Name('s1') select distinct IntOne, intTwo from SupportEventWithManyArray#keepall;\n";
+                    "@Name('s1') select distinct IntOne, IntTwo from SupportEventWithManyArray#keepall;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -350,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s1"),
-                    "IntOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
                         new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
@@ -384,10 +484,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         new object[] {new int[] {1, 2}}, 
                         new object[] {new int[] {3, 4}}});
 
-                result = env.CompileExecuteFAF("select distinct IntOne, intTwo from MyWindow", path);
+                result = env.CompileExecuteFAF("select distinct IntOne, IntTwo from MyWindow", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    "IntOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
                         new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
@@ -403,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                string epl = "@Name('s0') select distinct IntOne, intTwo from SupportEventWithManyArray output every 1 seconds";
+                string epl = "@Name('s0') select distinct IntOne, IntTwo from SupportEventWithManyArray output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -416,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "IntOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
                         new object[] {new int[] {3, 4}, new int[] {1, 2}}, 

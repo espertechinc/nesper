@@ -49,12 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						eventsPerStream,
 						isNewData,
 						exprEvaluatorContext) => {
-						EventBean[] events = (EventBean[]) target;
+						var events = (EventBean[]) target;
 						if (events == null) {
 							return null;
 						}
 
-						int? index = _indexExpression.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedInt32();
+						var index = _indexExpression.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedInt32();
 						if (index == null) {
 							return null;
 						}
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			ExprForgeCodegenSymbol symbols,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod method = parent.MakeChild(typeof(EventBean), typeof(ExprDotForgeProperty), classScope)
+			var method = parent.MakeChild(typeof(EventBean), typeof(ExprDotForgeProperty), classScope)
 				.AddParam(typeof(EventBean[]), "target")
 				.AddParam(typeof(int?), "index");
 			method.Block
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					NewInstance(
 						typeof(EPException),
 						Concat(Constant("Array length "), ArrayLength(Ref("target")), Constant(" less than index "), Ref("index"))))
-				.MethodReturn(ArrayAtIndex(Ref("target"), Cast(typeof(int), Ref("index"))));
+				.MethodReturn(ArrayAtIndex(Ref("target"), ExprDotMethod(Ref("index"), "AsInt32")));
 			return LocalMethod(method, inner, _indexExpression.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope));
 		}
 	}

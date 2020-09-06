@@ -47,10 +47,6 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             bool includeDebugSymbols,
             bool fireAndForget)
         {
-            if (_namespaceScope.FieldsClassName == null) {
-                Debug.WriteLine("FieldsClassName == null");
-            }
-
             // write code to create an implementation of StatementResource
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();

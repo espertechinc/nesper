@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 				methodNode.Block.AssignRef("und." + entryTarget.Value.FieldName, Ref("src." + src.FieldName));
 			}
 
-			methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedJson", Ref("und"), resultEventType));
+			methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
 			return methodNode;
 		}
 	}

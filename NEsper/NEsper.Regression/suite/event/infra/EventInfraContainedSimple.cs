@@ -39,8 +39,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env.SendEventBean(new LocalEvent(new LocalInnerEvent(id)));
 			};
 			var beanepl =
-				"@public @buseventtype create schema LocalInnerEvent as " + typeof(LocalInnerEvent).MaskTypeName() + ";\n" +
-				"@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n";
+				$"@public @buseventtype create schema LocalInnerEvent as {typeof(LocalInnerEvent).MaskTypeName()};\n" +
+				$"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()}";
 			RunAssertion(env, beanepl, bean);
 
 			// Map
@@ -49,13 +49,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				id) => {
 				env.SendEventMap(
 					Collections.SingletonDataMap(
-						"property",
-						Collections.SingletonDataMap("id", id)),
+						"Property",
+						Collections.SingletonDataMap("Id", id)),
 					"LocalEvent");
 			};
 			var mapepl =
-				"@public @buseventtype create schema LocalInnerEvent(id string);\n" +
-			             "@public @buseventtype create schema LocalEvent(property LocalInnerEvent);\n";
+				"@public @buseventtype create schema LocalInnerEvent(Id string);\n" +
+			             "@public @buseventtype create schema LocalEvent(Property LocalInnerEvent);\n";
 			RunAssertion(env, mapepl, map);
 
 			// Object-array
@@ -65,24 +65,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env.SendEventObjectArray(new object[] {new object[] {id}}, "LocalEvent");
 			};
 			var oaepl =
-				"@public @buseventtype create objectarray schema LocalInnerEvent(id string);\n" +
-			            "@public @buseventtype create objectarray schema LocalEvent(property LocalInnerEvent);\n";
+				"@public @buseventtype create objectarray schema LocalInnerEvent(Id string);\n" +
+			            "@public @buseventtype create objectarray schema LocalEvent(Property LocalInnerEvent);\n";
 			RunAssertion(env, oaepl, oa);
 
 			// Json
 			BiConsumer<EventType, string> json = (
 				type,
 				id) => {
-				var @event = new JObject(new JProperty("property", new JObject(new JProperty("id", id))));
+				var @event = new JObject(new JProperty("Property", new JObject(new JProperty("Id", id))));
 				env.SendEventJson(@event.ToString(), "LocalEvent");
 			};
 			var jsonepl =
-				"@public @buseventtype create json schema LocalInnerEvent(id string);\n" +
-			    "@public @buseventtype create json schema LocalEvent(property LocalInnerEvent);\n";
+				"@public @buseventtype create json schema LocalInnerEvent(Id string);\n" +
+			    "@public @buseventtype create json schema LocalEvent(Property LocalInnerEvent);\n";
 			RunAssertion(env, jsonepl, json);
 
 			// Json-Class-Provided
-			var jsonProvidedEpl = $"@JsonSchema(className='{typeof(MyLocalJsonProvided).FullName}') @public @buseventtype create json schema LocalEvent();\n";
+			var jsonProvidedEpl = $"@JsonSchema(ClassName='{typeof(MyLocalJsonProvided).FullName}') @public @buseventtype create json schema LocalEvent();\n";
 			RunAssertion(env, jsonProvidedEpl, json);
 
 			// Avro
@@ -90,19 +90,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				type,
 				id) => {
 				var schema = SchemaBuilder
-					.Record("name", Field("id", StringType(
+					.Record("name", Field("Id", StringType(
 						Property(
 						AvroConstant.PROP_STRING_KEY,
 						AvroConstant.PROP_STRING_VALUE))));
 
 				var inside = new GenericRecord(schema);
-				inside.Put("id", id);
+				inside.Put("Id", id);
 				var @event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				@event.Put("property", inside);
+				@event.Put("Property", inside);
 				env.SendEventAvro(@event, "LocalEvent");
 			};
-			var avroepl = "@public @buseventtype create avro schema LocalInnerEvent(id string);\n" +
-			              "@public @buseventtype create avro schema LocalEvent(property LocalInnerEvent);\n";
+			var avroepl = "@public @buseventtype create avro schema LocalInnerEvent(Id string);\n" +
+			              "@public @buseventtype create avro schema LocalEvent(Property LocalInnerEvent);\n";
 			RunAssertion(env, avroepl, avro);
 		}
 
@@ -111,12 +111,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			string createSchemaEPL,
 			BiConsumer<EventType, string> sender)
 		{
-			env.CompileDeploy(createSchemaEPL + "@Name('s0') select * from LocalEvent[property];\n").AddListener("s0");
+			env.CompileDeploy(createSchemaEPL + "@Name('s0') select * from LocalEvent[Property];\n").AddListener("s0");
 			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
 
 			sender.Invoke(eventType, "a");
 			var @event = env.Listener("s0").AssertOneGetNewAndReset();
-			Assert.AreEqual("a", @event.Get("id"));
+			Assert.AreEqual("a", @event.Get("Id"));
 
 			env.UndeployAll();
 		}
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			// ReSharper disable once InconsistentNaming
 			// ReSharper disable once UnusedMember.Global
-			public MyLocalJsonProvidedInnerEvent property;
+			public MyLocalJsonProvidedInnerEvent Property;
 		}
 
 		[Serializable]
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			// ReSharper disable once InconsistentNaming
 			// ReSharper disable once UnusedMember.Global
-			public string id;
+			public string Id;
 		}
 	}
 } // end of namespace

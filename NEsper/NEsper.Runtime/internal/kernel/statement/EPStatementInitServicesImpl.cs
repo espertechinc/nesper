@@ -27,6 +27,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -103,6 +104,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         public EventBeanTypedEventFactory EventBeanTypedEventFactory => ServicesContext.EventBeanTypedEventFactory;
 
         public ImportServiceRuntime ImportServiceRuntime => ServicesContext.ImportServiceRuntime;
+
+        public ScriptCompiler ScriptCompiler => ServicesContext.ScriptCompiler;
 
         public string RuntimeURI => ServicesContext.RuntimeURI;
 

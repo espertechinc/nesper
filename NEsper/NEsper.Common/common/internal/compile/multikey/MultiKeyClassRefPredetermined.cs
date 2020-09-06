@@ -16,26 +16,26 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 {
     public class MultiKeyClassRefPredetermined : MultiKeyClassRef
     {
-        private readonly Type clazzMK;
-        private readonly DataInputOutputSerdeForge serdeForge;
+        private readonly Type _clazzMK;
+        private readonly DataInputOutputSerdeForge _serdeForge;
 
         public MultiKeyClassRefPredetermined(
             Type clazzMK,
             Type[] mkTypes,
             DataInputOutputSerdeForge serdeForge)
         {
-            this.clazzMK = clazzMK;
+            _clazzMK = clazzMK;
             MKTypes = mkTypes;
-            this.serdeForge = serdeForge;
+            _serdeForge = serdeForge;
         }
 
-        public string ClassNameMK => clazzMK.Name;
+        public NameOrType ClassNameMK => new NameOrType(_clazzMK);
 
         public CodegenExpression GetExprMKSerde(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            return serdeForge.Codegen(method, classScope, null);
+            return _serdeForge.Codegen(method, classScope, null);
         }
 
         public Type[] MKTypes { get; }

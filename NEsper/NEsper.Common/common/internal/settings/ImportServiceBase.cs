@@ -223,15 +223,19 @@ namespace com.espertech.esper.common.@internal.settings
             if (forAnnotationUse) {
                 switch (className.ToLowerInvariant()) {
                     case "private":
+                    case "privateattribute":
                         return typeof(PrivateAttribute);
 
                     case "protected":
+                    case "protectedattribute":
                         return typeof(ProtectedAttribute);
 
                     case "public":
+                    case "publicattribute":
                         return typeof(PublicAttribute);
 
                     case "buseventtype":
+                    case "buseventtypeattribute":
                         return typeof(BusEventTypeAttribute);
                 }
             }
@@ -424,20 +428,10 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             if (paramTypes.Length > 0) {
-                message += "named '" +
-                           methodName +
-                           "' in class '" +
-                           clazz.CleanName() +
-                           "' with matching parameter number and expected parameter type(s) '" +
-                           expected +
-                           "'";
+                message += $"named '{methodName}' in class '{clazz.CleanName()}' with matching parameter number and expected parameter type(s) '{expected}'";
             }
             else {
-                message += "method named '" +
-                           methodName +
-                           "' in class '" +
-                           clazz.CleanName() +
-                           "' taking no parameters";
+                message += $"named '{methodName}' in class '{clazz.CleanName()}' taking no parameters";
             }
 
             if (e.NearestMissMethod != null) {

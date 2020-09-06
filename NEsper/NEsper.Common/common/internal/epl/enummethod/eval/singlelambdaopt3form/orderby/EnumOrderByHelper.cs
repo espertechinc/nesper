@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -28,37 +30,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		/// <param name="hasColl">collection flag</param>
 		/// <param name="descending">true for descending</param>
 		/// <returns>collection</returns>
-		public static ICollection<object> EnumOrderBySortEval(
-			IOrderedDictionary<object, object> sort,
+		public static ICollection<T> EnumOrderBySortEval<T>(
+			IOrderedDictionary<object, ICollection<T>> sort,
 			bool hasColl,
 			bool descending)
 		{
-			IDictionary<object, object> sorted;
-			if (descending) {
-				sorted = sort.Invert();
-			}
-			else {
-				sorted = sort;
-			}
+			IDictionary<object, ICollection<T>> sorted = descending ? sort.Invert() : sort;
 
-			if (!hasColl) {
-				return sorted.Values;
-			}
+			// if (!hasColl) {
+			// 	return sorted.Values;
+			// }
 
-			var coll = new ArrayDeque<object>();
+			var coll = new ArrayDeque<T>();
 			foreach (var entry in sorted) {
-				if (entry.Value.IsObjectCollectionCompatible()) {
-					coll.AddAll(entry.Value.AsObjectCollection());
-				}
-				else {
-					coll.Add(entry.Value);
-				}
+				coll.AddAll(entry.Value);
 			}
 
 			return coll;
 		}
 
-		public static void SortingCode(
+		public static void SortingCode<T>(
 			CodegenBlock block,
 			Type innerBoxedType,
 			ExprForge innerExpression,
@@ -66,20 +57,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
+			var componentType = typeof(T);
+			var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
+			var dequeType = typeof(ArrayDeque<>).MakeGenericType(componentType);
+			
 			block
 				.DeclareVar(innerBoxedType, "value", innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
-				.DeclareVar<object>("entry", ExprDotMethod(Ref("sort"), "Get", Ref("value")))
+				.DeclareVar(collectionType, "entry", ExprDotMethod(Ref("sort"), "Get", Ref("value")))
+				
 				.IfCondition(EqualsNull(Ref("entry")))
-				.Expression(ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("next")))
+				.AssignRef("entry", NewInstance(dequeType))
+				.ExprDotMethod(Ref("entry"), "Add", Ref("next"))
+				.Expression(ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("entry")))
 				.BlockContinue()
-				.IfCondition(InstanceOf(Ref("entry"), typeof(ICollection<object>)))
-				.ExprDotMethod(Cast(typeof(ICollection<object>), Ref("entry")), "Add", Ref("next"))
-				.BlockContinue()
-				.DeclareVar<Deque<object>>("coll", NewInstance(typeof(ArrayDeque<object>), Constant(2)))
-				.ExprDotMethod(Ref("coll"), "Add", Ref("entry"))
-				.ExprDotMethod(Ref("coll"), "Add", Ref("next"))
-				.ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("coll"))
-				.AssignRef("hasColl", ConstantTrue())
+				
+				.ExprDotMethod(Ref("entry"), "Add", Ref("next"))
 				.BlockEnd();
 		}
 	}

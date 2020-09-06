@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             public object GetterReturnValue { get; }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFragments()
         {
             var nestedTypeFragment = eventTypeComplex.GetFragmentType("Nested");
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             SupportEventTypeAssertionUtil.AssertConsistency(eventTypeNested);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             Assert.AreEqual(null, eventTypeSimple.GetGetter("dummy"));
@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual("a", getter.Get(eventSimple));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyNames()
         {
             var properties = eventTypeSimple.PropertyNames;
@@ -295,27 +295,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             CollectionAssert.AreEquivalent(SupportBeanCombinedProps.PROPERTIES, properties);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(string), eventTypeSimple.GetPropertyType("MyString"));
             Assert.IsNull(eventTypeSimple.GetPropertyType("dummy"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetUnderlyingType()
         {
             Assert.AreEqual(typeof(SupportBeanSimple), eventTypeSimple.UnderlyingType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsValidProperty()
         {
             Assert.IsTrue(eventTypeSimple.IsProperty("MyString"));
             Assert.IsFalse(eventTypeSimple.IsProperty("dummy"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestProperties()
         {
             var nestedOne = typeof(SupportBeanCombinedProps.NestedLevOne);

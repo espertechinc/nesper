@@ -27,6 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
     {
         public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.OR;
 
+        public EvalOrForgeNode(bool attachPatternText) : base(attachPatternText)
+        {
+        }
+
         public override string ToString()
         {
             return "EvalOrNode children=" + ChildNodes.Count;

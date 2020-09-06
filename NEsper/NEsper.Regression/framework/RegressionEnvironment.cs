@@ -19,6 +19,7 @@ using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.container;
@@ -249,5 +250,13 @@ namespace com.espertech.esper.regressionlib.framework
                 //throw new AssertionException("Exception occurred during serialized copy", t);
             }
         }
+        
+        public static Configuration MinimalConfiguration(this RegressionEnvironment env)
+        {
+            var configuration = new Configuration();
+            configuration.Common.Scripting.Engines.AddAll(env.Configuration.Common.Scripting.Engines);
+            return configuration;
+        }
+
     }
 } // end of namespace

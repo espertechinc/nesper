@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env,
                 epl,
                 "Failed to validate select-clause expression 'Contained.set(\"hour\",1)': Date-time enumeration method 'set' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property but received collection of events of type '" +
-                typeof(SupportBean_ST0).Name +
+                typeof(SupportBean_ST0).CleanName() +
                 "'");
 
             // invalid incompatible params

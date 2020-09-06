@@ -63,9 +63,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				new Pair<object, object>(Collections.SingletonMap("somekey", "10"), notExists),
 				new Pair<object, object>(
 					TwoEntryMap<string, object>(
-						"indexed",
+						"Indexed",
 						new int[] {1, 2},
-						"mapped",
+						"Mapped",
 						TwoEntryMap<string, object>("keyOne", 3, "keyTwo", 4)),
 					AllExist(1, 2, 3, 4)),
 			};
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var xmlTests = new Pair<object, object>[] {
 				new Pair<object, object>("", notExists),
 				new Pair<object, object>(
-					"<indexed>1</indexed><indexed>2</indexed><mapped id=\"keyOne\">3</mapped><mapped id=\"keyTwo\">4</mapped>",
+					"<Indexed>1</Indexed><Indexed>2</Indexed><Mapped id=\"keyOne\">3</Mapped><Mapped id=\"keyTwo\">4</Mapped>",
 					AllExist("1", "2", "3", "4"))
 			};
 			RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
@@ -91,8 +91,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
 			var datumOne = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
 			var datumTwo = new GenericRecord(schema);
-			datumTwo.Put("indexed", Arrays.AsList(1, 2));
-			datumTwo.Put("mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
+			datumTwo.Put("Indexed", Arrays.AsList(1, 2));
+			datumTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
 			var avroTests = new Pair<object, object>[] {
 				new Pair<object, object>(datumOne, notExists),
 				new Pair<object, object>(datumTwo, AllExist(1, 2, 3, 4)),
@@ -100,11 +100,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object), path);
 
 			// Json
-			env.CompileDeploy("@JsonSchema(dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()", path);
+			env.CompileDeploy("@JsonSchema(Dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()", path);
 			var jsonTests = new Pair<object, object>[] {
 				new Pair<object, object>("{}", notExists),
 				new Pair<object, object>(
-					"{\"mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"indexed\":[\"1\",\"2\"]}",
+					"{\"Mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"Indexed\":[\"1\",\"2\"]}",
 					AllExist("1", "2", "3", "4"))
 			};
 			RunAssertion(env, JSON_TYPENAME, FJSON, null, jsonTests, typeof(object), path);
@@ -113,11 +113,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var jsonProvidedTests = new Pair<object, object>[] {
 				new Pair<object, object>("{}", notExists),
 				new Pair<object, object>(
-					"{\"mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"indexed\":[\"1\",\"2\"]}",
+					"{\"Mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"Indexed\":[\"1\",\"2\"]}",
 					AllExist(1, 2, "3", "4"))
 			};
 			env.CompileDeploy(
-				"@JsonSchema(className='" + nameof(MyLocalJsonProvided) + "') @public @buseventtype create json schema " + JSONPROVIDED_TYPENAME + "()",
+				"@JsonSchema(ClassName='" + nameof(MyLocalJsonProvided) + "') @public @buseventtype create json schema " + JSONPROVIDED_TYPENAME + "()",
 				path);
 			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, null, jsonProvidedTests, typeof(object), path);
 		}
@@ -132,24 +132,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RegressionPath path)
 		{
 
-			var stmtText = "@Name('s0') select " +
-			               "indexed[0]? as indexed1, " +
-			               "exists(indexed[0]?) as exists_indexed1, " +
-			               "indexed[1]? as indexed2, " +
-			               "exists(indexed[1]?) as exists_indexed2, " +
-			               "mapped('keyOne')? as mapped1, " +
-			               "exists(mapped('keyOne')?) as exists_mapped1, " +
-			               "mapped('keyTwo')? as mapped2,  " +
-			               "exists(mapped('keyTwo')?) as exists_mapped2  " +
-			               "from " +
-			               typename;
+			var stmtText =
+				"@Name('s0') select " +
+				"Indexed[0]? as Indexed1, " +
+				"exists(Indexed[0]?) as exists_Indexed1, " +
+				"Indexed[1]? as Indexed2, " +
+				"exists(Indexed[1]?) as exists_Indexed2, " +
+				"Mapped('keyOne')? as Mapped1, " +
+				"exists(Mapped('keyOne')?) as exists_Mapped1, " +
+				"Mapped('keyTwo')? as Mapped2,  " +
+				"exists(Mapped('keyTwo')?) as exists_Mapped2  " +
+				"from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
-			var propertyNames = "indexed1,indexed2,mapped1,mapped2".SplitCsv();
+			var propertyNames = "Indexed1,Indexed2,Mapped1,Mapped2".SplitCsv();
 			var eventType = env.Statement("s0").EventType;
 			foreach (var propertyName in propertyNames) {
 				Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
-				Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
+				Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("Exists" + propertyName));
 			}
 
 			foreach (var pair in tests) {
@@ -164,8 +164,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public int[] indexed;
-			public IDictionary<string, object> mapped;
+			public int[] Indexed;
+			public IDictionary<string, object> Mapped;
 		}
 	}
 } // end of namespace

@@ -24,6 +24,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -63,6 +64,8 @@ namespace com.espertech.esper.common.@internal.context.module
         ContextServiceFactory ContextServiceFactory { get; }
 
         ImportServiceRuntime ImportServiceRuntime { get; }
+        
+        ScriptCompiler ScriptCompiler { get; }
 
         RuntimeSettingsService RuntimeSettingsService { get; }
 
@@ -147,6 +150,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public const string CONTEXTSERVICEFACTORY = "ContextServiceFactory";
         //public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
         public const string IMPORTSERVICERUNTIME = "ImportServiceRuntime";
+        public const string SCRIPTCOMPILER = "ScriptCompiler";
         public const string RUNTIMESETTINGSSERVICE = "RuntimeSettingsService";
         public const string EVENTBEANTYPEDEVENTFACTORY = "EventBeanTypedEventFactory";
         public const string EVENTTABLEINDEXSERVICE = "EventTableIndexService";

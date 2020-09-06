@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			Type collectionComponentType)
 		{
 			return lambda => {
-				var rt = lambda.BodyForge.EvaluationType;
-				return EPTypeHelper.CollectionOfSingleValue(rt);
+				var returnType = lambda.BodyForge.EvaluationType;
+				return EPTypeHelper.CollectionOfSingleValue(returnType, typeof(EventBean));
 			};
 		}
 

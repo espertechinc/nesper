@@ -16,13 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             private ExprDotEvalSumMethodFactoryDecimal() {
             }
 
-            public ExprDotEvalSumMethod SumAggregator {
-                get { return new ExprDotEvalSumMethodDecimal(); }
-            }
+            public ExprDotEvalSumMethod SumAggregator => new ExprDotEvalSumMethodDecimal();
 
-            public Type ValueType {
-                get { return typeof(decimal?); }
-            }
+            public Type ValueType => typeof(decimal?);
 
             public void CodegenDeclare(CodegenBlock block) {
                 block.DeclareVar<decimal>("sum", Constant(0.0m));
@@ -31,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
             public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value) {
                 block.IncrementRef("cnt");
-                block.AssignCompound("sum", "+", value);
+                block.AssignCompound("sum", "+", ExprDotMethod(value, "AsDecimal"));
             }
 
             public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value) {

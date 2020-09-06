@@ -845,7 +845,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 }
 
                 // compile as pattern if there are prior matches to consider, since this is a type of followed-by relationship
-                EvalForgeNode forgeNode = new EvalFilterForgeNode(filter.FilterSpecRaw, filter.OptionalFilterAsName, 0);
+                EvalForgeNode forgeNode = new EvalFilterForgeNode(validationEnv.Services.IsAttachPatternText, filter.FilterSpecRaw, filter.OptionalFilterAsName, 0);
                 var pattern = new ContextSpecConditionPattern(forgeNode, true, false);
                 var validated = ValidatePatternContextConditionPattern(
                     isStartCondition,

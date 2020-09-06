@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             IDictionary<string, object> oaType = null;
             IDictionary<string, object> mapType = null;
             var isCollection = false;
-            var isIterator = false;
+            var isEnumerator = false;
             EventType eventType;
             EventType eventTypeWhenMethodReturnsEventBeans = null;
             var isStaticMethod = false;
@@ -169,11 +169,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     beanClass = collectionClass;
                 }
 
-                isIterator = beanClass.IsGenericEnumerator();
-                Type iteratorClass = null;
-                if (isIterator) {
-                    iteratorClass = TypeHelper.GetGenericReturnType(methodReflection, true);
-                    beanClass = iteratorClass;
+                isEnumerator = beanClass.IsGenericEnumerator();
+                Type enumerator = null;
+                if (isEnumerator) {
+                    enumerator = TypeHelper.GetGenericReturnType(methodReflection, true);
+                    beanClass = enumerator;
                 }
 
                 // If the method returns a Map, look up the map type
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     methodReflection.ReturnType.IsArray &&
                     methodReflection.ReturnType.GetElementType().IsGenericDictionary() ||
                     isCollection && collectionClass.IsGenericDictionary() ||
-                    isIterator && iteratorClass.IsGenericDictionary()) {
+                    isEnumerator && enumerator.IsGenericDictionary()) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 if (methodReflection.ReturnType == typeof(object[]) ||
                     methodReflection.ReturnType == typeof(object[][]) ||
                     isCollection && collectionClass == typeof(object[]) ||
-                    isIterator && iteratorClass == typeof(object[])) {
+                    isEnumerator && enumerator == typeof(object[])) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
@@ -246,7 +246,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 if (methodReflection.ReturnType.IsArray &&
                     methodReflection.ReturnType.GetElementType() == typeof(EventBean) ||
                     isCollection && collectionClass == typeof(EventBean) ||
-                    isIterator && iteratorClass == typeof(EventBean)) {
+                    isEnumerator && enumerator == typeof(EventBean)) {
                     var typeName = methodStreamSpec.EventTypeName == null
                         ? eventTypeNameProvidedUDFOrScript
                         : methodStreamSpec.EventTypeName;
@@ -319,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 oaType,
                 strategy,
                 isCollection,
-                isIterator,
+                isEnumerator,
                 variableMetaData,
                 eventTypeWhenMethodReturnsEventBeans,
                 scriptExpression);

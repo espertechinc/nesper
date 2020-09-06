@@ -19,7 +19,7 @@ using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.join.assemble;
-using com.espertech.esper.common.@internal.epl.@join.@base;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.join.queryplanouter;

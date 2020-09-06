@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
@@ -32,7 +33,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
 	public class ExprCoreCast
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var executions = new List<RegressionExecution>();
@@ -68,9 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"arr_2dim_primitive System.Object, arr_2dim_object System.Object," +
 					"arr_3dim_primitive System.Object, arr_3dim_object System.Object" +
 					");\n" +
-					"create schema MyArrayEvent as " +
-					typeof(MyArrayEvent).Name +
-					";\n";
+					"create schema MyArrayEvent as " + typeof(MyArrayEvent).MaskTypeName() + ";\n";
 				env.CompileDeployWBusPublicType(epl, path);
 
 				var insert = "@Name('s0') insert into MyArrayEvent select " +
@@ -104,30 +102,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				map.Put("arr_boxed_one", new int?[] {2});
 				map.Put("arr_boxed_two", new int?[] {3});
 				map.Put("arr_object", new[] {new SupportBean("E1", 0)});
-				map.Put(
-					"arr_2dim_primitive",
-					new[] {
-						new[] {10}
-					});
-				map.Put(
-					"arr_2dim_object",
-					new[] {
-						new int?[] {11}
-					});
-				map.Put(
-					"arr_3dim_primitive",
-					new[] {
-						new[] {
-							new[] {12}
-						}
-					});
-				map.Put(
-					"arr_3dim_object",
-					new[] {
-						new[] {
-							new int?[] {13}
-						}
-					});
+				map.Put("arr_2dim_primitive", new[] { new[] {10} });
+				map.Put("arr_2dim_object", new[] { new object[] {11} });
+				map.Put("arr_3dim_primitive", new[] { new[] { new[] {12} } });
+				map.Put("arr_3dim_object", new[] { new[] { new object[] {13 } } });
 
 				env.SendEventMap(map, "MyEvent");
 
@@ -159,10 +137,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				           "cast(anFloat, float) as floatVal, " +
 				           "cast(anByte, byte) as byteVal, " +
 				           "cast(anShort, short) as shortVal, " +
-				           "cast(IntPrimitive, int) as IntOne, " +
-				           "cast(IntBoxed, int) as intTwo, " +
-				           "cast(IntPrimitive, System.Int64) as longOne, " +
-				           "cast(IntBoxed, long) as longTwo " +
+				           "cast(intPrimitive, int) as IntOne, " +
+				           "cast(intBoxed, int) as intTwo, " +
+				           "cast(intPrimitive, System.Int64) as longOne, " +
+				           "cast(intBoxed, long) as longTwo " +
 				           "from StaticTypeMapEvent";
 
 				env.CompileDeploy(stmt).AddListener("s0");
@@ -174,8 +152,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				map.Put("anFloat", "1.001");
 				map.Put("anByte", "0x0A");
 				map.Put("anShort", "223");
-				map.Put("IntPrimitive", 10);
-				map.Put("IntBoxed", 11);
+				map.Put("intPrimitive", 10);
+				map.Put("intBoxed", 11);
 
 				env.SendEventMap(map, "StaticTypeMapEvent");
 				var row = env.Listener("s0").AssertOneGetNewAndReset();
@@ -206,8 +184,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpression(fields[3], "cast(TheString, char)")
 					.WithExpression(fields[4], "cast(TheString, boolean)")
 					.WithExpression(fields[5], "cast(IntPrimitive, BigInteger)")
-					.WithExpression(fields[6], "cast(IntPrimitive, BigDecimal)")
-					.WithExpression(fields[7], "cast(DoublePrimitive, BigDecimal)")
+					.WithExpression(fields[6], "cast(IntPrimitive, decimal)")
+					.WithExpression(fields[7], "cast(DoublePrimitive, decimal)")
 					.WithExpression(fields[8], "cast(TheString, char)");
 
 				builder.WithStatementConsumer(
@@ -221,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 							typeof(char?),
 							typeof(bool?),
 							typeof(BigInteger?),
-							typeof(decimal),
-							typeof(decimal),
+							typeof(decimal?),
+							typeof(decimal?),
 							typeof(char?));
 					});
 
@@ -277,13 +255,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.UndeployAll();
 
 				// test cast with chained and null
-				var epl = "@Name('s0') select cast(one as " +
-				          typeof(SupportBean).Name +
-				          ").getTheString() as t0," +
-				          "cast(null, " +
-				          typeof(SupportBean).Name +
-				          ") as t1" +
-				          " from SupportBeanObject";
+				var epl =
+					"@Name('s0') select" +
+					" cast(One as " + typeof(SupportBean).FullName + ").GetTheString() as t0," +
+					" cast(null, " + typeof(SupportBean).FullName + ") as t1" +
+					" from SupportBeanObject";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBeanObject(new SupportBean("E1", 1)));
@@ -298,10 +274,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "select cast(item?,double) as t0 from SupportBeanDynRoot";
+				var epl = "select cast(Item?,double) as t0 from SupportBeanDynRoot";
 
 				var model = new EPStatementObjectModel();
-				model.SelectClause = SelectClause.Create().Add(Expressions.Cast("item?", "double"), "t0");
+				model.SelectClause = SelectClause.Create().Add(Expressions.Cast("Item?", "double"), "t0");
 				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBeanDynRoot).Name));
 				model = SerializableObjectCopier.CopyMayFail(env.Container, model);
 				Assert.AreEqual(epl, model.ToEPL());
@@ -340,19 +316,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var milestone = new AtomicLong();
 
 				RunAssertionDatetimeBaseTypes(env, true, milestone);
-
 				RunAssertionDatetimeVariance(env, milestone);
-
 				RunAssertionDatetimeRenderOutCol(env, milestone);
-
 				RunAssertionDynamicDateFormat(env);
-
 				RunAssertionConstantDate(env, milestone);
-
 				RunAssertionISO8601Date(env, milestone);
-
 				RunAssertionDateformatNonString(env, milestone);
-
 				RunAssertionDatetimeInvalid(env);
 			}
 		}
@@ -378,14 +347,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@Name('s0') select" +
-				          " cast(item?, " + typeof(SupportMarkerInterface).Name + ") as t0, " +
-				          " cast(item?, " + typeof(ISupportA).Name + ") as t1, " +
-				          " cast(item?, " + typeof(ISupportBaseAB).Name + ") as t2, " +
-				          " cast(item?, " + typeof(ISupportBaseABImpl).Name + ") as t3, " +
-				          " cast(item?, " + typeof(ISupportC).Name + ") as t4, " +
-				          " cast(item?, " + typeof(ISupportD).Name + ") as t5, " +
-				          " cast(item?, " + typeof(ISupportAImplSuperG).Name + ") as t6, " +
-				          " cast(item?, " + typeof(ISupportAImplSuperGImplPlus).Name + ") as t7 " +
+				          " cast(item?, " + typeof(SupportMarkerInterface).FullName + ") as t0, " +
+				          " cast(item?, " + typeof(ISupportA).FullName + ") as t1, " +
+				          " cast(item?, " + typeof(ISupportBaseAB).FullName + ") as t2, " +
+				          " cast(item?, " + typeof(ISupportBaseABImpl).FullName + ") as t3, " +
+				          " cast(item?, " + typeof(ISupportC).FullName + ") as t4, " +
+				          " cast(item?, " + typeof(ISupportD).FullName + ") as t5, " +
+				          " cast(item?, " + typeof(ISupportAImplSuperG).FullName + ") as t6, " +
+				          " cast(item?, " + typeof(ISupportAImplSuperGImplPlus).FullName + ") as t7 " +
 				          " from SupportBeanDynRoot";
 
 				env.CompileDeploy(epl).AddListener("s0");
@@ -433,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select cast(item?,System.String) as t0 from SupportBeanDynRoot";
+				var epl = "@Name('s0') select cast(Item?,System.String) as t0 from SupportBeanDynRoot";
 
 				env.EplToModelCompileDeploy(epl).AddListener("s0");
 
@@ -482,14 +451,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				bean.BoolBoxed = true;
 				env.SendEventBean(bean);
 				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new object[] {true, true, "true"});
+				AssertResults(theEvent, new object[] {true, true, "True"});
 
 				bean = new SupportBean(null, 100);
 				bean.BoolPrimitive = false;
 				bean.BoolBoxed = false;
 				env.SendEventBean(bean);
 				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new object[] {false, false, "false"});
+				AssertResults(theEvent, new object[] {false, false, "False"});
 
 				bean = new SupportBean(null, 100);
 				bean.BoolPrimitive = true;
@@ -554,8 +523,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				.WithExpression(fields[3], "cast(yyyymmddhhmmss,System.DateTimeOffset,dateformat:\"yyyyMMddHHmmss\")")
 				.WithExpression(fields[4], "cast(hhmmss,datetimeoffset,dateformat:\"HHmmss\")")
 				.WithExpression(fields[5], "cast(hhmmss,System.DateTimeOffset,dateformat:\"HHmmss\")")
-				.WithExpression(fields[6], "cast(yyyymmddhhmmsszz,datetimeoffset,dateformat:\"yyyyMMddHHmmssVV\")")
-				.WithExpression(fields[7], "cast(yyyymmddhhmmsszz,System.DateTimeOffset,dateformat:\"yyyyMMddHHmmssVV\")");
+				.WithExpression(fields[6], "cast(yyyymmddhhmmsszz,datetimeoffset,dateformat:\"yyyyMMddHHmmsszzz\")")
+				.WithExpression(fields[7], "cast(yyyymmddhhmmsszz,System.DateTimeOffset,dateformat:\"yyyyMMddHHmmsszzz\")");
 
 			var yyyymmdd = "20100510";
 			var yyyymmddhhmmss = "20100510141516";
@@ -599,10 +568,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			var fields = "c0,c1,c2,c3".SplitCsv();
 			var builder = new SupportEvalBuilder("SupportBean_StringAlphabetic")
-				.WithExpression(fields[0], "cast(a,long,dateformat:b)")
-				.WithExpression(fields[1], "cast(a,datetime,dateformat:b)")
-				.WithExpression(fields[1], "cast(a,datetimeoffset,dateformat:b)")
-				.WithExpression(fields[2], "cast(a,dtx,dateformat:b)");
+				.WithExpression(fields[0], "cast(A,long,dateformat:B)")
+				.WithExpression(fields[1], "cast(A,datetime,dateformat:B)")
+				.WithExpression(fields[2], "cast(A,datetimeoffset,dateformat:B)")
+				.WithExpression(fields[3], "cast(A,dtx,dateformat:B)");
 
 			AssertDynamicDateFormat(builder, fields, "20100502", "yyyyMMdd");
 			AssertDynamicDateFormat(builder, fields, "20100502101112", "yyyyMMddhhmmss");
@@ -692,19 +661,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			          "cast(TheString,dtx,dateformat:'iso') as c8," +
 			          "cast(TheString,long,dateformat:'iso') as c9," +
 			          "cast(TheString,date,dateformat:'iso') as c10," +
-			          "cast('1997-07-16T19:20:30.45',localdatetime,dateformat:'iso') as c11," +
-			          "cast('1997-07-16T19:20:30+01:00',zoneddatetime,dateformat:'iso') as c12," +
-			          "cast('1997-07-16',localdate,dateformat:'iso') as c13," +
-			          "cast('19:20:30',localtime,dateformat:'iso') as c14" +
+			          "cast('1997-07-16T19:20:30.45',datetimeoffset,dateformat:'iso') as c11," +
+			          "cast('1997-07-16T19:20:30+01:00',datetime,dateformat:'iso') as c12," +
+			          "cast('1997-07-16',datetimeoffset,dateformat:'iso') as c13," +
+			          "cast('19:20:30',datetimeoffset,dateformat:'iso') as c14" +
 			          " from SupportBean";
 			env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
 			env.SendEventBean(new SupportBean());
 			var @event = env.Listener("s0").AssertOneGetNewAndReset();
-			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c0"), 1997, 7, 16, 19, 20, 30, 0, "GMT+00:00");
+			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c0"), 1997, 7, 16, 19, 20, 30, 0, "UTC");
 			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c1"), 1997, 7, 16, 19, 20, 30, 0, "GMT+01:00");
 			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c2"), 1997, 7, 16, 19, 20, 30, 0, "UTC");
-			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c3"), 1997, 7, 16, 19, 20, 30, 450, "GMT+00:00");
+			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c3"), 1997, 7, 16, 19, 20, 30, 450, "UTC");
 			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c4"), 1997, 7, 16, 19, 20, 30, 450, "GMT+01:00");
 			SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c5"), 1997, 7, 16, 19, 20, 30, 450, "UTC");
 			
@@ -777,7 +746,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
 				"select cast(TheString, date, dateformat:1) from SupportBean",
-				"Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
+				"Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormat");
 
 			// invalid input
 			SupportMessageAssertUtil.TryInvalidCompile(
@@ -785,11 +754,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				"select cast(IntPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
 				"Failed to validate select-clause expression 'cast(IntPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
 
-			// invalid target
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
 				"select cast(TheString, int, dateformat:'yyyyMMdd') from SupportBean",
-				"Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
+				"Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of long, DateTime, DateTimeOffset or DateEx");
 
 #if false // completely valid, DateTimeFormat implements DateFormat
             // invalid parser
@@ -848,22 +816,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				C8 = c8;
 			}
 
+			[PropertyName("c0")]
 			public string[] C0 { get; }
 
+			[PropertyName("c1")]
 			public int[] C1 { get; }
 
+			[PropertyName("c2")]
 			public int?[] C2 { get; }
 
+			[PropertyName("c3")]
 			public int?[] C3 { get; }
 
+			[PropertyName("c4")]
 			public object[] C4 { get; }
 
+			[PropertyName("c5")]
 			public int[][] C5 { get; }
 
+			[PropertyName("c6")]
 			public object[][] C6 { get; }
 
+			[PropertyName("c7")]
 			public int[][][] C7 { get; }
 
+			[PropertyName("c8")]
 			public object[][][] C8 { get; }
 		}
 	}

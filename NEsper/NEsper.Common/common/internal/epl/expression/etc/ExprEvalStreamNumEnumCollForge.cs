@@ -7,9 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -36,9 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             _evaluationType = typeof(FlexCollection);
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw new UnsupportedOperationException("Not available at compile time"); }
-        }
+        public ExprEvaluator ExprEvaluator => throw new UnsupportedOperationException("Not available at compile time");
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -49,16 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return _enumeration.EvaluateGetROCollectionEventsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType {
-            get => _evaluationType;
-        }
+        public Type EvaluationType => _evaluationType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _enumeration.EnumForgeRenderable;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _enumeration.EnumForgeRenderable;
     }
 } // end of namespace

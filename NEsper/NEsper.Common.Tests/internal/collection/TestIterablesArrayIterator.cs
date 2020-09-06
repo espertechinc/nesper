@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.collection
                 supportEventTypeFactory);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIterator()
         {
             IEnumerable<EventBean>[][] iterables = new IEnumerable<EventBean>[1][];

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 			Func<CodegenMethod, CodegenExpression> expressionFunc)
 		{
 			CodegenExpression expression = expressionFunc.Invoke(_method);
-			return SetValue(name, expression == null ? ConstantNull() : expression);
+			return SetValue(name, expression ?? ConstantNull());
 		}
 
 		public CodegenSetterBuilder MapOfConstants<T>(
@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 			string name,
 			CodegenExpression expression)
 		{
-			_method.Block.ExprDotMethod(Ref(_refName), "Set" + GetBeanCap(name), expression);
+			_method.Block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
 			return this;
 		}
 

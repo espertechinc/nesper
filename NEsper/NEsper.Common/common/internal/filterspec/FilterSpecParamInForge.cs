@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            if (!_listOfValues.ToArray().DeepEquals(other._listOfValues.ToArray())) {
+            if (!CompatExtensions.DeepEqualsWithType(_listOfValues, other._listOfValues)) {
                 return false;
             }
 

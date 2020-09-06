@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -87,6 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 
 			var initializationType = _initialization.EvaluationType;
 			var innerType = _innerExpression.EvaluationType;
+			if (innerType != initializationType && innerType == initializationType.GetBoxedType()) {
+				initializationType = innerType;
+			}
 
 			var scope = new ExprForgeCodegenSymbol(false, null);
 			var methodNode = codegenMethodScope

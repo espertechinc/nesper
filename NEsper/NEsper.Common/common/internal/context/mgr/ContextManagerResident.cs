@@ -316,11 +316,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public void RemoveListener(ContextPartitionStateListener listener)
         {
-            if (listenersLazy == null) {
-                return;
-            }
-
-            listenersLazy.Remove(listener);
+            listenersLazy?.Remove(listener);
         }
 
         public IEnumerator<ContextPartitionStateListener> Listeners {

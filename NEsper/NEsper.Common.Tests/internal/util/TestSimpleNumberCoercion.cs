@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSimpleNumberCoercion : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetCoercer()
         {
             Assert.AreEqual(1d, SimpleNumberCoercerFactory.GetCoercer(null, typeof(double?)).CoerceBoxed(1d));

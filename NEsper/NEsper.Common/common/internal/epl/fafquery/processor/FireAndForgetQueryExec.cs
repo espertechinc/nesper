@@ -486,15 +486,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                     QUERY_PLAN_LOG.Info(prefix + indexText + eventTableOrNull.ToQueryPlan());
                 }
 
-                if (hook != null) {
-                    hook.FireAndForget(
-                        new QueryPlanIndexDescFAF(
-                            new[] {
-                                new IndexNameAndDescPair(
-                                    indexNameOrNull,
-                                    eventTableOrNull != null ? eventTableOrNull.ProviderClass.Name : null)
-                            }));
-                }
+                hook?.FireAndForget(
+                    new QueryPlanIndexDescFAF(
+                        new[] {
+                            new IndexNameAndDescPair(
+                                indexNameOrNull,
+                                eventTableOrNull != null ? eventTableOrNull.ProviderClass.Name : null)
+                        }));
             }
         }
     }

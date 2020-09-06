@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
 {
     public class AggregatorMedian : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private CodegenExpressionMember _vector;
+        private readonly CodegenExpressionMember _vector;
 
         public AggregatorMedian(
             AggregationForgeFactory factory,

@@ -23,7 +23,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
@@ -235,7 +235,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 							"Property indicated indexed-type but failed to find proper collection adapter for use with enumeration methods");
 					}
 
-					typeInfo = EPTypeHelper.CollectionOfSingleValue(desc.PropertyComponentType);
+					typeInfo = EPTypeHelper.CollectionOfSingleValue(
+						desc.PropertyComponentType,
+						desc.PropertyType);
 				}
 			}
 
@@ -344,16 +346,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 							array.Indexes,
 							() => "operation on type " + typeInfo.ToTypeDescriptive());
 						var componentType = type.Component.GetBoxedType();
-						ExprDotForgeGetArray get = new ExprDotForgeGetArray(indexExpr.Forge, componentType);
+						var get = new ExprDotForgeGetArray(indexExpr.Forge, componentType);
 						methodForges.Add(get);
 						currentInputType = get.TypeInfo;
 						continue;
 					}
 				}
 
-				// determine if there is a matching method
-				var matchingMethod = false;
+				// determine if there is a matching method or property
 				var methodTarget = GetMethodTarget(currentInputType);
+				var matchingMethod = false;
 				if (methodTarget != null && (!(chainElement is ChainableArray))) {
 					try {
 						GetValidateMethodDescriptor(methodTarget, chainElementName, parameters, validationContext);
@@ -367,9 +369,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				if (EnumMethodResolver.IsEnumerationMethod(chainElementName, validationContext.ImportService) &&
 				    (!matchingMethod || methodTarget.IsArray || methodTarget.IsGenericCollection())) {
 					var enumerationMethod = EnumMethodResolver.FromName(chainElementName, validationContext.ImportService);
-					ExprDotForgeEnumMethod eval = enumerationMethod.Factory.Invoke(chainElement.GetParametersOrEmpty().Count);
+					if (enumerationMethod == null) {
+						throw new EPException("unable to determine enumeration method from name");
+					}
+					
+					var eval = enumerationMethod.Factory.Invoke(chainElement.GetParametersOrEmpty().Count);
 					if (currentInputType is ClassEPType classEpType && classEpType.Clazz.IsGenericCollection()) {
-						currentInputType = EPTypeHelper.CollectionOfSingleValue(typeof(object));
+						currentInputType = EPTypeHelper.CollectionOfSingleValue(typeof(object), null);
 					}
 
 					eval.Init(streamOfProviderIfApplicable, enumerationMethod, chainElementName, currentInputType, parameters, validationContext);
@@ -389,7 +395,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				     methodTarget == typeof(DateTimeEx) ||
 				     methodTarget == typeof(DateTimeOffset) ||
 				     methodTarget == typeof(DateTime))) {
-					DatetimeMethodDesc datetimeMethod = DatetimeMethodResolver.FromName(chainElementName, validationContext.ImportService);
+					var datetimeMethod = DatetimeMethodResolver.FromName(chainElementName, validationContext.ImportService);
 					var datetimeImpl = ExprDotDTFactory.ValidateMake(
 						validationContext.StreamTypeService,
 						chainSpecStack,
@@ -452,7 +458,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						chainableArray.Indexes,
 						() => "operation on type " + typeInfo.ToTypeDescriptive());
 					currentInputType = EPTypeHelper.SingleEvent(inputEventType);
-					ExprDotForgeEventArrayAtIndex forge = new ExprDotForgeEventArrayAtIndex(currentInputType, indexExpr);
+					var forge = new ExprDotForgeEventArrayAtIndex(currentInputType, indexExpr);
 					methodForges.Add(forge);
 					continue;
 				}
@@ -665,17 +671,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						methodNode,
 						exprSymbol,
 						codegenClassScope);
-				
-				// We can't assume anything about the return type.  Unfortunately, we do not know the resultant type
-				// of the forge... I must fix this. - TBD
-				invocation = CodegenLegoCast.CastSafeFromObjectType(reftype, invocation);
-				
+
 				if (reftype == typeof(void)) {
 					block
 						.Expression(invocation)
 						.Apply(Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, ConstantNull()));
 				}
 				else {
+					// We can't assume anything about the return type.  Unfortunately, we do not know the resultant type
+					// of the forge... I must fix this. - TBD
+					invocation = CodegenLegoCast.CastSafeFromObjectType(reftype, invocation);
+					
 					block.DeclareVar(reftype, refname, invocation);
 					currentTarget = refname;
 					currentTargetType = reftype;

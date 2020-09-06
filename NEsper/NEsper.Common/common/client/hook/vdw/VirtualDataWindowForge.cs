@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client.hook.vdw
     /// <summary>
     ///     Factory for <seealso cref="VirtualDataWindow" />.
     ///     <para />
-    ///     Register an implementation of this interface with the runtimebefore use:
+    ///     Register an implementation of this interface with the runtime before use:
     ///     configuration.addPlugInVirtualDataWindow("test", "vdw", SupportVirtualDWFactory.class.getName());
     /// </summary>
     public interface VirtualDataWindowForge

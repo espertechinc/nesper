@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public interface ExpressionScriptCompiled
     {
+        Func<ScriptArgs, object> ScriptAction { get; }
+
         Type KnownReturnType { get; }
     }
 }

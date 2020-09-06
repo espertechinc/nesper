@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				.MakeChild(typeof(decimal?), typeof(EnumAverageDecimalScalarNoParam), codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS)
 				.Block
-				.DeclareVar<double>("sum", Constant(0.0m))
+				.DeclareVar<decimal>("sum", Constant(0.0m))
 				.DeclareVar<int>("count", Constant(0))
 				.ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.IfRefNull("num")

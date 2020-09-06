@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
 		EVENTSBETWEEN,
 		SUBMAP,
-		NAVIGABLEMAPREFERENCE,
+		DICTIONARYREFERENCE,
 	}
 
 	public static class AggregationMethodSortedEnumExtensions
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				AggregationMethodSortedEnum.COUNTKEYS => (false),
 				AggregationMethodSortedEnum.EVENTSBETWEEN => (true),
 				AggregationMethodSortedEnum.SUBMAP => (false),
-				AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE => (false),
+				AggregationMethodSortedEnum.DICTIONARYREFERENCE => (false),
 				_ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
 			};
 		}
@@ -120,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				AggregationMethodSortedEnum.COUNTKEYS => false,
 				AggregationMethodSortedEnum.EVENTSBETWEEN => false,
 				AggregationMethodSortedEnum.SUBMAP => false,
-				AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE => false,
+				AggregationMethodSortedEnum.DICTIONARYREFERENCE => false,
 				_ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
 			};
 		}
@@ -153,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				AggregationMethodSortedEnum.COUNTKEYS => AggregationMethodSortedFootprintEnum.NOPARAM,
 				AggregationMethodSortedEnum.EVENTSBETWEEN => AggregationMethodSortedFootprintEnum.SUBMAP,
 				AggregationMethodSortedEnum.SUBMAP => AggregationMethodSortedFootprintEnum.SUBMAP,
-				AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE => AggregationMethodSortedFootprintEnum.NOPARAM,
+				AggregationMethodSortedEnum.DICTIONARYREFERENCE => AggregationMethodSortedFootprintEnum.NOPARAM,
 				_ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
 			};
 		}
@@ -172,8 +173,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 					return typeof(int);
 
 				case AggregationMethodSortedEnum.SUBMAP:
-				case AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE:
-					return typeof(IDictionary<object, object>);
+				case AggregationMethodSortedEnum.DICTIONARYREFERENCE:
+					return typeof(IOrderedDictionary<object, object>);
 			}
 
 			if (!IsReturnsSingleEvent(value) && !IsReturnsCollectionOfEvents(value)) {

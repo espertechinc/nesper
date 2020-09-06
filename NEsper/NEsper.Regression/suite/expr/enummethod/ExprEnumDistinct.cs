@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -26,14 +27,41 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumDistinct
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumDistinctEvents());
-			execs.Add(new ExprEnumDistinctScalar());
-			execs.Add(new ExprEnumDistinctEventsMultikeyWArray());
+			WithEvents(execs);
+			WithScalar(execs);
+			WithEventsMultikeyWArray(execs);
+			WithScalarMultikeyWArray(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarMultikeyWArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumDistinctScalarMultikeyWArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsMultikeyWArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumDistinctEventsMultikeyWArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumDistinctScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumDistinctEvents());
 			return execs;
 		}
 
@@ -83,8 +111,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SendManyArray(env, "E4", new[] {2});
 
 				env.SendEventBean(new SupportBean("SB1", 0));
-				ICollection<SupportEventWithManyArray> collection =
-					(ICollection<SupportEventWithManyArray>) env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
+				var collection = (FlexCollection) env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
+				//ICollection<SupportEventWithManyArray> collection =
+				//	(ICollection<SupportEventWithManyArray>) env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
 				Assert.AreEqual(2, collection.Count);
 
 				env.UndeployAll();
@@ -105,9 +134,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.distinctOf(x => p00)");
-				builder.WithExpression(fields[1], "contained.distinctOf( (x, i) => case when i<2 then p00 else -1*p00 end)");
-				builder.WithExpression(fields[2], "contained.distinctOf( (x, i, s) => case when s<=2 then p00 else 0 end)");
+				builder.WithExpression(fields[0], "Contained.distinctOf(x => P00)");
+				builder.WithExpression(fields[1], "Contained.distinctOf( (x, i) => case when i<2 then P00 else -1*P00 end)");
+				builder.WithExpression(fields[2], "Contained.distinctOf( (x, i, s) => case when s<=2 then P00 else 0 end)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -146,10 +175,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.distinctOf()");
-				builder.WithExpression(fields[1], "strvals.distinctOf(v => extractNum(v))");
-				builder.WithExpression(fields[2], "strvals.distinctOf((v, i) => case when i<2 then extractNum(v) else 0 end)");
-				builder.WithExpression(fields[3], "strvals.distinctOf((v, i, s) => case when s<=2 then extractNum(v) else 0 end)");
+				builder.WithExpression(fields[0], "Strvals.distinctOf()");
+				builder.WithExpression(fields[1], "Strvals.distinctOf(v => extractNum(v))");
+				builder.WithExpression(fields[2], "Strvals.distinctOf((v, i) => case when i<2 then extractNum(v) else 0 end)");
+				builder.WithExpression(fields[3], "Strvals.distinctOf((v, i, s) => case when s<=2 then extractNum(v) else 0 end)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 

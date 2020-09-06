@@ -51,7 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             var bestMatchDiff = int.MaxValue;
             var props = eventType.PropertyDescriptors;
             for (var j = 0; j < props.Count; j++) {
-                var diff = LevenshteinDistance.ComputeLevenshteinDistance(propertyName, props[j].PropertyName);
+                var itemPropName = props[j].PropertyName;
+                var diff = LevenshteinDistance.ComputeLevenshteinDistance(propertyName, itemPropName);
                 if (diff < bestMatchDiff) {
                     bestMatchDiff = diff;
                     bestMatch = props[j].PropertyName;

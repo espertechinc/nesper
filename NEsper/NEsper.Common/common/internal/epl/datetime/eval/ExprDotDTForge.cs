@@ -106,8 +106,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
             var block = methodNode.Block;
 
-            block.Debug("Codegen: target = {0}", Ref("target"));
-            
             if (innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }

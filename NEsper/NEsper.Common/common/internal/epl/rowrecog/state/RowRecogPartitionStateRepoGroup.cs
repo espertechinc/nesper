@@ -105,11 +105,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                     // we will need to remove event-by-event
                     for (var i = 0; i < oldData.Length; i++) {
                         var partitionState = GetStateImpl(oldData[i], true);
-                        if (partitionState == null) {
-                            continue;
-                        }
 
-                        partitionState.RemoveEventFromPrev(oldData);
+                        partitionState?.RemoveEventFromPrev(oldData);
                     }
                 }
 

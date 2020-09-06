@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.@internal.collection
 {
     /// <summary> General-purpose pair of values of any type. The pair equals another pair if

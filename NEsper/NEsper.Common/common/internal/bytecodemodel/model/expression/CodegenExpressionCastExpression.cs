@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
 
             _clazz = null;
-            _typeName = typeName;
+            _typeName = typeName.CodeInclusionTypeName();
             _expression = expression;
         }
 

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return EPTypeHelper.SingleValue(typeof(IDictionary<string, object>));
+			return EPTypeHelper.SingleValue(typeof(IDictionary<object, object>));
 		}
 
 		protected override TwoLambdaThreeFormEventPlainFactory.ForgeFunction TwoParamEventPlain()

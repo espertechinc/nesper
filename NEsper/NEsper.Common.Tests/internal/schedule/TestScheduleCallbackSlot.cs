@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.schedule
     [TestFixture]
     public class TestScheduleCallbackSlot : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCompare()
         {
             long[] slots = new long[10];

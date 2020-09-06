@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             }
 
             var index = -1;
-            var existingTypes = new List<Type>(optionalPrior.Classes);
+            var existingTypes = new List<Type>(optionalPrior?.Classes ?? EmptyList<Type>.Instance);
             var existingTypesSet = new HashSet<string>(existingTypes.Select(_ => _.FullName));
 
             // In .NET our classes must be part of an assembly.  This is different from Java, where each class 

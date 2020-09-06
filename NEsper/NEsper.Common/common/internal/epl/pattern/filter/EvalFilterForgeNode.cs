@@ -37,15 +37,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         /// <summary>
         ///     Constructor.
         /// </summary>
+        /// <param name="attachPatternText">whether to attach EPL subexpression text</param>
         /// <param name="filterSpecification">specifies the filter properties</param>
         /// <param name="eventAsName">
         ///     is the name to use for adding matching events to the MatchedEventMaptable used when indicating truth value of true.
         /// </param>
         /// <param name="consumptionLevel">when using @consume</param>
         public EvalFilterForgeNode(
+            bool attachPatternText,
             FilterSpecRaw filterSpecification,
             string eventAsName,
             int? consumptionLevel)
+            : base(attachPatternText)
         {
             RawFilterSpec = filterSpecification;
             EventAsName = eventAsName;

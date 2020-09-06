@@ -39,8 +39,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
-        [RunInApplicationDomain]
+        [Test, RunInApplicationDomain]
         public void TestExprDefineConfigurations()
         {
             Run(null, new ExprDefineConfigurations(4));

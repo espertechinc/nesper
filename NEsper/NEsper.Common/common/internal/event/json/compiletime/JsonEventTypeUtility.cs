@@ -24,9 +24,11 @@ using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.common.@internal.@event.json.parser.deserializers.forge;
+using com.espertech.esper.common.@internal.@event.json.deserializers.forge;
+using com.espertech.esper.common.@internal.@event.json.forge;
 using com.espertech.esper.common.@internal.@event.json.parser.forge;
 using com.espertech.esper.common.@internal.@event.json.serializers;
+using com.espertech.esper.common.@internal.@event.json.serializers.forge;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -74,9 +76,13 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			// determine supertype
-			var optionalSuperType =
-				(JsonEventType) (superTypes == null ? null : (superTypes.First == null || superTypes.First.Length == 0 ? null : superTypes.First[0]));
-			var numFieldsSuperType = optionalSuperType == null ? 0 : optionalSuperType.Detail.FieldDescriptors.Count;
+			var optionalSuperType = (JsonEventType)
+				(superTypes == null 
+					? null 
+					: (superTypes.First == null || superTypes.First.Length == 0
+						? null 
+						: superTypes.First[0]));
+			var numFieldsSuperType = optionalSuperType?.Detail.FieldDescriptors.Count ?? 0;
 
 			// determine dynamic
 			var jsonSchema = (JsonSchemaAttribute) AnnotationUtil.FindAnnotation(raw.Annotations, typeof(JsonSchemaAttribute));
@@ -88,7 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// determine properties
 			IDictionary<string, object> properties;
 			IDictionary<string, string> fieldNames;
-			IDictionary<Type, JsonApplicationClassDelegateDesc> deepClasses;
+			IDictionary<Type, JsonApplicationClassSerializationDesc> deepClasses;
 			IDictionary<string, FieldInfo> fields;
 			if (optionalUnderlyingProvided == null) {
 				properties = ResolvePropertyTypes(compiledTyping, services.EventTypeCompileTimeResolver);
@@ -106,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					throw new ExprValidationException("Specifying a supertype is not supported with a provided JSON event class");
 				}
 
-				if (!optionalUnderlyingProvided.IsPublic) {
+				if (!optionalUnderlyingProvided.IsPublic && !optionalUnderlyingProvided.IsNestedPublic) {
 					throw new ExprValidationException("Provided JSON event class is not public");
 				}
 
@@ -131,90 +137,75 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			var fieldDescriptors = ComputeFields(properties, fieldNames, optionalSuperType, fields);
-			var forges = ComputeValueForges(properties, fields, deepClasses, raw.Annotations, services);
+			// Computes a forge for each property presented.
+			var forgesByProperty = ComputeValueForges(properties, fields, deepClasses, raw.Annotations, services);
+			// Determines a name for the internal class representation for this json event.
+			var jsonClassNameSimple = DetermineJsonClassName(metadata, raw, optionalUnderlyingProvided);
 
-			string jsonClassNameSimple;
-			if (optionalUnderlyingProvided != null) {
-				jsonClassNameSimple = optionalUnderlyingProvided.Name;
-			}
-			else {
-				jsonClassNameSimple = metadata.Name;
-				if (metadata.AccessModifier.IsPrivateOrTransient()) {
-					var uuid = CodeGenerationIDGenerator.GenerateClassNameUUID();
-					jsonClassNameSimple = jsonClassNameSimple + "__" + uuid;
-				}
-				else if (raw.ModuleName != null) {
-					jsonClassNameSimple = jsonClassNameSimple + "__" + "module" + "_" + raw.ModuleName;
-				}
-			}
-
-			var forgeableDesc = new StmtClassForgeableJsonDesc(properties, fieldDescriptors, dynamic, numFieldsSuperType, optionalSuperType, forges);
+			var forgeableDesc = new StmtClassForgeableJsonDesc(properties, fieldDescriptors, dynamic, numFieldsSuperType, optionalSuperType, forgesByProperty);
 
 			var underlyingClassNameSimple = jsonClassNameSimple;
-			var underlyingClassNameForReference = optionalUnderlyingProvided != null ? optionalUnderlyingProvided.Name : underlyingClassNameSimple;
-			StmtClassForgeableFactory underlying = new ProxyStmtClassForgeableFactory() {
-				ProcMake = (
-					namespaceScope,
-					classPostfix) => {
-					return new StmtClassForgeableJsonUnderlying(underlyingClassNameSimple, namespaceScope, forgeableDesc);
-				},
-			};
-
-			var deserializerClassNameSimple = jsonClassNameSimple + "__Delegate";
-			StmtClassForgeableFactory deserializer = new ProxyStmtClassForgeableFactory() {
-				ProcMake = (
-					namespaceScope,
-					classPostfix) => {
-					return new StmtClassForgeableJsonDeserializer(
-						CodegenClassType.JSONDELEGATE,
-						deserializerClassNameSimple,
-						namespaceScope,
-						underlyingClassNameForReference,
-						forgeableDesc);
-				},
-			};
-
-			var deserializerFactoryClassNameSimple = jsonClassNameSimple + "__Factory";
-			StmtClassForgeableFactory deserializerFactory = new ProxyStmtClassForgeableFactory() {
-				ProcMake = (
-					namespaceScope,
-					classPostfix) => {
-					return new StmtClassForgeableJsonSerializer(
-						CodegenClassType.JSONDELEGATEFACTORY,
-						deserializerFactoryClassNameSimple,
-						optionalUnderlyingProvided != null,
-						namespaceScope,
-						deserializerClassNameSimple,
-						underlyingClassNameForReference,
-						forgeableDesc);
-				},
-			};
-
+			var underlyingClassNameForReference = optionalUnderlyingProvided != null
+				? optionalUnderlyingProvided.Name
+				: underlyingClassNameSimple;
 			var underlyingClassNameFull = optionalUnderlyingProvided == null
-				? services.Namespace + "." + underlyingClassNameSimple
-				: optionalUnderlyingProvided.Name;
-			var deserializerClassNameFull = services.Namespace + "." + deserializerClassNameSimple;
-			var deserializerFactoryClassNameFull = services.Namespace + "." + deserializerFactoryClassNameSimple;
-			var serdeClassNameFull =
-				services.Namespace +
-				"." +
-				jsonClassNameSimple +
-				"__" +
-				metadata.Name +
-				"__Serde"; // include event type name as underlying-class may occur multiple times
+				? $"{services.Namespace}.{underlyingClassNameSimple}"
+				: optionalUnderlyingProvided.FullName;
+			
+			var underlying = new ProxyStmtClassForgeableFactory() {
+				ProcMake = (
+					namespaceScope,
+					classPostfix) => new StmtClassForgeableJsonUnderlying(
+					underlyingClassNameSimple,
+					underlyingClassNameFull,
+					namespaceScope,
+					forgeableDesc),
+			};
+
+			var deserializerClassNameSimple = jsonClassNameSimple + "__Deserializer";
+			var deserializer = new ProxyStmtClassForgeableFactory() {
+				ProcMake = (
+					namespaceScope,
+					classPostfix) => new StmtClassForgeableJsonDeserializer(
+					CodegenClassType.JSONDESERIALIZER,
+					deserializerClassNameSimple,
+					namespaceScope,
+					underlyingClassNameFull,
+					forgeableDesc),
+			};
+
+			var serializerClassNameSimple = jsonClassNameSimple + "__Serializer";
+			var serializer = new ProxyStmtClassForgeableFactory() {
+				ProcMake = (
+					namespaceScope,
+					classPostfix) => new StmtClassForgeableJsonSerializer(
+					CodegenClassType.JSONSERIALIZER,
+					serializerClassNameSimple,
+					optionalUnderlyingProvided != null,
+					namespaceScope,
+					underlyingClassNameFull,
+					forgeableDesc),
+			};
+
+			var serializerClassNameFull = $"{services.Namespace}.{serializerClassNameSimple}";
+			var deserializerClassNameFull = $"{services.Namespace}.{deserializerClassNameSimple}";
+			// var deserializerFactoryClassNameFull = $"{services.Namespace}.{deserializerFactoryClassNameSimple}";
+			
+			// include event type name as underlying-class may occur multiple times
+			var serdeClassNameFull = $"{services.Namespace}.{jsonClassNameSimple}__{metadata.Name}__Serde";
 
 			var detail = new JsonEventTypeDetail(
 				underlyingClassNameFull,
 				optionalUnderlyingProvided,
 				deserializerClassNameFull,
-				deserializerFactoryClassNameFull,
+				serializerClassNameFull,
 				serdeClassNameFull,
 				fieldDescriptors,
 				dynamic,
 				numFieldsSuperType);
 			var getterFactoryJson = new EventTypeNestableGetterFactoryJson(detail);
 
-			var standIn = optionalUnderlyingProvided == null
+			Type standIn = optionalUnderlyingProvided == null
 				? services.CompilerServices.CompileStandInClass(CodegenClassType.JSONEVENT, underlyingClassNameSimple, services.Services)
 				: optionalUnderlyingProvided;
 
@@ -223,26 +214,55 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				properties,
 				superTypes == null ? new EventType[0] : superTypes.First,
 				superTypes == null ? EmptySet<EventType>.Instance : superTypes.Second,
-				config == null ? null : config.StartTimestampPropertyName,
-				config == null ? null : config.EndTimestampPropertyName,
+				config?.StartTimestampPropertyName,
+				config?.EndTimestampPropertyName,
 				getterFactoryJson,
 				services.BeanEventTypeFactoryPrivate,
 				detail,
 				standIn);
 
-			IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(3);
+			var additionalForgeables = new List<StmtClassForgeableFactory>();
 
-			// generate deserializer and factory forgables for application classes
-			GenerateApplicationClassForgables(optionalUnderlyingProvided, deepClasses, additionalForgeables, raw.Annotations, services);
+			// generate serializer and deserializer forgeables for application classes
+			GenerateApplicationClassForgables(
+				optionalUnderlyingProvided, deepClasses, additionalForgeables, raw.Annotations, services);
 
 			if (optionalUnderlyingProvided == null) {
 				additionalForgeables.Add(underlying);
 			}
 
 			additionalForgeables.Add(deserializer);
-			additionalForgeables.Add(deserializerFactory);
+			additionalForgeables.Add(serializer);
 
 			return new EventTypeForgeablesPair(eventType, additionalForgeables);
+		}
+
+		/// <summary>
+		/// Determines a classname for the json event representation.
+		/// </summary>
+		/// <param name="metadata"></param>
+		/// <param name="raw"></param>
+		/// <param name="optionalUnderlyingProvided"></param>
+		/// <returns></returns>
+		private static string DetermineJsonClassName(
+			EventTypeMetadata metadata,
+			StatementRawInfo raw,
+			Type optionalUnderlyingProvided)
+		{
+			if (optionalUnderlyingProvided != null) {
+				return optionalUnderlyingProvided.Name;
+			}
+
+			var jsonClassNameSimple = metadata.Name;
+			if (metadata.AccessModifier.IsPrivateOrTransient()) {
+				var uuid = CodeGenerationIDGenerator.GenerateClassNameUUID();
+				jsonClassNameSimple = $"{jsonClassNameSimple}__{uuid}";
+			}
+			else if (raw.ModuleName != null) {
+				jsonClassNameSimple = $"{jsonClassNameSimple}__module_{raw.ModuleName}";
+			}
+
+			return jsonClassNameSimple;
 		}
 
 		private static void ValidateFieldTypes(
@@ -307,7 +327,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 		private static void GenerateApplicationClassForgables(
 			Type optionalUnderlyingProvided,
-			IDictionary<Type, JsonApplicationClassDelegateDesc> deepClasses,
+			IDictionary<Type, JsonApplicationClassSerializationDesc> deepClasses,
 			IList<StmtClassForgeableFactory> additionalForgeables,
 			Attribute[] annotations,
 			StatementCompileTimeServices services)
@@ -317,43 +337,42 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					continue;
 				}
 
-				LinkedHashMap<string, FieldInfo> fields = new LinkedHashMap<string, FieldInfo>();
+				var fields = new LinkedHashMap<string, FieldInfo>();
 				entry.Value.Fields.ForEach(field => fields.Put(field.Name, field));
 
 				var properties = ResolvePropertiesFromFields(fields);
 				var fieldNames = ComputeFieldNamesFromProperties(properties);
 				var forges = ComputeValueForges(properties, fields, deepClasses, annotations, services);
 				var fieldDescriptors = ComputeFields(properties, fieldNames, null, fields);
-
-				var deserializerClassNameSimple = entry.Value.DelegateClassName;
 				var forgeableDesc = new StmtClassForgeableJsonDesc(properties, fieldDescriptors, false, 0, null, forges);
-				StmtClassForgeableFactory deserializer = new ProxyStmtClassForgeableFactory() {
+
+				var deserializerClassNameSimple = entry.Value.DeserializerClassName;
+				var deserializer = new ProxyStmtClassForgeableFactory() {
 					ProcMake = (
 						namespaceScope,
 						classPostfix) => new StmtClassForgeableJsonDeserializer(
-						CodegenClassType.JSONNESTEDCLASSDELEGATEANDFACTORY,
+						CodegenClassType.JSONDESERIALIZER,
 						deserializerClassNameSimple,
 						namespaceScope,
-						entry.Key.Name,
+						entry.Key.FullName,
 						forgeableDesc),
 				};
 
-				var deserializerFactoryClassNameSimple = entry.Value.DelegateFactoryClassName;
-				StmtClassForgeableFactory deserializerFactory = new ProxyStmtClassForgeableFactory() {
+				var serializerClassNameSimple = entry.Value.SerializerClassName;
+				var serializer = new ProxyStmtClassForgeableFactory() {
 					ProcMake = (
 						namespaceScope,
 						classPostfix) => new StmtClassForgeableJsonSerializer(
-						CodegenClassType.JSONNESTEDCLASSDELEGATEANDFACTORY,
-						deserializerFactoryClassNameSimple,
+						CodegenClassType.JSONSERIALIZER,
+						serializerClassNameSimple,
 						true,
 						namespaceScope,
-						deserializerClassNameSimple,
-						entry.Key.Name,
+						entry.Key.FullName,
 						forgeableDesc),
 				};
 
 				additionalForgeables.Add(deserializer);
-				additionalForgeables.Add(deserializerFactory);
+				additionalForgeables.Add(serializer);
 			}
 		}
 
@@ -403,23 +422,33 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				var propertyType = prop.Value;
 				verified.Put(propertyName, propertyType);
 
-				if (propertyType is EventType) {
-					var eventType = (EventType) propertyType;
+				if (propertyType is EventType eventType) {
 					verified.Put(propertyName, new TypeBeanOrUnderlying(eventType));
 				}
-				else if (propertyType is EventType[]) {
-					var eventType = ((EventType[]) propertyType)[0];
-					verified.Put(propertyName, new TypeBeanOrUnderlying[] {new TypeBeanOrUnderlying(eventType)});
+				else if (propertyType is EventType[] eventTypeArray) {
+					verified.Put(propertyName, new[] {
+						new TypeBeanOrUnderlying(eventTypeArray[0])
+					});
 				}
 			}
 
 			return verified;
 		}
 
+		/// <summary>
+		/// TBD: Understand what this method does...
+		/// </summary>
+		/// <param name="compiledTyping"></param>
+		/// <param name="fields"></param>
+		/// <param name="deepClasses"></param>
+		/// <param name="annotations"></param>
+		/// <param name="services"></param>
+		/// <returns></returns>
+		/// <exception cref="IllegalStateException"></exception>
 		private static IDictionary<string, JsonForgeDesc> ComputeValueForges(
 			IDictionary<string, object> compiledTyping,
 			IDictionary<string, FieldInfo> fields,
-			IDictionary<Type, JsonApplicationClassDelegateDesc> deepClasses,
+			IDictionary<Type, JsonApplicationClassSerializationDesc> deepClasses,
 			Attribute[] annotations,
 			StatementCompileTimeServices services)
 		{
@@ -432,12 +461,11 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				
 				if (type == null) {
 					forgeDesc = new JsonForgeDesc(
-						entry.Key,
 						JsonDeserializerForgeNull.INSTANCE,
 						JsonSerializerForgeNull.INSTANCE);
 				}
 				else if (type is Type clazz) {
-					forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(
+					forgeDesc = JsonForgeFactoryBuiltinClassTyped.INSTANCE.Forge(
 						clazz,
 						entry.Key,
 						optionalField,
@@ -445,8 +473,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 						annotations,
 						services);
 				}
-				else if (type is TypeBeanOrUnderlying) {
-					var eventType = ((TypeBeanOrUnderlying) type).EventType;
+				else if (type is TypeBeanOrUnderlying typeBeanOrUnderlying) {
+					var eventType = typeBeanOrUnderlying.EventType;
 					ValidateJsonOrMapType(eventType);
 					if (eventType is JsonEventType jsonEventType) {
 						forgeDesc = JsonForgeFactoryEventTypeTyped.ForgeNonArray(
@@ -454,7 +482,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 							jsonEventType);
 					}
 					else {
-						forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(
+						forgeDesc = JsonForgeFactoryBuiltinClassTyped.INSTANCE.Forge(
 							typeof(IDictionary<string, object>),
 							entry.Key,
 							optionalField,
@@ -463,8 +491,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 							services);
 					}
 				}
-				else if (type is TypeBeanOrUnderlying[]) {
-					var eventType = ((TypeBeanOrUnderlying[]) type)[0].EventType;
+				else if (type is TypeBeanOrUnderlying[] typeBeanOrUnderlyingArray) {
+					var eventType = typeBeanOrUnderlyingArray[0].EventType;
 					ValidateJsonOrMapType(eventType);
 					if (eventType is JsonEventType jsonEventType) {
 						forgeDesc = JsonForgeFactoryEventTypeTyped.ForgeArray(
@@ -472,7 +500,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 							jsonEventType);
 					}
 					else {
-						forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(
+						forgeDesc = JsonForgeFactoryBuiltinClassTyped.INSTANCE.Forge(
 							typeof(IDictionary<string, object>[]),
 							entry.Key,
 							optionalField,
@@ -482,7 +510,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					}
 				}
 				else {
-					throw new IllegalStateException("Unrecognized type " + type);
+					throw new IllegalStateException($"Unrecognized type {type}");
 				}
 
 				valueForges.Put(entry.Key, forgeDesc);
@@ -606,11 +634,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			ParentClassLoader classLoader,
 			string optionalDeploymentId)
 		{
-			if (!(eventType is JsonEventType)) {
+			if (!(eventType is JsonEventType jsonEventType)) {
 				return;
 			}
 
-			var jsonEventType = (JsonEventType) eventType;
 			// for named-window the same underlying is used and we ignore duplicate add
 			var allowDuplicate = eventType.Metadata.TypeClass == EventTypeTypeClass.NAMED_WINDOW;
 			if (jsonEventType.Detail.OptionalUnderlyingProvided == null) {
@@ -627,8 +654,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				allowDuplicate);
 
 			classLoader.Add(
-				jsonEventType.Detail.DeserializerFactoryClassName,
-				jsonEventType.SerializationContext.GetType(),
+				jsonEventType.Detail.SerializerClassName,
+				jsonEventType.SerializerType,
 				optionalDeploymentId,
 				allowDuplicate);
 		}

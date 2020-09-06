@@ -138,20 +138,18 @@ namespace com.espertech.esper.common.@internal.settings
                 return;
             }
 
-            if (UnhandledException != null) {
-                UnhandledException(
-                    this,
-                    new ExceptionHandlerEventArgs {
-                        Context = new ExceptionHandlerContext(
-                            RuntimeURI,
-                            ex,
-                            deploymentId,
-                            statementName,
-                            optionalEPL,
-                            type,
-                            optionalCurrentEvent)
-                    });
-            }
+            UnhandledException?.Invoke(
+                this,
+                new ExceptionHandlerEventArgs {
+                    Context = new ExceptionHandlerContext(
+                        RuntimeURI,
+                        ex,
+                        deploymentId,
+                        statementName,
+                        optionalEPL,
+                        type,
+                        optionalCurrentEvent)
+                });
         }
 
         public void HandleInboundPoolException(
@@ -159,13 +157,11 @@ namespace com.espertech.esper.common.@internal.settings
             Exception exception,
             object @event)
         {
-            if (UnhandledException != null) {
-                UnhandledException(
-                    this,
-                    new ExceptionHandlerEventArgs {
-                        InboundPoolContext = new ExceptionHandlerContextUnassociated(engineURI, exception, @event)
-                    });
-            }
+            UnhandledException?.Invoke(
+                this,
+                new ExceptionHandlerEventArgs {
+                    InboundPoolContext = new ExceptionHandlerContextUnassociated(engineURI, exception, @event)
+                });
         }
     }
 }

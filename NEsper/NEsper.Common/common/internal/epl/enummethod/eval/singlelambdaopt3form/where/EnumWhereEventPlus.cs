@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						}
 
 						var beans = (ICollection<EventBean>) enumcoll;
-						var result = new ArrayDeque<object>();
+						var result = new ArrayDeque<EventBean>();
 						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
 						eventsLambda[StreamNumLambda + 1] = indexEvent;
 						var props = indexEvent.Properties;
@@ -61,21 +62,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							eventsLambda[StreamNumLambda] = next;
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
+							if (pass == null || false.Equals(pass)) {
 								continue;
 							}
 
 							result.Add(next);
 						}
 
-						return result;
+						return FlexCollection.Of(result);
 					});
 			}
 		}
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -89,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
+			block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance(typeof(ArrayDeque<EventBean>)));
 		}
 
 		public override void ForEachBlock(
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(Ref("result"));
+			block.MethodReturn(FlexWrap(Ref("result")));
 		}
 	}
 } // end of namespace

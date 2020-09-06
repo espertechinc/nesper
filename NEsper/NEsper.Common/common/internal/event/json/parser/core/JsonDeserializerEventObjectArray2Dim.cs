@@ -17,14 +17,10 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     public class JsonDeserializerEventObjectArray2Dim : JsonDeserializerBase
     {
         private readonly Type _componentType;
-        private readonly JsonSerializationContext _factory;
         private readonly List<object> _events = new List<object>();
 
-        public JsonDeserializerEventObjectArray2Dim(
-            JsonSerializationContext factory,
-            Type componentType)
+        public JsonDeserializerEventObjectArray2Dim(Type componentType)
         {
-            _factory = factory;
             _componentType = componentType;
         }
 

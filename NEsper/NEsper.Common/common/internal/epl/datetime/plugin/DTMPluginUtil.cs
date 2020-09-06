@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.plugin
 		{
 			if (mode == null) {
 				if (inputType == firstParameter) {
-					throw new ExprValidationException("Plugin datetime method does not provide a forge for input type " + inputType.Name);
+					throw new ExprValidationException("Plugin datetime method does not provide a forge for input type " + inputType.CleanName());
 				}
 
 				return;
@@ -74,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.plugin
 			var staticMethod = (DateTimeMethodModeStaticMethod) mode;
 			var method = parent.MakeChild(returnedClass, typeof(DTMPluginValueChangeForge), classScope).AddParam(firstParameterClass, "dt");
 			var @params = new CodegenExpression[paramExpressions.Count + 1];
-			@params[0] = @Ref("dt");
+			@params[0] = Ref("dt");
 			for (var i = 0; i < paramExpressions.Count; i++) {
 				var forge = paramExpressions[i].Forge;
 				@params[i + 1] = forge.EvaluateCodegen(forge.EvaluationType, method, symbols, classScope);

@@ -342,12 +342,6 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
-                    /*
-                    if (i % 1000 == 0)
-                    {
-                        log.info(".testMemoryRFIDEvent now at " + i);
-                    }
-                    */
                     var theEvent = new SupportRFIDEvent("a", "111");
                     env.SendEventBean(theEvent);
 

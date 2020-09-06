@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.collection
                 supportEventTypeFactory, new string[] { "1", "2", "3", "4" });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             Assert.IsTrue(list.IsEmpty());

@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			public void Run(RegressionEnvironment env)
 			{
 				env.AdvanceTime(0);
-				string[] fields = new[] {"id", "IntOne"};
+				string[] fields = new[] {"Id", "IntOne"};
 				string epl = "create context MyContext start @now end after 1 second;\n" +
 				             "@Name('s0') context MyContext select * from SupportEventWithManyArray#keepall output snapshot when terminated for grouped_delivery (IntOne)";
 				env.CompileDeploy(epl).AddListener("s0");
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select * from SupportBean for ",
-					"Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an identifier but found end-of-input at line 1 column 29");
+					"Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an identifier but found EOF at line 1 column 29");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,

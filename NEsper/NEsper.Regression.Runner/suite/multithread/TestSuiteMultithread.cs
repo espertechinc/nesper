@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtInsertInto());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtIterate()
         {
             RegressionRunner.Run(session, new MultithreadStmtIterate());

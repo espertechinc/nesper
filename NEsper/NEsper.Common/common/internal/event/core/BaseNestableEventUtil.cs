@@ -777,20 +777,20 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .Block
                 .IfRefNullReturnFalse("value")
                 .IfConditionReturnConst(
-                    Not(ExprDotMethodChain(Ref("value")).Add("GetType").Add("IsArray")),
+                    Not(ExprDotMethodChain(Ref("value")).Add("GetType").Get("IsArray")),
                     false)
+                .DeclareVar<Array>("asArray", Cast(typeof(Array), Ref("value")))
                 .IfConditionReturnConst(
                     Relational(
-                        StaticMethod(typeof(Array), "getLength", Ref("value")),
+                        ExprDotName(Ref("asArray"), "Length"),
                         LE,
                         Constant(index)),
                     false)
                 .DeclareVar<object>(
                     "arrayItem",
-                    StaticMethod(
-                        typeof(Array),
-                        "get",
-                        Ref("value"),
+                    ExprDotMethod(
+                        Ref("asArray"),
+                        "GetValue",
                         Constant(index)))
                 .IfRefNullReturnFalse("arrayItem")
                 .MethodReturn(

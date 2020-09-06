@@ -92,6 +92,9 @@ namespace com.espertech.esper.compiler.@internal.util
             var configuration = arguments.Configuration;
             var path = arguments.Path;
             var options = arguments.Options;
+            
+            // script
+            var scriptCompiler = MakeScriptCompiler(configuration);
 
             // imports
             var importServiceCompileTime = MakeImportService(configuration);
@@ -172,7 +175,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 configuration.Common.EventTypesXMLDOM,
                 beanEventTypeFactoryPrivate,
                 xmlFragmentEventTypeFactory,
-                importServiceCompileTime);
+                container.ResourceManager());
             EventTypeAvroHandler eventTypeAvroHandler = EventTypeAvroHandlerFactory.Resolve(
                 importServiceCompileTime,
                 configuration.Common.EventMeta.AvroSettings,
@@ -525,7 +528,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 patternResolutionService,
                 scriptCompileTimeRegistry,
                 scriptCompileTimeResolver,
-                null, // scriptServiceCompileTime
+                scriptCompiler,
                 serdeEventTypeRegistry,
                 serdeResolver,
                 tableCompileTimeRegistry,
@@ -534,48 +537,14 @@ namespace com.espertech.esper.compiler.@internal.util
                 variableCompileTimeResolver,
                 viewResolutionService,
                 xmlFragmentEventTypeFactory);
-           
-#if false            
-            return new ModuleCompileTimeServices(
-                container,
-                compilerServices,
-                configuration,
-                contextCompileTimeRegistry,
-                contextCompileTimeResolver,
-                beanEventTypeStemService,
-                beanEventTypeFactoryPrivate,
-                databaseConfigServiceCompileTime,
-                importServiceCompileTime,
-                exprDeclaredCompileTimeRegistry,
-                exprDeclaredCompileTimeResolver,
-                eventTypeAvroHandler,
-                eventTypeCompileRegistry,
-                eventTypeCompileTimeResolver,
-                eventTypeRepositoryPreconfigured,
-                indexCompileTimeRegistry,
-                moduleDependencies,
-                moduleVisibilityRules,
-                namedWindowCompileTimeResolver,
-                namedWindowCompileTimeRegistry,
-                patternResolutionService,
-                scriptCompileTimeRegistry,
-                scriptCompileTimeResolver,
-                scriptServiceCompileTime,
-                tableCompileTimeRegistry,
-                tableCompileTimeResolver,
-                variableCompileTimeRegistry,
-                variableCompileTimeResolver,
-                viewResolutionService,
-                xmlFragmentEventTypeFactory);
-#endif
         }
 
 
-        internal static ScriptServiceCompileTime MakeScriptService(Configuration configuration)
+        internal static ScriptCompiler MakeScriptCompiler(Configuration configuration)
         {
-            var scriptService = new ScriptServiceCompileTimeImpl();
-            scriptService.DiscoverEngines(configuration.Container);
-            return scriptService;
+            return new ScriptCompilerImpl(
+                configuration.Container,
+                configuration.Common);
         }
 
         internal static ImportServiceCompileTime MakeImportService(Configuration configuration)

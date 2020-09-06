@@ -35,13 +35,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.Method,
                 context.ClassScope,
                 true);
-            context.Method.Block.DeclareVar<EventBean>(
+            context.Method.Block
+                .DeclareVar<EventBean>(
                     "bean",
                     factoryLinear.AggregatorLinear.GetLastValueCodegen(
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))
-                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",

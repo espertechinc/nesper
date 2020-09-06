@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 					AssertMessage(ex.Message, message);
 				}
 			}
-			catch (EPStageException ex) {
+			catch (EPStageException) {
 				throw;
 			}
 		}
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 				env.StageService.GetStage("ST").Unstage(Arrays.AsList(id));
 				Assert.Fail();
 			}
-			catch (EPStageException ex) {
+			catch (EPStageException) {
 				// expected
 			}
 		}

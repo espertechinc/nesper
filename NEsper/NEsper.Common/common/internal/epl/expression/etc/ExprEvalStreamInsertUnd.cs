@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             int streamNum,
             Type returnType)
         {
-            this._undNode = undNode;
-            this._streamNum = streamNum;
-            this._returnType = returnType;
+            _undNode = undNode;
+            _streamNum = streamNum;
+            _returnType = returnType;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -58,43 +58,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 _returnType,
                 typeof(ExprEvalStreamInsertUnd),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .IfCondition(EqualsNull(refEPS))
+                .BlockReturn(ConstantNull())
                 .DeclareVar<EventBean>("bean", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("bean")
-                .MethodReturn(Cast(_returnType, ExprDotUnderlying(Ref("bean"))));
+                .MethodReturn(FlexCast(_returnType, ExprDotUnderlying(Ref("bean"))));
             
             return LocalMethod(methodNode);
         }
 
-        public int StreamNum {
-            get => _streamNum;
-        }
+        public int StreamNum => _streamNum;
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw new IllegalStateException("Evaluator not available"); }
-        }
+        public ExprEvaluator ExprEvaluator => throw new IllegalStateException("Evaluator not available");
 
-        public Type EvaluationType {
-            get => typeof(EventBean);
-        }
+        public Type EvaluationType => _returnType;
 
-        public Type UnderlyingReturnType {
-            get => _returnType;
-        }
+        public Type UnderlyingReturnType => _returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _undNode;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _undNode;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

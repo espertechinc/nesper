@@ -32,7 +32,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		private static object keywordCacheLock = new object();
 	    private static ISet<string> keywordCache;
 
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestParse() {
 	        RunAssertion("prop", new SimplePropAssertion("prop"));
 	        RunAssertion("a[1]", new IndexedPropAssertion("a", 1));

@@ -39,12 +39,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='getQuote', defaultNamespace='http://services.samples/xsd', rootElementNamespace='http://services.samples/xsd'," +
-                          "  xpathResolvePropertiesAbsolute=true, xpathPropertyExpr=true)" +
-                          "@XMLSchemaNamespacePrefix(prefix='m0', namespace='http://services.samples/xsd')" +
-                          "@XMLSchemaField(name='symbol_a', xpath='//m0:symbol', type='string')" +
-                          "@XMLSchemaField(name='symbol_b', xpath='//*[local-name(.) = \"getQuote\" and namespace-uri(.) = \"http://services.samples/xsd\"]', type='string')" +
-                          "@XMLSchemaField(name='symbol_c', xpath='/m0:getQuote/m0:request/m0:symbol', type='string')" +
+                          "@XMLSchema(RootElementName='getQuote', DefaultNamespace='http://services.samples/xsd', RootElementNamespace='http://services.samples/xsd'," +
+                          "  XPathResolvePropertiesAbsolute=true, XPathPropertyExpr=true)" +
+                          "@XMLSchemaNamespacePrefix(Prefix='m0', Namespace='http://services.samples/xsd')" +
+                          "@XMLSchemaField(Name='symbol_a', XPath='//m0:symbol', Type='string')" +
+                          "@XMLSchemaField(Name='symbol_b', XPath='//*[local-name(.) = \"getQuote\" and namespace-uri(.) = \"http://services.samples/xsd\"]', Type='string')" +
+                          "@XMLSchemaField(Name='symbol_c', XPath='/m0:getQuote/m0:request/m0:symbol', Type='string')" +
                           "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);
@@ -59,9 +59,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             var epl = "@Name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from " + eventTypeName;
             env.CompileDeploy(epl, path).AddListener("s0");
-
-            epl = "@Name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from StockQuote";
-            env.CompileDeploy(epl).AddListener("s0");
 
             var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
             SendXMLEvent(env, xml, eventTypeName);

@@ -27,10 +27,10 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 {
 	public class StmtClassForgeableMultiKey : StmtClassForgeable
 	{
-		private readonly string className;
+		private readonly string _className;
 		private readonly CodegenNamespaceScope _namespaceScope;
-		private readonly Type[] types;
-		private readonly bool lenientEquals;
+		private readonly Type[] _types;
+		private readonly bool _lenientEquals;
 
 		public StmtClassForgeableMultiKey(
 			string className,
@@ -38,10 +38,10 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			Type[] types,
 			bool lenientEquals)
 		{
-			this.className = className;
-			this._namespaceScope = namespaceScope;
-			this.types = types;
-			this.lenientEquals = lenientEquals;
+			_className = className;
+			_namespaceScope = namespaceScope;
+			_types = types;
+			_lenientEquals = lenientEquals;
 		}
 
 		public CodegenClass Forge(
@@ -49,41 +49,41 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			bool fireAndForget)
 		{
 			IList<CodegenTypedParam> @params = new List<CodegenTypedParam>();
-			for (int i = 0; i < types.Length; i++) {
-				@params.Add(new CodegenTypedParam(types[i].GetBoxedType(), "k" + i));
+			for (var i = 0; i < _types.Length; i++) {
+				@params.Add(new CodegenTypedParam(_types[i].GetBoxedType(), "k" + i));
 			}
 
-			CodegenCtor ctor = new CodegenCtor(typeof(StmtClassForgeableMultiKey), ClassName, includeDebugSymbols, @params);
+			var ctor = new CodegenCtor(typeof(StmtClassForgeableMultiKey), ClassName, includeDebugSymbols, @params);
 
-			CodegenClassProperties properties = new CodegenClassProperties();
-			CodegenClassMethods methods = new CodegenClassMethods();
-			CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, className);
+			var properties = new CodegenClassProperties();
+			var methods = new CodegenClassMethods();
+			var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
 
-			CodegenMethod hashMethod = CodegenMethod
+			var hashMethod = CodegenMethod
 				.MakeParentNode(typeof(int), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride();
-			MakeHashMethod(types.Length, hashMethod);
+			MakeHashMethod(_types.Length, hashMethod);
 			CodegenStackGenerator.RecursiveBuildStack(hashMethod, "GetHashCode", methods, properties);
 
-			CodegenMethod equalsMethod = CodegenMethod
+			var equalsMethod = CodegenMethod
 				.MakeParentNode(typeof(bool), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride()
 				.AddParam(typeof(object), "o");
-			MakeEqualsMethod(types.Length, equalsMethod);
+			MakeEqualsMethod(_types.Length, equalsMethod);
 			CodegenStackGenerator.RecursiveBuildStack(equalsMethod, "Equals", methods, properties);
 
-			CodegenProperty numKeysProperty = CodegenProperty
+			var numKeysProperty = CodegenProperty
 				.MakePropertyNode(typeof(int), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-			numKeysProperty.GetterBlock.BlockReturn(Constant(types.Length));
+			numKeysProperty.GetterBlock.BlockReturn(Constant(_types.Length));
 			CodegenStackGenerator.RecursiveBuildStack(numKeysProperty, "NumKeys", methods, properties);
 
-			CodegenMethod getKeyMethod = CodegenMethod
+			var getKeyMethod = CodegenMethod
 				.MakeParentNode(typeof(object), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(int), "num");
-			MakeGetKeyMethod(types.Length, getKeyMethod);
+			MakeGetKeyMethod(_types.Length, getKeyMethod);
 			CodegenStackGenerator.RecursiveBuildStack(getKeyMethod, "GetKey", methods, properties);
 
-			CodegenMethod toStringMethod = CodegenMethod
+			var toStringMethod = CodegenMethod
 				.MakeParentNode(typeof(string), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride();
 			MakeToStringMethod(toStringMethod);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			return new CodegenClass(
 				CodegenClassType.KEYPROVISIONING,
 				typeof(MultiKey),
-				className,
+				_className,
 				classScope,
 				EmptyList<CodegenTypedParam>.Instance, 
 				ctor,
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 		}
 
 		public string ClassName {
-			get { return className; }
+			get { return _className; }
 		}
 
 		public StmtClassForgeableType ForgeableType {
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				.IfCondition(EqualsIdentity(Ref("this"), Ref("o")))
 				.BlockReturn(Constant(true));
 
-			if (!lenientEquals) {
+			if (!_lenientEquals) {
 				equalsMethod.Block
 					.IfCondition(
 						Or(
@@ -139,17 +139,17 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 									ExprDotMethod(Ref("this"), "GetType"),
 									ExprDotMethod(Ref("o"), "GetType")))))
 					.BlockReturn(Constant(false))
-					.DeclareVar(className, "k", Cast(className, Ref("o")));
+					.DeclareVar(_className, "k", Cast(_className, Ref("o")));
 
-				for (int i = 0; i < length; i++) {
-					CodegenExpressionRef self = Ref("k" + i);
-					CodegenExpressionRef other = Ref("k.k" + i);
+				for (var i = 0; i < length; i++) {
+					var self = Ref("k" + i);
+					var other = Ref("k.k" + i);
 					if (i < length - 1) {
-						CodegenExpression notEquals = GetNotEqualsExpression(types[i], self, other);
+						var notEquals = GetNotEqualsExpression(_types[i], self, other);
 						equalsMethod.Block.IfCondition(notEquals).BlockReturn(ConstantFalse());
 					}
 					else {
-						CodegenExpression equals = GetEqualsExpression(types[i], self, other);
+						var equals = GetEqualsExpression(_types[i], self, other);
 						equalsMethod.Block.MethodReturn(equals);
 					}
 				}
@@ -159,27 +159,30 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			// Lenient-equals:
 			// - does not check the class
-			// - pull the key value from the "getKey" method of KeyProvisioning
+			// - pull the key value from the "GetKey" method of KeyProvisioning
 			// - may cast the key in case of Array.equals
 			equalsMethod.Block
-				.IfCondition(Not(InstanceOf(Ref("o"), typeof(MultiKeyArrayOfKeys<object>))))
+				.IfCondition(Not(InstanceOf(Ref("o"), typeof(MultiKey))))
 				.BlockReturn(Constant(false))
-				.DeclareVar<MultiKeyArrayOfKeys<object>>("k", Cast(typeof(MultiKeyArrayOfKeys<object>), Ref("o")));
+				.DeclareVar<MultiKey>("k", Cast(typeof(MultiKey), Ref("o")));
 
-			for (int i = 0; i < length; i++) {
-				CodegenExpressionRef self = Ref("k" + i);
-				CodegenExpression other = ExprDotMethod(Ref("k"), "Get", Constant(i));
-				if (types[i].IsArray) {
-					other = Cast(types[i], other);
+			for (var i = 0; i < length; i++) {
+				var self = Ref("k" + i);
+				var other = ExprDotMethod(Ref("k"), "GetKey", Constant(i));
+				if (_types[i].IsArray) {
+					other = Cast(_types[i], other);
 				}
 
 				if (i < length - 1) {
-					CodegenExpression notEquals = GetNotEqualsExpression(types[i], self, other);
-					equalsMethod.Block.IfCondition(notEquals).BlockReturn(ConstantFalse());
+					var notEquals = GetNotEqualsExpression(_types[i], self, other);
+					equalsMethod.Block
+						.IfCondition(notEquals)
+						.BlockReturn(ConstantFalse());
 				}
 				else {
-					CodegenExpression equals = GetEqualsExpression(types[i], self, other);
-					equalsMethod.Block.MethodReturn(equals);
+					var equals = GetEqualsExpression(_types[i], self, other);
+					equalsMethod.Block
+						.MethodReturn(equals);
 				}
 			}
 		}
@@ -188,8 +191,8 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			int length,
 			CodegenMethod method)
 		{
-			CodegenBlock[] blocks = method.Block.SwitchBlockOfLength(Ref("num"), length, true);
-			for (int i = 0; i < length; i++) {
+			var blocks = method.Block.SwitchBlockOfLength(Ref("num"), length, true);
+			for (var i = 0; i < length; i++) {
 				blocks[i].BlockReturn(Ref("k" + i));
 			}
 		}
@@ -200,18 +203,13 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenExpression other)
 		{
 			if (!type.IsArray) {
-				CodegenExpression cond = NotEqualsNull(self);
-				CodegenExpression condTrue = ExprDotMethod(self, "Equals", other);
-				CodegenExpression condFalse = EqualsNull(other);
+				var cond = NotEqualsNull(self);
+				var condTrue = StaticMethod(typeof(CompatExtensions), "DeepEquals", self, other);
+				var condFalse = EqualsNull(other);
 				return Conditional(cond, condTrue, condFalse);
 			}
 
-			if (RequiresDeepEquals(type.GetElementType())) {
-				return StaticMethod(typeof(Arrays), "DeepEquals", self, other);
-			}
-			else {
-				return StaticMethod(typeof(Arrays), "Equals", self, other);
-			}
+			return StaticMethod(typeof(Arrays), "DeepEquals", self, other);
 		}
 
 		private static CodegenExpression GetNotEqualsExpression(
@@ -220,18 +218,13 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenExpression other)
 		{
 			if (!type.IsArray) {
-				CodegenExpression cond = NotEqualsNull(self);
-				CodegenExpression condTrue = Not(ExprDotMethod(self, "Equals", other));
-				CodegenExpression condFalse = NotEqualsNull(other);
+				var cond = NotEqualsNull(self);
+				var condTrue = Not(StaticMethod(typeof(CompatExtensions), "DeepEquals", self, other));
+				var condFalse = NotEqualsNull(other);
 				return Conditional(cond, condTrue, condFalse);
 			}
 
-			if (RequiresDeepEquals(type.GetElementType())) {
-				return Not(StaticMethod(typeof(Arrays), "DeepEquals", self, other));
-			}
-			else {
-				return Not(StaticMethod(typeof(Arrays), "Equals", self, other));
-			}
+			return Not(StaticMethod(typeof(Arrays), "DeepEquals", self, other));
 		}
 
 		private void MakeHashMethod(
@@ -245,11 +238,11 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			//    return result;
 			// <code>
 
-			CodegenExpression computeHash = GetHashExpression(Ref("k0"), types[0]);
+			var computeHash = GetHashExpression(Ref("k0"), _types[0]);
 			hashMethod.Block.DeclareVar<int>("h", computeHash);
 
-			for (int i = 1; i < length; i++) {
-				computeHash = GetHashExpression(Ref("k" + i), types[i]);
+			for (var i = 1; i < length; i++) {
+				computeHash = GetHashExpression(Ref("k" + i), _types[i]);
 				hashMethod.Block.AssignRef("h", Op(Op(Constant(31), "*", Ref("h")), "+", computeHash));
 			}
 
@@ -260,39 +253,36 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenExpressionRef key,
 			Type type)
 		{
-			if (!type.IsArray) {
-				return Conditional(NotEqualsNull(key), ExprDotMethod(key, "GetHashCode"), Constant(0));
-			}
+			// if (!type.IsArray) {
+			// 	return Conditional(NotEqualsNull(key), ExprDotMethod(key, "GetHashCode"), Constant(0));
+			// }
 
-			if (RequiresDeepEquals(type.GetElementType())) {
-				return StaticMethod(typeof(Arrays), "DeepHashCode", key);
-			}
-			else {
-				return StaticMethod(typeof(Arrays), "HashCode", key);
-			}
+			return StaticMethod(typeof(CompatExtensions), "DeepHash", key);
 		}
 
 		private void MakeToStringMethod(CodegenMethod toStringMethod)
 		{
 			toStringMethod.Block
 				.DeclareVar<StringBuilder>("b", NewInstance(typeof(StringBuilder)))
-				.ExprDotMethod(Ref("b"), "Append", Constant(typeof(MultiKeyArrayOfKeys<object>).Name + "["));
-			for (int i = 0; i < types.Length; i++) {
+				.ExprDotMethod(Ref("b"), "Append", ExprDotName(ExprDotMethod(Ref("this"), "GetType"), "Name"))
+				.ExprDotMethod(Ref("b"), "Append", Constant("<"));
+
+			for (var i = 0; i < _types.Length; i++) {
 				if (i > 0) {
 					toStringMethod.Block.ExprDotMethod(Ref("b"), "Append", Constant(","));
 				}
 
-				CodegenExpressionRef self = Ref("k" + i);
+				var self = Ref("k" + i);
 				CodegenExpression text = self;
-				if (types[i].IsArray) {
-					text = StaticMethod(typeof(Arrays), "ToString", self);
+				if (_types[i].IsArray) {
+					text = StaticMethod(typeof(CompatExtensions), "RenderAny", self);
 				}
 
 				toStringMethod.Block.ExprDotMethod(Ref("b"), "Append", text);
 			}
 
 			toStringMethod.Block
-				.ExprDotMethod(Ref("b"), "Append", Constant("]"))
+				.ExprDotMethod(Ref("b"), "Append", Constant(">"))
 				.MethodReturn(ExprDotMethod(Ref("b"), "ToString"));
 		}
 	}

@@ -101,8 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 				"aggregation function",
 				_moduleUses,
 				_moduleDependencies,
-				anno => Collections.SingletonSet(anno.GetName()));
-			return pair == null ? null : pair.First;
+				anno => Collections.SingletonSet(anno.Name));
+			return pair?.First;
 		}
 
 		public Pair<Type, string[]> ResolveAggregationMultiFunction(string name)
@@ -273,7 +273,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 				foundPathFunc = matchesUses[0];
 			}
 
-			moduleDependencies.AddPathClass(foundPathFunc.Clazz.Name, foundPathFunc.OptionalModuleName);
+			moduleDependencies.AddPathClass(foundPathFunc.Clazz.FullName, foundPathFunc.OptionalModuleName);
 			return new Pair<Type, T>(foundPathFunc.Clazz, foundPathFunc.Annotation);
 		}
 

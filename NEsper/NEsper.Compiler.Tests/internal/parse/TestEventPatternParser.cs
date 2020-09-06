@@ -25,7 +25,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 {
     [TestFixture]
 	public class TestEventPatternParser  {
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestDisplayAST() {
 	        string expression = "A -> [10] B until C -> D";
 
@@ -34,7 +34,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        SupportParserHelper.DisplayAST(ast.First);
 	    }
 
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestInvalidCases() {
 	        // Base vocabulary
 	        AssertIsInvalid("a(");
@@ -178,7 +178,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        AssertIsInvalid("A(y(g)..z = 1)");
 	    }
 
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestValidCases() {
 	        string className = typeof(SupportBean).Name;
 
@@ -349,7 +349,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        AssertIsValid("A(x('1') = 1)");
 	        AssertIsValid("A(x(\"1\") = 1)");
 	        AssertIsValid("B(a('aa').b.c[1].d.e(\"ee\")=2)");
-	        AssertIsValid("a=X -> b=Y(id=a.indexed[0])");
+	        AssertIsValid("a=X -> b=Y(id=a.Indexed[0])");
 
 	        // intervals specs
 	        AssertIsValid("timer:interval(5 seconds)");
@@ -394,7 +394,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        AssertIsValid("every-distinct(value, bcd) [5] A");
 	    }
 
-        [Test]
+        [Test, RunInApplicationDomain]
 	    public void TestParserNodeGeneration() {
 	        string expression = "a(m=1) -> not b() or every c() and d() where a:b (5) and timer:interval(10)";
 

@@ -34,12 +34,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.takeWhile(x => x.p00 > 0)");
-				builder.WithExpression(fields[1], "contained.takeWhileLast(x => x.p00 > 0)");
-				builder.WithExpression(fields[2], "contained.takeWhile( (x, i) => x.p00 > 0 and i<2)");
-				builder.WithExpression(fields[3], "contained.takeWhileLast( (x, i) => x.p00 > 0 and i<2)");
-				builder.WithExpression(fields[4], "contained.takeWhile( (x, i, s) => x.p00 > 0 and i<s-2)");
-				builder.WithExpression(fields[5], "contained.takeWhileLast( (x, i,s) => x.p00 > 0 and i<s-2)");
+				builder.WithExpression(fields[0], "Contained.takeWhile(x => x.P00 > 0)");
+				builder.WithExpression(fields[1], "Contained.takeWhileLast(x => x.P00 > 0)");
+				builder.WithExpression(fields[2], "Contained.takeWhile( (x, i) => x.P00 > 0 and i<2)");
+				builder.WithExpression(fields[3], "Contained.takeWhileLast( (x, i) => x.P00 > 0 and i<2)");
+				builder.WithExpression(fields[4], "Contained.takeWhile( (x, i, s) => x.P00 > 0 and i<s-2)");
+				builder.WithExpression(fields[5], "Contained.takeWhileLast( (x, i,s) => x.P00 > 0 and i<s-2)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -103,12 +103,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.takeWhile(x => x != 'E1')");
-				builder.WithExpression(fields[1], "strvals.takeWhileLast(x => x != 'E1')");
-				builder.WithExpression(fields[2], "strvals.takeWhile( (x, i) => x != 'E1' and i<2)");
-				builder.WithExpression(fields[3], "strvals.takeWhileLast( (x, i) => x != 'E1' and i<2)");
-				builder.WithExpression(fields[4], "strvals.takeWhile( (x, i, s) => x != 'E1' and i<s-2)");
-				builder.WithExpression(fields[5], "strvals.takeWhileLast( (x, i, s) => x != 'E1' and i<s-2)");
+				builder.WithExpression(fields[0], "Strvals.takeWhile(x => x != 'E1')");
+				builder.WithExpression(fields[1], "Strvals.takeWhileLast(x => x != 'E1')");
+				builder.WithExpression(fields[2], "Strvals.takeWhile( (x, i) => x != 'E1' and i<2)");
+				builder.WithExpression(fields[3], "Strvals.takeWhileLast( (x, i) => x != 'E1' and i<2)");
+				builder.WithExpression(fields[4], "Strvals.takeWhile( (x, i, s) => x != 'E1' and i<s-2)");
+				builder.WithExpression(fields[5], "Strvals.takeWhileLast( (x, i, s) => x != 'E1' and i<s-2)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 

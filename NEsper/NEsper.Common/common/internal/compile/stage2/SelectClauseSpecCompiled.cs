@@ -50,20 +50,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// <summary>Returns the list of select expressions. </summary>
         /// <value>list of expressions</value>
         public SelectClauseElementCompiled[] SelectExprList {
-            get { return _selectClauseElements; }
-            set { _selectClauseElements = value; }
+            get => _selectClauseElements;
+            set => _selectClauseElements = value;
         }
 
         /// <summary>Returns true if the select clause contains at least one wildcard. </summary>
         /// <value>true if clause contains wildcard, false if not</value>
-        public bool IsUsingWildcard {
-            get { return _selectClauseElements.OfType<SelectClauseElementWildcard>().Any(); }
-        }
+        public bool IsUsingWildcard => _selectClauseElements.OfType<SelectClauseElementWildcard>().Any();
 
         /// <summary>Returns indictor whether distinct or not. </summary>
         /// <value>distinct indicator</value>
-        public bool IsDistinct {
-            get { return _isDistinct; }
-        }
+        public bool IsDistinct => _isDistinct;
     }
 }

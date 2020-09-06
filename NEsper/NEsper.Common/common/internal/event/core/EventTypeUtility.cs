@@ -273,10 +273,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression typeResolver)
         {
             if (eventType == null) {
-                throw new ArgumentException("Null event type");
+                throw new ArgumentNullException(nameof(eventType), "Null event type");
             }
             if (typeResolver == null) {
-                throw new ArgumentException("Event type resolver not provided");
+                throw new ArgumentNullException(nameof(typeResolver), "Event type resolver not provided");
             }
 
             if (eventType is BeanEventType && eventType.Metadata.AccessModifier == NameAccessModifier.TRANSIENT) {
@@ -401,12 +401,29 @@ namespace com.espertech.esper.common.@internal.@event.core
         public static CodegenExpression CodegenWriter(
             EventType eventType, 
             Type evaluationType, 
+            Type optionalCoercionType,
             EventPropertyWriterSPI writer, 
             CodegenMethod method, 
             Type generator,
             CodegenClassScope classScope)
         {
             //evaluationType = evaluationType.GetBoxedType();
+
+            CodegenExpression assigned = Ref("eval");
+            
+            if (optionalCoercionType != null && 
+                optionalCoercionType != evaluationType &&
+                evaluationType.IsNumeric()) {
+                // Is this simple unboxing or is this true coercion
+                if (optionalCoercionType.GetBoxedType() == evaluationType) {
+                    assigned = Unbox(assigned);
+                }
+                else {
+                    assigned = SimpleNumberCoercerFactory
+                        .GetCoercer(evaluationType, optionalCoercionType.GetBoxedType())
+                        .CoerceCodegen(assigned, evaluationType);
+                }
+            }
 
             var write = new CodegenExpressionLambda(method.Block)
                 .WithParam<object>("value")
@@ -423,7 +440,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                             Cast(evaluationType, Ref("value")))
                         .Expression(
                             writer.WriteCodegen(
-                                Ref("eval"),
+                                assigned,
                                 Ref("und"),
                                 Ref("bean"),
                                 method,
@@ -1252,11 +1269,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
                 if (property is SimpleProperty) {
                     var propItem = simplePropertyTypes.Get(propertyName);
-                    if (propItem != null) {
-                        return propItem.SimplePropertyType;
-                    }
-
-                    return null;
+                    return propItem?.SimplePropertyType;
                 }
 
                 if (property is IndexedProperty indexedProp) {
@@ -2182,6 +2195,23 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var source = theEvent.Underlying;
             var sourceType = (JsonEventType) theEvent.EventType;
+            var target = targetType.Deserializer.Allocator.Invoke();
+
+            foreach (var entry in targetType.Detail.FieldDescriptors) {
+                JsonUnderlyingField targetField = entry.Value;
+                JsonUnderlyingField sourceField = sourceType.Detail.FieldDescriptors.Get(entry.Key);
+                if (sourceField == null) {
+                    continue;
+                }
+                
+                
+            }
+
+            throw new NotImplementedException("broken: 878b024a-bae5-4797-a8a7-ce86fd4b498d");
+
+#if BROKEN
+            var source = theEvent.Underlying;
+            var sourceType = (JsonEventType) theEvent.EventType;
             var target = targetType.SerializationContext.NewUnderlying();
             
             foreach (var entry in targetType.Detail.FieldDescriptors) {
@@ -2196,6 +2226,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return target;
+#endif
         }
 
         public static EventTypeForgeablesPair CreateNonVariantType(

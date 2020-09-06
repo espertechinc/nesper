@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
 					ProcEvaluateEnumMethod = (
 						eventsLambda,
@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						context) => {
 						IComparable minKey = null;
 
-						ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-						foreach (EventBean next in beans) {
+						var beans = (ICollection<EventBean>) enumcoll;
+						foreach (var next in beans) {
 							eventsLambda[StreamNumLambda] = next;
 
-							object comparable = inner.Evaluate(eventsLambda, isNewData, context);
+							var comparable = inner.Evaluate(eventsLambda, isNewData, context);
 							if (comparable == null) {
 								continue;
 							}

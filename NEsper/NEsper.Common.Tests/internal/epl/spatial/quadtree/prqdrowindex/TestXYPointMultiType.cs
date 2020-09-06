@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             return joiner.ToString();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddMultiType()
         {
             var vOne = new XYPointMultiType(10, 20, "X");
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertValues("A,B,1,2,C", vFive);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddSingleValue()
         {
             var v = new XYPointMultiType(10, 20, "X");
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertValues("X,Y,Z", v);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCollectInto()
         {
             ICollection<object> values = new List<object>();
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Assert.AreEqual("X,Y", Join(values));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidMerge()
         {
             var vOne = new XYPointMultiType(10, 20, "X");

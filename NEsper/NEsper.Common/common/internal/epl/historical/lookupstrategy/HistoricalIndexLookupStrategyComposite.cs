@@ -50,11 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                 var idx = (PropertyCompositeEventTable) index[0];
                 var map = idx.Index;
                 var events = chain.Get(lookupEvent, map, context, idx.PostProcessor);
-                if (events != null) {
-                    return events.GetEnumerator();
-                }
-
-                return null;
+                return events?.GetEnumerator();
             }
 
             return index[0].GetEnumerator();

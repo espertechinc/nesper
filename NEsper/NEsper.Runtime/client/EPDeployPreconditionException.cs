@@ -7,32 +7,45 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.runtime.client
 {
     /// <summary>
-    /// Deploy exception to indicate that a precondition is not satisfied
+    ///     Deploy exception to indicate that a precondition is not satisfied
     /// </summary>
+    [Serializable]
     public class EPDeployPreconditionException : EPDeployException
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
-        public EPDeployPreconditionException(string message, int rolloutItemNumber)
+        public EPDeployPreconditionException(
+            string message,
+            int rolloutItemNumber)
             : base("A precondition is not satisfied: " + message, rolloutItemNumber)
         {
         }
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="cause">cause</param>
         /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
-        public EPDeployPreconditionException(string message, Exception cause, int rolloutItemNumber)
+        public EPDeployPreconditionException(
+            string message,
+            Exception cause,
+            int rolloutItemNumber)
             : base("A precondition is not satisfied: " + message, cause, rolloutItemNumber)
+        {
+        }
+
+        protected EPDeployPreconditionException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

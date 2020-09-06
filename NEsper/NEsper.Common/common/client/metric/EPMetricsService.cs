@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.metric
         /// Enable metrics reporting for the given statement.
         /// <para />This operation can only be performed at runtime and is not available at runtime initialization time.
         /// <para />Statement metric reporting follows the configured default or statement group interval.
-        /// <para />Only if metrics reporting (on the runtimelevel) has been enabled at initialization time
+        /// <para />Only if metrics reporting (on the runtime level) has been enabled at initialization time
         /// can statement-level metrics reporting be enabled through this method.
         /// </summary>
         /// <param name="deploymentId">for which to enable metrics reporting</param>
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.client.metric
         /// <summary>
         /// Enable runtime-level metrics reporting.
         /// <para />Use this operation to control, at runtime, metrics reporting globally.
-        /// <para />Only if metrics reporting (on the runtimelevel) has been enabled at initialization time
+        /// <para />Only if metrics reporting (on the runtime level) has been enabled at initialization time
         /// can metrics reporting be re-enabled at runtime through this method.
         /// </summary>
         /// <throws>ConfigurationException if use at runtime and metrics reporting had not been enabled at initialization time</throws>

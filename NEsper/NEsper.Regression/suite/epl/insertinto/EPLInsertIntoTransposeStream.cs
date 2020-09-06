@@ -42,15 +42,78 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoTransposeCreateSchemaPONO());
-            execs.Add(new EPLInsertIntoTransposeMapAndObjectArrayAndOthers());
-            execs.Add(new EPLInsertIntoTransposeFunctionToStreamWithProps());
-            execs.Add(new EPLInsertIntoTransposeFunctionToStream());
-            execs.Add(new EPLInsertIntoTransposeSingleColumnInsert());
-            execs.Add(new EPLInsertIntoTransposeEventJoinMap());
-            execs.Add(new EPLInsertIntoTransposeEventJoinPONO());
-            execs.Add(new EPLInsertIntoTransposePONOPropertyStream());
+            WithTransposeCreateSchemaPONO(execs);
+            WithTransposeMapAndObjectArrayAndOthers(execs);
+            WithTransposeFunctionToStreamWithProps(execs);
+            WithTransposeFunctionToStream(execs);
+            WithTransposeSingleColumnInsert(execs);
+            WithTransposeEventJoinMap(execs);
+            WithTransposeEventJoinPONO(execs);
+            WithTransposePONOPropertyStream(execs);
+            WithInvalidTranspose(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidTranspose(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalidTranspose());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposePONOPropertyStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposePONOPropertyStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeEventJoinPONO(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeEventJoinPONO());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeEventJoinMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeEventJoinMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeSingleColumnInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeSingleColumnInsert());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeFunctionToStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeFunctionToStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeFunctionToStreamWithProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeFunctionToStreamWithProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeMapAndObjectArrayAndOthers(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeMapAndObjectArrayAndOthers());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeCreateSchemaPONO(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeCreateSchemaPONO());
             return execs;
         }
 
@@ -111,16 +174,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                String epl = "create schema SupportBeanTwo as " + typeof(SupportBeanTwo).FullName + ";\n" +
-                             "on SupportBean event insert into astream select transpose(" + typeof(EPLInsertIntoTransposeStream).FullName + ".MakeSB2Event(event));\n" +
-                             "on SupportBean event insert into bstream select transpose(" + typeof(EPLInsertIntoTransposeStream).FullName + ".MakeSB2Event(event));\n" +
+                String epl = "create schema SupportBeanTwo as " +
+                             typeof(SupportBeanTwo).FullName +
+                             ";\n" +
+                             "on SupportBean event insert into astream select transpose(" +
+                             typeof(EPLInsertIntoTransposeStream).FullName +
+                             ".MakeSB2Event(event));\n" +
+                             "on SupportBean event insert into bstream select transpose(" +
+                             typeof(EPLInsertIntoTransposeStream).FullName +
+                             ".MakeSB2Event(event));\n" +
                              "@Name('a') select * from astream\n;" +
                              "@Name('b') select * from bstream\n;";
                 env.CompileDeploy(epl).AddListener("a").AddListener("b");
 
                 env.SendEventBean(new SupportBean("E1", 1));
 
-                String[] fields = new String[] {"stringTwo"};
+                String[] fields = new String[] {"StringTwo"};
                 EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), fields, new Object[] {"E1"});
                 EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), fields, new Object[] {"E1"});
 

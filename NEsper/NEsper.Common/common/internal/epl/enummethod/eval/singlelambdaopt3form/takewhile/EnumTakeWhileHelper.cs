@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -22,6 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumTakeWhileHelper
 	{
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="enumcoll">events</param>
+		/// <returns>array</returns>
+		public static EventBean[] TakeWhileLastEventBeanToArray(FlexCollection enumcoll)
+		{
+			return enumcoll.IsEventBeanCollection
+				? enumcoll.EventBeanCollection.ToArray()
+				: enumcoll.ObjectCollection.UnwrapIntoArray<EventBean>();
+		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -72,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			Type evaluationType)
 		{
 			var blockSingle = block.IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
-				.DeclareVar<object>("item", ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next"))
+				.DeclareVar<object>("item", ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
 				.AssignArrayElement("props", Constant(0), Ref("item"));
 			if (numParameters >= 2) {
 				blockSingle.AssignArrayElement("props", Constant(1), Constant(0));
@@ -82,10 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				blockSingle,
 				evaluationType,
 				innerValue,
-				StaticMethod(typeof(Collections), "emptyList"));
-			blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", Ref("item")));
+				FlexEmpty());
+			blockSingle.BlockReturn(FlexValue(Ref("item")));
 
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
+			block.DeclareVar<ArrayDeque<object>>("result", NewInstance<ArrayDeque<object>>());
 		}
 
 		public static void InitBlockSizeOneEvent(
@@ -94,22 +106,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int streamNumLambda,
 			Type evaluationType)
 		{
-			var blockSingle = block.IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
-				.DeclareVar(
-					typeof(EventBean),
-					"item",
-					Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL)
-						.Add("iterator")
-						.Add("next")))
+			var blockSingle = block
+				.IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
+				.DeclareVar<EventBean>("item", Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(streamNumLambda), Ref("item"));
+
+			block.DebugStack();
+			
 			CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
 				blockSingle,
 				evaluationType,
 				innerValue,
-				StaticMethod(typeof(Collections), "emptyList"));
-			blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", Ref("item")));
+				EnumValue(typeof(FlexCollection), "Empty"));
+			blockSingle.BlockReturn(
+				FlexWrap(StaticMethod(typeof(Collections), "SingletonList", Ref("item"))));
 
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
+			block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance<ArrayDeque<EventBean>>());
 		}
 
 		public static void InitBlockSizeOneEventPlus(
@@ -121,27 +133,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			var blockSingle = block
 				.IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
-				.DeclareVar(
-					typeof(EventBean),
-					"item",
-					Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL)
-						.Add("iterator")
-						.Add("next")))
+				.DeclareVar<EventBean>("item", Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(streamNumLambda), Ref("item"))
 				.AssignArrayElement("props", Constant(0), Constant(0));
 			if (numParameters > 2) {
 				blockSingle.AssignArrayElement("props", Constant(1), Constant(1));
 			}
 
+			block.DebugStack();
+
 			CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
 				blockSingle,
 				evaluationType,
 				innerValue,
-				StaticMethod(typeof(Collections), "emptyList"));
-			blockSingle.BlockReturn(
-				StaticMethod(typeof(Collections), "singletonList", Ref("item")));
+				EnumValue(typeof(FlexCollection), "Empty"));
 
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
+			blockSingle.BlockReturn(
+				FlexWrap(StaticMethod(typeof(Collections), "SingletonList", Ref("item"))));
+
+			block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance<ArrayDeque<EventBean>>());
 		}
 	}
 } // end of namespace

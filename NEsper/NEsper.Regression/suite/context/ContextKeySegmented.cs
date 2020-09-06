@@ -226,8 +226,8 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context PartitionByArray partition by id, array from SupportEventWithIntArray;\n" +
-                          "@Name('s0') context PartitionByArray select sum(value) as thesum from SupportEventWithIntArray;\n";
+                var epl = "create context PartitionByArray partition by Id, Array from SupportEventWithIntArray;\n" +
+                          "@Name('s0') context PartitionByArray select sum(Value) as thesum from SupportEventWithIntArray;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertArray(env, "G1", new int[] {1, 2}, 1, 1);
@@ -281,8 +281,8 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context PartitionByArray partition by array from SupportEventWithIntArray;\n" +
-                          "@Name('s0') context PartitionByArray select sum(value) as thesum from SupportEventWithIntArray;\n";
+                var epl = "create context PartitionByArray partition by Array from SupportEventWithIntArray;\n" +
+                          "@Name('s0') context PartitionByArray select sum(Value) as thesum from SupportEventWithIntArray;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertArray(env, "E1", new int[] {1, 2}, 10, 10);

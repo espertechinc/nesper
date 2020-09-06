@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 catch (AssertionException ex) {
                     var message = "Failed after create stmt " + i + " and before milestone P" + milestone.Get();
                     log.Error(message, ex);
-                    throw new AssertionException(message, ex);
+                    Assert.Fail(message, ex);
                 }
 
                 env.Milestone(milestone.GetAndIncrement());
@@ -72,9 +72,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                     AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
-                    throw new AssertionException(
-                        "Failed after create stmt " + i + " and after milestone P" + milestone.Get(),
-                        ex);
+                    Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get(), ex);
                 }
             }
 

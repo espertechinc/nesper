@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenExpression optionalInitializer)
         {
             _clazz = null;
-            _typeName = typeName ?? throw new ArgumentException("Class cannot be null");
+            _typeName = typeName.CodeInclusionTypeName() ?? throw new ArgumentException("Class cannot be null");
             _var = var;
             _optionalInitializer = optionalInitializer;
         }
@@ -60,7 +60,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 builder.Append(_typeName);
             }
 
-            builder.Append(" ").Append(_var);
+            builder
+                .Append(" ")
+                .Append(_var);
+            
             if (_optionalInitializer != null) {
                 builder.Append("=");
                 _optionalInitializer.Render(builder, isInnerClass, 1, new CodegenIndent(true));

@@ -87,16 +87,14 @@ namespace com.espertech.esper.common.@internal.util
             var columnTypeBoxed = columnType.GetBoxedType();
             var targetTypeBoxed = writeablePropertyType.GetBoxedType();
 
-            if (customizer != null) {
-                var custom = customizer.WidenerFor(
-                    columnName,
-                    columnType,
-                    writeablePropertyType,
-                    writeablePropertyName,
-                    statementName);
-                if (custom != null) {
-                    return custom;
-                }
+            var custom = customizer?.WidenerFor(
+                columnName,
+                columnType,
+                writeablePropertyType,
+                writeablePropertyName,
+                statementName);
+            if (custom != null) {
+                return custom;
             }
 
             if (columnType == null) {

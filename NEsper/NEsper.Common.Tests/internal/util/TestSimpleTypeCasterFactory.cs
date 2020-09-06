@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSimpleTypeCasterFactory : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetCaster()
         {
             object[][] tests = {

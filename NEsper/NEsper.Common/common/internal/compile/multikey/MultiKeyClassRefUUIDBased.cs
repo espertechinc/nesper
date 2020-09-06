@@ -30,10 +30,10 @@ namespace com.espertech.esper.common.@internal.compile.multikey
             MKTypes = mkTypes;
         }
 
-        public string ClassNameMK {
+        public NameOrType ClassNameMK {
             get {
                 CheckClassPostfix();
-                return GetClassNameMK(classPostfix);
+                return new NameOrType(GetClassNameMK(classPostfix));
             }
         }
 

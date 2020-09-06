@@ -44,11 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                 eventsPerStream[lookupStream] = lookupEvent;
 
                 var result = InKeywordTableLookupUtil.SingleIndexLookup(evaluators, eventsPerStream, context, idx);
-                if (result == null) {
-                    return null;
-                }
 
-                return result.GetEnumerator();
+                return result?.GetEnumerator();
             }
 
             return index[0].GetEnumerator();

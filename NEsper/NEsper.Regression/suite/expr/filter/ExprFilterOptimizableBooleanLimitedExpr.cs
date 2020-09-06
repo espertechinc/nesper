@@ -32,27 +32,111 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprFilterOptReboolConstValueRegexpRHS());
-			executions.Add(new ExprFilterOptReboolMixedValueRegexpRHS());
-			executions.Add(new ExprFilterOptReboolConstValueRegexpRHSPerformance());
-			executions.Add(new ExprFilterOptReboolConstValueRegexpLHS());
-			executions.Add(new ExprFilterOptReboolNoValueExprRegexpSelf());
-			executions.Add(new ExprFilterOptReboolNoValueConcat());
-			executions.Add(new ExprFilterOptReboolContextValueDeep());
-			executions.Add(new ExprFilterOptReboolContextValueWithConst());
-			executions.Add(new ExprFilterOptReboolPatternValueWithConst());
-			executions.Add(new ExprFilterOptReboolWithEquals());
-			executions.Add(new ExprFilterOptReboolMultiple());
-			executions.Add(new ExprFilterOptReboolDisqualify());
-			return executions;
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			WithConstValueRegexpRHS(execs);
+			WithMixedValueRegexpRHS(execs);
+			WithConstValueRegexpRHSPerformance(execs);
+			WithConstValueRegexpLHS(execs);
+			WithNoValueExprRegexpSelf(execs);
+			WithNoValueConcat(execs);
+			WithContextValueDeep(execs);
+			WithContextValueWithConst(execs);
+			WithPatternValueWithConst(execs);
+			WithWithEquals(execs);
+			WithMultiple(execs);
+			WithDisqualify(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithDisqualify(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolDisqualify());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMultiple(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolMultiple());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWithEquals(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolWithEquals());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithPatternValueWithConst(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolPatternValueWithConst());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithContextValueWithConst(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolContextValueWithConst());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithContextValueDeep(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolContextValueDeep());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNoValueConcat(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolNoValueConcat());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNoValueExprRegexpSelf(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolNoValueExprRegexpSelf());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithConstValueRegexpLHS(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolConstValueRegexpLHS());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithConstValueRegexpRHSPerformance(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolConstValueRegexpRHSPerformance());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMixedValueRegexpRHS(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolMixedValueRegexpRHS());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithConstValueRegexpRHS(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprFilterOptReboolConstValueRegexpRHS());
+			return execs;
 		}
 
 		private class ExprFilterOptReboolWithEquals : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from pattern[s0=SupportBean_S0 -> SupportBean(IntPrimitive+5=s0.id and TheString='a')]";
+				string epl = "@Name('s0') select * from pattern[s0=SupportBean_S0 -> SupportBean(IntPrimitive+5=s0.Id and TheString='a')]";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(10));
 
@@ -76,8 +160,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@Name('s0') select * from SupportBean_S0(p00 regexp '.*X' and p01 regexp '.*Y')").AddListener("s0");
-				env.CompileDeploy("@Name('s1') select * from SupportBean_S0(p01 regexp '.*Y' and p00 regexp '.*X')").AddListener("s1");
+				env.CompileDeploy("@Name('s0') select * from SupportBean_S0(P00 regexp '.*X' and P01 regexp '.*Y')").AddListener("s0");
+				env.CompileDeploy("@Name('s1') select * from SupportBean_S0(P01 regexp '.*Y' and P00 regexp '.*X')").AddListener("s1");
 
 				env.Milestone(0);
 
@@ -86,9 +170,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 					FilterItem[] s0 = filters.Get("s0");
 					FilterItem[] s1 = filters.Get("s1");
 					Assert.AreEqual(REBOOL, s0[0].Op);
-					Assert.AreEqual(".p00 regexp ?", s0[0].Name);
+					Assert.AreEqual(".P00 regexp ?", s0[0].Name);
 					Assert.AreEqual(REBOOL, s0[1].Op);
-					Assert.AreEqual(".p01 regexp ?", s0[1].Name);
+					Assert.AreEqual(".P01 regexp ?", s0[1].Name);
 					Assert.AreEqual(s0[0], s1[0]);
 					Assert.AreEqual(s0[1], s1[1]);
 				}
@@ -105,11 +189,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') select * from pattern[s0=SupportBean_S0 -> SupportBean_S1(p10 || 'abc' regexp s0.p00)];\n";
+				string epl = "@Name('s0') select * from pattern[s0=SupportBean_S0 -> SupportBean_S1(P10 || 'abc' regexp s0.P00)];\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(1, "x.*abc"));
 				if (HasFilterIndexPlanAdvanced(env)) {
-					AssertFilterSvcSingle(env.Statement("s0"), ".p10||\"abc\" regexp ?", REBOOL);
+					AssertFilterSvcSingle(env.Statement("s0"), ".P10||\"abc\" regexp ?", REBOOL);
 				}
 
 				env.Milestone(0);
@@ -126,11 +210,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "create context MyContext start SupportBean_S0 as s0;\n" +
-				             "@Name('s0') context MyContext select * from SupportBean_S1(p10 || 'abc' regexp context.s0.p00);\n";
+				             "@Name('s0') context MyContext select * from SupportBean_S1(P10 || 'abc' regexp context.s0.P00);\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(1, "x.*abc"));
 				if (HasFilterIndexPlanAdvanced(env)) {
-					AssertFilterSvcSingle(env.Statement("s0"), ".p10||\"abc\" regexp ?", REBOOL);
+					AssertFilterSvcSingle(env.Statement("s0"), ".P10||\"abc\" regexp ?", REBOOL);
 				}
 
 				env.Milestone(0);
@@ -147,11 +231,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "create context MyContext start SupportBean_S0 as s0;\n" +
-				             "@Name('s0') context MyContext select * from SupportBean_S1(p10 regexp p11 || context.s0.p00);\n";
+				             "@Name('s0') context MyContext select * from SupportBean_S1(P10 regexp P11 || context.s0.P00);\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				env.SendEventBean(new SupportBean_S0(1, ".*X"));
 				if (HasFilterIndexPlanAdvanced(env)) {
-					AssertFilterSvcSingle(env.Statement("s0"), ".p10 regexp p11||?", REBOOL);
+					AssertFilterSvcSingle(env.Statement("s0"), ".P10 regexp P11||?", REBOOL);
 				}
 
 				env.Milestone(0);
@@ -168,12 +252,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "select * from SupportBean_S0(p00 || p01 = p02 || p03)";
+				string epl = "select * from SupportBean_S0(P00 || P01 = P02 || P03)";
 				RunTwoStmt(
 					env,
 					epl,
 					epl,
-					".p00||p01=p02||p03",
+					".P00||P01=P02||P03",
 					"SupportBean_S0",
 					new SupportBean_S0(1, "a", "b", "a", "b"),
 					new SupportBean_S0(1, "a", "b", "a", "c"));
@@ -186,9 +270,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			{
 				RunTwoStmt(
 					env,
-					"select * from SupportBean_S0(p00 regexp p01) as a",
-					"select * from SupportBean_S0(s0.p00 regexp s0.p01) as s0",
-					".p00 regexp p01",
+					"select * from SupportBean_S0(P00 regexp P01) as a",
+					"select * from SupportBean_S0(s0.P00 regexp s0.P01) as s0",
+					".P00 regexp P01",
 					"SupportBean_S0",
 					new SupportBean_S0(1, "abc", ".*c"),
 					new SupportBean_S0(2, "abc", ".*d"));
@@ -218,9 +302,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 				             "@Name('s0') select * from SupportBean(TheString regexp MYVAR);\n" +
 				             "" +
 				             "@Name('ctx') create context MyContext start SupportBean_S0 as s0;\n" +
-				             "@Name('s1') context MyContext select * from SupportBean(TheString regexp context.s0.p00);\n" +
+				             "@Name('s1') context MyContext select * from SupportBean(TheString regexp context.s0.P00);\n" +
 				             "" +
-				             "@Name('s2') select * from pattern[s0=SupportBean_S0 -> every SupportBean(TheString regexp s0.p00)];\n" +
+				             "@Name('s2') select * from pattern[s0=SupportBean_S0 -> every SupportBean(TheString regexp s0.P00)];\n" +
 				             "" +
 				             "@Name('s3') select * from SupportBean(TheString regexp '.*' || 'abc' || '.*');\n";
 				env.CompileDeploy(epl);
@@ -262,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			public void Run(RegressionEnvironment env)
 			{
 				SupportFilterPlanHook.Reset();
-				string hook = "@Hook(Type=HookType.INTERNAL_FILTERSPEC, hook='" + typeof(SupportFilterPlanHook).Name + "')";
+				string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).FullName + "')";
 				string epl = hook + "@Name('s0') select * from SupportBean(TheString regexp '.*a.*')";
 				env.CompileDeploy(epl).AddListener("s0");
 				if (HasFilterIndexPlanAdvanced(env)) {
@@ -349,7 +433,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 						}
 					});
 
+#if DEBUG
+				Assert.That(delta, Is.LessThan(2000), "Delta is " + delta); // ~7 seconds without optimization
+#else
 				Assert.That(delta, Is.LessThan(1000), "Delta is " + delta); // ~7 seconds without optimization
+#endif
+
 				env.UndeployAll();
 
 			}
@@ -367,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 				try {
 					admin.Deploy(compiled);
 				}
-				catch (EPDeployException ex) {
+				catch (EPDeployException) {
 					Assert.Fail();
 				}
 			}
@@ -386,11 +475,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 				                 "@public create table MyTable(tablecol string);\n" +
 				                 "@public create window MyWindow#keepall as SupportBean;\n" +
 				                 "@public create inlined_class \"\"\"\n" +
-				                 "  import com.espertech.esper.common.client.hook.singlerowfunc.*;\n" +
-				                 "  import com.espertech.esper.common.client.configuration.compiler.*;\n" +
-				                 "  @ExtensionSingleRowFunction(name=\"doit\", methodName=\"doit\", filterOptimizable=ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizable.DISABLED)\n" +
+				                 "  using com.espertech.esper.common.client.hook.singlerowfunc;\n" +
+				                 "  using com.espertech.esper.common.client.configuration.compiler;\n" +
+				                 "  [ExtensionSingleRowFunction(Name=\"doit\", MethodName=\"Doit\", FilterOptimizable=ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED)]\n" +
 				                 "  public class Helper {\n" +
-				                 "    public static String doit(Object param) {\n" +
+				                 "    public static string Doit(object param) {\n" +
 				                 "      return null;\n" +
 				                 "    }\n" +
 				                 "  }\n" +
@@ -399,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 				                 "@public create expression MyHandThrough {v => v};" +
 				                 "@public create expression string js:MyJavaScript() [\"a\"];\n";
 				env.Compile(objects, path);
-				string hook = "@Hook(Type=HookType.INTERNAL_FILTERSPEC, hook='" + typeof(SupportFilterPlanHook).Name + "')";
+				string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
 
 				// Core disqualifing: non-constant variables, tables, subselects, lambda, plug-in UDF with filter-opt-disabled, scripts
 				AssertDisqualified(env, path, "SupportBean", hook + "select * from SupportBean(TheString regexp MYVARIABLE_NONCONSTANT)");
@@ -409,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 					env,
 					path,
 					"SupportBeanArrayCollMap",
-					hook + "select * from SupportBeanArrayCollMap(id = SetOfString.where(v => v=id).firstOf())");
+					hook + "select * from SupportBeanArrayCollMap(Id = SetOfString.where(v => v=Id).firstOf())");
 				AssertDisqualified(env, path, "SupportBean", hook + "select * from SupportBean(TheString regexp doit('abc'))");
 				AssertDisqualified(env, path, "SupportBean", hook + "select * from SupportBean(TheString regexp MyJavaScript())");
 
@@ -418,24 +507,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 					env,
 					path,
 					"SupportBean_S1",
-					hook + "select * from pattern[s0=SupportBean_S0 -> SupportBean_S1(s0.p00 || p10 = s0.p00 || p11)]");
+					hook + "select * from pattern[s0=SupportBean_S0 -> SupportBean_S1(s0.P00 || P10 = s0.P00 || P11)]");
 				AssertDisqualified(
 					env,
 					path,
 					"SupportBean_S1",
 					"create context MyContext start SupportBean_S0 as s0;\n" +
 					hook +
-					"context MyContext select * from SupportBean_S1(context.s0.p00 || p10 = context.s0.p01)");
+					"context MyContext select * from SupportBean_S1(context.s0.P00 || P10 = context.s0.P01)");
 
 				string eplWithLocalHelper = hook +
 				                            "inlined_class \"\"\"\n" +
 				                            "  public class LocalHelper {\n" +
-				                            "    public static String doit(Object param) {\n" +
+				                            "    public static string Doit(object param) {\n" +
 				                            "      return null;\n" +
 				                            "    }\n" +
 				                            "  }\n" +
 				                            "\"\"\"\n" +
-				                            "select * from SupportBean(TheString regexp LocalHelper.doit('abc'))";
+				                            "select * from SupportBean(TheString regexp LocalHelper.Doit('abc'))";
 				AssertDisqualified(env, path, "SupportBean", eplWithLocalHelper);
 			}
 		}

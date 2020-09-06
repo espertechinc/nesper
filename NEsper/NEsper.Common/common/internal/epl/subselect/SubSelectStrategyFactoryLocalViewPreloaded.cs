@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.prior;
@@ -265,9 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             }
 
             var newEvents = eventsInWindow.ToArray();
-            if (subselectView != null) {
-                ((View) subselectView).Update(newEvents, null);
-            }
+            ((View) subselectView)?.Update(newEvents, null);
 
             if (eventIndex != null) {
                 foreach (var table in eventIndex) {

@@ -43,55 +43,153 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            
+            WithOnMergeSimpleInsert(execs);
+            WithOnMergeMatchNoMatch(execs);
+            WithUpdateNestedEvent(execs);
+            WithOnMergeInsertStream(execs);
+            WithInsertOtherStream(execs);
+            WithMultiactionDeleteUpdate(execs);
+            WithUpdateOrderOfFields(execs);
+            WithInfraSubqueryNotMatched(execs);
+            WithPatternMultimatch(execs);
+            WithNoWhereClause(execs);
+            WithMultipleInsert(execs);
+            WithFlow(execs);
+            WithInnerTypeAndVariable(execs);
+            WithInvalid(execs);
+            WithInsertOnly(execs);
+            WithDeleteThenUpdate(execs);
+            WithPropertyEvalUpdate(execs);
+            WithPropertyEvalInsertNoMatch(execs);
+            WithPropertyEvalUpdate(execs);
+            WithSetArrayElementWithIndex(execs);
+            WithSetArrayElementWithIndexInvalid(execs);
+            
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithOnMergeSimpleInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeSimpleInsert(true));
             execs.Add(new InfraOnMergeSimpleInsert(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithOnMergeMatchNoMatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeMatchNoMatch(true));
             execs.Add(new InfraOnMergeMatchNoMatch(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithUpdateNestedEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraUpdateNestedEvent(true));
             execs.Add(new InfraUpdateNestedEvent(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithOnMergeInsertStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeInsertStream(true));
             execs.Add(new InfraOnMergeInsertStream(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInsertOtherStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 execs.Add(new InfraInsertOtherStream(true, rep));
                 execs.Add(new InfraInsertOtherStream(false, rep));
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithMultiactionDeleteUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMultiactionDeleteUpdate(true));
             execs.Add(new InfraMultiactionDeleteUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithUpdateOrderOfFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraUpdateOrderOfFields(true));
             execs.Add(new InfraUpdateOrderOfFields(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInfraSubqueryNotMatched(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubqueryNotMatched(true));
             execs.Add(new InfraSubqueryNotMatched(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithPatternMultimatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPatternMultimatch(true));
             execs.Add(new InfraPatternMultimatch(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithNoWhereClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNoWhereClause(true));
             execs.Add(new InfraNoWhereClause(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithMultipleInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMultipleInsert(true));
             execs.Add(new InfraMultipleInsert(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithFlow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraFlow(true));
             execs.Add(new InfraFlow(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInnerTypeAndVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                if (rep != EventRepresentationChoice.AVRO) {
+                if (!rep.IsAvroOrJsonEvent()) {
                     execs.Add(new InfraInnerTypeAndVariable(true, rep));
                     execs.Add(new InfraInnerTypeAndVariable(false, rep));
                 }
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInvalid(true));
             execs.Add(new InfraInvalid(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInsertOnly(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             foreach (var namedWindow in new[] {true, false}) {
                 execs.Add(new InfraInsertOnly(namedWindow, true, false, false));
                 execs.Add(new InfraInsertOnly(namedWindow, false, false, false));
@@ -99,21 +197,44 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 execs.Add(new InfraInsertOnly(namedWindow, false, true, false));
                 execs.Add(new InfraInsertOnly(namedWindow, false, true, true));
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithDeleteThenUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraDeleteThenUpdate(true));
             execs.Add(new InfraDeleteThenUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithPropertyEvalInsertNoMatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraPropertyEvalInsertNoMatch(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyEvalUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPropertyEvalUpdate(true));
             execs.Add(new InfraPropertyEvalUpdate(false));
-            
-            execs.Add(new InfraPropertyEvalInsertNoMatch(true));
-            execs.Add(new InfraPropertyEvalUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSetArrayElementWithIndexInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSetArrayElementWithIndexInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSetArrayElementWithIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSetArrayElementWithIndex(false, false));
             execs.Add(new InfraSetArrayElementWithIndex(true, true));
-
-            execs.Add(new InfraSetArrayElementWithIndexInvalid());
-            
             return execs;
         }
 
@@ -558,19 +679,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 					env,
 					path,
 					"on SupportBean update MyInfra set doublearray[null]=1",
-					"Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null' for expression 'doublearray'");
+					"Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null (any type)' for expression 'doublearray'");
 
 				// type incompatible cannot assign
 				TryInvalidCompile(
 					env,
 					path,
 					"on SupportBean update MyInfra set intarray[IntPrimitive]='x'",
-					"Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'System.String'");
+					"Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'System.Int32' from expression returning 'System.String'");
 				TryInvalidCompile(
 					env,
 					path,
 					"on SupportBean update MyInfra set intarray[IntPrimitive]=1L",
-					"Failed to validate assignment expression 'intarray[IntPrimitive]=1': Invalid assignment to property 'intarray' component type 'int' from expression returning 'long'");
+					"Failed to validate assignment expression 'intarray[IntPrimitive]=1L': Invalid assignment to property 'intarray' component type 'System.Int32' from expression returning 'System.Int64'");
 
 				// not-an-array
 				TryInvalidCompile(

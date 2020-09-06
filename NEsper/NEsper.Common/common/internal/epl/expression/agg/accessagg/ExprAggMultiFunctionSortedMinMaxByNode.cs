@@ -182,13 +182,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			CodegenClassScope codegenClassScope)
 		{
 			CodegenExpression future = GetAggFuture(codegenClassScope);
-			return ExprDotMethod(
-				future,
-				"getCollectionOfEvents",
-				Constant(column),
-				exprSymbol.GetAddEPS(parent),
-				exprSymbol.GetAddIsNewData(parent),
-				exprSymbol.GetAddExprEvalCtx(parent));
+			return FlexWrap(
+				ExprDotMethod(
+					future,
+					"GetCollectionOfEvents",
+					Constant(column),
+					exprSymbol.GetAddEPS(parent),
+					exprSymbol.GetAddIsNewData(parent),
+					exprSymbol.GetAddExprEvalCtx(parent)));
 		}
 
 		private AggregationForgeFactoryAccessSorted HandleIntoTable(ExprValidationContext validationContext)
@@ -349,9 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			return _containedType;
 		}
 
-		public Type ComponentTypeCollection {
-			get { return null; }
-		}
+		public Type ComponentTypeCollection => null;
 
 		public EventType GetEventTypeSingle(
 			StatementRawInfo statementRawInfo,
@@ -372,20 +371,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			CodegenExpression future = GetAggFuture(codegenClassScope);
 			return ExprDotMethod(
 				future,
-				"getEventBean",
+				"GetEventBean",
 				Constant(column),
 				exprSymbol.GetAddEPS(parent),
 				exprSymbol.GetAddIsNewData(parent),
 				exprSymbol.GetAddExprEvalCtx(parent));
 		}
 
-		public bool IsMax {
-			get { return _max; }
-		}
+		public bool IsMax => _max;
 
-		public override bool IsFilterExpressionAsLastParameter {
-			get { return false; }
-		}
+		public override bool IsFilterExpressionAsLastParameter => false;
 
 		public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 		{
@@ -397,16 +392,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			return _max == other._max && _containedType == other._containedType && _sortedwin == other._sortedwin && _ever == other._ever;
 		}
 
-		public ExprEnumerationEval ExprEvaluatorEnumeration {
-			get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-		}
+		public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
-		public AggregationForgeFactory AggregationForgeFactory {
-			get { return _aggregationForgeFactory; }
-		}
+		public AggregationForgeFactory AggregationForgeFactory => _aggregationForgeFactory;
 
-		private string ErrorPrefix {
-			get { return "The '" + AggregationFunctionName + "' aggregation function"; }
-		}
+		private string ErrorPrefix => "The '" + AggregationFunctionName + "' aggregation function";
 	}
 } // end of namespace

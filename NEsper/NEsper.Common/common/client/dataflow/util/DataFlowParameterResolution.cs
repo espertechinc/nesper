@@ -107,11 +107,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                 return resolvedFromProvider;
             }
 
-            if (optionalEvaluator == null) {
-                return null;
-            }
-
-            return (string) optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
+            return (string) optionalEvaluator?.Evaluate(null, true, context.AgentInstanceContext);
         }
 
         /// <summary>

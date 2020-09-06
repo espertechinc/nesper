@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return ExprNewStructNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType => typeof(IDictionary<string, object>);
+        public Type EvaluationType => typeof(IDictionary<object, object>);
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 

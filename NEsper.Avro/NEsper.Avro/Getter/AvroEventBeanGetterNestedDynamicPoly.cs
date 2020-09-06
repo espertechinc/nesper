@@ -142,7 +142,8 @@ namespace NEsper.Avro.Getter
         
         private CodegenMethod ExistsCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            return codegenMethodScope
+                .MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(GenericRecord), "record")
                 .Block
                 .DeclareVar<GenericRecord>(

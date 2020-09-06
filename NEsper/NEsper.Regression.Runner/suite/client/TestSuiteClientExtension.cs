@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 typeof(SupportAggMFEventsAsListForge));
             configurationCompiler.AddPlugInAggregationMultiFunction(codegenTestAccum);
             // For use with the inlined-class example when disabled, comment-in when needed:
-            // ConfigurationCompilerPlugInAggregationMultiFunction codegenTestTrie = new ConfigurationCompilerPlugInAggregationMultiFunction("".split(","), ClientExtendAggregationMultiFunctionInlinedClass.TrieAggForge.class.getName());
+            // ConfigurationCompilerPlugInAggregationMultiFunction codegenTestTrie = new ConfigurationCompilerPlugInAggregationMultiFunction("".Split(","), ClientExtendAggregationMultiFunctionInlinedClass.TrieAggForge.class.getName());
             // configurationCompiler.addPlugInAggregationMultiFunction(codegenTestTrie);
 
             configuration.Compiler.AddPlugInView("mynamespace", "flushedsimple", typeof(MyFlushedSimpleViewForge));

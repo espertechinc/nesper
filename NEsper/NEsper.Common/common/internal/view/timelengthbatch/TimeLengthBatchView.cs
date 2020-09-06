@@ -186,9 +186,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
                 }
 
                 // Post new data (current batch) and old data (prior batch)
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(newData, oldData);
-                }
+                viewUpdatedCollection?.Update(newData, oldData);
 
                 if (newData != null || oldData != null || factory.IsForceUpdate) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);

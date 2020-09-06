@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.client.serde
 	public interface SerdeProviderFactory
     {
 	    /// <summary>
-	    ///     Called by the runtimeonce at initialization time, returns a serde provider.
+	    ///     Called by the runtime once at initialization time, returns a serde provider.
 	    /// </summary>
 	    /// <param name="context">runtime contextual information</param>
 	    /// <returns>serde provide or null if none provided</returns>

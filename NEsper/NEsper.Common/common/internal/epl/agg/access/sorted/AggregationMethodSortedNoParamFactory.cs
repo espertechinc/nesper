@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	                sorted => null
 	            );
 	        }
-	        if (method == AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE) {
+	        if (method == AggregationMethodSortedEnum.DICTIONARYREFERENCE) {
 	            return new AggregationMethodSortedNoParamEval(
 	                sorted => new AggregationMethodSortedWrapperDictionary(sorted.Sorted),
 	                sorted => null,

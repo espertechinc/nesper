@@ -722,7 +722,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     factory.Aggregator.ApplyTableLeaveCodegen(value, evaluationTypes, updateMethod, classScope);
                 }
 
-                blocks[i].InstanceMethod(updateMethod, value).BlockReturnNoValue();
+                blocks[i].LocalMethod(updateMethod, value).BlockReturnNoValue();
             }
 
             return method;
@@ -809,11 +809,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     .AddParam(PARAMS);
                 if (type == AggregationCodegenTableUpdateType.ENTER) {
                     aggregator.ApplyEnterCodegen(updateMethod, symbols, classScope, namedMethods);
-                    blocks[i].InstanceMethod(updateMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
+                    blocks[i].LocalMethod(updateMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
                 }
                 else {
                     aggregator.ApplyLeaveCodegen(updateMethod, symbols, classScope, namedMethods);
-                    blocks[i].InstanceMethod(updateMethod, REF_EPS, ConstantFalse(), REF_EXPREVALCONTEXT);
+                    blocks[i].LocalMethod(updateMethod, REF_EPS, ConstantFalse(), REF_EXPREVALCONTEXT);
                 }
 
                 blocks[i].BlockReturnNoValue();
@@ -1075,7 +1075,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             // code for enter
             symbols.DerivedSymbolsCodegen(parent, parent.Block, classScope);
             foreach (var method in methods) {
-                parent.Block.InstanceMethod(method);
+                parent.Block.LocalMethod(method);
             }
 
             return parent;

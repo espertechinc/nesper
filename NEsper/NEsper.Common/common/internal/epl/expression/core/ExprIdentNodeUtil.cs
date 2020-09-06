@@ -123,28 +123,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // the property available may be indexed or mapped
             try {
                 var desc = streamTypeService.ResolveByPropertyName(streamOrPropertyName, false);
-                if (desc != null) {
-                    var d2 = desc.StreamEventType.GetPropertyDescriptor(streamOrPropertyName);
-                    if (d2 != null) {
-                        string text = null;
-                        if (d2.IsIndexed) {
-                            text = "an indexed property and requires an index or enumeration method to access values";
-                        }
+                var d2 = desc?.StreamEventType.GetPropertyDescriptor(streamOrPropertyName);
+                if (d2 != null) {
+                    string text = null;
+                    if (d2.IsIndexed) {
+                        text = "an indexed property and requires an index or enumeration method to access values";
+                    }
 
-                        if (d2.IsMapped) {
-                            text = "a mapped property and requires keyed access";
-                        }
+                    if (d2.IsMapped) {
+                        text = "a mapped property and requires keyed access";
+                    }
 
-                        if (text != null) {
-                            throw new ExprValidationPropertyException(
-                                "Failed to resolve property '" +
-                                propertyNameCandidate +
-                                "' (property '" +
-                                streamOrPropertyName +
-                                "' is " +
-                                text +
-                                ")");
-                        }
+                    if (text != null) {
+                        throw new ExprValidationPropertyException(
+                            "Failed to resolve property '" +
+                            propertyNameCandidate +
+                            "' (property '" +
+                            streamOrPropertyName +
+                            "' is " +
+                            text +
+                            ")");
                     }
                 }
             }
@@ -218,11 +216,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             StreamTypesException typeExceptionTwo)
         {
             var suggestionOne = GetSuggestion(typeExceptionOne);
-            var suggestionTwo = GetSuggestion(typeExceptionTwo);
             if (suggestionOne != null) {
                 return new ExprValidationPropertyException(typeExceptionOne.Message + suggestionOne);
             }
 
+            var suggestionTwo = GetSuggestion(typeExceptionTwo);
             if (suggestionTwo != null) {
                 return new ExprValidationPropertyException(typeExceptionTwo.Message + suggestionTwo);
             }
@@ -246,11 +244,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         private static string GetSuggestion(StreamTypesException ex)
         {
-            if (ex == null) {
-                return null;
-            }
-
-            var suggestion = ex.OptionalSuggestion;
+            var suggestion = ex?.OptionalSuggestion;
             if (suggestion == null) {
                 return null;
             }

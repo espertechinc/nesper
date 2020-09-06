@@ -8,7 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.annotation
@@ -34,7 +37,15 @@ namespace com.espertech.esper.common.client.annotation
             typeof(NameAttribute),
             typeof(NoLockAttribute),
             typeof(PriorityAttribute),
-            typeof(TagAttribute)
+            typeof(TagAttribute),
+            
+            typeof(JsonEventFieldAttribute),
+            typeof(JsonSchemaAttribute),
+            typeof(JsonSchemaFieldAttribute),
+            
+            typeof(XmlSchemaAttribute),
+            typeof(XMLSchemaFieldAttribute),
+            typeof(XMLSchemaNamespacePrefixAttribute)
         };
 
         /// <summary>
@@ -44,7 +55,15 @@ namespace com.espertech.esper.common.client.annotation
 
         static BuiltinAnnotation()
         {
-            foreach (var clazz in VALUES) {
+            var myType = typeof(BuiltinAnnotation);
+            var myNamespace = myType.Namespace;
+            var myBuiltinAttributes = myType.Assembly
+                .GetTypes()
+                .Where(t => t.Namespace == myNamespace)
+                .Where(t => t.IsAbstract == false)
+                .Where(t => t.IsAttribute());
+            
+            foreach (var clazz in myBuiltinAttributes) {
                 BUILTIN.Put(clazz.Name.ToLower(), clazz);
             }
         }

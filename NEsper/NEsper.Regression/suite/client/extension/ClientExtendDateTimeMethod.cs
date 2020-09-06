@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.datetimemethod;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.epl.datetime.plugin;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -41,19 +42,19 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				TryInvalidCompile(
 					env,
 					"select DateTimeEx.someDTMInvalidNoOp() from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeEx.someDTMInvalidNoOp()': Plug-in datetime method provider class");
+					"Failed to validate select-clause expression 'DateTimeEx.someDTMInvalidNoOp()': Plug-in datetime method provider " + typeof(DTMPluginForgeFactory).CleanName());
 
 				// validate pre-made argument test
 				TryInvalidCompile(
 					env,
 					"select DateTimeEx.dtmInvalidMethodNotExists('x') from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to resolve enumeration method, date-time method or mapped property 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to validate date-time method 'dtmInvalidMethodNotExists', expected a Integer-type result for expression parameter 0 but received System.String");
+					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidMethodNotExist...(41 chars)': Failed to resolve enumeration method, date-time method or mapped property 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to validate date-time method 'dtmInvalidMethodNotExists', expected a System.Nullable<System.Int32>-type result for expression parameter 0 but received System.String");
 
 				// validate static method not matching
 				TryInvalidCompile(
 					env,
 					"select DateTimeOffset.dtmInvalidMethodNotExists(1) from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeOffset.dtmInvalidMethodNotExists(1)': Failed to find static method for date-time method extension: Unknown method ArrayList.dtmInvalidMethod");
+					"Failed to validate select-clause expression 'DateTimeOffset.dtmInvalidMethodNotE...(43 chars)': Failed to find static method for date-time method extension: Unknown method List`1.dtmInvalidMethod(System.DateTimeOffset, System.Int32)");
 
 				// validate not provided
 				TryInvalidCompile(
@@ -82,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.SendEventBean(@event);
 				EPAssertionUtil.AssertProps(
 					env.Listener("s0").AssertOneGetNewAndReset(),
-					"c0,c1,c2,c3,c4".SplitCsv(),
+					"c0,c1,c2,c3".SplitCsv(),
 					new object[] {
 						dateExpected.UtcMillis,
 						dateExpected,
@@ -150,22 +151,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
 		public class MyLocalDTMRollUtility
 		{
-			public static void RollOne(
+			public static DateTimeEx RollOne(
 				DateTimeEx dateTime,
 				string fieldName,
 				bool flagValue)
 			{
 				switch (fieldName) {
 					case "date":
-						if (flagValue) {
-							dateTime.AddDays(1);
-						}
-						else {
-							dateTime.AddDays(-1);
-						}
-
-						break;
-
+						return flagValue ? dateTime.AddDays(1) : dateTime.AddDays(-1);
 					default:
 						throw new EPException("Invalid field name '" + fieldName + "'");
 				}

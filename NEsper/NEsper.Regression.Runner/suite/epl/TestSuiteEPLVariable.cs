@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.variable;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -43,12 +44,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         {
             RegressionRunner.Run(session, EPLVariablesUse.Executions());
         }
-        
-        [Test, RunInApplicationDomain]
-        public void TestEPLVariablesOnSet()
-        {
-            RegressionRunner.Run(session, EPLVariablesOnSet.Executions());
-        }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesCreate()
@@ -68,7 +63,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLVariablesEventTyped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariablesPerf()
         {
             RegressionRunner.Run(session, new EPLVariablesPerf());
@@ -79,18 +74,84 @@ namespace com.espertech.esper.regressionrun.suite.epl
         {
             RegressionRunner.Run(session, EPLVariablesOutputRate.Executions());
         }
-        
+
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesInlinedClass()
         {
             RegressionRunner.Run(session, EPLVariablesInlinedClass.Executions());
         }
 
+        /// <summary>
+        /// Auto-test(s): EPLVariablesOnSet
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesOnSet.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLVariablesOnSet : AbstractTestBase
+        {
+            public TestEPLVariablesOnSet() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithExpression() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithExpression());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayInvalid() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayBoxed() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayBoxed());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayAtIndex() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayAtIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubqueryMultikeyWArray() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSubqueryMultikeyWArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithCoercion() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithCoercion());
+
+            [Test, RunInApplicationDomain]
+            public void WithRuntimeOrderMultiple() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithRuntimeOrderMultiple());
+
+            [Test, RunInApplicationDomain]
+            public void WithAssignmentOrderDup() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithAssignmentOrderDup());
+
+            [Test, RunInApplicationDomain]
+            public void WithAssignmentOrderNoDup() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithAssignmentOrderNoDup());
+
+            [Test, RunInApplicationDomain]
+            public void WithWDeploy() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithWDeploy());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubquery() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithFilter() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithWithFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectModel() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithObjectModel());
+
+            [Test, RunInApplicationDomain]
+            public void WithCompile() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleSceneTwo() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSimpleSceneTwo());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimple() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSimple());
+        }
+
+
         private RegressionSession session;
 
         private static void Configure(Configuration configuration)
         {
-            foreach (Type clazz in new []{
+            foreach (Type clazz in new[] {
                 typeof(SupportBean),
                 typeof(SupportBean_S0),
                 typeof(SupportBean_S1),
@@ -101,8 +162,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(EPLVariablesUse.MyVariableCustomEvent),
                 typeof(SupportEventWithIntArray),
                 typeof(SupportBeanNumeric)
-            })
-            {
+            }) {
                 configuration.Common.AddEventType(clazz);
             }
 
@@ -120,7 +180,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("papi_3", typeof(string), "value");
             common.AddVariable("myRuntimeInitService", typeof(EPLVariablesUse.MySimpleVariableService), null);
             common.AddVariable("MYCONST_TWO", "string", null, true);
-            common.AddVariable("varcoll", "String[]", new string[] { "E1", "E2" }, true);
+            common.AddVariable("varcoll", "String[]", new string[] {"E1", "E2"}, true);
             common.AddVariable("mySimpleVariableService", typeof(EPLVariablesUse.MySimpleVariableService), null);
             common.AddVariable("myInitService", typeof(EPLVariablesUse.MySimpleVariableService), EPLVariablesUse.MySimpleVariableServiceFactory.MakeService());
             common.AddVariable("supportEnum", typeof(SupportEnum), SupportEnum.ENUM_VALUE_1);

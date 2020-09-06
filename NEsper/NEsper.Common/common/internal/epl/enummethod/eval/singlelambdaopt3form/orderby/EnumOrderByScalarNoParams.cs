@@ -60,17 +60,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			var block = codegenMethodScope.MakeChild(typeof(ICollection<object>), typeof(EnumOrderByScalarNoParams), codegenClassScope)
+			var block = codegenMethodScope
+				.MakeChild(typeof(ICollection<object>), typeof(EnumOrderByScalarNoParams), codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS)
 				.Block
 				.IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
 				.BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-				.DeclareVar<IList<object>>("list", NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
+				.DeclareVar<List<object>>("list", NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
 			if (_descending) {
-				block.StaticMethod(typeof(Collections), "sort", Ref("list"), StaticMethod(typeof(Collections), "reverseOrder"));
+				block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"), StaticMethod(typeof(Comparers), "Inverse", new[] {typeof(object)}));
 			}
 			else {
-				block.StaticMethod(typeof(Collections), "sort", Ref("list"));
+				block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"));
 			}
 
 			var method = block.MethodReturn(Ref("list"));

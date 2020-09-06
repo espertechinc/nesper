@@ -335,12 +335,7 @@ namespace com.espertech.esper.common.@internal.support
             SupportBean[] beans,
             int[] indexes)
         {
-            if (indexes == null) {
-                return null;
-            }
-
-            return indexes
-                .Select(index => beans[index])
+            return indexes?.Select(index => beans[index])
                 .ToArray();
         }
 

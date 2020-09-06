@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.collection
         private MultiKeyArrayOfKeys<string> keys12 = new MultiKeyArrayOfKeys<string>(new string[] { "esperc", "esperd" });
         private MultiKeyArrayOfKeys<string> keys13 = new MultiKeyArrayOfKeys<string>(new string[] { "espere", "esperf" });
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestHashCode()
         {
             Assert.IsTrue(keys11.GetHashCode() != keys12.GetHashCode());
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(keys9.GetHashCode() == keys10.GetHashCode());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             Assert.AreEqual(keys2, keys1);
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(keys9.Equals(keys10));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(1, keys6.Count);
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue("d" == keys10[3]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestWithSet()
         {
             EventBean[][] testEvents = new EventBean[][]{

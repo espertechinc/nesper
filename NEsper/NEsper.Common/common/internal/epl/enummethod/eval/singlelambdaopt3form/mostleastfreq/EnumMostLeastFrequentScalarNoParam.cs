@@ -74,13 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				.DeclareVar<IDictionary<object, int>>("items", NewInstance(typeof(Dictionary<object, int>)));
 			
 			var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.DeclareVar<int?>("existing", Cast(typeof(int?), ExprDotMethod(Ref("items"), "Get", Ref("next"))))
+				.DeclareVar<int?>("existing", ExprDotMethod(ExprDotMethod(Ref("items"), "Get", Ref("next")), "AsBoxedInt32"))
 				.IfCondition(EqualsNull(Ref("existing")))
 				.AssignRef("existing", Constant(1))
 				.IfElse()
 				.IncrementRef("existing")
 				.BlockEnd()
-				.ExprDotMethod(Ref("items"), "Put", Ref("next"), Ref("existing"));
+				.ExprDotMethod(Ref("items"), "Put", Ref("next"), Unbox(Ref("existing")));
 			var method = block.MethodReturn(
 				Cast(
 					_returnType,

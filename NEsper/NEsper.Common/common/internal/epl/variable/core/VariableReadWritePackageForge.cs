@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
 								// determine if the expression type can be assigned
 								if (variableType != typeof(object)) {
-									if ((Boxing.GetBoxedType(expressionType) != variableType) &&
+									if ((expressionType.GetBoxedType() != variableType.GetBoxedType()) &&
 									    (expressionType != null)) {
 										if ((!TypeHelper.IsNumeric(variableType)) ||
 										    (!TypeHelper.IsNumeric(expressionType))) {

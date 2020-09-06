@@ -31,30 +31,184 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			var executions = new List<RegressionExecution>();
-			executions.Add(new ExprCoreInNumeric());
-			executions.Add(new ExprCoreInObject());
-			executions.Add(new ExprCoreInArraySubstitution());
-			executions.Add(new ExprCoreInCollectionArrayProp());
-			executions.Add(new ExprCoreInCollectionArrays());
-			executions.Add(new ExprCoreInCollectionColl());
-			executions.Add(new ExprCoreInCollectionMaps());
-			executions.Add(new ExprCoreInCollectionMixed());
-			executions.Add(new ExprCoreInCollectionObjectArrayProp());
-			executions.Add(new ExprCoreInCollectionArrayConst());
-			executions.Add(new ExprCoreInStringExprOM());
-			executions.Add(new ExprCoreInStringExpr());
-			executions.Add(new ExprCoreBetweenBigIntBigDecExpr());
-			executions.Add(new ExprCoreBetweenStringExpr());
-			executions.Add(new ExprCoreBetweenNumericExpr());
-			executions.Add(new ExprCoreInBoolExpr());
-			executions.Add(new ExprCoreInNumericCoercionLong());
-			executions.Add(new ExprCoreInNumericCoercionDouble());
-			executions.Add(new ExprCoreBetweenNumericCoercionLong());
-			executions.Add(new ExprCoreInRange());
-			executions.Add(new ExprCoreBetweenNumericCoercionDouble());
-			executions.Add(new ExprCoreInBetweenInvalid());
-			return executions;
+			var execs = new List<RegressionExecution>();
+			WithInNumeric(execs);
+			WithInObject(execs);
+			WithInArraySubstitution(execs);
+			WithInCollectionArrayProp(execs);
+			WithInCollectionArrays(execs);
+			WithInCollectionColl(execs);
+			WithInCollectionMaps(execs);
+			WithInCollectionMixed(execs);
+			WithInCollectionObjectArrayProp(execs);
+			WithInCollectionArrayConst(execs);
+			WithInStringExprOM(execs);
+			WithInStringExpr(execs);
+			WithBetweenBigIntBigDecExpr(execs);
+			WithBetweenStringExpr(execs);
+			WithBetweenNumericExpr(execs);
+			WithInBoolExpr(execs);
+			WithInNumericCoercionLong(execs);
+			WithInNumericCoercionDouble(execs);
+			WithBetweenNumericCoercionLong(execs);
+			WithInRange(execs);
+			WithBetweenNumericCoercionDouble(execs);
+			WithInBetweenInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInBetweenInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInBetweenInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBetweenNumericCoercionDouble(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBetweenNumericCoercionDouble());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInRange(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInRange());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBetweenNumericCoercionLong(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBetweenNumericCoercionLong());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInNumericCoercionDouble(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInNumericCoercionDouble());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInNumericCoercionLong(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInNumericCoercionLong());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInBoolExpr(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInBoolExpr());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBetweenNumericExpr(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBetweenNumericExpr());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBetweenStringExpr(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBetweenStringExpr());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBetweenBigIntBigDecExpr(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBetweenBigIntBigDecExpr());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInStringExpr(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInStringExpr());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInStringExprOM(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInStringExprOM());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionArrayConst(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionArrayConst());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionObjectArrayProp(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionObjectArrayProp());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionMixed(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionMixed());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionMaps(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionMaps());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionColl(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionColl());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionArrays(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionArrays());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInCollectionArrayProp(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInCollectionArrayProp());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInArraySubstitution(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInArraySubstitution());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInObject(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInObject());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInNumeric(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreInNumeric());
+			return execs;
 		}
 
 		private class ExprCoreInNumeric : RegressionExecution
@@ -141,11 +295,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 
-				var epl = "@Name('s0') select 10 in (arrayProperty) as result from SupportBeanComplexProps";
+				var epl = "@Name('s0') select 10 in (ArrayProperty) as result from SupportBeanComplexProps";
 				env.CompileDeploy(epl).AddListener("s0");
 				Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
 
-				epl = "@Name('s1') select 5 in (arrayProperty) as result from SupportBeanComplexProps";
+				epl = "@Name('s1') select 5 in (ArrayProperty) as result from SupportBeanComplexProps";
 				env.CompileDeploy(epl).AddListener("s1");
 				env.Milestone(0);
 
@@ -189,7 +343,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 
 				var fields = "resOne, resTwo".SplitCsv();
-				var epl = "@Name('s0') select 1 in (intCol, LongCol) as resOne, 1 not in (LongCol, intCol) as resTwo from SupportBeanArrayCollMap";
+				var epl = "@Name('s0') select 1 in (IntCol, LongCol) as resOne, 1 not in (LongCol, IntCol) as resTwo from SupportBeanArrayCollMap";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new[] {10, 20, 30}, null));
@@ -238,7 +392,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 
 				var epl =
-					"@Name('s0') select 1 in (LongBoxed, IntArr, LongMap, intCol) as resOne, 1 not in (LongBoxed, IntArr, LongMap, intCol) as resTwo from SupportBeanArrayCollMap";
+					"@Name('s0') select 1 in (LongBoxed, IntArr, LongMap, IntCol) as resOne, 1 not in (LongBoxed, IntArr, LongMap, IntCol) as resTwo from SupportBeanArrayCollMap";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var fields = "resOne, resTwo".SplitCsv();
@@ -378,22 +532,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var fields = "c0,c1,c2,c3".SplitCsv();
+				var bigInteger = typeof(BigIntegerHelper).FullName;
+				var fields = "c0,c1".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean")
-					.WithExpression(fields[0], "IntPrimitive between BigInteger.valueOf(1) and BigInteger.valueOf(3)")
-					.WithExpression(fields[1], "IntPrimitive between BigDecimal.valueOf(1) and BigDecimal.valueOf(3)")
-					.WithExpression(fields[2], "IntPrimitive in (BigInteger.valueOf(1):BigInteger.valueOf(3))")
-					.WithExpression(fields[3], "IntPrimitive in (BigDecimal.valueOf(1):BigDecimal.valueOf(3))");
+					.WithExpression(fields[0], $"IntPrimitive between {bigInteger}.ValueOf(1) and {bigInteger}.ValueOf(3)")
+					.WithExpression(fields[1], $"IntPrimitive in ({bigInteger}.ValueOf(1):{bigInteger}.ValueOf(3))");
 
-				builder.WithAssertion(new SupportBean("E0", 0)).Expect(fields, false, false, false, false);
+				builder.WithAssertion(new SupportBean("E0", 0)).Expect(fields, false, false);
 
-				builder.WithAssertion(new SupportBean("E1", 1)).Expect(fields, true, true, false, false);
+				builder.WithAssertion(new SupportBean("E1", 1)).Expect(fields, true, false);
 
-				builder.WithAssertion(new SupportBean("E2", 2)).Expect(fields, true, true, true, true);
+				builder.WithAssertion(new SupportBean("E2", 2)).Expect(fields, true, true);
 
-				builder.WithAssertion(new SupportBean("E3", 3)).Expect(fields, true, true, false, false);
+				builder.WithAssertion(new SupportBean("E3", 3)).Expect(fields, true, false);
 
-				builder.WithAssertion(new SupportBean("E4", 4)).Expect(fields, false, false, false, false);
+				builder.WithAssertion(new SupportBean("E4", 4)).Expect(fields, false, false);
 
 				builder.Run(env);
 				env.UndeployAll();
@@ -547,7 +700,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var fields = "c0,".SplitCsv();
+				var fields = "c0".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean")
 					.WithExpressions(fields, "IntPrimitive between ShortBoxed and LongBoxed")
 					.WithStatementConsumer(stmt => Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
@@ -573,8 +726,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				var fields = "ro,rc,rho,rhc,nro,nrc,nrho,nrhc".SplitCsv();
 				var eplOne =
-					"@Name('s0') select IntPrimitive in (2:4) as ro, IntPrimitive in [2:4] as rc, IntPrimitive in [2:4) as rho, IntPrimitive in (2:4] as rhc, " +
-					"IntPrimitive not in (2:4) as nro, IntPrimitive not in [2:4] as nrc, IntPrimitive not in [2:4) as nrho, IntPrimitive not in (2:4] as nrhc " +
+					"@Name('s0') select" +
+					" IntPrimitive in (2:4) as ro," +
+					" IntPrimitive in [2:4] as rc," +
+					" IntPrimitive in [2:4) as rho," +
+					" IntPrimitive in (2:4] as rhc," +
+					" IntPrimitive not in (2:4) as nro," +
+					" IntPrimitive not in [2:4] as nrc," +
+					" IntPrimitive not in [2:4) as nrho," +
+					" IntPrimitive not in (2:4] as nrhc " +
 					"from SupportBean";
 				env.CompileDeploy(eplOne).AddListener("s0");
 
@@ -649,7 +809,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var epl = model.ToEPL();
 				epl = epl.Replace("IntPrimitive between 2 and 4 as rc", "IntPrimitive in [2:4] as rc");
 				epl = epl.Replace("IntPrimitive not between 2 and 4 as nrc", "IntPrimitive not in [2:4] as nrc");
-				Assert.AreEqual(eplOne, epl);
+				Assert.That(epl, Is.EqualTo(eplOne));
 
 				// test range reversed
 				var eplTwo = "@Name('s1') select IntPrimitive between 4 and 2 as r1, IntPrimitive in [4:2] as r2 from SupportBean";

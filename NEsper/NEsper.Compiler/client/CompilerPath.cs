@@ -27,9 +27,9 @@ namespace com.espertech.esper.compiler.client
         public IList<EPCompiled> Compileds { get; } = new List<EPCompiled>();
 
         /// <summary>
-        ///     Returns the path information provided by runtimes.
+        ///     Returns the path information provided by runtime s.
         /// </summary>
-        /// <returns>path information provided by runtimes.</returns>
+        /// <returns>path information provided by runtime s.</returns>
         public IList<EPCompilerPathable> CompilerPathables { get; } = new List<EPCompilerPathable>();
 
         /// <summary>

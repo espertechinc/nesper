@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -42,10 +43,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env.SendEventBean(new LocalEvent(inners));
 			};
 			var beanepl = "@public @buseventtype create schema LocalInnerEvent as " +
-			              typeof(LocalInnerEvent).FullName +
+			              typeof(LocalInnerEvent).MaskTypeName() +
 			              ";\n" +
 			              "@public @buseventtype create schema LocalEvent as " +
-			              typeof(LocalEvent).FullName +
+			              typeof(LocalEvent).MaskTypeName() +
 			              ";\n";
 			RunAssertion(env, beanepl, bean);
 
@@ -55,13 +56,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				ids) => {
 				var inners = new IDictionary<string, object>[ids.Length];
 				for (var i = 0; i < ids.Length; i++) {
-					inners[i] = Collections.SingletonDataMap("id", ids[i]);
+					inners[i] = Collections.SingletonDataMap("Id", ids[i]);
 				}
 
-				env.SendEventMap(Collections.SingletonDataMap("indexed", inners), "LocalEvent");
+				env.SendEventMap(Collections.SingletonDataMap("Indexed", inners), "LocalEvent");
 			};
-			var mapepl = "@public @buseventtype create schema LocalInnerEvent(id string);\n" +
-			             "@public @buseventtype create schema LocalEvent(indexed LocalInnerEvent[]);\n";
+			var mapepl = "@public @buseventtype create schema LocalInnerEvent(Id string);\n" +
+			             "@public @buseventtype create schema LocalEvent(Indexed LocalInnerEvent[]);\n";
 			RunAssertion(env, mapepl, map);
 
 			// Object-array
@@ -75,8 +76,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 				env.SendEventObjectArray(new object[] {inners}, "LocalEvent");
 			};
-			var oaepl = "@public @buseventtype create objectarray schema LocalInnerEvent(id string);\n" +
-			            "@public @buseventtype create objectarray schema LocalEvent(indexed LocalInnerEvent[]);\n";
+			var oaepl = "@public @buseventtype create objectarray schema LocalInnerEvent(Id string);\n" +
+			            "@public @buseventtype create objectarray schema LocalEvent(Indexed LocalInnerEvent[]);\n";
 			RunAssertion(env, oaepl, oa);
 
 			// Json
@@ -85,20 +86,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				ids) => {
 				var array = new JArray();
 				for (var i = 0; i < ids.Length; i++) {
-					array.Add(new JObject(new JProperty("id", ids[i])));
+					array.Add(new JObject(new JProperty("Id", ids[i])));
 				}
 
-				var @event = new JObject(new JProperty("indexed", array));
+				var @event = new JObject(new JProperty("Indexed", array));
 				env.SendEventJson(@event.ToString(), "LocalEvent");
 			};
-			var jsonepl = "@public @buseventtype create json schema LocalInnerEvent(id string);\n" +
-			              "@public @buseventtype create json schema LocalEvent(indexed LocalInnerEvent[]);\n";
+			var jsonepl = "@public @buseventtype create json schema LocalInnerEvent(Id string);\n" +
+			              "@public @buseventtype create json schema LocalEvent(Indexed LocalInnerEvent[]);\n";
 			RunAssertion(env, jsonepl, json);
 
 			// Json-Class-Provided
-			var jsonProvidedEpl = "@JsonSchema(className='" +
-			                      typeof(MyLocalJsonProvided).FullName +
-			                      "') @public @buseventtype create json schema LocalEvent();\n";
+			var jsonProvidedEpl = "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') @public @buseventtype create json schema LocalEvent();\n";
 			RunAssertion(env, jsonProvidedEpl, json);
 
 			// Avro
@@ -108,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				var schema = SchemaBuilder.Record(
 					"name",
 					TypeBuilder.Field(
-						"id",
+						"Id",
 						TypeBuilder.StringType(
 							TypeBuilder.Property(
 								AvroConstant.PROP_STRING_KEY,
@@ -116,16 +115,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				var inners = new List<GenericRecord>();
 				for (var i = 0; i < ids.Length; i++) {
 					var inner = new GenericRecord(schema);
-					inner.Put("id", ids[i]);
+					inner.Put("Id", ids[i]);
 					inners.Add(inner);
 				}
 
 				var @event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				@event.Put("indexed", inners);
+				@event.Put("Indexed", inners);
 				env.SendEventAvro(@event, "LocalEvent");
 			};
-			var avroepl = "@public @buseventtype create avro schema LocalInnerEvent(id string);\n" +
-			              "@public @buseventtype create avro schema LocalEvent(indexed LocalInnerEvent[]);\n";
+			var avroepl = "@public @buseventtype create avro schema LocalInnerEvent(Id string);\n" +
+			              "@public @buseventtype create avro schema LocalEvent(Indexed LocalInnerEvent[]);\n";
 			RunAssertion(env, avroepl, avro);
 		}
 
@@ -137,16 +136,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			env.CompileDeploy(
 					createSchemaEPL +
-					"@Name('s0') select * from LocalEvent[indexed[0]];\n" +
-					"@Name('s1') select * from LocalEvent[indexed[1]];\n"
+					"@Name('s0') select * from LocalEvent[Indexed[0]];\n" +
+					"@Name('s1') select * from LocalEvent[Indexed[1]];\n"
 				)
 				.AddListener("s0")
 				.AddListener("s1");
 			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
 
 			sender.Invoke(eventType, new[] {"a", "b"});
-			Assert.AreEqual("a", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
-			Assert.AreEqual("b", env.Listener("s1").AssertOneGetNewAndReset().Get("id"));
+			Assert.AreEqual("a", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
+			Assert.AreEqual("b", env.Listener("s1").AssertOneGetNewAndReset().Get("Id"));
 
 			env.UndeployAll();
 		}
@@ -174,13 +173,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public MyLocalJsonProvidedInnerEvent[] indexed;
+			public MyLocalJsonProvidedInnerEvent[] Indexed;
 		}
 
 		[Serializable]
 		public class MyLocalJsonProvidedInnerEvent
 		{
-			public string id;
+			public string Id;
 		}
 	}
 } // end of namespace

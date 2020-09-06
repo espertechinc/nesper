@@ -47,14 +47,14 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
 
-		public DataInputOutputSerde<TE> LinkedHashMapEventsAndInt<TE>(EventType eventType)
+		public DataInputOutputSerde LinkedHashMapEventsAndInt(EventType eventType)
 		{
-			return DIOUnsupportedSerde<TE>.INSTANCE;
+			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
 
-		public DataInputOutputSerde<TE> RefCountedSetAtomicInteger<TE>(EventType eventType)
+		public DataInputOutputSerde RefCountedSetAtomicInteger(EventType eventType)
 		{
-			return DIOUnsupportedSerde<TE>.INSTANCE;
+			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
 
 		public DataInputOutputSerde<EventBean> NullableEventMayCollate(EventType eventType)
@@ -67,14 +67,14 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
 
-		public DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<E>(
-			DataInputOutputSerde<E>[] criteriaSerdes,
+		public DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque(
+			DataInputOutputSerde[] criteriaSerdes,
 			EventType eventType)
 		{
 			return null;
 		}
 
-		public DataInputOutputSerde ObjectArrayMayNullNull<E>(DataInputOutputSerde<E>[] serdes)
+		public DataInputOutputSerde ObjectArrayMayNullNull(DataInputOutputSerde[] serdes)
 		{
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}

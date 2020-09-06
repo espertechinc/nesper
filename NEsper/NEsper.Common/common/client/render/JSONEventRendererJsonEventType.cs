@@ -12,6 +12,7 @@ using System.Text.Json;
 
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.@internal.@event.json.core;
+using com.espertech.esper.common.@internal.@event.json.serde;
 
 namespace com.espertech.esper.common.client.render
 {
@@ -31,12 +32,13 @@ namespace com.espertech.esper.common.client.render
 
 			using var stream = new MemoryStream();
 			using var writer = new Utf8JsonWriter(stream);
+			using var context = new JsonSerializationContext(writer);
 
 			writer.WriteStartObject();
 			writer.WritePropertyName(title);
 
 			try {
-				@event.WriteTo(writer);
+				@event.WriteTo(context);
 			}
 			catch (IOException e) {
 				throw new EPException("Failed to write json: " + e.Message, e);
@@ -51,17 +53,18 @@ namespace com.espertech.esper.common.client.render
 		public string Render(EventBean theEvent)
 		{
 			var underlying = theEvent.Underlying;
-			if (underlying is JsonEventObject) {
-				var @event = (JsonEventObject) underlying;
-				return @event.ToString(default(JsonWriterOptions));
+			if (underlying is JsonEventObject jsonEventObject) {
+				return jsonEventObject.ToString(default(JsonWriterOptions));
 			}
 
 			var eventType = (JsonEventType) theEvent.EventType;
 
 			using var stream = new MemoryStream();
 			using var writer = new Utf8JsonWriter(stream);
+			using var context = new JsonSerializationContext(writer);
 
-			eventType.SerializationContext.Serializer.Invoke(writer, underlying);
+			eventType.Serializer.Serialize(context, underlying);
+			
 			writer.Flush();
 
 			return Encoding.UTF8.GetString(stream.ToArray());

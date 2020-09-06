@@ -240,7 +240,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestComments()
         {
             const string filename = "regression/comments.csv";
@@ -260,7 +260,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestConflictingPropertyOrder()
         {
             CompileDeploy(_runtime, "@public @buseventtype create schema intsTitleRowEvent(intOne string, intTwo string)");
@@ -287,7 +287,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual("0", _listener.GetLastNewData()[0].Get("intOne"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDestroy()
         {
             const string filename = "regression/timestampOne.csv";
@@ -296,7 +296,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(AdapterState.DESTROYED, _adapter.State);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventsPerSecAndTimestamp()
         {
             const string filename = "regression/timestampOne.csv";
@@ -312,7 +312,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventsPerSecInvalid()
         {
             const string filename = "regression/timestampOne.csv";
@@ -334,7 +334,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFewerPropertiesToSend()
         {
             const string filename = "regression/moreProperties.csv";
@@ -351,7 +351,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInputStream()
         {
             var stream = _container.ResourceManager().GetResourceAsStream("regression/noTimestampOne.csv");
@@ -370,7 +370,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsLoopingNoTitleRow()
         {
             const string filename = "regression/timestampOne.csv";
@@ -386,7 +386,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertLoopingEvents(events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsLoopingTitleRow()
         {
             const string filename = "regression/titleRow.csv";
@@ -403,7 +403,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertLoopingEvents(events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNoPropertyTypes()
         {
             CompileDeploy(_runtime, "@public @buseventtype create schema allStringEvent(myInt string, myDouble string, myString string)");
@@ -432,7 +432,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent("3", "3.3", "noTimestampOne.three");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNoTimestampNoEventsPerSec()
         {
             const string filename = "regression/timestampOne.csv";
@@ -445,7 +445,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 5, 5.5, "timestampOne.five");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNotUsingEngineThreadTimestamp()
         {
             const string filename = "regression/timestampOne.csv";
@@ -463,7 +463,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 5, 5.5, "timestampOne.five");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNotUsingEngineThreaNoTimestamp()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -481,7 +481,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 3, 3.3, "noTimestampOne.three");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNullEPService()
         {
             var adapter = new CSVInputAdapter(
@@ -495,7 +495,7 @@ namespace com.espertech.esperio.regression.adapter
             RunNullEPService(adapter);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPause()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -511,7 +511,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResumePartialInterval()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -533,7 +533,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 2.2, "noTimestampOne.two");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResumeWholeInterval()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -551,7 +551,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 2.2, "noTimestampOne.two");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunDecreasingTimestamps()
         {
             const string filename = "regression/decreasingTimestamps.csv";
@@ -569,7 +569,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunEmptyFile()
         {
             const string filename = "regression/emptyFile.csv";
@@ -577,7 +577,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunNegativeTimestamps()
         {
             const string filename = "regression/negativeTimestamps.csv";
@@ -595,14 +595,14 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunNonexistentFile()
         {
             const string filename = "someNonexistentFile";
             AssertFailedConstruction(filename, _eventTypeName);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRuntimePropertyTypes()
         {
             CompileDeploy(_runtime, "@public @buseventtype create schema propertyTypeEvent(myInt int, myDouble double, myString string)");
@@ -632,7 +632,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(3, 3.3, "noTimestampOne.three");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRuntimePropertyTypesInvalid()
         {
             var propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
@@ -679,7 +679,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunTimestamps()
         {
             const string filename = "regression/timestampOne.csv";
@@ -699,7 +699,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunTitleRowOnly()
         {
             const string filename = "regression/titleRowOnly.csv";
@@ -708,21 +708,21 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunWrongAlias()
         {
             const string filename = "regression/noTimestampOne.csv";
             AssertFailedConstruction(filename, "myNonMapEvent");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRunWrongMapType()
         {
             const string filename = "regression/differentMap.csv";
             AssertFailedConstruction(filename, _eventTypeName);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestStartOneRow()
         {
             const string filename = "regression/oneRow.csv";
@@ -732,7 +732,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(1, 1.1, "one");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestStop()
         {
             const string filename = "regression/timestampOne.csv";
@@ -756,7 +756,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertFlatEvents(events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestStopAfterEOF()
         {
             const string filename = "regression/timestampOne.csv";
@@ -764,7 +764,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(AdapterState.OPENED, _adapter.State);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTitleRowNoTimestamp()
         {
             const string filename = "regression/titleRowNoTimestamp.csv";

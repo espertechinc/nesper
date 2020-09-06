@@ -212,7 +212,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             Ref("@event"),
                             codegenMethodScope,
                             codegenClassScope)));
-            return LocalMethodBuild(method).Pass(@event).Pass(evalctx).Call();
+            return LocalMethodBuild(method)
+                .Pass(@event)
+                .Pass(evalctx).
+                Call();
         }
 
         private ICollection<object> EvaluateGetInternal(EventBean @event)
@@ -260,7 +263,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             Ref("value"))));
             }
             else {
-                method = block.MethodReturn(Ref("value"));
+                method = block.MethodReturn(FlexWrap(Ref("value")));
             }
 
             return LocalMethodBuild(method).Pass(@event).Call();

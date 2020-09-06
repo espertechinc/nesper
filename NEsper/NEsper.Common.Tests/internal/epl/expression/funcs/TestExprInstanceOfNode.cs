@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private ExprInstanceofNode[] instanceofNodes;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             Assert.IsFalse(instanceofNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsTrue(instanceofNodes[0].EqualsNode(instanceofNodes[0], false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             for (var i = 0; i < instanceofNodes.Length; i++)
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(true, instanceofNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             for (var i = 0; i < instanceofNodes.Length; i++)
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             Assert.AreEqual(
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(instanceofNodes[1]));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             var instanceofNode = new ExprInstanceofNode(new string[0]);

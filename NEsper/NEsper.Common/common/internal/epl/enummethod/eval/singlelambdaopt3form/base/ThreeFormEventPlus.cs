@@ -70,12 +70,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				typeof(ObjectArrayEventType),
 				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(FieldEventType, EPStatementInitServicesConstants.REF)));
 
-			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-			CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
+			var scope = new ExprForgeCodegenSymbol(false, null);
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
-			CodegenBlock block = methodNode.Block;
+			var block = methodNode.Block;
 
-			CodegenExpression returnEmpty = ReturnIfEmptyOptional();
+			var returnEmpty = ReturnIfEmptyOptional();
 			if (returnEmpty != null) {
 				block.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 					.BlockReturn(returnEmpty);
@@ -95,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			InitBlock(block, methodNode, scope, codegenClassScope);
 
 			if (HasForEachLoop()) {
-				CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
+				var forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
 					.IncrementRef("count")
 					.AssignArrayElement("props", Constant(0), Ref("count"))
 					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));

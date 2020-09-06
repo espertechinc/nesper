@@ -100,12 +100,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 			}
 
 			var col = FindTableColumnMayByPrefixed(streamTypeService, unresolvedPropertyName, tableCompileTimeResolver);
-			if (col == null) {
-				return null;
-			}
 
-			var pair = col.Pair;
-			if (pair.Column is TableMetadataColumnAggregation) {
+			var pair = col?.Pair;
+			if (pair?.Column is TableMetadataColumnAggregation) {
 				var agg = (TableMetadataColumnAggregation) pair.Column;
 				var returnType = pair.TableMetadata.PublicEventType.GetPropertyType(pair.Column.ColumnName);
 				var node = new ExprTableIdentNode(
@@ -135,12 +132,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 			}
 
 			var col = FindTableColumnMayByPrefixed(streamTypeService, propertyPrefixed, resolver);
-			if (col == null) {
-				return null;
-			}
 
-			var pair = col.Pair;
-			if (pair.Column is TableMetadataColumnAggregation) {
+			var pair = col?.Pair;
+			if (pair?.Column is TableMetadataColumnAggregation) {
 				var agg = (TableMetadataColumnAggregation) pair.Column;
 				var resultType = pair.TableMetadata.PublicEventType.GetPropertyType(agg.ColumnName);
 				return new ExprTableIdentNode(
@@ -284,11 +278,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 			TableCompileTimeResolver resolver)
 		{
 			var tableMetadata = resolver.ResolveTableFromEventType(type);
-			if (tableMetadata != null) {
-				var column = tableMetadata.Columns.Get(columnName);
-				if (column != null) {
-					return new StreamTableColPair(streamNum, column, tableMetadata);
-				}
+			var column = tableMetadata?.Columns.Get(columnName);
+			if (column != null) {
+				return new StreamTableColPair(streamNum, column, tableMetadata);
 			}
 
 			return null;

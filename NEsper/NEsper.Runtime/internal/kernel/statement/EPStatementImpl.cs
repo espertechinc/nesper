@@ -174,7 +174,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             {
                 theIterator = parentView.GetEnumerator();
             }
-
             if (statementContext.EpStatementHandle.HasTableAccess)
             {
                 return new UnsafeEnumeratorWTableImpl<EventBean>(statementContext.TableExprEvaluatorContext, theIterator);

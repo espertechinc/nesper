@@ -26,9 +26,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventRenderPropertyCustomRenderer());
-            execs.Add(new EventRenderObjectArray());
+            WithPropertyCustomRenderer(execs);
+            WithObjectArray(execs);
+            WithPONOMap(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPONOMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventRenderPONOMap());
+            return execs;
+        }
+        public static IList<RegressionExecution> WithObjectArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderObjectArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyCustomRenderer(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderPropertyCustomRenderer());
             return execs;
         }
 

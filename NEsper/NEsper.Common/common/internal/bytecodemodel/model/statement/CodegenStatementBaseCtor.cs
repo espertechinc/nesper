@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             StringBuilder builder,
             bool isInnerClass)
         {
-            builder.Append("super(");
+            builder.Append("base(");
             RenderExpressions(builder, parameters, isInnerClass);
             builder.Append(")");
         }

@@ -38,13 +38,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 			public void Run(RegressionEnvironment env)
 			{
 				var resourceManager = env.Container.ResourceManager();
-				var schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
+				var schemaUriSimpleSchema = resourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
 				var epl = "@public @buseventtype " +
-				          "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
-				          schemaUriSimpleSchema +
-				          "', xpathPropertyExpr=false)" +
-				          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
-				          "@XMLSchemaField(name='customProp', xpath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', type='number')" +
+				          "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" + schemaUriSimpleSchema + "', XPathPropertyExpr=false)" +
+				          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+				          "@XMLSchemaField(Name='customProp', XPath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', Type='number')" +
 				          "create xml schema MyEventCreateSchema()";
 				var path = new RegressionPath();
 				env.CompileDeploy(epl, path);

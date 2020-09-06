@@ -38,22 +38,113 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraMapTranspose());
-            execs.Add(new InfraNoWildcardWithAs());
-            execs.Add(new InfraNoWildcardNoAs());
-            execs.Add(new InfraConstantsAs());
-            execs.Add(new InfraCreateTableSyntax());
-            execs.Add(new InfraWildcardNoFieldsNoAs());
-            execs.Add(new InfraModelAfterMap());
-            execs.Add(new InfraWildcardInheritance());
-            execs.Add(new InfraNoSpecificationBean());
-            execs.Add(new InfraWildcardWithFields());
-            execs.Add(new InfraCreateTableArray());
+            WithMapTranspose(execs);
+            WithNoWildcardWithAs(execs);
+            WithNoWildcardNoAs(execs);
+            WithConstantsAs(execs);
+            WithCreateTableSyntax(execs);
+            WithWildcardNoFieldsNoAs(execs);
+            WithModelAfterMap(execs);
+            WithWildcardInheritance(execs);
+            WithNoSpecificationBean(execs);
+            WithWildcardWithFields(execs);
+            WithCreateTableArray(execs);
+            WithEventTypeColumnDef(execs);
+            WithCreateSchemaModelAfter(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchemaModelAfter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateSchemaModelAfter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypeColumnDef(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 execs.Add(new InfraEventTypeColumnDef(rep));
             }
 
-            execs.Add(new InfraCreateSchemaModelAfter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateTableArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateTableArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardWithFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWildcardWithFields());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoSpecificationBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNoSpecificationBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardInheritance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWildcardInheritance());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithModelAfterMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraModelAfterMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardNoFieldsNoAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWildcardNoFieldsNoAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateTableSyntax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateTableSyntax());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConstantsAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraConstantsAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoWildcardNoAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNoWildcardNoAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoWildcardWithAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNoWildcardWithAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapTranspose(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMapTranspose());
             return execs;
         }
 
@@ -367,9 +458,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var epl = 
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTypeOne>() + " create schema EventTypeOne (hsi int);\n" +
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTypeTwo>() + " create schema EventTypeTwo (event EventTypeOne);\n" +
+                var epl =
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTypeOne>() +
+                    " create schema EventTypeOne (hsi int);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTypeTwo>() +
+                    " create schema EventTypeTwo (event EventTypeOne);\n" +
                     "@Name('create') create window NamedWindow#unique(event.hsi) as EventTypeTwo;\n" +
                     "on EventTypeOne as ev insert into NamedWindow select ev as event;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());

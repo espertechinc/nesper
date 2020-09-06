@@ -124,6 +124,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 				env.AdvanceTime(nextLong);
 				// Comment-me-in: System.out.println("Advance to " + printMicro(nextLong));
 				Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked(), "missing callback at " + next);
+
+				Assert.IsFalse(env.Listener("s0").IsInvoked);
 			}
 		}
 	}

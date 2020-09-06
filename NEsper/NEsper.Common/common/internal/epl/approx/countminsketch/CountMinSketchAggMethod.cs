@@ -33,7 +33,16 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
 		public static CountMinSketchAggMethod? FromNameMayMatch(string name)
 		{
-			return EnumHelper.ParseBoxed<CountMinSketchAggMethod>(name, true);
+			var nameLower = name.ToLowerInvariant();
+			
+			foreach (CountMinSketchAggMethod value in EnumHelper.GetValues<CountMinSketchAggMethod>()) {
+				var funcName = GetMethodName(value).ToLowerInvariant();
+				if (funcName == nameLower) {
+					return value;
+				}
+			}
+			
+			return null;
 		}
 	}
 } // end of namespace

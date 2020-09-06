@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -90,23 +91,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				typeof(ObjectArrayEventType),
 				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
 
-			var initType = _initialization.EvaluationType;
 			var innerType = _innerExpression.EvaluationType;
+			var initType = _initialization.EvaluationType;
+			if (initType != innerType && initType.GetBoxedType() == innerType) {
+				initType = innerType;
+			}
 
 			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope.MakeChildWithScope(initType, typeof(EnumAggregateEvent), scope, codegenClassScope)
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(initType, typeof(EnumAggregateEvent), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
 
 			var block = methodNode.Block;
-			block.DeclareVar(initType, "value", _initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
+			block
+				.DeclareVar(initType, "value", _initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
 				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 				.BlockReturn(Ref("value"));
-			block.DeclareVar(
-					typeof(ObjectArrayEventBean),
-					"resultEvent",
-					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters - 1)), typeMember))
+			block
+				.DeclareVar<ObjectArrayEventBean>("resultEvent", NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters - 1)), typeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
-				.DeclareVar<object[]>("props", ExprDotMethod(Ref("resultEvent"), "getProperties"));
+				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (_numParameters > 3) {
 				block.AssignArrayElement("props", Constant(2), ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"));
 			}
@@ -115,16 +119,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				block.DeclareVar<int>("count", Constant(-1));
 			}
 
-			var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+			var forEach = block
+				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.AssignArrayElement("props", Constant(0), Ref("value"));
+			
 			if (_numParameters > 2) {
-				forEach.IncrementRef("count")
+				forEach
+					.IncrementRef("count")
 					.AssignArrayElement("props", Constant(1), Ref("count"));
 			}
 
-			forEach.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))
-				.AssignRef("value", _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
+			var innerCodegen = _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
+			
+			forEach
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))
+				.AssignRef("value", innerCodegen)
 				.BlockEnd();
+			
 			block.MethodReturn(Ref("value"));
 			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
 		}

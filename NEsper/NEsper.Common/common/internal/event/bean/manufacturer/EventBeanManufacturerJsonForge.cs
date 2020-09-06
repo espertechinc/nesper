@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 			JsonEventType jsonEventType,
 			WriteablePropertyDescriptor[] writables)
 		{
-			this._jsonEventType = jsonEventType;
-			this._writables = writables;
+			_jsonEventType = jsonEventType;
+			_writables = writables;
 		}
 
 		public CodegenExpression Make(
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 				}
 			}
 
-			block.MethodReturn(Ref("und"));
+			block.BlockReturn(Ref("und"));
 		}
 	}
 } // end of namespace

@@ -78,7 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_resultEventType, EPStatementInitServicesConstants.REF)));
 
 			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope.MakeChildWithScope(typeof(IDictionary<string, object>), GetType(), scope, codegenClassScope)
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(typeof(IDictionary<object, object>), GetType(), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
 			var hasIndex = _numParameters >= 2;
 			var hasSize = _numParameters >= 3;
@@ -86,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			var returnIfEmpty = ReturnIfEmptyOptional();
 			if (returnIfEmpty != null) {
 				methodNode.Block
-					.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+					.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 					.BlockReturn(returnIfEmpty);
 			}
 
@@ -96,22 +97,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 				.DeclareVar<ObjectArrayEventBean>(
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("resultEvent"))
-				.DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
+				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
 				methodNode.Block.DeclareVar<int>("count", Constant(-1));
 			}
 
 			if (hasSize) {
-				methodNode.Block.AssignArrayElement(@Ref("props"), Constant(2), ExprDotMethod(REF_ENUMCOLL, "size"));
+				methodNode.Block.AssignArrayElement(Ref("props"), Constant(2), ExprDotName(REF_ENUMCOLL, "Count"));
 			}
 
 			var forEach = methodNode.Block
 				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignArrayElement("props", Constant(0), @Ref("next"));
+				.AssignArrayElement("props", Constant(0), Ref("next"));
 			
 			if (hasIndex) {
-				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), @Ref("count"));
+				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));
 			}
 
 			ForEachBlock(forEach, methodNode, scope, codegenClassScope);

@@ -26,11 +26,46 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateWindowNonTable());
-			execs.Add(new ResultSetAggregateWindowTableAccess());
-			execs.Add(new ResultSetAggregateWindowTableIdentWCount());
-			execs.Add(new ResultSetAggregateWindowListReference());
+			WithNonTable(execs);
+			WithTableAccess(execs);
+			WithTableIdentWCount(execs);
+			WithListReference(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateWindowInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithListReference(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ResultSetAggregateWindowListReference());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTableIdentWCount(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ResultSetAggregateWindowTableIdentWCount());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTableAccess(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ResultSetAggregateWindowTableAccess());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNonTable(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ResultSetAggregateWindowNonTable());
 			return execs;
 		}
 
@@ -50,10 +85,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				env.SendEventBean(new SupportBean_S0(-1));
 				IList<EventBean> events = (IList<EventBean>) env.Listener("s0").AssertOneGetNewAndReset().Get("collref");
 				Assert.AreEqual(2, events.Count);
-				EPAssertionUtil.AssertEqualsExactOrder(new object[] {
-					events[0].Underlying, 
-					events[1].Underlying
-				}, new SupportBean[] {sb1, sb2});
+				EPAssertionUtil.AssertEqualsExactOrder(
+					new object[] {
+						events[0].Underlying,
+						events[1].Underlying
+					},
+					new SupportBean[] {sb1, sb2});
 
 				env.UndeployAll();
 			}
@@ -141,10 +178,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"A", sb2, sb4});
 
 				SupportBean sb5 = MakeSendBean(env, "B", 5);
-				EPAssertionUtil.AssertPropsPerRowAnyOrder(env.Listener("s0").GetAndResetLastNewData(), fields, new object[][] {
-					new object[] {"B", sb5, sb5}, 
-					new object[] {"A", sb3, sb4}
-				});
+				EPAssertionUtil.AssertPropsPerRowAnyOrder(
+					env.Listener("s0").GetAndResetLastNewData(),
+					fields,
+					new object[][] {
+						new object[] {"B", sb5, sb5},
+						new object[] {"A", sb3, sb4}
+					});
 
 				SupportBean sb6 = MakeSendBean(env, "A", 6);
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"A", sb4, sb6});
@@ -170,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 					env,
 					path,
 					"select MyTable.windowcol.listReference(IntPrimitive) from SupportBean_S0",
-					"Failed to validate select-clause expression 'MyTable.windowcol.listReference(int...(45 chars)': Invalid number of parameters");
+					"Failed to validate select-clause expression 'MyTable.windowcol.listReference(Int...(45 chars)': Invalid number of parameters");
 
 				env.UndeployAll();
 			}

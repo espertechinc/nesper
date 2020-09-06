@@ -75,11 +75,11 @@ namespace com.espertech.esper.compiler.@internal.util
             CompilerOptions compilerOptions,
             out Assembly assembly)
         {
-            StatementCompileTimeServices compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
+            var compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 
             // Stage 0 - parse and compile-inline-classes and walk statement
-            CompilerHelperSingleResult walked = ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
-            StatementSpecRaw raw = walked.StatementSpecRaw;
+            var walked = ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
+            var raw = walked.StatementSpecRaw;
             string classNameCreateClass = null;
             if (raw.CreateClassProvided != null) {
                 classNameCreateClass = DetermineClassNameCreateClass(walked.ClassesInlined);

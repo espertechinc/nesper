@@ -44,21 +44,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public ContextPropertyRegistry ContextPropertyRegistry {
             get {
-                if (StatementRawInfo.OptionalContextDescriptor == null) {
-                    return null;
-                }
-
-                return StatementRawInfo.OptionalContextDescriptor.ContextPropertyRegistry;
+                return StatementRawInfo.OptionalContextDescriptor?.ContextPropertyRegistry;
             }
         }
 
         public string ContextName {
             get {
-                if (StatementRawInfo.OptionalContextDescriptor == null) {
-                    return null;
-                }
-
-                return StatementRawInfo.OptionalContextDescriptor.ContextName;
+                return StatementRawInfo.OptionalContextDescriptor?.ContextName;
             }
         }
     }

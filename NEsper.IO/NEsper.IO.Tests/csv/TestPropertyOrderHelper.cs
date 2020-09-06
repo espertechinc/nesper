@@ -29,7 +29,7 @@ namespace com.espertech.esperio.csv
     		_propertyTypes.Put("myString", typeof(String));
     	}
     
-        [Test]
+        [Test, RunInApplicationDomain]
     	public void TestResolveTitleRow()
     	{
     		// Use first row

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -59,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
             try {
                 var pair = path.GetAnyModuleExpectSingle(typeName, null);
-                return pair == null ? null : pair.First;
+                return pair?.First;
             }
             catch (PathException e) {
                 throw new EPException("Event type name '" + typeName + "' is ambiguous: " + e.Message, e);
@@ -73,9 +72,9 @@ namespace com.espertech.esper.common.@internal.@event.path
             return beanEventTypeFactoryPrivate.GetCreateBeanType(clazz, publicFields);
         }
 
-        public EventType Resolve(EventTypeMetadata metadata)
+        public EventTypeSPI Resolve(EventTypeMetadata metadata)
         {
-            return Resolve(metadata, publics, locals, path);
+            return (EventTypeSPI) Resolve(metadata, publics, locals, path);
         }
 
         public EventSerdeFactory GetEventSerdeFactory()
@@ -86,17 +85,17 @@ namespace com.espertech.esper.common.@internal.@event.path
         public static EventType Resolve(
             EventTypeMetadata metadata,
             EventTypeNameResolver publics,
-            IDictionary<String, EventType> locals,
-            PathRegistry<String, EventType> path)
+            IDictionary<string, EventType> locals,
+            PathRegistry<string, EventType> path)
         {
-            EventType type;
+            EventTypeSPI type;
             // public can only see public
             if (metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
-                type = publics.GetTypeByName(metadata.Name);
+                type = (EventTypeSPI) publics.GetTypeByName(metadata.Name);
 
                 // for create-schema the type may be defined by the same module
                 if (type == null) {
-                    type = locals.Get(metadata.Name);
+                    type = (EventTypeSPI) locals.Get(metadata.Name);
                 }
             }
             else if (metadata.AccessModifier == NameAccessModifier.PUBLIC ||
@@ -106,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.path
                 if (local != null) {
                     if (local.Metadata.AccessModifier == NameAccessModifier.PUBLIC ||
                         local.Metadata.AccessModifier == NameAccessModifier.INTERNAL) {
-                        return local;
+                        return (EventTypeSPI) local;
                     }
                 }
 
@@ -114,14 +113,14 @@ namespace com.espertech.esper.common.@internal.@event.path
                     var pair = path.GetAnyModuleExpectSingle(
                         metadata.Name,
                         Collections.SingletonSet(metadata.ModuleName));
-                    type = pair?.First;
+                    type = (EventTypeSPI) pair?.First;
                 }
                 catch (PathException e) {
                     throw new EPException(e.Message, e);
                 }
             }
             else {
-                type = locals.Get(metadata.Name);
+                type = (EventTypeSPI) locals.Get(metadata.Name);
             }
 
             if (type == null) {

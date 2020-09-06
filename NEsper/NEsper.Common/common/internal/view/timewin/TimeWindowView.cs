@@ -130,9 +130,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
                     timeWindow.Add(timestamp, newData[i]);
                 }
 
-                if (ViewUpdatedCollection != null) {
-                    ViewUpdatedCollection.Update(newData, null);
-                }
+                ViewUpdatedCollection?.Update(newData, null);
             }
 
             // update child views
@@ -171,9 +169,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
             if (Child != null) {
                 if (expired != null && !expired.IsEmpty()) {
                     EventBean[] oldEvents = expired.ToArray();
-                    if (ViewUpdatedCollection != null) {
-                        ViewUpdatedCollection.Update(null, oldEvents);
-                    }
+                    ViewUpdatedCollection?.Update(null, oldEvents);
 
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(timeWindowViewFactory, null, oldEvents);
                     Child.Update(null, oldEvents);

@@ -468,17 +468,15 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                 AUDIT_LOG_DESTINATION.Info(result);
             }
 
-            if (auditCallback != null) {
-                auditCallback.Invoke(
-                    new AuditContext(
-                        ctx.RuntimeURI,
-                        ctx.DeploymentId,
-                        ctx.StatementName,
-                        ctx.AgentInstanceId,
-                        category,
-                        ctx.TimeProvider.Time,
-                        message));
-            }
+            auditCallback?.Invoke(
+                new AuditContext(
+                    ctx.RuntimeURI,
+                    ctx.DeploymentId,
+                    ctx.StatementName,
+                    ctx.AgentInstanceId,
+                    category,
+                    ctx.TimeProvider.Time,
+                    message));
         }
 
         private static void PrintScheduleObjectType(

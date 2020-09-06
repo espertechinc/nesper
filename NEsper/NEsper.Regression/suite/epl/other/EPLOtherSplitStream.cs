@@ -387,10 +387,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create schema AValue(value int);\n" +
+                string epl = "create schema AValue(Value int);\n" +
                              "on SupportBean\n" +
-                             "  insert into AValue select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as value where IntPrimitive > 0\n" +
-                             "  insert into AValue select 0 as value where IntPrimitive <= 0;\n" +
+                             "  insert into AValue select (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array) as Value where IntPrimitive > 0\n" +
+                             "  insert into AValue select 0 as Value where IntPrimitive <= 0;\n" +
                              "@Name('s0') select * from AValue;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -416,10 +416,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 int? expected)
             {
                 env.SendEventBean(new SupportBean("X", 0));
-                Assert.AreEqual(0, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+                Assert.AreEqual(0, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
 
                 env.SendEventBean(new SupportBean("Y", 1));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
             }
         }
 

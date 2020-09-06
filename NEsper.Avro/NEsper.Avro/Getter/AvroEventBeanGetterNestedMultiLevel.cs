@@ -108,7 +108,7 @@ namespace NEsper.Avro.Getter
                 typeof(AvroEventBeanGetterNestedMultiLevel),
                 "ExistsRecordValueTopWPath",
                 underlyingExpression,
-                Constant(_top),
+                Constant(_top.Name),
                 Constant(_path.Select(p => p.Name).ToArray()));
         }
 
@@ -177,6 +177,27 @@ namespace NEsper.Avro.Getter
 
             return true;
         }
+
+        public static bool ExistsRecordValueTopWPath(
+            GenericRecord record,
+            string top,
+            string[] path)
+        {
+            var inner = (GenericRecord) record.Get(top);
+            if (inner == null) {
+                return false;
+            }
+
+            for (int i = 0; i < path.Length - 1; i++) {
+                inner = (GenericRecord) inner.Get(path[i]);
+                if (inner == null) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
 
         public static object GetRecordValueTopWPath(
             GenericRecord record,

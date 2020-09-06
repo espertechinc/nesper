@@ -28,8 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     public class EvalRootForgeNode : EvalForgeNodeBase
     {
         public EvalRootForgeNode(
+            bool attachPatternText,
             EvalForgeNode childNode,
             Attribute[] annotations)
+            : base(attachPatternText)
         {
             AddChildNode(childNode);
             bool audit = AuditEnum.PATTERN.GetAudit(annotations) != null ||

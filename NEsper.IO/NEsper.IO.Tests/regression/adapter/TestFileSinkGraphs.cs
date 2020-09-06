@@ -42,7 +42,7 @@ namespace com.espertech.esperio.regression.adapter
 			runtime.Initialize();
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestInvalid()
 		{
 			string graph;
@@ -87,7 +87,7 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestWriteCSV()
 		{
 			RunAssertion("MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEvents(), true);

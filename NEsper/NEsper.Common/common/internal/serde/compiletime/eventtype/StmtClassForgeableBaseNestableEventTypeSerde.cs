@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	            CodegenExpression get;
 
 	            if (eventType is MapEventType) {
-	                get = ExprDotMethod(Ref("map"), "get", Constant(propertyNames[i]));
+	                get = ExprDotMethod(Ref("map"), "Get", Constant(propertyNames[i]));
 	            } else if (eventType is ObjectArrayEventType) {
 	                get = ArrayAtIndex(Ref("oa"), Constant(i));
 	            } else {

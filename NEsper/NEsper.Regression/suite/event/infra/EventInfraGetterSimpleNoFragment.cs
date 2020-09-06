@@ -12,6 +12,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -27,7 +28,6 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-
 	public class EventInfraGetterSimpleNoFragment : RegressionExecution
 	{
 		public const string XMLTYPENAME = nameof(EventInfraGetterSimpleNoFragment) + "XML";
@@ -40,16 +40,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				property) => {
 				env.SendEventBean(new LocalEvent(property));
 			};
-			var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+			var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
 			RunAssertion(env, "LocalEvent", beanepl, bean);
 
 			// Map
 			BiConsumer<EventType, string> map = (
 				type,
 				property) => {
-				env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
+				env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
 			};
-			var mapepl = "@public @buseventtype create schema LocalEvent(property string);\n";
+			var mapepl = "@public @buseventtype create schema LocalEvent(Property string);\n";
 			RunAssertion(env, "LocalEvent", mapepl, map);
 
 			// Object-array
@@ -58,22 +58,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				property) => {
 				env.SendEventObjectArray(new object[] {property}, "LocalEvent");
 			};
-			var oaepl = "@public @buseventtype create objectarray schema LocalEvent(property string);\n";
+			var oaepl = "@public @buseventtype create objectarray schema LocalEvent(Property string);\n";
 			RunAssertion(env, "LocalEvent", oaepl, oa);
 
 			// Json
 			BiConsumer<EventType, string> json = (
 				type,
 				property) => {
-				env.SendEventJson(new JObject(new JProperty("property", property)).ToString(), "LocalEvent");
+				env.SendEventJson(new JObject(new JProperty("Property", property)).ToString(), "LocalEvent");
 			};
-			RunAssertion(env, "LocalEvent", "@public @buseventtype create json schema LocalEvent(property string);\n", json);
+			RunAssertion(env, "LocalEvent", "@public @buseventtype create json schema LocalEvent(Property string);\n", json);
 
 			// Json-Class-Provided
 			RunAssertion(
 				env,
 				"LocalEvent",
-				"@JsonSchema(className='" + typeof(MyLocalJsonProvided).FullName + "') @public @buseventtype create json schema LocalEvent();\n",
+				"@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') @public @buseventtype create json schema LocalEvent();\n",
 				json);
 
 			// Avro
@@ -81,16 +81,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				type,
 				property) => {
 				var theEvent = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				theEvent.Put("property", property);
+				theEvent.Put("Property", property);
 				env.SendEventAvro(theEvent, type.Name);
 			};
-			RunAssertion(env, "LocalEvent", "@public @buseventtype create avro schema LocalEvent(property string);\n", avro);
+			RunAssertion(env, "LocalEvent", "@public @buseventtype create avro schema LocalEvent(Property string);\n", avro);
 
 			// XML
 			BiConsumer<EventType, string> xml = (
 				type,
 				property) => {
-				var doc = "<" + XMLTYPENAME + (property != null ? " property=\"" + property + "\"" : "") + "/>";
+				var doc = "<" + XMLTYPENAME + (property != null ? " Property=\"" + property + "\"" : "") + "/>";
 				SupportXML.SendXMLEvent(env, doc, XMLTYPENAME);
 			};
 			RunAssertion(env, XMLTYPENAME, "", xml);
@@ -102,18 +102,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			string createSchemaEPL,
 			BiConsumer<EventType, string> sender)
 		{
-
-			var epl = createSchemaEPL +
-			          "@Name('s0') select * from " +
-			          typeName +
-			          ";\n" +
-			          "@Name('s1') select property as c0, exists(property) as c1, typeof(property) as c2 from " +
-			          typeName +
-			          ";\n";
+			var epl =
+				createSchemaEPL + 
+				$"@Name('s0') select * from {typeName};\n" +
+				$"@Name('s1') select Property as c0, exists(Property) as c1, typeof(Property) as c2 from {typeName};\n";
+			
 			env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
+			
 			var eventType = env.Statement("s0").EventType;
 
-			var g0 = eventType.GetGetter("property");
+			var g0 = eventType.GetGetter("Property");
 
 			sender.Invoke(eventType, "a");
 			var @event = env.Listener("s0").AssertOneGetNewAndReset();
@@ -152,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			public LocalEvent(string property)
 			{
-				this.Property = property;
+				Property = property;
 			}
 
 			public string Property { get; }
@@ -161,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public string property;
+			public string Property;
 		}
 	}
 } // end of namespace

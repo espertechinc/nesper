@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
             string underlyingClassName,
             Type optionalUnderlyingProvided,
             string deserializerClassName,
-            string deserializerFactoryClassName,
+            string serializerClassName,
             string serdeClassName,
             IDictionary<string, JsonUnderlyingField> fieldDescriptors,
             bool dynamic,
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
             UnderlyingClassName = underlyingClassName;
             OptionalUnderlyingProvided = optionalUnderlyingProvided;
             DeserializerClassName = deserializerClassName;
-            DeserializerFactoryClassName = deserializerFactoryClassName;
+            SerializerClassName = serializerClassName;
             SerdeClassName = serdeClassName;
             FieldDescriptors = fieldDescriptors;
             IsDynamic = dynamic;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
         public string DeserializerClassName { get; set; }
 
-        public string DeserializerFactoryClassName { get; set; }
+        public string SerializerClassName { get; set; }
 
         public Type OptionalUnderlyingProvided { set; get; }
 
@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
                 .DeclareVar<JsonEventTypeDetail>("detail", NewInstance(typeof(JsonEventTypeDetail)))
                 .SetProperty(Ref("detail"), "UnderlyingClassName", Constant(UnderlyingClassName))
                 .SetProperty(Ref("detail"), "OptionalUnderlyingProvided", Constant(OptionalUnderlyingProvided))
-                .SetProperty(Ref("detail"), "DelegateClassName", Constant(DeserializerClassName))
-                .SetProperty(Ref("detail"), "DelegateFactoryClassName", Constant(DeserializerFactoryClassName))
+                .SetProperty(Ref("detail"), "DeserializerClassName", Constant(DeserializerClassName))
+                .SetProperty(Ref("detail"), "SerializerClassName", Constant(SerializerClassName))
                 .SetProperty(Ref("detail"), "SerdeClassName", Constant(SerdeClassName))
                 .SetProperty(Ref("detail"), "FieldDescriptors", LocalMethod(MakeFieldDescCodegen(method, classScope)))
                 .SetProperty(Ref("detail"), "IsDynamic", Constant(IsDynamic))
@@ -94,8 +94,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
                 "fields",
                 NewInstance(typeof(Dictionary<string, JsonUnderlyingField>)));
 
-            foreach (KeyValuePair<string, JsonUnderlyingField> entry in FieldDescriptors) {
-                method.Block.ExprDotMethod(Ref("fields"), "Put", Constant(entry.Key), entry.Value.ToExpression());
+            foreach (var entry in FieldDescriptors) {
+                method.Block.ExprDotMethod(Ref("fields"), "Put", Constant(entry.Key), entry.Value.ToCodegenExpression());
             }
 
             method.Block.MethodReturn(Ref("fields"));

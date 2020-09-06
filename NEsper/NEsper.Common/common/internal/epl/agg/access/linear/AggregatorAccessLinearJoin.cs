@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .IfCondition(Relational(Ref("index"), GE, ExprDotName(_refSet, "Count")))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(_array))
-                .InstanceMethod(initArray)
+                .LocalMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(ArrayAtIndex(_array, Ref("index")));
             return LocalMethod(method, index);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .IfCondition(Relational(Ref("index"), GE, ExprDotName(_refSet, "Count")))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(_array))
-                .InstanceMethod(initArray)
+                .LocalMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(ArrayAtIndex(_array, Op(Op(ArrayLength(_array), "-", Ref("index")), "-", Constant(1))));
             return LocalMethod(method, index);
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(_array))
-                .InstanceMethod(initArray)
+                .LocalMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(ArrayAtIndex(_array, Op(ArrayLength(_array), "-", Constant(1))));
             return LocalMethod(method);
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
             method.Block.IfNull(_array)
-                .InstanceMethod(initArray)
+                .LocalMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(
                     ExprDotMethod(
@@ -218,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
             method.Block.IfNull(_array)
-                .InstanceMethod(initArray)
+                .LocalMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", _array));
             return LocalMethod(method);
@@ -240,7 +240,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.StreamNum)))
                 .IfRefNull("theEvent")
                 .BlockReturnNoValue()
-                .InstanceMethod(addEvent, Ref("theEvent"));
+                .LocalMethod(addEvent, Ref("theEvent"));
         }
 
         internal override void ApplyLeaveFiltered(
@@ -254,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.StreamNum)))
                 .IfRefNull("theEvent")
                 .BlockReturnNoValue()
-                .InstanceMethod(removeEvent, Ref("theEvent"));
+                .LocalMethod(removeEvent, Ref("theEvent"));
         }
 
         private CodegenMethod AddEventCodegen(

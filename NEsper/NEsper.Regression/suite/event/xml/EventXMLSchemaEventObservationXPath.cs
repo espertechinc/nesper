@@ -45,17 +45,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var resourceManager = env.Container.ResourceManager();
-                var schemaUriSensorEvent = resourceManager.GetResourceAsStream("regression/sensorSchema.xsd").ConsumeStream();
+                var schemaUriSensorEvent = resourceManager.ResolveResourceURL("regression/sensorSchema.xsd");
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='Sensor', schemaResource='" +
+                          "@XMLSchema(RootElementName='Sensor', SchemaResource='" +
                           schemaUriSensorEvent +
                           "')" +
-                          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='SensorSchema')" +
-                          "@XMLSchemaField(name='countTags', xpath='count(/ss:Sensor/ss:Observation/ss:Tag)', type='number')" +
-                          "@XMLSchemaField(name='countTagsInt', xpath='count(/ss:Sensor/ss:Observation/ss:Tag)', type='number', castToType='int')" +
-                          "@XMLSchemaField(name='idarray', xpath='//ss:Tag/ss:ID', type='NODESET', castToType='String[]')" +
-                          "@XMLSchemaField(name='tagArray', xpath='//ss:Tag', type='NODESET', eventTypeName='TagEvent')" +
-                          "@XMLSchemaField(name='tagOne', xpath='//ss:Tag[position() = 1]', type='node', eventTypeName='TagEvent')" +
+                          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='SensorSchema')" +
+                          "@XMLSchemaField(Name='countTags', XPath='count(/ss:Sensor/ss:Observation/ss:Tag)', Type='number')" +
+                          "@XMLSchemaField(Name='countTagsInt', XPath='count(/ss:Sensor/ss:Observation/ss:Tag)', Type='number', CastToType='int')" +
+                          "@XMLSchemaField(Name='idarray', XPath='//ss:Tag/ss:ID', Type='NODESET', CastToType='String[]')" +
+                          "@XMLSchemaField(Name='tagArray', XPath='//ss:Tag', Type='NODESET', EventTypeName='TagEvent')" +
+                          "@XMLSchemaField(Name='tagOne', XPath='//ss:Tag[position() = 1]', Type='any', EventTypeName='TagEvent')" +
                           "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);

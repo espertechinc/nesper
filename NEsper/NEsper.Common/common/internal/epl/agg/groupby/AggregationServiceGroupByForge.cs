@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             }
 
             if (HasRefCounting) {
-                method.Block.InstanceMethod(HandleRemovedKeysCodegen(method, classScope));
+                method.Block.LocalMethod(HandleRemovedKeysCodegen(method, classScope));
             }
 
             var block = method.Block.AssignRef(
@@ -373,7 +373,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope)
         {
             if (aggGroupByDesc.IsRefcounted) {
-                method.Block.InstanceMethod(HandleRemovedKeysCodegen(method, classScope));
+                method.Block.LocalMethod(HandleRemovedKeysCodegen(method, classScope));
             }
 
             method.Block.MethodReturn(ExprDotName(MEMBER_AGGREGATORSPERGROUP, "Keys"));

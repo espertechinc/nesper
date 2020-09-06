@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "" +
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
-                    "    public static double computeInitialValue(double alpha, double[] burnValues) {\n" +
+                    "    public static double ComputeInitialValue(double alpha, double[] burnValues) {\n" +
                     "      double total = 0;\n" +
                     "      for (double v : burnValues) {\n" +
                     "        total = total + v;\n" +
@@ -464,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "// Update the 'value' field with the current value\n" +
                     "@priority(1) on MyEvent merge EMA as ema\n" +
                     "  when matched and cnt < BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1\n" +
-                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.computeInitialValue(ALPHA, burnValues), burnValues = null\n" +
+                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.ComputeInitialValue(ALPHA, burnValues), burnValues = null\n" +
                     "  when matched then update set value = ALPHA * x + (1 - ALPHA) * value;\n" +
                     "" +
                     "// Output value\n" +

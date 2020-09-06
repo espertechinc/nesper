@@ -105,11 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                                 eventsPerStream,
                                 isNewData,
                                 exprEvaluatorContext);
-                            if (@event != null) {
-                                return @event.Underlying;
-                            }
-
-                            return null;
+                            return @event?.Underlying;
                         }
                     };
                 }

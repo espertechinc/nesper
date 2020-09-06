@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.collection
             refMap.Put("a", 100);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPut()
         {
             try
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.That(refMap.Contains("b"), Is.False);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.AreEqual(100, val);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestReference()
         {
             refMap.Reference("a");
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDereference()
         {
             bool isLast = refMap.Dereference("a");
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             refMap.Put("b", -1);

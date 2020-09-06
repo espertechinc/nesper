@@ -65,7 +65,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				}
 				catch (EPDeployException ex) {
 					RolloutCleanPathAndTypes(inits, deploymentIds, runtime.ServicesContext);
-					throw ex;
+					throw;
 				}
 				catch (Exception ex) {
 					RolloutCleanPathAndTypes(inits, deploymentIds, runtime.ServicesContext);

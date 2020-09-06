@@ -95,9 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 agentInstanceViewFactoryContext.AgentInstanceContext,
                 scheduler);
 
-            if (scheduler != null) {
-                scheduler.SetScheduleCallback(agentInstanceViewFactoryContext.AgentInstanceContext, view);
-            }
+            scheduler?.SetScheduleCallback(agentInstanceViewFactoryContext.AgentInstanceContext, view);
 
             return view;
         }

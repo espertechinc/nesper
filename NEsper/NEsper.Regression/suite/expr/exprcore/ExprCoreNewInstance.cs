@@ -25,22 +25,70 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
 	public class ExprCoreNewInstance
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
-			IList<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExecCoreNewInstanceKeyword(true));
-			executions.Add(new ExecCoreNewInstanceKeyword(false));
-			executions.Add(new ExecCoreNewInstanceStreamAlias());
-			executions.Add(new ExecCoreNewInstanceInvalid());
-			executions.Add(new ExecCoreNewInstanceArraySized(false));
-			executions.Add(new ExecCoreNewInstanceArraySized(true));
-			executions.Add(new ExecCoreNewInstanceArrayInitOneDim(false));
-			executions.Add(new ExecCoreNewInstanceArrayInitOneDim(true));
-			executions.Add(new ExecCoreNewInstanceArrayInitTwoDim(false));
-			executions.Add(new ExecCoreNewInstanceArrayInitTwoDim(true));
-			executions.Add(new ExecCoreNewInstanceArrayInvalid());
-			return executions;
+			IList<RegressionExecution> execs = new List<RegressionExecution>();
+			WithKeyword(execs);
+			WithStreamAlias(execs);
+			WithInvalid(execs);
+			WithArraySized(execs);
+			WithArrayInitOneDim(execs);
+			WithArrayInitTwoDim(execs);
+			WithArrayInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithArrayInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceArrayInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithArrayInitTwoDim(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceArrayInitTwoDim(false));
+			execs.Add(new ExecCoreNewInstanceArrayInitTwoDim(true));
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithArrayInitOneDim(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceArrayInitOneDim(false));
+			execs.Add(new ExecCoreNewInstanceArrayInitOneDim(true));
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithArraySized(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceArraySized(false));
+			execs.Add(new ExecCoreNewInstanceArraySized(true));
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithStreamAlias(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceStreamAlias());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithKeyword(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceKeyword(true));
+			execs.Add(new ExecCoreNewInstanceKeyword(false));
+			return execs;
 		}
 
 		private class ExecCoreNewInstanceArrayInitTwoDim : RegressionExecution
@@ -59,12 +107,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "new double[][] {{1}} as c1, " +
 				          "new int[][] {{1},{IntPrimitive,10}} as c2, " +
 				          "new float[][] {{},{1},{2.0f}} as c3, " +
-				          "new long[][] {{1L,Long.MAX_VALUE,-1L}} as c4, " +
+				          "new long[][] {{1L,Int64.MaxValue,-1L}} as c4, " +
 				          "new String[][] {} as c5, " +
 				          "new String[][] {{},{},{\"x\"},{}} as c6, " +
 				          "new String[][] {{\"x\",\"y\"},{\"z\"}} as c7, " +
 				          "new Integer[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
-				          "new " + typeof(DateTimeEx).FullName + "[][] {} as c9, " +
+				          "new " +
+				          typeof(DateTimeEx).FullName +
+				          "[][] {} as c9, " +
 				          "new Object[][] {{}} as c10, " +
 				          "new Object[][] {{1}} as c11, " +
 				          "new Object[][] {{\"x\"},{1},{10L}} as c12 " +
@@ -80,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c5"));
 				Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c6"));
 				Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c7"));
-				Assert.AreEqual(typeof(int?[][]), @out.GetPropertyType("c8"));
+				Assert.AreEqual(typeof(int[][]), @out.GetPropertyType("c8"));
 				Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c9"));
 				Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c10"));
 				Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c11"));
@@ -156,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpression(fields[1], "new double[] {1}")
 					.WithExpression(fields[2], "new int[] {1,IntPrimitive,10}")
 					.WithExpression(fields[3], "new float[] {1,2.0f}")
-					.WithExpression(fields[4], "new long[] {1L,Long.MAX_VALUE,-1L}")
+					.WithExpression(fields[4], "new long[] {1L,Int64.MaxValue,-1L}")
 					.WithExpression(fields[5], "new String[] {}")
 					.WithExpression(fields[6], "new String[] {\"x\"}")
 					.WithExpression(fields[7], "new String[] {\"x\",\"y\"}")
@@ -177,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 						Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c5"));
 						Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c6"));
 						Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c7"));
-						Assert.AreEqual(typeof(int?[]), @out.GetPropertyType("c8"));
+						Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c8"));
 						Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c9"));
 						Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c10"));
 						Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c11"));
@@ -229,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					stmt => {
 						var @out = stmt.EventType;
 						Assert.AreEqual(typeof(double[]), @out.GetPropertyType("new double[1]"));
-						Assert.AreEqual(typeof(int?[]), @out.GetPropertyType("c1"));
+						Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c1"));
 						Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c2"));
 						Assert.AreEqual(typeof(double[][]), @out.GetPropertyType("new double[1][2]"));
 						Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c4"));
@@ -277,17 +327,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select new double[] {null} from SupportBean",
-					"Failed to validate select-clause expression 'new double[] {null}': Array element type mismatch: Expecting type double but received null");
+					"Failed to validate select-clause expression 'new double[] {null}': Array element type mismatch: Expecting type System.Double but received null");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select new String[] {1} from SupportBean",
-					"Failed to validate select-clause expression 'new String[] {1}': Array element type mismatch: Expecting type System.String but received type int");
+					"Failed to validate select-clause expression 'new String[] {1}': Array element type mismatch: Expecting type System.String but received type System.Int32");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select new String[] {IntPrimitive} from SupportBean",
-					"Failed to validate select-clause expression 'new String[] {IntPrimitive}': Array element type mismatch: Expecting type System.String but received type System.Int32");
+					"Failed to validate select-clause expression 'new String[] {IntPrimitive}': Array element type mismatch: Expecting type System.String but received type System.Nullable<System.Int32>");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
@@ -297,12 +347,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select new String[][] {{IntPrimitive}} from SupportBean",
-					"Failed to validate select-clause expression 'new String[] {{IntPrimitive}}': Array element type mismatch: Expecting type System.String but received type System.Int32");
+					"Failed to validate select-clause expression 'new String[] {{IntPrimitive}}': Array element type mismatch: Expecting type System.String but received type System.Nullable<System.Int32>");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select new String[] {{'x'}} from SupportBean",
-					"Failed to validate select-clause expression 'new String[] {{\"x\"}}': Array element type mismatch: Expecting type System.String but received type System.String(Array)");
+					"Failed to validate select-clause expression 'new String[] {{\"x\"}}': Array element type mismatch: Expecting type System.String but received type System.String[]");
 
 				// Runtime null handling
 				//
@@ -338,8 +388,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
+				var atomicLong = typeof(AtomicLong).FullName;
+
 				// try variable
-				env.CompileDeploy("create constant variable java.util.concurrent.atomic.AtomicInteger cnt = new java.util.concurrent.atomic.AtomicInteger(1)");
+				env.CompileDeploy($"create constant variable {atomicLong} cnt = new {atomicLong}(1)");
 
 				// try shallow invalid cases
 				SupportMessageAssertUtil.TryInvalidCompile(
@@ -387,11 +439,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "new SupportBean(\"A\",IntPrimitive) as c0, " +
 				          "new SupportBean(\"B\",IntPrimitive+10), " +
 				          "new SupportBean() as c2, " +
-				          "new SupportBean(\"ABC\",0).getTheString() as c3 " +
+				          "new SupportBean(\"ABC\",0).GetTheString() as c3 " +
 				          "from SupportBean";
 				env.CompileDeploy(soda, epl).AddListener("s0");
 				var expectedAggType = new[] {
-					new object[] {"c0", typeof(SupportBean)}, 
+					new object[] {"c0", typeof(SupportBean)},
 					new object[] {"new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)}
 				};
 				SupportEventTypeAssertionUtil.AssertEventTypeProperties(

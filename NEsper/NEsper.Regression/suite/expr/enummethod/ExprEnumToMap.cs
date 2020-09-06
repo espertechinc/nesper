@@ -28,12 +28,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumToMapEvent());
-			execs.Add(new ExprEnumToMapScalar());
-			execs.Add(new ExprEnumToMapInvalid());
+WithEvent(execs);
+WithScalar(execs);
+WithInvalid(execs);
 			return execs;
 		}
-
+public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprEnumToMapInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprEnumToMapScalar());
+    return execs;
+}public static IList<RegressionExecution> WithEvent(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprEnumToMapEvent());
+    return execs;
+}
 		internal class ExprEnumToMapEvent : RegressionExecution
 		{
 			public bool ExcludeWhenInstrumented()
@@ -45,13 +60,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.toMap(c => id, d=> p00)");
-				builder.WithExpression(fields[1], "contained.toMap((c, index) => id || '_' || Convert.ToString(index), (d, index) => p00 + 10*index)");
+				builder.WithExpression(fields[0], "Contained.toMap(c => Id, d => P00)");
+				builder.WithExpression(fields[1], "Contained.toMap((c, index) => Id || '_' || Convert.ToString(index), (d, index) => P00 + 10*index)");
 				builder.WithExpression(
 					fields[2],
-					"contained.toMap((c, index, size) => id || '_' || Convert.ToString(index) || '_' || Convert.ToString(size), (d, index, size) => p00 + 10*index + 100*size)");
+					"Contained.toMap((c, index, size) => Id || '_' || Convert.ToString(index) || '_' || Convert.ToString(size), (d, index, size) => P00 + 10*index + 100*size)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, object>)));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"))
 					.Verify("c0", val => CompareMap(val, "E1,E3,E2", 1, 12, 5))
@@ -83,13 +98,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.toMap(k => k, v => extractNum(v))");
-				builder.WithExpression(fields[1], "strvals.toMap((k, i) => k || '_' || Convert.ToString(i), (v, idx) => extractNum(v) + 10*idx)");
+				builder.WithExpression(fields[0], "Strvals.toMap(k => k, v => extractNum(v))");
+				builder.WithExpression(fields[1], "Strvals.toMap((k, i) => k || '_' || Convert.ToString(i), (v, idx) => extractNum(v) + 10*idx)");
 				builder.WithExpression(
 					fields[2],
-					"strvals.toMap((k, i, s) => k || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
+					"Strvals.toMap((k, i, s) => k || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, object>)));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E3"))
 					.Verify("c0", val => CompareMap(val, "E1,E2,E3", 1, 2, 3))
@@ -119,11 +134,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "select strvals.toMap(k => k, (v, i) => extractNum(v)) from SupportCollection";
+				string epl = "select Strvals.toMap(k => k, (v, i) => extractNum(v)) from SupportCollection";
 				TryInvalidCompile(
 					env,
 					epl,
-					"Failed to validate select-clause expression 'strvals.toMap(,)': Parameters mismatch for enumeration method 'toMap', the method requires a lambda expression providing key-selector and a lambda expression providing value-selector, but receives a lambda expression and a 2-parameter lambda expression");
+					"Failed to validate select-clause expression 'Strvals.toMap(,)': Parameters mismatch for enumeration method 'toMap', the method requires a lambda expression providing key-selector and a lambda expression providing value-selector, but receives a lambda expression and a 2-parameter lambda expression");
 			}
 		}
 
@@ -132,8 +147,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			string keyCSV,
 			params object[] values)
 		{
-			string[] keys = string.IsNullOrWhiteSpace(keyCSV) ? new string[0] : keyCSV.SplitCsv();
-			EPAssertionUtil.AssertPropsMap((IDictionary<string, object>) received, keys, values);
+			var keys = string.IsNullOrWhiteSpace(keyCSV) ? new string[0] : keyCSV.SplitCsv();
+			var receivedDictionary = received.AsObjectDictionary();
+			EPAssertionUtil.AssertPropsMap(receivedDictionary, keys, values);
 		}
 	}
 } // end of namespace

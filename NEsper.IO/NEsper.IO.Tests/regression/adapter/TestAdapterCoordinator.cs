@@ -97,7 +97,7 @@ namespace com.espertech.esperio.regression.adapter
             _noTimestampsLooping.IsUsingEngineThread = true;
     	}
     
-        [Test]
+        [Test, RunInApplicationDomain]
     	public void TestRun()
     	{
     		_coordinator.Coordinate(new CSVInputAdapter(_timestampsNotLooping));
@@ -180,7 +180,7 @@ namespace com.espertech.esperio.regression.adapter
     		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     	}
     
-        [Test]
+        [Test, RunInApplicationDomain]
     	public void TestRunTillNull()
     	{
     		_coordinator.Coordinate(new CSVInputAdapter(_runtime, _timestampsNotLooping));
@@ -219,7 +219,7 @@ namespace com.espertech.esperio.regression.adapter
             Log.Debug(".testRunTillNull time==800");
     	}
     
-        [Test]
+        [Test, RunInApplicationDomain]
     	public void TestNotUsingEngineThread()
     	{
     		_coordinator = new AdapterCoordinatorImpl(_runtime, false);
@@ -242,7 +242,7 @@ namespace com.espertech.esperio.regression.adapter
     		AssertEvent(5, 5, 5.5, "timestampOne.five");
     	}
     
-        [Test]
+        [Test, RunInApplicationDomain]
     	public void TestExternalTimer()
     	{
     		_coordinator = new AdapterCoordinatorImpl(_runtime, false, true, false);

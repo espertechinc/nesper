@@ -45,17 +45,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var resourceManager = env.Container.ResourceManager();
-                string schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
+                var schemaUriSimpleSchema = resourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
                 string epl = "@public @buseventtype " +
-                             "@XMLSchema(rootElementName='//nested2', schemaResource='" +
+                             "@XMLSchema(RootElementName='//nested2', SchemaResource='" +
                              schemaUriSimpleSchema +
-                             "', eventSenderValidatesRoot=false)" +
+                             "', EventSenderValidatesRoot=false)" +
                              "create xml schema MyEventCreateSchemaNested();\n" +
                              "" +
                              "@public @buseventtype " +
-                             "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
+                             "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" +
                              schemaUriSimpleSchema +
-                             "', eventSenderValidatesRoot=false)" +
+                             "', EventSenderValidatesRoot=false)" +
                              "create xml schema MyEventCreateSchemaABC();\n";
                 RegressionPath path = new RegressionPath();
                 env.CompileDeploy(epl, path);

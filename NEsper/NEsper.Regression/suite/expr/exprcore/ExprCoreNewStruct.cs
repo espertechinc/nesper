@@ -31,11 +31,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		public static ICollection<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprCoreNewStructNewWRepresentation());
-			execs.Add(new ExprCoreNewStructDefaultColumnsAndSODA());
-			execs.Add(new ExprCoreNewStructNewWithCase());
-			execs.Add(new ExprCoreNewStructInvalid());
+			WithNewWRepresentation(execs);
+			WithDefaultColumnsAndSODA(execs);
+			WithNewWithCase(execs);
+			WithInvalid(execs);
+			WithWithBacktick(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWithBacktick(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprCoreNewStructWithBacktick());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreNewStructInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNewWithCase(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreNewStructNewWithCase());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithDefaultColumnsAndSODA(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreNewStructDefaultColumnsAndSODA());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNewWRepresentation(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreNewStructNewWRepresentation());
 			return execs;
 		}
 
@@ -189,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					epl,
-					"Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected System.String but receives System.Int32 [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
+					"Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected System.String but receives System.Nullable<System.Int32> [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
 
 				epl = "select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean";
 				SupportMessageAssertUtil.TryInvalidCompile(

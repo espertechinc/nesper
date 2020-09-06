@@ -20,7 +20,7 @@ namespace com.espertech.esper.runtime.client.plugin
         /// </summary>
         /// <param name="name">is the loader name</param>
         /// <param name="properties">is a set of properties from the configuration</param>
-        /// <param name="runtime">is the SPI of the runtimeitself for sending events to</param>
+        /// <param name="runtime">is the SPI of the runtime itself for sending events to</param>
         /// <param name="configXml">config xml</param>
         public PluginLoaderInitContext(
             string name,
@@ -53,7 +53,7 @@ namespace com.espertech.esper.runtime.client.plugin
         public string ConfigXml { get; }
 
         /// <summary>
-        ///     Returns the runtimeloading the plugin.
+        ///     Returns the runtime loading the plugin.
         /// </summary>
         /// <returns>runtime</returns>
         public EPRuntime Runtime { get; }

@@ -33,17 +33,17 @@ namespace com.espertech.esper.common.@internal.view.sort
         {
             events = EventFactoryHelper.MakeEventMap(new[] { "a", "b", "c", "d", "f", "g" }, supportEventTypeFactory);
             comparator = new ComparatorHashableMultiKeyCasting(new ComparatorHashableMultiKey(new[] { false }));
-            testMap = new BTreeDictionary<object, object>(comparator);
+            testMap = new OrderedListDictionary<object, object>(comparator);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEmpty()
         {
             var enumerator = testMap.GetMultiLevelEnumerator();
             EPAssertionUtil.AssertEqualsExactOrder(null, enumerator);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMixedEntryElement()
         {
             var list1 = new List<EventBean>();
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                 }, enumerator);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestOneElement()
         {
             var list = new List<EventBean>();
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a") }, enumerator);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTwoByTwoEntryElement()
         {
             var list1 = new List<EventBean>();
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b"), events.Get("c"), events.Get("d") }, enumerator);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTwoInOneEntryElement()
         {
             var list = new List<EventBean>();
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b") }, enumerator);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTwoSeparateEntryElement()
         {
             var list1 = new List<EventBean>();

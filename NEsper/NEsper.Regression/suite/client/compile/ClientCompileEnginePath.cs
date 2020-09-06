@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			{
 				CreateStmt(
 					env,
-					"@Name('A') @public create table MyTableAggs(TheString String primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
+					"@Name('A') @public create table MyTableAggs(TheString string primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
 				CreateStmt(
 					env,
 					"@Name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by TheString");
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				CreateStmt(env, "@Name('Create') @public create table MyTable(id String primary key, theGroup int primary key)");
+				CreateStmt(env, "@Name('Create') @public create table MyTable(id string primary key, theGroup int primary key)");
 				CreateStmt(env, "@Name('Index') create unique index I1 on MyTable(id)");
 
 				CreateStmt(env, "@Name('Create') @public create window MyWindow#keepall as SupportBean");
@@ -86,11 +86,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				                  "create table MyTable(y string);\n" +
 				                  "create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
 				                  "create expression myScript() [ 2 ];\n" +
-				                  "create inlined_class \"\"\" public class MyClass { public static String doIt(String parameter) { return \"def\"; } }\"\"\";\n";
+				                  "create inlined_class \"\"\" public class MyClass { public static string DoIt(string parameter) { return \"def\"; } }\"\"\";\n";
 				env.CompileDeploy(deployed, new RegressionPath());
 
 				string epl = "@Name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
-				             "MyClass.doIt(TheString) as c4 from SupportBean;\n" +
+				             "MyClass.DoIt(TheString) as c4 from SupportBean;\n" +
 				             "select * from MySchema;" +
 				             "on SupportBean_S1 delete from MyWindow;\n" +
 				             "on SupportBean_S1 delete from MyTable;\n" +

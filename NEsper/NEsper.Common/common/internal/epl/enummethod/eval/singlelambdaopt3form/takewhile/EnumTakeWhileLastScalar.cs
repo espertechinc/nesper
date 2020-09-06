@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -64,11 +65,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							props[1] = 0;
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
-								return EmptyList<object>.Instance;
+							if (pass == null || false.Equals(pass)) {
+								return FlexCollection.Empty;
 							}
 
-							return Collections.SingletonList(item);
+							return FlexCollection.OfObject(item);
 						}
 
 						var all = TakeWhileLastScalarToArray(enumcoll);
@@ -81,21 +82,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							props[1] = count;
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || (!(Boolean) pass)) {
+							if (pass == null || false.Equals(pass)) {
 								break;
 							}
 
 							result.AddFirst(all[i]);
 						}
 
-						return result;
+						return FlexCollection.Of(result);
 					});
 			}
 		}
 
 		public override Type ReturnType()
 		{
-			return typeof(ICollection<object>);
+			return typeof(FlexCollection);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
@@ -114,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			block.DeclareVar(
 				typeof(object[]),
 				"all",
-				StaticMethod(typeof(EnumTakeWhileHelper), "takeWhileLastScalarToArray", EnumForgeCodegenNames.REF_ENUMCOLL));
+				StaticMethod(typeof(EnumTakeWhileHelper), "TakeWhileLastScalarToArray", EnumForgeCodegenNames.REF_ENUMCOLL));
 
 			var forEach = block.ForLoop(
 					typeof(int),
@@ -129,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 
 			CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(forEach, InnerExpression.EvaluationType, innerValue);
-			forEach.Expression(ExprDotMethod(Ref("result"), "addFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
+			forEach.Expression(ExprDotMethod(Ref("result"), "AddFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
 		}
 
 		public override bool HasForEachLoop()
@@ -148,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(Ref("result"));
+			block.MethodReturn(FlexWrap(Ref("result")));
 		}
 	}
 } // end of namespace

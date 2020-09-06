@@ -38,6 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         AggregationPortableValidation AggregationPortableValidation { get; }
 
+        MathContext OptionalMathContext { get; }
+
         void InitMethodForge(
             int col,
             CodegenCtor rowCtor,

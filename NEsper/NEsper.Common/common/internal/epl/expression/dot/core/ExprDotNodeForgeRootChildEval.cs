@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         exprSymbol,
                         codegenClassScope,
                         Ref("inner"),
-                        typeof(ICollection<object>),
+                        typeof(FlexCollection),
                         forge.forgesIteratorEventBean,
                         null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))

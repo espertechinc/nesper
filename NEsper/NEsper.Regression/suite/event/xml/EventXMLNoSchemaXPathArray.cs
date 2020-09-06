@@ -39,8 +39,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='Event')" +
-                          "@XMLSchemaField(name='A', xpath='//Field[@Name=\"A\"]/@Value', type='nodeset', castToType='string[]')" +
+                          "@XMLSchema(RootElementName='Event')" +
+                          "@XMLSchemaField(Name='A', XPath='//Field[@Name=\"A\"]/@Value', Type='nodeset', CastToType='string[]')" +
                           "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);

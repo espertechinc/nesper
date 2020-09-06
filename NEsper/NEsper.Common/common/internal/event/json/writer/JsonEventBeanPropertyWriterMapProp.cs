@@ -26,9 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 		private readonly string _key;
 
 		public JsonEventBeanPropertyWriterMapProp(
-			JsonSerializationContext serializationContext,
 			JsonUnderlyingField field,
-			string key) : base(serializationContext, field)
+			string key) : base(field)
 		{
 			_key = key;
 		}

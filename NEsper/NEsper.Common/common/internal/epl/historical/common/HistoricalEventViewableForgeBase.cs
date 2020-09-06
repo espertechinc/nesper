@@ -122,8 +122,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                             for (int i = 0; i < expressions.Length; i++) {
                                 expressions[i] = Cast(MultiKeyClassRef.MKTypes[i], ArrayAtIndex(Ref("values"), Constant(i)));
                             }
+                            
+                            var instance = MultiKeyClassRef.ClassNameMK.Type != null
+                                ? NewInstance(MultiKeyClassRef.ClassNameMK.Type, expressions)
+                                : NewInstanceInner(MultiKeyClassRef.ClassNameMK.Name, expressions);
 
-                            block.BlockReturn(NewInstanceInner(MultiKeyClassRef.ClassNameMK, expressions));
+                            block.BlockReturn(instance);
                         }
                     });
             

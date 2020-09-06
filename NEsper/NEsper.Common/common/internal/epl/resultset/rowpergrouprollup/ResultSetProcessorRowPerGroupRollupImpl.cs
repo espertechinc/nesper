@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 method.Block.ExprDotMethod(Ref("this"), "Clear");
             }
 
-            method.Block.InstanceMethod(resetEventPerGroupJoinBuf)
+            method.Block.LocalMethod(resetEventPerGroupJoinBuf)
                 .DeclareVar<object[][]>(
                     "newDataMultiKey",
                     LocalMethod(generateGroupKeysJoin, REF_NEWDATA, Ref(NAME_EVENTPERGROUPBUFJOIN), ConstantTrue()))
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var generateOutputEventsView = GenerateOutputEventsViewCodegen(forge, classScope, instance);
 
             method.Block
-                .InstanceMethod(resetEventPerGroupBufView)
+                .LocalMethod(resetEventPerGroupBufView)
                 .DeclareVar<object[][]>(
                     "newDataMultiKey",
                     LocalMethod(generateGroupKeysView, REF_NEWDATA, Ref(NAME_EVENTPERGROUPBUFVIEW), ConstantTrue()))
@@ -446,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             }
 
             method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
-                .DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
+                .DeclareVar<IEnumerator<EventBean>>("enumerator", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .DeclareVar<object[]>(
                     "groupKeys",
@@ -455,11 +455,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "levels",
                     ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
                     .AssignArrayElement(
                         Ref("eventsPerStream"),
                         Constant(0),
-                        Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
+                        Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
                     .DeclareVar<object>(
                         "groupKeyComplete",
                         LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -502,14 +502,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var iterator = parent
                 .MakeChild(typeof(IEnumerator<EventBean>), typeof(ResultSetProcessorRowPerGroupRollupImpl), classScope)
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
-            iterator.Block.InstanceMethod(resetEventPerGroupBufView)
+            iterator.Block.LocalMethod(resetEventPerGroupBufView)
                 .DeclareVar<EventBean[]>(
                     "events",
                     StaticMethod(
                         typeof(CollectionUtil),
                         METHOD_ENUMERATORTOARRAYEVENTS,
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator")))
-                .InstanceMethod(generateGroupKeysView, Ref("events"), Ref(NAME_EVENTPERGROUPBUFVIEW), ConstantTrue())
+                .LocalMethod(generateGroupKeysView, Ref("events"), Ref(NAME_EVENTPERGROUPBUFVIEW), ConstantTrue())
                 .DeclareVar<EventBean[]>(
                     "output",
                     LocalMethod(
@@ -543,8 +543,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var generateOutputEventsJoin = GenerateOutputEventsJoinCodegen(forge, classScope, instance);
             var resetEventPerGroupBuf = ResetEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFJOIN, classScope, instance);
             method.Block
-                .InstanceMethod(resetEventPerGroupBuf)
-                .InstanceMethod(generateGroupKeysJoin, REF_JOINSET, Ref(NAME_EVENTPERGROUPBUFJOIN), ConstantTrue())
+                .LocalMethod(resetEventPerGroupBuf)
+                .LocalMethod(generateGroupKeysJoin, REF_JOINSET, Ref(NAME_EVENTPERGROUPBUFJOIN), ConstantTrue())
                 .DeclareVar<EventBean[]>(
                     "output",
                     LocalMethod(
@@ -862,7 +862,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -933,7 +933,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1043,7 +1043,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1106,7 +1106,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1293,7 +1293,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1369,7 +1369,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1478,7 +1478,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1539,7 +1539,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             Ref("groupKey"),
                                             Ref("eventsPerStream"))));
                                 if (forge.IsSelectRStream) {
-                                    putBlock.InstanceMethod(
+                                    putBlock.LocalMethod(
                                             generateOutputBatchedGivenArray,
                                             ConstantFalse(),
                                             Ref("groupKey"),
@@ -1602,7 +1602,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .DeclareVar<EventBean[]>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"))
-                    .InstanceMethod(resetEventPerGroupBufView)
+                    .LocalMethod(resetEventPerGroupBufView)
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(
@@ -1619,7 +1619,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             ConstantFalse()));
 
                 if (forge.IsSelectRStream) {
-                    forEach.InstanceMethod(
+                    forEach.LocalMethod(
                         generateOutputBatchedCollectView,
                         Ref(NAME_EVENTPERGROUPBUFVIEW),
                         ConstantFalse(),
@@ -1639,7 +1639,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("oldData"),
                         Ref("oldDataMultiKey"),
                         Ref("eventsPerStream"))
-                    .InstanceMethod(
+                    .LocalMethod(
                         generateOutputBatchedCollectView,
                         Ref(NAME_EVENTPERGROUPBUFVIEW),
                         ConstantTrue(),
@@ -1682,7 +1682,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"))
-                    .InstanceMethod(resetEventPerGroupBufJoin)
+                    .LocalMethod(resetEventPerGroupBufJoin)
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(
@@ -1699,7 +1699,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             ConstantFalse()));
 
                 if (forge.IsSelectRStream) {
-                    forEach.InstanceMethod(
+                    forEach.LocalMethod(
                         generateOutputBatchedCollectJoin,
                         Ref(NAME_EVENTPERGROUPBUFJOIN),
                         ConstantFalse(),
@@ -1717,7 +1717,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("newDataMultiKey"),
                         Ref("oldData"),
                         Ref("oldDataMultiKey"))
-                    .InstanceMethod(
+                    .LocalMethod(
                         generateOutputBatchedCollectJoin,
                         Ref(NAME_EVENTPERGROUPBUFJOIN),
                         ConstantTrue(),
@@ -1764,7 +1764,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .IfElse()
                 .AssignRef("sortKeys", ArrayAtIndex(Ref("optSortKeys"), ExprDotName(Ref("level"), "LevelNumber")))
                 .BlockEnd()
-                .InstanceMethod(
+                .LocalMethod(
                     generateOutputBatched,
                     Ref("mk"),
                     Ref("level"),
@@ -1980,7 +1980,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2025,7 +2025,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2118,7 +2118,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2165,7 +2165,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2221,7 +2221,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(KeyValuePair<object, EventBean[]>),
                         "entry",
                         Ref("groupGenerators"))
-                    .InstanceMethod(
+                    .LocalMethod(
                         generateOutputBatchedGivenArray,
                         ConstantFalse(),
                         ExprDotName(Ref("entry"), "Key"),
@@ -2272,7 +2272,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2317,7 +2317,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2373,7 +2373,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(KeyValuePair<object, EventBean[]>),
                         "entry",
                         Ref("groupGenerators"))
-                    .InstanceMethod(
+                    .LocalMethod(
                         generateOutputBatchedGivenArray,
                         ConstantFalse(),
                         ExprDotName(Ref("entry"), "Key"),
@@ -2428,7 +2428,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2475,7 +2475,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Ref("groupKey"),
                                         Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
-                                ifNullPut.InstanceMethod(
+                                ifNullPut.LocalMethod(
                                         generateOutputBatchedGivenArray,
                                         ConstantFalse(),
                                         Ref("groupKey"),
@@ -2526,7 +2526,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "eventsPerStream",
                             Constant(0),
                             Cast(typeof(EventBean), ExprDotName(Ref("pair"), "Value")))
-                        .InstanceMethod(
+                        .LocalMethod(
                             generateOutputBatched,
                             ExprDotName(Ref("pair"), "Key"),
                             Ref("level"),
@@ -2573,7 +2573,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ArrayAtIndex(
                             Ref("eventPairs"),
                             ExprDotName(Ref("level"), "LevelNumber")));
-                    forEvents.InstanceMethod(
+                    forEvents.LocalMethod(
                         generateOutputBatched,
                         ExprDotName(Ref("pair"), "Key"),
                         Ref("level"),
@@ -2791,7 +2791,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(KeyValuePair<object, EventBean[]>),
                         "entry",
                         Ref("groupGenerators"))
-                    .InstanceMethod(
+                    .LocalMethod(
                         generateOutputBatched,
                         ExprDotName(Ref("entry"), "Key"),
                         Ref("level"),

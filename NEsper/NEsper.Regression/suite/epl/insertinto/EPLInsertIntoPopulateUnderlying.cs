@@ -42,19 +42,103 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoCtor());
-            execs.Add(new EPLInsertIntoCtorWithPattern());
-            execs.Add(new EPLInsertIntoBeanJoin());
-            execs.Add(new EPLInsertIntoPopulateBeanSimple());
-            execs.Add(new EPLInsertIntoBeanWildcard());
-            execs.Add(new EPLInsertIntoPopulateBeanObjects());
-            execs.Add(new EPLInsertIntoPopulateUnderlyingSimple());
+            WithCtor(execs);
+            WithCtorWithPattern(execs);
+            WithBeanJoin(execs);
+            WithPopulateBeanSimple(execs);
+            WithBeanWildcard(execs);
+            WithPopulateBeanObjects(execs);
+            WithPopulateUnderlyingSimple(execs);
+            WithBeanFactoryMethod(execs);
+            WithArrayPONOInsert(execs);
+            WithArrayMapInsert(execs);
+            WithWindowAggregationAtEventBean(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowAggregationAtEventBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoWindowAggregationAtEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithArrayMapInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoArrayMapInsert());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithArrayPONOInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoArrayPONOInsert());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanFactoryMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             //execs.Add(new EPLInsertIntoCharSequenceCompat());
             execs.Add(new EPLInsertIntoBeanFactoryMethod());
-            execs.Add(new EPLInsertIntoArrayPONOInsert());
-            execs.Add(new EPLInsertIntoArrayMapInsert());
-            execs.Add(new EPLInsertIntoWindowAggregationAtEventBean());
-            execs.Add(new EPLInsertIntoInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPopulateUnderlyingSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoPopulateUnderlyingSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPopulateBeanObjects(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoPopulateBeanObjects());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoBeanWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPopulateBeanSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoPopulateBeanSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoBeanJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCtorWithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoCtorWithPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCtor(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoCtor());
             return execs;
         }
 
@@ -65,9 +149,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             var schema =
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventOne>() +
-                " create schema EventOne(id string);\n" +
+                " create schema EventOne(Id string);\n" +
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTwo>() +
-                " create schema EventTwo(id string, val int);\n" +
+                " create schema EventTwo(Id string, val int);\n" +
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedFinalEventValid>() +
                 " create schema FinalEventValid (startEvent EventOne, endEvent EventTwo[]);\n" +
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedFinalEventInvalidNonArray>() +
@@ -189,10 +273,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 record.Put("Id", id);
                 record.Put("val", val);
                 env.SendEventAvro(record, "EventTwo");
-            } 
+            }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
-                @object.Add("id", id);
+                @object.Add("Id", id);
                 @object.Add("val", val);
                 env.SendEventJson(@object.ToString(), "EventTwo");
             }
@@ -285,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "intVal","stringVal","doubleVal" },
+                new[] {"intVal", "stringVal", "doubleVal"},
                 new object[] {1000, "E1", 1001d});
             env.UndeployAll();
         }
@@ -567,9 +651,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 Assert.Throws<EPException>(
-                    () => {
-                        env.SendEventMap(new Dictionary<string, object>(), "MyMap");
-                    });
+                    () => { env.SendEventMap(new Dictionary<string, object>(), "MyMap"); });
 
                 env.UndeployAll();
 
@@ -671,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(vals, "MyMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "LongBoxed","DoubleBoxed" },
+                    new[] {"LongBoxed", "DoubleBoxed"},
                     new object[] {4L, 0d});
                 env.UndeployAll();
 
@@ -684,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNew().Get("themap"),
-                    new [] { "somefield" },
+                    new[] {"somefield"},
                     "E1");
 
                 env.UndeployAll();
@@ -707,7 +789,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(vals, "MySupportMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "IntPrimitive","LongBoxed","TheString","BoolPrimitive" },
+                    new[] {"IntPrimitive", "LongBoxed", "TheString", "BoolPrimitive"},
                     new object[] {4, 100L, "E1", true});
 
                 env.UndeployAll();
@@ -731,7 +813,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 inner["mykey"] = "myval";
                 mymapVals.Put("MapProp", inner);
                 env.SendEventMap(mymapVals, "MyMap");
-                
+
                 var theEvent = (SupportBeanComplexProps) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
                 Assert.AreEqual(-2, theEvent.ArrayProperty[1]);
                 Assert.AreEqual(20, theEvent.ObjectArray[1]);
@@ -810,6 +892,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
                         continue; // Json doesn't allow CharSequence by itself unless registering an adapter
                     }
+
                     var path = new RegressionPath();
                     env.CompileDeploy(rep.GetAnnotationText() + "create schema ConcreteType as (value System.Span<Char>)", path);
                     env.CompileDeploy("insert into ConcreteType select \"Test\" as value from SupportBean", path);
@@ -842,7 +925,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(new Dictionary<string, object>(), "MyMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "Id","Type","Device", "Measurement", "Confidence" },
+                    new[] {"Id", "Type", "Device", "Measurement", "Confidence"},
                     new object[] {2, "A01", "DHC1000", 100.0, 5.0});
 
                 Assert.That(
@@ -977,19 +1060,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedEventTwo {
+        public class MyLocalJsonProvidedEventTwo
+        {
             public string id;
             public int val;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedFinalEventValid {
+        public class MyLocalJsonProvidedFinalEventValid
+        {
             public MyLocalJsonProvidedEventOne startEvent;
             public MyLocalJsonProvidedEventTwo[] endEvent;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedFinalEventInvalidNonArray {
+        public class MyLocalJsonProvidedFinalEventInvalidNonArray
+        {
             public MyLocalJsonProvidedEventOne startEvent;
             public MyLocalJsonProvidedEventTwo endEvent;
         }

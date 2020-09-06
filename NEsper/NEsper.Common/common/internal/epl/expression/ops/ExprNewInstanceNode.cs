@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 foreach (ExprNode child  in ChildNodes) {
                     var evalType = child.Forge.EvaluationType;
                     if (!TypeHelper.IsInt32(evalType)) {
-                        String message = "New-keyword with an array-type result requires an Integer-typed dimension but received type '" +
+                        string message = "New-keyword with an array-type result requires an Integer-typed dimension but received type '" +
                                          evalType.CleanName() +
                                          "'";
                         throw new ExprValidationException(message);

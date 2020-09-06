@@ -49,11 +49,9 @@ namespace com.espertech.esper.common.@internal.context.controller.core
 
                         NamedWindowMetaData namedWindow =
                             compileTimeServices.NamedWindowCompileTimeResolver.Resolve(stmtFilterType.Name);
-                        if (namedWindow != null) {
-                            string namedWindowContextName = namedWindow.ContextName;
-                            if (namedWindowContextName != null && namedWindowContextName.Equals(contextName)) {
-                                return;
-                            }
+                        string namedWindowContextName = namedWindow?.ContextName;
+                        if (namedWindowContextName != null && namedWindowContextName.Equals(contextName)) {
+                            return;
                         }
                     }
                 }

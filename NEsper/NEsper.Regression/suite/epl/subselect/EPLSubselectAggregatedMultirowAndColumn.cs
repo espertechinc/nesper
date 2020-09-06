@@ -192,9 +192,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S0(1));
                 var maps = GetSortMapMultiRow("e1", env.Listener("s0").AssertOneGetNewAndReset(), "c1");
-                Assert.IsTrue(Arrays.Equals(new int[] {1, 2}, (int[]) maps[0].Get("c0")));
+                Assert.IsTrue(Arrays.AreEqual(new int[] {1, 2}, (int[]) maps[0].Get("c0")));
                 Assert.AreEqual(21, maps[0].Get("c1"));
-                Assert.IsTrue(Arrays.Equals(new int[] {1}, (int[]) maps[1].Get("c0")));
+                Assert.IsTrue(Arrays.AreEqual(new int[] {1}, (int[]) maps[1].Get("c0")));
                 Assert.AreEqual(41, maps[1].Get("c1"));
 
                 env.UndeployAll();

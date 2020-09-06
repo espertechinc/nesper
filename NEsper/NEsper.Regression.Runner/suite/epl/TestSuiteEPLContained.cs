@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.wordexample;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Util.Support;
 
@@ -70,12 +71,27 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLContainedEventNested.Executions());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLContainedEventSplitExpr()
-        {
-            RegressionRunner.Run(session, EPLContainedEventSplitExpr.Executions());
-        }
+        /// <summary>
+        /// Auto-test(s): EPLContainedEventSplitExpr
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLContainedEventSplitExpr.Executions());
+        /// </code>
+        /// </summary>
 
+        public class TestEPLContainedEventSplitExpr : AbstractTestBase
+        {
+            public TestEPLContainedEventSplitExpr() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithingleRowSplitAndType() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithingleRowSplitAndType());
+
+            [Test, RunInApplicationDomain]
+            public void WithplitExprReturnsEventBean() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithplitExprReturnsEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithcriptContextValue() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithcriptContextValue());
+        }
+        
         private static void Configure(Configuration configuration)
         {
             foreach (var clazz in new Type[] {
@@ -99,36 +115,36 @@ namespace com.espertech.esper.regressionrun.suite.epl
             var outerMapDef = Collections.SingletonDataMap("i", "MyInnerMap[]");
             configuration.Common.AddEventType("MyOuterMap", outerMapDef);
 
-            var funcs = new [] { "splitSentence","splitSentenceBean","splitWord" };
+            var funcs = new [] { "SplitSentence","SplitSentenceBean","SplitWord" };
             for (var i = 0; i < funcs.Length; i++) {
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                     string[] methods;
                     if (rep.IsObjectArrayEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnObjectArray",
-                            "splitSentenceBeanMethodReturnObjectArray",
-                            "splitWordMethodReturnObjectArray"
+                            "SplitSentenceMethodReturnObjectArray",
+                            "SplitSentenceBeanMethodReturnObjectArray",
+                            "SplitWordMethodReturnObjectArray"
                         };
                     }
                     else if (rep.IsMapEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnMap",
-                            "splitSentenceBeanMethodReturnMap",
-                            "splitWordMethodReturnMap"
+                            "SplitSentenceMethodReturnMap",
+                            "SplitSentenceBeanMethodReturnMap",
+                            "SplitWordMethodReturnMap"
                         };
                     }
                     else if (rep.IsAvroEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnAvro",
-                            "splitSentenceBeanMethodReturnAvro",
-                            "splitWordMethodReturnAvro"
+                            "SplitSentenceMethodReturnAvro",
+                            "SplitSentenceBeanMethodReturnAvro",
+                            "SplitWordMethodReturnAvro"
                         };
                     }
                     else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnJson",
-                            "splitSentenceBeanMethodReturnJson",
-                            "splitWordMethodReturnJson"
+                            "SplitSentenceMethodReturnJson",
+                            "SplitSentenceBeanMethodReturnJson",
+                            "SplitWordMethodReturnJson"
                         };
                     }
                     else {

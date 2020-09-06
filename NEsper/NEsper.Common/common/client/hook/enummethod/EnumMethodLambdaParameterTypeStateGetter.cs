@@ -20,13 +20,13 @@ namespace com.espertech.esper.common.client.hook.enummethod
         ///     Ctor.
         /// </summary>
         /// <param name="type">lambda parameter-assumed value type</param>
-        /// <param name="getterMethodName">getter method name</param>
+        /// <param name="propertyName">getter method name</param>
         public EnumMethodLambdaParameterTypeStateGetter(
             Type type,
-            string getterMethodName)
+            string propertyName)
         {
             Type = type;
-            GetterMethodName = getterMethodName;
+            PropertyName = propertyName;
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace com.espertech.esper.common.client.hook.enummethod
         public Type Type { get; }
 
         /// <summary>
-        ///     Returns the name of the getter-method that the runtime invokes on the state object to obtain
+        ///     Returns the name of the property that the runtime invokes on the state object to obtain
         ///     the value of the lambda parameter
         /// </summary>
         /// <value>getter method name</value>
-        public string GetterMethodName { get; }
+        public string PropertyName { get; }
     }
 } // end of namespace

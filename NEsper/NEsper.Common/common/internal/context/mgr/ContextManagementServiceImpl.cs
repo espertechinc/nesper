@@ -64,11 +64,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             string contextName)
         {
             var deployment = deployments.Get(deploymentIdCreateContext);
-            if (deployment == null) {
-                return null;
-            }
 
-            return deployment.GetContextManager(contextName);
+            return deployment?.GetContextManager(contextName);
         }
 
         public int ContextCount {

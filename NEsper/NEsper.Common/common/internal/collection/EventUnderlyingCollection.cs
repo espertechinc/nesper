@@ -13,7 +13,6 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {

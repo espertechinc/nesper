@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext partition by TheString from SupportBean, p00 from SupportBean_S0 " +
+					"create context MyContext partition by TheString from SupportBean, P00 from SupportBean_S0 " +
 					"terminated by SupportBean_S0;\n" +
 					"@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");

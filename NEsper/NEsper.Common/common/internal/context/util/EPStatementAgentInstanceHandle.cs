@@ -94,9 +94,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         public void InternalDispatch()
         {
-            if (OptionalDispatchable != null) {
-                OptionalDispatchable.Execute();
-            }
+            OptionalDispatchable?.Execute();
         }
 
         public override string ToString()

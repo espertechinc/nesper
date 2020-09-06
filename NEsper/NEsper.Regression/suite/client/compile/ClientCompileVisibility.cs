@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			"${PREFIX} create table MyTable as (c count(*));\n" +
 			"${PREFIX} create expression MyExpr { 1 };\n" +
 			"${PREFIX} create expression double myscript(intvalue) [0];\n" +
-			"${PREFIX} create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\";\n";
+			"${PREFIX} create inlined_class \"\"\" namespace ${NAMESPACE} { public class MyClass { public static string DoIt() { return \"def\"; } } }\"\"\";\n";
 
 		private const string USER_EPL =
 			"select 1 from MySchema;\n" +
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			"into table MyTable select count(*) as c from SupportBean;\n" +
 			"select MyExpr() from SupportBean;\n" +
 			"select myscript(1) from SupportBean;\n" +
-			"select MyClass.doIt() from SupportBean;\n";
+			"select ${NAMESPACE}.MyClass.DoIt() from SupportBean;\n";
 
 		public static IList<RegressionExecution> Executions()
 		{
@@ -120,15 +120,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				RunAssertionDisambiguate(
 					env,
 					"create context MyContext partition by TheString from SupportBean;",
-					"create context MyContext partition by id from SupportBean_S0;",
-					"context MyContext select p00 from SupportBean_S0",
+					"create context MyContext partition by Id from SupportBean_S0;",
+					"context MyContext select P00 from SupportBean_S0",
 					() => { });
 
 				RunAssertionDisambiguate(
 					env,
 					"create window MyWindow#keepall as SupportBean",
 					"create window MyWindow#keepall as SupportBean_S0",
-					"select p00 from MyWindow",
+					"select P00 from MyWindow",
 					() => { });
 
 				RunAssertionDisambiguate(
@@ -168,10 +168,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				RunAssertionDisambiguate(
 					env,
 					"create inlined_class \"\"\" public class MyClass { " +
-					"public static String doIt() { return \"abc\"; } }\"\"\";\n",
+					"public static string DoIt() { return \"abc\"; } }\"\"\";\n",
 					"create inlined_class \"\"\" public class MyClass { " +
-					"public static String doIt() { return \"def\"; } }\"\"\";\n",
-					"select MyClass.doIt() as c0 from SupportBean",
+					"public static string DoIt() { return \"def\"; } }\"\"\";\n",
+					"select MyClass.DoIt() as c0 from SupportBean",
 					() => {
 						env.SendEventBean(new SupportBean());
 						Assert.AreEqual("def", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
@@ -225,15 +225,21 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "module a.b.c;\n" + CREATE_EPL.Replace("${PREFIX}", "@protected");
+				var namespc = NamespaceGenerator.Create();
+				var createEPL = CREATE_EPL
+					.Replace("${PREFIX}", "@protected")
+					.Replace("${NAMESPACE}", namespc);
+				
+				var epl = "module a.b.c;\n" + createEPL;
 				var compiled = env.Compile(epl);
 				TryInvalidNotVisible(env, compiled);
 
+				var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
 				var path = new RegressionPath();
 				path.Add(compiled);
-				env.Compile("module a.b.c;\n" + USER_EPL, path);
+				env.Compile("module a.b.c;\n" + userEPL, path);
 
-				TryInvalidCompile(env, path, "module a.b.d;\n" + USER_EPL, FIRST_MESSAGE);
+				TryInvalidCompile(env, path, "module a.b.d;\n" + userEPL, FIRST_MESSAGE);
 			}
 		}
 
@@ -241,12 +247,18 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "module a.b.c;\n" + CREATE_EPL.Replace("${PREFIX}", "@public");
+				var namespc = NamespaceGenerator.Create();
+				var createEPL = CREATE_EPL
+					.Replace("${PREFIX}", "@public")
+					.Replace("${NAMESPACE}", namespc);
+
+				var epl = "module a.b.c;\n" + createEPL.Replace("${PREFIX}", "@public");
 				var compiled = env.Compile(epl);
 
+				var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
 				var path = new RegressionPath();
 				path.Add(compiled);
-				env.Compile("module x;\n" + USER_EPL, path);
+				env.Compile("module x;\n" + userEPL, path);
 			}
 		}
 
@@ -254,11 +266,21 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = CREATE_EPL.Replace("${PREFIX}", "");
+				var namespc = NamespaceGenerator.Create();
+				var createEPL = CREATE_EPL
+					.Replace("${PREFIX}", "")
+					.Replace("${NAMESPACE}", namespc);
+
+				var epl = createEPL;
 				var compiled = env.Compile(epl);
 				TryInvalidNotVisible(env, compiled);
 
-				epl = epl + USER_EPL;
+				namespc = NamespaceGenerator.Create();
+				epl = CREATE_EPL
+					.Replace("${PREFIX}", "")
+					.Replace("${NAMESPACE}", namespc);
+				var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
+				epl = epl + userEPL;
 				env.CompileDeploy(epl).UndeployAll();
 			}
 		}
@@ -267,7 +289,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = CREATE_EPL.Replace("${PREFIX}", "@private") + USER_EPL;
+				var namespc = NamespaceGenerator.Create();
+				var createEPL = CREATE_EPL
+					.Replace("${PREFIX}", "@private")
+					.Replace("${NAMESPACE}", namespc);
+				var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
+
+				var epl = createEPL + userEPL;
 				var compiled = env.Compile(epl);
 				TryInvalidNotVisible(env, compiled);
 			}
@@ -284,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				                "create table MyTable as (c count(*));\n" +
 				                "create expression MyExpr { 1 };\n" +
 				                "create expression double myscript(stringvalue) [0];\n" +
-				                "create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\";\n";
+				                "create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\";\n";
 
 				var modOne = env.Compile("module one;\n " + commonEPL, new RegressionPath());
 				var modTwo = env.Compile("module two;\n " + commonEPL, new RegressionPath());
@@ -330,8 +358,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				TryInvalidCompile(
 					env,
 					path,
-					"select MyClass.doIt() from SupportBean",
-					"Failed to validate select-clause expression 'MyClass.doIt()': The application-inlined class by name 'MyClass' is ambiguous as it exists for multiple modules: An application-inlined class by name 'MyClass' is exported by multiple modules");
+					"select MyClass.DoIt() from SupportBean",
+					"Failed to validate select-clause expression 'MyClass.DoIt()': The application-inlined class by name 'MyClass' is ambiguous as it exists for multiple modules: An application-inlined class by name 'MyClass' is exported by multiple modules");
 			}
 		}
 
@@ -340,8 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-
-				var args = new CompilerArguments(new Configuration());
+				var args = new CompilerArguments(env.MinimalConfiguration());
 				args.Options
 					.SetAccessModifierVariable(_ => NameAccessModifier.PUBLIC)
 					.SetAccessModifierEventType(_ => NameAccessModifier.PUBLIC);
@@ -384,12 +411,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
 				var compiledInsert = env.Compile(
 					"insert into MyWindow select * from SupportBean",
-					new CompilerArguments(new Configuration()).SetPath(new CompilerPath().Add(compiledCreate)));
+					new CompilerArguments(env.MinimalConfiguration()).SetPath(new CompilerPath().Add(compiledCreate)));
 				env.Deploy(compiledInsert);
 
 				var compiledSelect = env.Compile(
 					"@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n",
-					new CompilerArguments(new Configuration()).SetPath(new CompilerPath().Add(compiledCreate)));
+					new CompilerArguments(env.MinimalConfiguration()).SetPath(new CompilerPath().Add(compiledCreate)));
 				env.Deploy(compiledSelect).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 10));
@@ -452,8 +479,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			TryInvalidCompile(
 				env,
 				path,
-				"select MyClass.doIt() from SupportBean",
-				"Failed to validate select-clause expression 'MyClass.doIt()': Failed to resolve 'MyClass.doIt' to a property, single-row function, aggregation function, script, stream or class name");
+				"select MyClassX.DoIt() from SupportBean",
+				"Failed to validate select-clause expression 'MyClassX.DoIt()': Failed to resolve 'MyClassX.DoIt' to a property, single-row function, aggregation function, script, stream or class name");
 		}
 
 		private static void RunAssertionDisambiguate(
@@ -505,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			string message)
 		{
 			try {
-				var configuration = new Configuration();
+				var configuration = env.MinimalConfiguration();
 				configurer.Invoke(configuration);
 				var args = new CompilerArguments(configuration);
 				env.Compiler.Compile(epl, args);

@@ -87,4 +87,44 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
     }
+
+    public abstract class AggregationMultiFunctionAggregationMethodBase : AggregationMultiFunctionAggregationMethod
+    {
+        public abstract object GetValue(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public ICollection<EventBean> GetValueCollectionEvents(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
+
+        public ICollection<object> GetValueCollectionScalar(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
+
+        public EventBean GetValueEventBean(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
+    } 
 }

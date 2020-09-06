@@ -85,10 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenExpression eps = symbols.GetAddEPS(method);
 			CodegenExpression ctx = symbols.GetAddExprEvalCtx(method);
-			method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
+			method.Block
+				.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
 				.IfCondition(EqualsNull(Ref("theEvent")))
 				.BlockReturnNoValue()
-				.InstanceMethod(AddEventCodegen(method, namedMethods, classScope), Ref("theEvent"), eps, ctx);
+				.LocalMethod(AddEventCodegen(method, namedMethods, classScope), Ref("theEvent"), eps, ctx);
 		}
 
 		internal override void ApplyLeaveFiltered(
@@ -189,7 +190,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-			methodNode.Block.DeclareVar<object>("comparable", LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
+			methodNode.Block
+				.DeclareVar<object>("comparable", LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
 				.IfCondition(EqualsNull(_currentMinMax))
 				.AssignRef(_currentMinMax, Ref("comparable"))
 				.AssignRef(_currentMinMaxBean, Ref("theEvent"))

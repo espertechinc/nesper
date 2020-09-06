@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var fields = "c0".SplitCsv();
-				Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("c0"));
+				Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("c0"));
 
 				env.SendEventBean(new SupportBean());
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 2.0m);

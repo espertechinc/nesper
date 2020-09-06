@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.@event.json.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
+namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public partial class SelectExprInsertEventBeanFactory
     {

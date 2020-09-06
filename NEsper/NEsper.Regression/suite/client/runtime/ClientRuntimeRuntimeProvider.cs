@@ -115,18 +115,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 Assert.That(
                     () => adminOne.Rollout(Collections.SingletonList(new EPDeploymentRolloutCompiled(compiled))),
-                    Throws.InstanceOf<EPDeployException>());
+                    Throws.InstanceOf<EPRuntimeDestroyedException>());
 
-                try {
-                    adminOne.Deploy(compiled);
-                    Assert.Fail();
-                }
-                catch (EPDeployException) {
-                    Assert.Fail();
-                }
-                catch (EPRuntimeDestroyedException) {
-                    // expected
-                }
+                Assert.That(
+                    () => adminOne.Deploy(compiled),
+                    Throws.InstanceOf<EPRuntimeDestroyedException>());
 
                 EPAssertionUtil.AssertNotContains(EPRuntimeProvider.RuntimeURIs, uriTwo);
 

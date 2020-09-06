@@ -44,9 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.IsNotNull(schemaStream);
                 var schemaTextSimpleSchemaWithRestriction = schemaStream.ConsumeStream();
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='order', schemaText='" +
-                          schemaTextSimpleSchemaWithRestriction +
-                          "')" +
+                          "@XMLSchema(RootElementName='order', SchemaText='" + schemaTextSimpleSchemaWithRestriction + "')" +
                           "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);

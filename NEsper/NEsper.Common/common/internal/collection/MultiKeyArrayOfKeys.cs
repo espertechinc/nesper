@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.collection
                 throw new ArgumentException("The array of keys must not be null");
             }
 
-            _hashCode = CompatExtensions.HashAll(keys);
+            _hashCode = CompatExtensions.DeepHash(keys);
             Array = keys;
         }
 
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public T this[int index] {
-            get { return Array[index]; }
-            set { Array[index] = value; }
+            get => Array[index];
+            set => Array[index] = value;
         }
 
         public override bool Equals(object other)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             if (other is MultiKeyArrayOfKeys<T> otherKeys) {
-                return Arrays.AreEqual(Array, otherKeys.Array);
+                return Arrays.DeepEquals(Array, otherKeys.Array);
             }
 
             return false;

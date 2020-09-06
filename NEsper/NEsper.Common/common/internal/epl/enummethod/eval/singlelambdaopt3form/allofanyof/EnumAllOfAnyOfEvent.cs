@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 							object pass = inner.Evaluate(eventsLambda, isNewData, context);
 							if (all) {
-								if (pass == null || (!(Boolean) pass)) {
+								if (pass == null || false.Equals(pass)) {
 									return false;
 								}
 							}

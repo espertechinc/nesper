@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         }
         
         //[Test, RunInApplicationDomain]
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileLarge() {
             RegressionRunner.Run(_session, ClientCompileLarge.Executions());
         }

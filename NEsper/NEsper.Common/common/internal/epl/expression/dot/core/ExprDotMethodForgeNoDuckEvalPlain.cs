@@ -90,6 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 		{
 			var method = forge.Method;
 			var returnType = method.ReturnType.GetBoxedType();
+			
             Type instanceType;
 
             IList<Type> methodParameters;
@@ -105,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 			var methodNode = codegenMethodScope
 				.MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
-				.AddParam(forge.Method.DeclaringType, "target");
+				.AddParam(innerType, "target");
 
 			var block = methodNode.Block;
 
@@ -143,7 +144,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				invocation = StaticMethod(method.DeclaringType, method.Name, args.ToArray());
 			}
 			else if (method.IsStatic) {
-				invocation = StaticMethod(method.DeclaringType, method.Name, args.ToArray());
+				if (method.IsSpecialName && method.Name.StartsWith("get_")) {
+					invocation = EnumValue(method.DeclaringType, forge.Method.Name.Substring(4));
+				}
+				else {
+					invocation = StaticMethod(method.DeclaringType, method.Name, args.ToArray());
+				}
+			}
+			else if (method.IsSpecialName && method.Name.StartsWith("get_")) {
+				invocation = ExprDotName(Ref("target"), forge.Method.Name.Substring(4));
 			}
 			else {
 				invocation = ExprDotMethod(Ref("target"), forge.Method.Name, args.ToArray());

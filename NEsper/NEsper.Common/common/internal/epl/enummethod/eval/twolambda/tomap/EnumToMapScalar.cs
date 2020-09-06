@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 							return EmptyDictionary<object, object>.Instance;
 						}
 
-						IDictionary<object, object> map = new Dictionary<object, object>();
+						IDictionary<object, object> map = new NullableDictionary<object, object>();
 						var resultEvent = new ObjectArrayEventBean(new object[3], _resultEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
 						var props = resultEvent.Properties;
@@ -96,37 +96,37 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			var hasSize = _numParameters >= 3;
 
 			var block = methodNode.Block
-				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
-				.BlockReturn(StaticMethod(typeof(Collections), "emptyMap"));
+				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+				.BlockReturn(EnumValue(typeof(EmptyDictionary<object, object>), "Instance"));
 
-			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)))
+			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(NullableDictionary<object, object>)))
 				.DeclareVar(
 					typeof(ObjectArrayEventBean),
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("resultEvent"))
-				.DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
+				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
 				block.DeclareVar<int>("count", Constant(-1));
 			}
 
 			if (hasSize) {
-				block.AssignArrayElement(@Ref("props"), Constant(2), ExprDotMethod(REF_ENUMCOLL, "size"));
+				block.AssignArrayElement(Ref("props"), Constant(2), ExprDotName(REF_ENUMCOLL, "Count"));
 			}
 
 			var forEach = block
 				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignArrayElement("props", Constant(0), @Ref("next"));
+				.AssignArrayElement("props", Constant(0), Ref("next"));
 			if (hasIndex) {
-				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), @Ref("count"));
+				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));
 			}
 
 			forEach
 				.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
 				.DeclareVar<object>("value", _secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.Expression(ExprDotMethod(@Ref("map"), "Put", @Ref("key"), @Ref("value")));
+				.Expression(ExprDotMethod(Ref("map"), "Put", Ref("key"), Ref("value")));
 
-			block.MethodReturn(@Ref("map"));
+			block.MethodReturn(Ref("map"));
 			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
 		}
 	}

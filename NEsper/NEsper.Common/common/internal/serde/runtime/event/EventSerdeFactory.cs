@@ -22,11 +22,11 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 	    DataInputOutputSerde<EventBean> NullableEventArray(EventType eventType);
 	    DataInputOutputSerde NullableEventOrUnderlying(EventType eventType);
 	    DataInputOutputSerde NullableEventArrayOrUnderlying(EventType eventType);
-	    DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<TE>(DataInputOutputSerde<TE>[] criteriaSerdes, EventType eventType);
-	    DataInputOutputSerde ObjectArrayMayNullNull<TE>(DataInputOutputSerde<TE>[] serdes);
+	    DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque(DataInputOutputSerde[] criteriaSerdes, EventType eventType);
+	    DataInputOutputSerde ObjectArrayMayNullNull(DataInputOutputSerde[] serdes);
 	    DataInputOutputSerde ListEvents(EventType eventType);
-	    DataInputOutputSerde<TE> LinkedHashMapEventsAndInt<TE>(EventType eventType);
-	    DataInputOutputSerde<TE> RefCountedSetAtomicInteger<TE>(EventType eventType);
+	    DataInputOutputSerde LinkedHashMapEventsAndInt(EventType eventType);
+	    DataInputOutputSerde RefCountedSetAtomicInteger(EventType eventType);
 	    DataInputOutputSerde<EventBean> NullableEventMayCollate(EventType eventType);
 	}
 } // end of namespace

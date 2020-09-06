@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using com.espertech.esper.compat.collections.bound;
 
@@ -204,7 +205,13 @@ namespace com.espertech.esper.compat.collections.btree
                 return default;
             }
 
-            return cursor.Value;
+            try {
+                return cursor.Value;
+            }
+            catch (IndexOutOfRangeException e) {
+                Console.WriteLine("test");
+                throw;
+            }
         }
 
         /// <summary>
@@ -237,7 +244,7 @@ namespace com.espertech.esper.compat.collections.btree
         public KeyValuePair<TK, TV>? LessThanOrEqualTo(TK key)
         {
             var cursor = Underlying.LessThanOrEqual(key, Underlying.RootCursor);
-            if (cursor.IsEnd) {
+            if (cursor.IsEnd || (cursor.Position == -1)) {
                 return default;
             }
 
@@ -256,7 +263,7 @@ namespace com.espertech.esper.compat.collections.btree
             out KeyValuePair<TK, TV> valuePair)
         {
             var cursor = Underlying.LessThanOrEqual(key, Underlying.RootCursor);
-            if (cursor.IsEnd) {
+            if (cursor.IsEnd || (cursor.Position == -1)) {
                 valuePair = default;
                 return false;
             }
@@ -310,7 +317,7 @@ namespace com.espertech.esper.compat.collections.btree
         public KeyValuePair<TK, TV>? LessThan(TK key)
         {
             var cursor = Underlying.LessThan(key, Underlying.RootCursor);
-            if (cursor.IsEnd) {
+            if (cursor.IsEnd || (cursor.Position == -1)) {
                 return default;
             }
 
@@ -329,7 +336,7 @@ namespace com.espertech.esper.compat.collections.btree
             out KeyValuePair<TK, TV> valuePair)
         {
             var cursor = Underlying.LessThan(key, Underlying.RootCursor);
-            if (cursor.IsEnd) {
+            if (cursor.IsEnd || (cursor.Position == -1)) {
                 valuePair = default;
                 return false;
             }
@@ -356,6 +363,7 @@ namespace com.espertech.esper.compat.collections.btree
             TK key,
             TV value)
         {
+            Debug.WriteLine("BTreeDictionary:add {0}", key);
             var kvpair = new KeyValuePair<TK, TV>(key, value);
             var result = Underlying.InsertUnique(kvpair);
             if (!result.Succeeded) {
@@ -370,6 +378,7 @@ namespace com.espertech.esper.compat.collections.btree
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
         public void Add(KeyValuePair<TK, TV> item)
         {
+            Debug.WriteLine("BTreeDictionary:add {0}", item.Key);
             var result = Underlying.InsertUnique(item);
             if (!result.Succeeded) {
                 throw new ArgumentException("An element with the same key already exists");
@@ -390,6 +399,7 @@ namespace com.espertech.esper.compat.collections.btree
             var cursor = Underlying.FindUnique(item.Key, Underlying.RootCursor);
             if (cursor.Node != null) {
                 if (Equals(cursor.Value.Value, item.Value)) {
+                    Debug.WriteLine("BTreeDictionary:removing {0}", item.Key);
                     Underlying.Erase(cursor);
                     return true;
                 }
@@ -412,7 +422,7 @@ namespace com.espertech.esper.compat.collections.btree
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
         public bool Remove(TK key)
         {
-            //Console.WriteLine("removing {0}", key);
+            Debug.WriteLine("BTreeDictionary:removing {0}", key);
             return Underlying.TryEraseUnique(key, out var value);
         }
 
@@ -473,6 +483,7 @@ namespace com.espertech.esper.compat.collections.btree
                 throw new KeyNotFoundException();
             }
             set {
+                Debug.WriteLine("BTreeDictionary:dict[] {0}", key);
                 var kvpair = new KeyValuePair<TK, TV>(key, value);
                 var result = Underlying.InsertUnique(kvpair);
                 if (!result.Succeeded) {

@@ -15,6 +15,7 @@ using Antlr4.Runtime;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.module;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -123,7 +124,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     else {
                         imports.Add(
                             new ImportType(
-                                parseNodeImport.Imported));
+                                parseNodeImport.Imported.UnmaskTypeName()));
                     }
 
                     continue;

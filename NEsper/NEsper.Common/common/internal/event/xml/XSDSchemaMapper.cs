@@ -351,20 +351,18 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             // For complex types, the simple type information can be embedded as an extension
             // of the complex type.
-            if (complexActualElement != null) {
-                var contentModel = complexActualElement.ContentModel;
-                if (contentModel is XmlSchemaSimpleContent) {
-                    var simpleContentModel = (XmlSchemaSimpleContent) contentModel;
-                    var simpleContentExtension = simpleContentModel.Content as XmlSchemaSimpleContentExtension;
-                    if (simpleContentExtension != null) {
-                        var simpleContentBaseTypeName = simpleContentExtension.BaseTypeName;
-                        if (!simpleContentBaseTypeName.IsEmpty) {
-                            var simpleType =
-                                ResolveSchemaType(xsModel, simpleContentBaseTypeName) as XmlSchemaSimpleType;
-                            if (simpleType != null) {
-                                optionalSimpleType = simpleType;
-                                optionalSimpleTypeName = simpleType.QualifiedName;
-                            }
+            var contentModel = complexActualElement?.ContentModel;
+            if (contentModel is XmlSchemaSimpleContent) {
+                var simpleContentModel = (XmlSchemaSimpleContent) contentModel;
+                var simpleContentExtension = simpleContentModel.Content as XmlSchemaSimpleContentExtension;
+                if (simpleContentExtension != null) {
+                    var simpleContentBaseTypeName = simpleContentExtension.BaseTypeName;
+                    if (!simpleContentBaseTypeName.IsEmpty) {
+                        var simpleType =
+                            ResolveSchemaType(xsModel, simpleContentBaseTypeName) as XmlSchemaSimpleType;
+                        if (simpleType != null) {
+                            optionalSimpleType = simpleType;
+                            optionalSimpleTypeName = simpleType.QualifiedName;
                         }
                     }
                 }
@@ -729,7 +727,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         {
                             try
                             {
-                                digits = Integer.parseInt(facet.getLexicalFacetValue());
+                                digits = Int32.Parse(facet.getLexicalFacetValue());
                             }
                             catch (Exception ex)
                             {

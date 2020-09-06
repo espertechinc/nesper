@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             public override object Parse(string input)
             {
-                return StringToDateTimeWStaticFormatParse(input, DateTimeFormat.For(format));
+                return StringToDateTimeWStaticFormatParse(input, dateFormat);
             }
 
             public override CodegenExpression CodegenPremade(

@@ -28,20 +28,70 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			var executions = new List<RegressionExecution>();
-			executions.Add(new ExprCoreLikeWConstants());
-			executions.Add(new ExprCoreLikeWExprs());
-			executions.Add(new ExprCoreRegexpWConstants());
-			executions.Add(new ExprCoreRegexpWExprs());
-			executions.Add(new ExprCoreLikeRegexStringAndNull());
-			executions.Add(new ExprCoreLikeRegExInvalid());
-			executions.Add(new ExprCoreLikeRegexEscapedChar());
-			executions.Add(new ExprCoreLikeRegexStringAndNullOM());
-			executions.Add(new ExprCoreRegexStringAndNullCompile());
-			executions.Add(new ExprCoreLikeRegexNumericAndNull());
-			return executions;
+			var execs = new List<RegressionExecution>();
+WithLikeWConstants(execs);
+WithLikeWExprs(execs);
+WithRegexpWConstants(execs);
+WithRegexpWExprs(execs);
+WithLikeRegexStringAndNull(execs);
+WithLikeRegExInvalid(execs);
+WithLikeRegexEscapedChar(execs);
+WithLikeRegexStringAndNullOM(execs);
+WithRegexStringAndNullCompile(execs);
+WithLikeRegexNumericAndNull(execs);
+			return execs;
 		}
-
+public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexNumericAndNull());
+    return execs;
+}public static IList<RegressionExecution> WithRegexStringAndNullCompile(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreRegexStringAndNullCompile());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexStringAndNullOM(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexStringAndNullOM());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexEscapedChar(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexEscapedChar());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegExInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegExInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexStringAndNull(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexStringAndNull());
+    return execs;
+}public static IList<RegressionExecution> WithRegexpWExprs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreRegexpWExprs());
+    return execs;
+}public static IList<RegressionExecution> WithRegexpWConstants(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreRegexpWConstants());
+    return execs;
+}public static IList<RegressionExecution> WithLikeWExprs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeWExprs());
+    return execs;
+}public static IList<RegressionExecution> WithLikeWConstants(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeWConstants());
+    return execs;
+}
 		private class ExprCoreLikeWConstants : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
@@ -62,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				var fields = "c0,c1".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_S0")
-					.WithExpressions(fields, "p00 like p01", "id like p02");
+					.WithExpressions(fields, "P00 like P01", "Id like P02");
 
 				builder.WithAssertion(new SupportBean_S0(413, "%XXaXX", "%a%", "%1%", null)).Expect(fields, true, true);
 				builder.WithAssertion(new SupportBean_S0(413, "%XXcXX", "%b%", "%2%", null)).Expect(fields, false, false);
@@ -95,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				var fields = "c0,c1".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_S0")
-					.WithExpressions(fields, "p00 regexp p01", "id regexp p02");
+					.WithExpressions(fields, "P00 regexp P01", "Id regexp P02");
 
 				builder.WithAssertion(new SupportBean_S0(413, "XXAXX", ".*A.*", ".*1.*", null)).Expect(fields, true, true);
 				builder.WithAssertion(new SupportBean_S0(413, "XXaXX", ".*B.*", ".*2.*", null)).Expect(fields, false, false);
@@ -110,9 +160,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select p00 like p01 as r1, " +
-				          " p00 like p01 escape \"!\" as r2," +
-				          " p02 regexp p03 as r3 " +
+				var epl = "@Name('s0') select P00 like P01 as r1, " +
+				          " P00 like P01 escape \"!\" as r2," +
+				          " P02 regexp P03 as r3 " +
 				          " from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -139,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				TryInvalidCompile(
 					env,
 					"select TheString regexp \"*any*\" from SupportBean",
-					"Failed to validate select-clause expression 'TheString regexp \"*any*\"': Failed to compile regex pattern '*any*': Dangling meta character '*' near index 0");
+					"Failed to validate select-clause expression 'TheString regexp \"*any*\"': Failed to compile regex pattern '*any*': parsing \"*any*\" - Quantifier {x,y} following nothing.");
 			}
 		}
 
@@ -149,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				var fields = "c0".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_S0")
-					.WithExpressions(fields, "p00 regexp '\\\\w*-ABC'");
+					.WithExpressions(fields, "P00 regexp '\\\\w*-ABC'");
 
 				builder.WithAssertion(new SupportBean_S0(-1, "TBT-ABC")).Expect(fields, true);
 				builder.WithAssertion(new SupportBean_S0(-1, "TBT-BC")).Expect(fields, false);
@@ -163,17 +213,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var stmtText = "@Name('s0') select p00 like p01 as r1, " +
-				               "p00 like p01 escape \"!\" as r2, " +
-				               "p02 regexp p03 as r3 " +
+				var stmtText = "@Name('s0') select P00 like P01 as r1, " +
+				               "P00 like P01 escape \"!\" as r2, " +
+				               "P02 regexp P03 as r3 " +
 				               "from SupportBean_S0";
 
 				var model = new EPStatementObjectModel();
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 				model.SelectClause = SelectClause.Create()
-					.Add(Expressions.Like(Expressions.Property("p00"), Expressions.Property("p01")), "r1")
-					.Add(Expressions.Like(Expressions.Property("p00"), Expressions.Property("p01"), Expressions.Constant("!")), "r2")
-					.Add(Expressions.Regexp(Expressions.Property("p02"), Expressions.Property("p03")), "r3");
+					.Add(Expressions.Like(Expressions.Property("P00"), Expressions.Property("P01")), "r1")
+					.Add(Expressions.Like(Expressions.Property("P00"), Expressions.Property("P01"), Expressions.Constant("!")), "r2")
+					.Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("P03")), "r3");
 
 				model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
@@ -192,9 +242,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select p00 like p01 as r1, " +
-				          "p00 like p01 escape \"!\" as r2, " +
-				          "p02 regexp p03 as r3 " +
+				var epl = "@Name('s0') select P00 like P01 as r1, " +
+				          "P00 like P01 escape \"!\" as r2, " +
+				          "P02 regexp P03 as r3 " +
 				          "from SupportBean_S0";
 
 				var model = env.EplToModel(epl);

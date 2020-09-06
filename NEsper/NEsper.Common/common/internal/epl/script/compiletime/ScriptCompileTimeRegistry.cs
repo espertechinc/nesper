@@ -27,6 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             Scripts = new Dictionary<NameAndParamNum, ExpressionScriptProvided>();
         }
 
+        /// <summary>
+        /// Gets the dictionary of scripts.
+        /// </summary>
         public IDictionary<NameAndParamNum, ExpressionScriptProvided> Scripts { get; }
 
         public void NewScript(ExpressionScriptProvided detail)

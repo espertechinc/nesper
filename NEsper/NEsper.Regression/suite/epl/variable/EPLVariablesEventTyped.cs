@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
                 catch (VariableValueException ex) {
                     Assert.AreEqual(
-                        "Failed to validate assignment expression 'vars1_A=arrival': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
+                        "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                         typeof(SupportBean_S0).Name +
                         "' cannot be assigned a value of type '" +
                         typeof(SupportBean_S1).Name +
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "on SupportBean_S0 arrival set vars0_A = 1",
-                    "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
+                    "Failed to validate assignment expression 'vars0_A=1': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                     typeof(SupportBean_S0).Name +
                     "' cannot be assigned a value of type 'Int32'");
             }

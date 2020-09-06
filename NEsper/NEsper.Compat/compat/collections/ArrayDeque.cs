@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace com.espertech.esper.compat.collections
 {
@@ -17,6 +18,9 @@ namespace com.espertech.esper.compat.collections
     {
         private const int DEFAULT_INITIAL_CAPACITY = 256;
 
+        private static long _lid = 0L;
+        private long _id = Interlocked.Increment(ref _lid);
+        
         private int _head;
         private int _tail;
         private T[] _array;

@@ -88,9 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 AggregationRow aggs = tableStateInstance.Table.AggregationRowFactory.Make();
                 ((object[]) theEvent.Underlying)[0] = aggs;
                 tableStateInstance.AddEvent(theEvent);
-                if (changeHandlerAdded != null) {
-                    changeHandlerAdded.Add(theEvent, eventsPerStream, true, agentInstanceContext);
-                }
+                changeHandlerAdded?.Add(theEvent, eventsPerStream, true, agentInstanceContext);
 
                 return;
             }

@@ -9,7 +9,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.compat.collections.bound;
 
@@ -253,6 +252,27 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
+        /// Advances a head index until it reaches a valid point in the range.
+        /// </summary>
+        /// <param name="headIndex"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        private int AdvanceIntoRange(
+            int headIndex,
+            Bound<TK> start)
+        {
+            if (headIndex == -1) {
+                headIndex = 0;
+            }
+
+            while (headIndex < _itemList.Count && !BoundExtensions.IsGreaterThan(start, _itemList[headIndex].Key, _itemComparer.KeyComparer)) {
+                headIndex++;
+            }
+
+            return headIndex;
+        }
+        
+        /// <summary>
         /// Returns the count within a range.
         /// </summary>
         /// <returns></returns>
@@ -260,25 +280,27 @@ namespace com.espertech.esper.compat.collections
             Bound<TK> start,
             Bound<TK> end)
         {
-            if (start != null && end != null) {
-                var startPair = new KeyValuePair<TK, TV>(start.Value, default);
-                var endPair = new KeyValuePair<TK, TV>(end.Value, default);
-                if (_itemComparer.Compare(startPair, endPair) > 0) {
-                    throw new ArgumentException("invalid key order");
-                }
-            }
-
-            int tailIndex = GetHeadIndex(end);
+            int tailIndex = GetTailIndex(end);
             if (tailIndex != -1) {
-                int headIndex = GetTailIndex(start);
-                if (headIndex != -1) {
-                    return tailIndex - headIndex + 1;
+                if (tailIndex >= _itemList.Count) {
+                    tailIndex = _itemList.Count - 1;
                 }
+
+                while (tailIndex >= 0 && !BoundExtensions.IsLessThan(end, _itemList[tailIndex].Key, _itemComparer.KeyComparer)) {
+                    tailIndex--;
+                }
+
+                if (tailIndex == -1) {
+                    return 0;
+                }
+
+                var headIndex = AdvanceIntoRange(GetHeadIndex(start), start);
+                return Math.Max(tailIndex - headIndex + 1, 0);
             }
 
             return 0;
         }
-
+        
         /// <summary>
         /// Gets a value indicating whether this instance is read only.
         /// </summary>
@@ -535,22 +557,9 @@ namespace com.espertech.esper.compat.collections
             Bound<TK> start,
             Bound<TK> end)
         {
-            if (start != null && end != null) {
-                var startPair = new KeyValuePair<TK, TV>(start.Value, default);
-                var endPair = new KeyValuePair<TK, TV>(end.Value, default);
-                if (_itemComparer.Compare(startPair, endPair) > 0) {
-                    throw new ArgumentException("invalid key order");
-                }
-            }
-
-            int tailIndex = GetHeadIndex(end);
-            if (tailIndex != -1) {
-                int headIndex = GetTailIndex(start);
-                if (headIndex != -1) {
-                    for (int ii = headIndex; ii <= tailIndex; ii++) {
-                        yield return _itemList[ii];
-                    }
-                }
+            var headIndex = AdvanceIntoRange(GetHeadIndex(start), start);
+            for (int ii = headIndex; ii < _itemList.Count && BoundExtensions.IsLessThan(end, _itemList[ii].Key, _itemComparer.KeyComparer); ii++) {
+                yield return _itemList[ii];
             }
         }
 
@@ -588,7 +597,7 @@ namespace com.espertech.esper.compat.collections
                 valuePair = default;
                 return default; // no values are greater
             }
-            if (index > 0) {
+            if (index >= 0) {
                 valuePair = _itemList[index];
                 return true;
             }
@@ -632,12 +641,17 @@ namespace com.espertech.esper.compat.collections
         {
             if (_itemList.Count == 0) {
                 valuePair = default;
-                return default;
+                return false;
             }
 
             var index = BinarySearch(key);
-            if (index >= 0) {
-                valuePair = _itemList[index - 1];
+            if (index == 0) {
+                valuePair = _itemList[index];
+                return true;
+            }
+            
+            if (index > 0) {
+                valuePair = _itemList[index];
                 return false;
             }
             
@@ -686,6 +700,10 @@ namespace com.espertech.esper.compat.collections
             if (index == _itemList.Count) {
                 valuePair = default; // no values are greater
                 return false;
+            } 
+            if (index == 0) {
+                valuePair = _itemList[1]; // note, count is not zero
+                return true;
             }
             if (index > 0) {
                 valuePair = _itemList[index];
@@ -738,6 +756,7 @@ namespace com.espertech.esper.compat.collections
                 valuePair = default;
                 return false;
             }
+            
             if (index > 0) {
                 valuePair = _itemList[index - 1];
                 return true;

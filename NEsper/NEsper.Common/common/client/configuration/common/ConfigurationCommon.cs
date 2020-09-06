@@ -133,6 +133,11 @@ namespace com.espertech.esper.common.client.configuration.common
         private IDictionary<string, ConfigurationCommonEventTypeObjectArray> objectArrayTypeConfigurations;
 
         /// <summary>
+        ///     Scripting configuration.
+        /// </summary>
+        private ConfigurationCommonScripting scripting;
+
+        /// <summary>
         ///     Time source configuration
         /// </summary>
         private ConfigurationCommonTimeSource timeSource;
@@ -186,8 +191,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the object-array event types.
         /// </summary>
         /// <value>object-array event types</value>
-        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents =>
-            nestableObjectArrayNames;
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents => nestableObjectArrayNames;
 
         /// <summary>
         ///     Returns the mapping of event type name to XML DOM event type information.
@@ -229,8 +233,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the object-array event type configurations.
         /// </summary>
         /// <value>type configs</value>
-        public IDictionary<string, ConfigurationCommonEventTypeObjectArray> ObjectArrayTypeConfigurations =>
-            objectArrayTypeConfigurations;
+        public IDictionary<string, ConfigurationCommonEventTypeObjectArray> ObjectArrayTypeConfigurations => objectArrayTypeConfigurations;
 
         /// <summary>
         ///     Returns the preconfigured variables
@@ -286,6 +289,12 @@ namespace com.espertech.esper.common.client.configuration.common
         public ConfigurationCommonLogging Logging => logging;
 
         /// <summary>
+        ///     Returns scripting settings applicable to common.
+        /// </summary>
+        /// <value>scripting settings</value>
+        public ConfigurationCommonScripting Scripting => scripting;
+
+        /// <summary>
         ///     Returns the execution settings.
         /// </summary>
         /// <value>execution settings</value>
@@ -293,13 +302,15 @@ namespace com.espertech.esper.common.client.configuration.common
 
         /// <summary>
         ///     Returns a set of namespaces that event classes reside in.
-        ///     <para />
-        ///     This setting allows an application to place all it's events into one or more namespaces
-        ///     and then declare these packages via this method. The runtime
-        ///     attempts to resolve an event type name to a type residing in each declared package.
-        ///     <para />
-        ///     For example, in the statement "select * from MyEvent" the runtime attempts to load class "namespace.MyEvent"
-        ///     and if successful, uses that class as the event type.
+        ///     <para>
+        ///         This setting allows an application to place all it's events into one or more namespaces
+        ///         and then declare these packages via this method. The runtime
+        ///         attempts to resolve an event type name to a type residing in each declared package.
+        ///     </para>
+        ///     <para>
+        ///         For example, in the statement "select * from MyEvent" the runtime attempts to load class "namespace.MyEvent"
+        ///         and if successful, uses that class as the event type.
+        ///     </para>
         /// </summary>
         /// <value>set namespaces to look for events types when encountering a new event type name</value>
         public ISet<string> EventTypeAutoNameNamespaces => eventTypeAutoNameNamespaces;
@@ -375,12 +386,13 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             AddEventType(eventTypeName, typeof(T).FullName);
         }
-        
+
         /// <summary>
         ///     Add an name for an event type that represents IDictionary events.
-        ///     <para />
-        ///     Each entry in the type map is the property name and the fully-qualified
-        ///     type name or primitive type name.
+        ///     <para>
+        ///         Each entry in the type map is the property name and the fully-qualified
+        ///         type name or primitive type name.
+        ///     </para>
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="typeMap">
@@ -398,10 +410,11 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Add an name for an event type that represents IDictionary events,
         ///     and for which each property may itself be a Map of further properties,
         ///     with unlimited nesting levels.
-        ///     <para />
-        ///     Each entry in the type mapping must contain the String property name as the key value,
-        ///     and either a Class, or a further Map&lt;String, Object&gt;, or the name
-        ///     of another previously-register Map event type (append [] for array of Map).
+        ///     <para>
+        ///         Each entry in the type mapping must contain the String property name as the key value,
+        ///         and either a Class, or a further Map&lt;String, Object&gt;, or the name
+        ///         of another previously-register Map event type (append [] for array of Map).
+        ///     </para>
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="typeMap">
@@ -419,10 +432,11 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Add a name for an event type that represents IDictionary events,
         ///     and for which each property may itself be a Map of further properties,
         ///     with unlimited nesting levels.
-        ///     <para />
-        ///     Each entry in the type mapping must contain the String property name as the key value,
-        ///     and either a Class, or a further Map&lt;String, Object&gt;, or the name
-        ///     of another previously-register Map event type (append [] for array of Map).
+        ///     <para>
+        ///         Each entry in the type mapping must contain the String property name as the key value,
+        ///         and either a Class, or a further Map&lt;String, Object&gt;, or the name
+        ///         of another previously-register Map event type (append [] for array of Map).
+        ///     </para>
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="typeMap">
@@ -447,10 +461,11 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Add a name for an event type that represents IDictionary events,
         ///     and for which each property may itself be a Map of further properties,
         ///     with unlimited nesting levels.
-        ///     <para />
-        ///     Each entry in the type mapping must contain the String property name as the key value,
-        ///     and either a Class, or a further Map&lt;String, Object&gt;, or the name
-        ///     of another previously-register Map event type (append [] for array of Map).
+        ///     <para>
+        ///         Each entry in the type mapping must contain the String property name as the key value,
+        ///         and either a Class, or a further Map&lt;String, Object&gt;, or the name
+        ///         of another previously-register Map event type (append [] for array of Map).
+        ///     </para>
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="typeMap">
@@ -469,8 +484,9 @@ namespace com.espertech.esper.common.client.configuration.common
 
         /// <summary>
         ///     Add, for a given Map event type identified by the first parameter, the supertype (by its event type name).
-        ///     <para />
-        ///     Each Map event type may have any number of supertypes, each supertype must also be of a Map-type event.
+        ///     <para>
+        ///         Each Map event type may have any number of supertypes, each supertype must also be of a Map-type event.
+        ///     </para>
         /// </summary>
         /// <param name="mapeventTypeName">the name of a Map event type, that is to have a supertype</param>
         /// <param name="mapSupertypeName">the name of a Map event type that is the supertype</param>
@@ -490,9 +506,10 @@ namespace com.espertech.esper.common.client.configuration.common
 
         /// <summary>
         ///     Add, for a given Object-array event type identified by the first parameter, the supertype (by its event type name).
-        ///     <para />
-        ///     Each Object array event type may have any number of supertypes, each supertype must also be of a Object-array-type
-        ///     event.
+        ///     <para>
+        ///         Each Object array event type may have any number of supertypes, each supertype must also be of a Object-array-type
+        ///         event.
+        ///     </para>
         /// </summary>
         /// <param name="eventTypeName">the name of a Map event type, that is to have a supertype</param>
         /// <param name="supertypeName">the name of a Map event type that is the supertype</param>
@@ -658,7 +675,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="autoImportTypeName">a type to import</param>
         /// <param name="assemblyName">the optional assembly name</param>
         public void AddImportType(
-            string autoImportTypeName, 
+            string autoImportTypeName,
             string assemblyName)
         {
             imports.Add(new ImportType(autoImportTypeName, assemblyName));
@@ -687,9 +704,11 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="typeName">the type</param>
         /// <param name="assemblyName">the optional assembly name</param>
-        public void RemoveImportType(string typeName, string assemblyName)
+        public void RemoveImportType(
+            string typeName,
+            string assemblyName)
         {
-            imports.Remove(new ImportType(typeName, null));
+            imports.Remove(new ImportType(typeName));
         }
 
         /// <summary>
@@ -706,7 +725,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="namespace">the namespace</param>
         /// <param name="assemblyName">the optional assembly name</param>
-        public void RemoveImportNamespace(string @namespace, string assemblyName)
+        public void RemoveImportNamespace(
+            string @namespace,
+            string assemblyName)
         {
             imports.Remove(new ImportNamespace(@namespace, assemblyName));
         }
@@ -716,7 +737,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="namespace">namespace to import.</param>
         /// <param name="assemblyName">the optional assembly name</param>
-        public void AddAnnotationImportNamespace(string @namespace, string assemblyName)
+        public void AddAnnotationImportNamespace(
+            string @namespace,
+            string assemblyName)
         {
             annotationImports.Add(new ImportNamespace(@namespace, assemblyName));
         }
@@ -733,7 +756,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>Add a type name to the imports available for annotations only</summary>
         /// <param name="autoImportTypeName">fully qualified type name to add</param>
         /// <param name="assemblyName">the assembly name</param>
-        public void AddAnnotationImportType(string autoImportTypeName, string assemblyName)
+        public void AddAnnotationImportType(
+            string autoImportTypeName,
+            string assemblyName)
         {
             annotationImports.Add(new ImportType(autoImportTypeName, assemblyName));
         }
@@ -929,6 +954,7 @@ namespace com.espertech.esper.common.client.configuration.common
             transientConfiguration = new Dictionary<string, object>(2);
             eventTypeAutoNameNamespaces = new HashSet<string>();
             execution = new ConfigurationCommonExecution();
+            scripting = new ConfigurationCommonScripting();
         }
 
         /// <summary>

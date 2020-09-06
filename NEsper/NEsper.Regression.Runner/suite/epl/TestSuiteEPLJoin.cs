@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.epl.join;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -80,18 +81,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoin2StreamSimplePerformance.Executions());
         }
 
-        [Test]
-        public void TestEPLJoin2StreamRangePerformance()
-        {
-            RegressionRunner.Run(session, EPLJoin2StreamRangePerformance.Executions());
-        }
-
-        [Test]
-        public void TestEPLJoin2StreamSimpleCoercionPerformance()
-        {
-            RegressionRunner.Run(session, EPLJoin2StreamSimpleCoercionPerformance.Executions());
-        }
-
         [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamRangePerformance()
         {
@@ -114,12 +103,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLJoinCoercion()
         {
             RegressionRunner.Run(session, EPLJoinCoercion.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLJoinMultiKeyAndRange()
-        {
-            RegressionRunner.Run(session, EPLJoinMultiKeyAndRange.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -146,12 +129,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoinNoWhereClause.Executions());
         }
 
-        [Test]
-        public void TestEPLJoinEventRepresentation()
-        {
-            RegressionRunner.Run(session, EPLJoinEventRepresentation.Executions());
-        }
-
         [Test, RunInApplicationDomain]
         public void TestEPLJoinInheritAndInterface()
         {
@@ -168,12 +145,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLJoin2StreamInKeywordPerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamInKeywordPerformance.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOuterJoin2Stream()
-        {
-            RegressionRunner.Run(session, EPLOuterJoin2Stream.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -272,13 +243,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoin3StreamAndPropertyPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamCoercionPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamOuterJoinCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamOuterJoinCoercionPerformance.Executions());
@@ -302,6 +273,143 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoinPropertyAccess.Executions());
         }
 
+        /// <summary>
+        /// Auto-test(s): EPLJoinMultiKeyAndRange
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLJoinMultiKeyAndRange.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLJoinMultiKeyAndRange : AbstractTestBase
+        {
+            public TestEPLJoinMultiKeyAndRange() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithMultikeyWArrayComposite2Prop() => RegressionRunner.Run(_session, EPLJoinMultiKeyAndRange.WithMultikeyWArrayComposite2Prop());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultikeyWArrayCompositeArray() => RegressionRunner.Run(_session, EPLJoinMultiKeyAndRange.WithMultikeyWArrayCompositeArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultikeyWArrayHashJoin2Prop() => RegressionRunner.Run(_session, EPLJoinMultiKeyAndRange.WithMultikeyWArrayHashJoin2Prop());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultikeyWArrayHashJoinArray() => RegressionRunner.Run(_session, EPLJoinMultiKeyAndRange.WithMultikeyWArrayHashJoinArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithRangeNullAndDupAndInvalid() => RegressionRunner.Run(_session, EPLJoinMultiKeyAndRange.WithRangeNullAndDupAndInvalid());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLJoin2StreamRangePerformance
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLJoin2StreamRangePerformance.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLJoin2StreamRangePerformance : AbstractTestBase
+        {
+            public TestEPLJoin2StreamRangePerformance() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithUnidirectionalRelOp() => RegressionRunner.Run(_session, EPLJoin2StreamRangePerformance.WithUnidirectionalRelOp());
+
+            [Test, RunInApplicationDomain]
+            public void WithKeyAndRangeInverted() => RegressionRunner.Run(_session, EPLJoin2StreamRangePerformance.WithKeyAndRangeInverted());
+
+            [Test, RunInApplicationDomain]
+            public void WithKeyAndRange() => RegressionRunner.Run(_session, EPLJoin2StreamRangePerformance.WithKeyAndRange());
+
+            [Test, RunInApplicationDomain]
+            public void WithRelationalOp() => RegressionRunner.Run(_session, EPLJoin2StreamRangePerformance.WithRelationalOp());
+
+            [Test, RunInApplicationDomain]
+            public void WithKeyAndRangeOuterJoin() => RegressionRunner.Run(_session, EPLJoin2StreamRangePerformance.WithKeyAndRangeOuterJoin());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLJoin2StreamSimpleCoercionPerformance
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLJoin2StreamSimpleCoercionPerformance.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLJoin2StreamSimpleCoercionPerformance : AbstractTestBase
+        {
+            public TestEPLJoin2StreamSimpleCoercionPerformance() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithBack() => RegressionRunner.Run(_session, EPLJoin2StreamSimpleCoercionPerformance.WithBack());
+
+            [Test, RunInApplicationDomain]
+            public void WithForward() => RegressionRunner.Run(_session, EPLJoin2StreamSimpleCoercionPerformance.WithForward());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOuterJoin2Stream
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOuterJoin2Stream.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOuterJoin2Stream : AbstractTestBase
+        {
+            public TestEPLOuterJoin2Stream() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithFullOuterMultikeyWArrayPrimitive() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithFullOuterMultikeyWArrayPrimitive());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventType() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithEventType());
+
+            [Test, RunInApplicationDomain]
+            public void WithLeftOuterJoin() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithLeftOuterJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithRightOuterJoin() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithRightOuterJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiColumnRightCoercion() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithMultiColumnRightCoercion());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiColumnRight() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithMultiColumnRight());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiColumnLeft() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithMultiColumnLeft());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiColumnLeftOM() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithMultiColumnLeftOM());
+
+            [Test, RunInApplicationDomain]
+            public void WithFullOuterJoin() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithFullOuterJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithFullOuterIteratorGroupBy() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithFullOuterIteratorGroupBy());
+
+            [Test, RunInApplicationDomain]
+            public void WithRangeOuterJoin() => RegressionRunner.Run(_session, EPLOuterJoin2Stream.WithRangeOuterJoin());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLJoinEventRepresentation
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLJoinEventRepresentation.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEPLJoinEventRepresentation : AbstractTestBase
+        {
+            public TestEPLJoinEventRepresentation() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithWrapperEventNotUnique() => RegressionRunner.Run(_session, EPLJoinEventRepresentation.WithWrapperEventNotUnique());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapEventNotUnique() => RegressionRunner.Run(_session, EPLJoinEventRepresentation.WithMapEventNotUnique());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventRepresentations() => RegressionRunner.Run(_session, EPLJoinEventRepresentation.WithEventRepresentations());
+        }
+        
         private static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{
@@ -329,7 +437,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportBean_ST0),
                 typeof(SupportBean_ST1),
                 typeof(SupportBeanRange),
-                typeof(SupportEventWithManyArray)
+                typeof(SupportEventWithManyArray),
+                typeof(SupportEventWithIntArray)
             })
             {
                 configuration.Common.AddEventType(clazz);

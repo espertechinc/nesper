@@ -12,6 +12,8 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -43,9 +45,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"SupportBean",
 				new SupportBean_G("G1"),
 				"Event object of type " +
-				typeof(SupportBean_G).FullName +
+				typeof(SupportBean_G).MaskTypeName() +
 				" does not equal, extend or implement the type " +
-				typeof(SupportBean).FullName +
+				typeof(SupportBean).MaskTypeName() +
 				" of event type 'SupportBean'");
 			RunAssertionSendEvent(env, path, "SupportMarkerInterface", new SupportMarkerImplA("Q2"), new SupportBean_G("Q3"));
 			RunAssertionRouteEvent(env, path, "SupportBean", new SupportBean());
@@ -57,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env,
 				MAP_TYPENAME,
 				new SupportBean(),
-				"Unexpected event object of type " + typeof(SupportBean).FullName + ", expected java.util.Map");
+				"Unexpected event object of type " + typeof(SupportBean).MaskTypeName() + ", expected " + typeof(IDictionary<string, object>).CleanName());
 
 			// Object-Array
 			RunAssertionSendEvent(env, path, OA_TYPENAME, new object[] { });
@@ -66,21 +68,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env,
 				OA_TYPENAME,
 				new SupportBean(),
-				"Unexpected event object of type " + typeof(SupportBean).FullName + ", expected Object[]");
+				"Unexpected event object of type " + typeof(SupportBean).MaskTypeName() + ", expected Object[]");
 
 			// XML
-			RunAssertionSendEvent(env, path, XML_TYPENAME, SupportXML.GetDocument("<myevent/>").DocumentElement);
-			RunAssertionRouteEvent(env, path, XML_TYPENAME, SupportXML.GetDocument("<myevent/>").DocumentElement);
+			RunAssertionSendEvent(env, path, XML_TYPENAME, SupportXML.GetDocument("<Myevent/>").DocumentElement);
+			RunAssertionRouteEvent(env, path, XML_TYPENAME, SupportXML.GetDocument("<Myevent/>").DocumentElement);
 			RunAssertionInvalid(
 				env,
 				XML_TYPENAME,
 				new SupportBean(),
-				"Unexpected event object type '" + typeof(SupportBean).FullName + "' encountered, please supply a org.w3c.dom.Document or Element node");
+				"Unexpected event object type '" + typeof(SupportBean).MaskTypeName() + "' encountered, please supply a XmlDocument or XmlElement node");
 			RunAssertionInvalid(
 				env,
 				XML_TYPENAME,
 				SupportXML.GetDocument("<xxxx/>"),
-				"Unexpected root element name 'xxxx' encountered, expected a root element name of 'myevent'");
+				"Unexpected root element name 'xxxx' encountered, expected a root element name of 'Myevent'");
 
 			// Avro
 			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME))
@@ -91,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env,
 				AVRO_TYPENAME,
 				new SupportBean(),
-				"Unexpected event object type '" + typeof(SupportBean).FullName + "' encountered, please supply a GenericRecord");
+				"Unexpected event object type '" + typeof(SupportBean).MaskTypeName() + "' encountered, please supply a GenericRecord");
 
 			// Json
 			var schemas = "@public @buseventtype @name('schema') create json schema " + JSON_TYPENAME + "()";
@@ -102,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env,
 				JSON_TYPENAME,
 				new SupportBean(),
-				"Unexpected event object of type '" + typeof(SupportBean).FullName + "', expected a Json-formatted string-type value");
+				"Unexpected event object of type '" + typeof(SupportBean).Name + "', expected a Json-formatted string-type value");
 
 			// No such type
 			try {

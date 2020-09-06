@@ -144,7 +144,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
 
                 object eventOne = SendEvent(env, "SYM", 1);
-                EPAssertionUtil.AssertEqualsExactOrderUnderlying(new[] {eventOne}, env.Statement("s0").GetEnumerator());
+                EPAssertionUtil.AssertEqualsExactOrderUnderlying(
+                    new[] {eventOne},
+                    env.Statement("s0").GetEnumerator());
 
                 object eventTwo = SendEvent(env, "OCC", 2);
                 EPAssertionUtil.AssertEqualsExactOrderUnderlying(

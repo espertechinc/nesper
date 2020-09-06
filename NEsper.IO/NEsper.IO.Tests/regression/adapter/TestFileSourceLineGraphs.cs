@@ -128,7 +128,7 @@ namespace com.espertech.esperio.regression.adapter
             public int SomeInt { get; set; }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEndOfFileMarker()
         {
             CompileDeploy(runtime, "@public @buseventtype create objectarray schema MyBOF (filename string)");
@@ -176,7 +176,7 @@ namespace com.espertech.esperio.regression.adapter
                 });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFileBeanEvent()
         {
             var graph = "create dataflow ReadCSV " +
@@ -198,7 +198,7 @@ namespace com.espertech.esperio.regression.adapter
                 });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalid()
         {
             var epl = "create dataflow FlowOne " +
@@ -225,7 +225,7 @@ namespace com.espertech.esperio.regression.adapter
                 "Failed to instantiate data flow 'FlowOne': Failed to obtain operator instance for 'FileSource': Invalid property type for property 'someInt', expected a property of type String");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPropertyOrderWLoop()
         {
             var graph = "create dataflow ReadCSV " +
@@ -238,7 +238,7 @@ namespace com.espertech.esperio.regression.adapter
             EPAssertionUtil.AssertEqualsExactOrder(compare, new object[] {new object[] {"1, 0"}, new object[] {"2, 0"}, new object[] {"3, 0"}});
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestZipFileLine()
         {
             var graph = "create dataflow ReadCSV " +

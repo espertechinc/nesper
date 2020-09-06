@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 
 			CodegenBlock forEach = methodNode.Block
 				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("next"));
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
 			ForEachBlock(forEach, methodNode, scope, codegenClassScope);
 
 			ReturnResult(methodNode.Block);

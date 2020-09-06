@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     "row",
                     ExprDotMethod(
                         future,
-                        "getAggregationRow",
-                        ExprDotMethod(symbols.GetAddExprEvalCtx(parent), "getAgentInstanceId"),
+                        "GetAggregationRow",
+                        ExprDotName(symbols.GetAddExprEvalCtx(parent), "AgentInstanceId"),
                         symbols.GetAddEPS(parent),
                         symbols.GetAddIsNewData(parent),
                         symbols.GetAddExprEvalCtx(parent)))

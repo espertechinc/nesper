@@ -9,8 +9,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
@@ -42,8 +45,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "strvals.selectFrom( (v, i) => v || '_' || Convert.ToString(i))");
-				builder.WithExpression(fields[1], "strvals.selectFrom( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+				builder.WithExpression(fields[0], "Strvals.selectFrom( (v, i) => v || '_' || Convert.ToString(i))");
+				builder.WithExpression(fields[1], "Strvals.selectFrom( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -73,8 +76,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "contained.selectFrom( (v, i) => new {v0=v.id,v1=i})");
-				builder.WithExpression(fields[1], "contained.selectFrom( (v, i, s) => new {v0=v.id,v1=i + 100*s})");
+				builder.WithExpression(fields[0], "Contained.selectFrom( (v, i) => new {v0=v.Id,v1=i})");
+				builder.WithExpression(fields[1], "Contained.selectFrom( (v, i, s) => new {v0=v.Id,v1=i + 100*s})");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
@@ -139,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string field = "c0";
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(field, "contained.selectFrom(x => new {c0 = id||'x', c1 = key0||'y'})");
+				builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = Key0||'y'})");
 
 				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<object>)));
 
@@ -186,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string field = "c0";
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(field, "contained.selectFrom(x => id)");
+				builder.WithExpression(field, "Contained.selectFrom(x => Id)");
 
 				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, "c0", typeof(ICollection<object>)));
 
@@ -210,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
 				string field = "c0";
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(field, "strvals.selectFrom(v => extractNum(v))");
+				builder.WithExpression(field, "Strvals.selectFrom(v => extractNum(v))");
 
 				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<object>)));
 
@@ -236,8 +239,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				return null;
 			}
 
-			ICollection<IDictionary<string, object>> val = (ICollection<IDictionary<string, object>>) result;
-			return val.ToArray();
+			if (result is FlexCollection flexCollection) {
+				return result
+					.AsObjectCollection()
+					.Unwrap<IDictionary<string, object>>()
+					.ToArray();
+			}
+
+			return result
+				.Unwrap<IDictionary<string, object>>()
+				.ToArray();
 		}
 	}
 } // end of namespace

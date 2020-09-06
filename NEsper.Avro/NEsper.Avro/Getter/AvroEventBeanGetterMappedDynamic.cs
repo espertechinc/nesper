@@ -37,11 +37,16 @@ namespace NEsper.Avro.Getter
         public object GetAvroFieldValue(GenericRecord record)
         {
             var value = record.Get(_propertyName);
-            if (value == null || !(value is IDictionary<string, object>)) {
+            if (value == null) {
                 return null;
             }
 
-            return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck((IDictionary<string, object>) value, _key);
+            var stringDictionary = GetUnderlyingMap(value);
+            if (stringDictionary != null) {
+                return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(stringDictionary, _key);
+            }
+
+            return null;
         }
 
         public object Get(EventBean eventBean)
@@ -122,7 +127,8 @@ namespace NEsper.Avro.Getter
                 GetType(),
                 "IsExistsPropertyAvro",
                 underlyingExpression,
-                CodegenExpressionBuilder.Constant(_propertyName));
+                CodegenExpressionBuilder.Constant(_propertyName),
+                CodegenExpressionBuilder.Constant(_key));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

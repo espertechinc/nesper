@@ -58,9 +58,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var resourceManager = env.Container.ResourceManager();
-                var schemaUriSensorEvent = resourceManager.GetResourceAsStream("regression/sensorSchema.xsd").ConsumeStream();
+                var schemaUriSensorEvent = resourceManager.ResolveResourceURL("regression/sensorSchema.xsd");
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='Sensor', schemaResource='" +
+                          "@XMLSchema(RootElementName='Sensor', SchemaResource='" +
                           schemaUriSensorEvent +
                           "')" +
                           "create xml schema MyEventCreateSchema()";

@@ -139,7 +139,6 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
                 // Get the values on or before the current time - to get those that are exactly on the
                 // current time we just add one to the current time for getting the head map
                 var headMap = _timeHandleMap.Head(_currentTime + 1);
-
                 if (headMap.IsEmpty())
                 {
                     if (InstrumentationHelper.ENABLED)

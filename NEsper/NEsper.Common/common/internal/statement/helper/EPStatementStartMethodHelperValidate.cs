@@ -41,9 +41,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
             var visitorProps = new ExprNodeIdentifierCollectVisitor();
             foreach (var node in visitorSubselects.Subselects) {
-                if (node.StatementSpecCompiled.Raw.WhereClause != null) {
-                    node.StatementSpecCompiled.Raw.WhereClause.Accept(visitorProps);
-                }
+                node.StatementSpecCompiled.Raw.WhereClause?.Accept(visitorProps);
             }
 
             foreach (var node in visitorProps.ExprProperties) {

@@ -38,62 +38,112 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var path = new RegressionPath();
 
-			// Bean
-			RunAssertion(env, BEAN_TYPE.Name, FBEAN, new MyEvent(1, "abc", new MyInsideEvent(10)), path);
+			RunBeanType(env, path);
+			RunMapType(env, path);
+			RunObjectArrayType(env, path);
+			RunXMLType(env, path);
+			RunAvroType(env, path);
+			RunJsonType(env, path);
+			RunJsonTypeProvidedClass(env, path);
+		}
 
-			// Map
-			IDictionary<string, object> mapInner = new Dictionary<string, object>();
-			mapInner.Put("myInsideInt", 10);
-			IDictionary<string, object> topInner = new Dictionary<string, object>();
-			topInner.Put("myInt", 1);
-			topInner.Put("myString", "abc");
-			topInner.Put("nested", mapInner);
-			RunAssertion(env, MAP_TYPENAME, FMAP, topInner, path);
+		private void RunJsonTypeProvidedClass(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
+			var json = "{\n" +
+			           "  \"MyInt\": 1,\n" +
+			           "  \"MyString\": \"abc\",\n" +
+			           "  \"Nested\": {\n" +
+			           "    \"MyInsideInt\": 10\n" +
+			           "  }\n" +
+			           "}";
 
+			// Json-Class-Provided
+			var schemas = 
+				$"@JsonSchema(ClassName='{typeof(MyLocalJsonProvided).FullName}') " +
+			    $"@public @buseventtype @name('schema') " +
+				$"create json schema {JSONPROVIDED_TYPENAME} ()";
+			env.CompileDeploy(schemas, path);
+			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
+		}
+
+		private void RunJsonType(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
+			var json = "{\n" +
+			           "  \"MyInt\": 1,\n" +
+			           "  \"MyString\": \"abc\",\n" +
+			           "  \"Nested\": {\n" +
+			           "    \"MyInsideInt\": 10\n" +
+			           "  }\n" +
+			           "}";
+			
+			// Json
+			var schemasJson = "create json schema Nested(MyInsideInt int);\n" +
+			                  "@public @buseventtype @name('schema') create json schema " +
+			                  JSON_TYPENAME +
+			                  "(MyInt int, MyString string, Nested Nested)";
+			env.CompileDeploy(schemasJson, path);
+			RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
+		}
+
+		private void RunAvroType(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
+			// Avro
+			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
+			var innerSchema = schema.GetField("Nested").Schema;
+			var avroInner = new GenericRecord(innerSchema.AsRecordSchema());
+			avroInner.Put("MyInsideInt", 10);
+			var avro = new GenericRecord(schema.AsRecordSchema());
+			avro.Put("MyInt", 1);
+			avro.Put("MyString", "abc");
+			avro.Put("Nested", avroInner);
+			RunAssertion(env, AVRO_TYPENAME, FAVRO, avro, path);
+		}
+
+		private void RunXMLType(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
+			// XML
+			var xml = "<Myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></Myevent>";
+			RunAssertion(env, XML_TYPENAME, FXML, xml, path);
+		}
+
+		private void RunObjectArrayType(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
 			// Object-array
 			var oaInner = new object[] {10};
 			var oaTop = new object[] {1, "abc", oaInner};
 			RunAssertion(env, OA_TYPENAME, FOA, oaTop, path);
+		}
 
-			// XML
-			var xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
-			RunAssertion(env, XML_TYPENAME, FXML, xml, path);
+		private void RunMapType(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
+			// Map
+			IDictionary<string, object> mapInner = new Dictionary<string, object>();
+			mapInner.Put("MyInsideInt", 10);
+			IDictionary<string, object> topInner = new Dictionary<string, object>();
+			topInner.Put("MyInt", 1);
+			topInner.Put("MyString", "abc");
+			topInner.Put("Nested", mapInner);
+			RunAssertion(env, MAP_TYPENAME, FMAP, topInner, path);
+		}
 
-			// Avro
-			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
-			var innerSchema = schema.GetField("nested").Schema;
-			var avroInner = new GenericRecord(innerSchema.AsRecordSchema());
-			avroInner.Put("myInsideInt", 10);
-			var avro = new GenericRecord(schema.AsRecordSchema());
-			avro.Put("myInt", 1);
-			avro.Put("myString", "abc");
-			avro.Put("nested", avroInner);
-			RunAssertion(env, AVRO_TYPENAME, FAVRO, avro, path);
-
-			// Json
-			var schemasJson = "create json schema Nested(myInsideInt int);\n" +
-			                  "@public @buseventtype @name('schema') create json schema " +
-			                  JSON_TYPENAME +
-			                  "(myInt int, myString string, nested Nested)";
-			env.CompileDeploy(schemasJson, path);
-			var json = "{\n" +
-			           "  \"myInt\": 1,\n" +
-			           "  \"myString\": \"abc\",\n" +
-			           "  \"nested\": {\n" +
-			           "    \"myInsideInt\": 10\n" +
-			           "  }\n" +
-			           "}";
-			RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
-
-			// Json-Class-Provided
-			var schemas = "@JsonSchema(className='" +
-			              nameof(MyLocalJsonProvided) +
-			              "') " +
-			              "@public @buseventtype @name('schema') create json schema " +
-			              JSONPROVIDED_TYPENAME +
-			              "()";
-			env.CompileDeploy(schemas, path);
-			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
+		private void RunBeanType(
+			RegressionEnvironment env,
+			RegressionPath path)
+		{
+			// Bean
+			RunAssertion(env, BEAN_TYPE.Name, FBEAN, new MyEvent(1, "abc", new MyInsideEvent(10)), path);
 		}
 
 		private void RunAssertion(
@@ -111,12 +161,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
 			var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-			Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"nested\":{\"myInsideInt\":10}}", json);
+			Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
 
 			var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(env.Statement("s0").EventType);
 			var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
 			Assert.AreEqual(
-				"<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsideInt>10</myInsideInt></nested></root>",
+				"<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><Nested><MyInsideInt>10</MyInsideInt></Nested></root>",
 				xml);
 
 			env.UndeployAll();
@@ -124,63 +174,45 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 		public class MyEvent
 		{
-			private int myInt;
-			private string myString;
-			private MyInsideEvent nested;
-
 			public MyEvent(
 				int myInt,
 				string myString,
 				MyInsideEvent nested)
 			{
-				this.myInt = myInt;
-				this.myString = myString;
-				this.nested = nested;
+				this.MyInt = myInt;
+				this.MyString = myString;
+				this.Nested = nested;
 			}
 
-			public int GetMyInt()
-			{
-				return myInt;
-			}
+			public int MyInt { get; }
 
-			public string GetMyString()
-			{
-				return myString;
-			}
+			public string MyString { get; }
 
-			public MyInsideEvent GetNested()
-			{
-				return nested;
-			}
+			public MyInsideEvent Nested { get; }
 		}
 
 		public class MyInsideEvent
 		{
-			private int myInsideInt;
-
 			public MyInsideEvent(int myInsideInt)
 			{
-				this.myInsideInt = myInsideInt;
+				this.MyInsideInt = myInsideInt;
 			}
 
-			public int GetMyInsideInt()
-			{
-				return myInsideInt;
-			}
+			public int MyInsideInt { get; }
 		}
 
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public int myInt;
-			public string myString;
-			public MyLocalJsonProvidedNested nested;
+			public int MyInt;
+			public string MyString;
+			public MyLocalJsonProvidedNested Nested;
 		}
 
 		[Serializable]
 		public class MyLocalJsonProvidedNested
 		{
-			public int myInsideInt;
+			public int MyInsideInt;
 		}
 	}
 } // end of namespace

@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.suite.epl.insertinto;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -52,12 +53,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLInsertInto()
-        {
-            RegressionRunner.Run(session, EPLInsertInto.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoEmptyPropType()
         {
             RegressionRunner.Run(session, EPLInsertIntoEmptyPropType.Executions());
@@ -69,22 +64,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLInsertIntoIRStreamFunc());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateCreateStream()
         {
             RegressionRunner.Run(session, new EPLInsertIntoPopulateCreateStream());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateCreateStreamAvro()
         {
             RegressionRunner.Run(session, EPLInsertIntoPopulateCreateStreamAvro.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoPopulateEventTypeColumn()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoPopulateEventTypeColumn.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -93,28 +82,10 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLInsertIntoPopulateSingleColByMethodCall());
         }
 
-        [Test]
-        public void TestEPLInsertIntoPopulateUnderlying()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoPopulateUnderlying.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoPopulateUndStreamSelect()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoPopulateUndStreamSelect.Executions());
-        }
-
         [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoTransposePattern()
         {
             RegressionRunner.Run(session, EPLInsertIntoTransposePattern.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoTransposeStream()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoTransposeStream.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -132,6 +103,233 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoEventTypedColumnFromProp() {
             RegressionRunner.Run(session, EPLInsertIntoEventTypedColumnFromProp.Executions());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoPopulateEventTypeColumn
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoPopulateEventTypeColumn : AbstractTestBase
+        {
+            public TestEPLInsertIntoPopulateEventTypeColumn() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumerationSubquery() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithEnumerationSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithTypableAndCaseNew() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithTypableAndCaseNew());
+
+            [Test, RunInApplicationDomain]
+            public void WithTypableNewOperatorDocSample() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithTypableNewOperatorDocSample());
+
+            [Test, RunInApplicationDomain]
+            public void WithTypableSubquery() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithTypableSubquery());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoPopulateUnderlying
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoPopulateUnderlying : AbstractTestBase
+        {
+            public TestEPLInsertIntoPopulateUnderlying() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowAggregationAtEventBean() =>
+                RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithWindowAggregationAtEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayMapInsert() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithArrayMapInsert());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayPONOInsert() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithArrayPONOInsert());
+
+            [Test, RunInApplicationDomain]
+            public void WithBeanFactoryMethod() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithBeanFactoryMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithPopulateUnderlyingSimple() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithPopulateUnderlyingSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithPopulateBeanObjects() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithPopulateBeanObjects());
+
+            [Test, RunInApplicationDomain]
+            public void WithBeanWildcard() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithBeanWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithPopulateBeanSimple() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithPopulateBeanSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithBeanJoin() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithBeanJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithCtorWithPattern() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithCtorWithPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithCtor() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithCtor());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoPopulateUndStreamSelect
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoPopulateUndStreamSelect : AbstractTestBase
+        {
+            public TestEPLInsertIntoPopulateUndStreamSelect() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithStreamInsertWWidenOA() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithStreamInsertWWidenOA());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowRep() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithNamedWindowRep());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowInheritsMap() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithNamedWindowInheritsMap());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoTransposeStream
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoTransposeStream : AbstractTestBase
+        {
+            public TestEPLInsertIntoTransposeStream() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidTranspose() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithInvalidTranspose());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposePONOPropertyStream() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposePONOPropertyStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeEventJoinPONO() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeEventJoinPONO());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeEventJoinMap() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeEventJoinMap());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeSingleColumnInsert() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeSingleColumnInsert());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeFunctionToStream() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeFunctionToStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeFunctionToStreamWithProps() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeFunctionToStreamWithProps());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeMapAndObjectArrayAndOthers() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeMapAndObjectArrayAndOthers());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransposeCreateSchemaPONO() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeCreateSchemaPONO());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLInsertInto
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertInto.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertInto : AbstractTestBase
+        {
+            public TestEPLInsertInto() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithEventRepresentationsSimple() => RegressionRunner.Run(_session, EPLInsertInto.WithEventRepresentationsSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithTypeMismatchInvalid() => RegressionRunner.Run(_session, EPLInsertInto.WithTypeMismatchInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnnamedJoin() => RegressionRunner.Run(_session, EPLInsertInto.WithUnnamedJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnnamedWildcard() => RegressionRunner.Run(_session, EPLInsertInto.WithUnnamedWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnnamedSimple() => RegressionRunner.Run(_session, EPLInsertInto.WithUnnamedSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsJoinWildcard() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsJoinWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsJoin() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsWildcard() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsStateless() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsStateless());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsSimple() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsEPLToOMStmt() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsEPLToOMStmt());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedColsOMToStmt() => RegressionRunner.Run(_session, EPLInsertInto.WithNamedColsOMToStmt());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamOMToStmt() => RegressionRunner.Run(_session, EPLInsertInto.WithRStreamOMToStmt());
+
+            [Test, RunInApplicationDomain]
+            public void WithProvidePartitialCols() => RegressionRunner.Run(_session, EPLInsertInto.WithProvidePartitialCols());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleBeanToMulti() => RegressionRunner.Run(_session, EPLInsertInto.WithSingleBeanToMulti());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiBeanToMulti() => RegressionRunner.Run(_session, EPLInsertInto.WithMultiBeanToMulti());
+
+            [Test, RunInApplicationDomain]
+            public void WithChain() => RegressionRunner.Run(_session, EPLInsertInto.WithChain());
+
+            [Test, RunInApplicationDomain]
+            public void WithNullType() => RegressionRunner.Run(_session, EPLInsertInto.WithNullType());
+
+            [Test, RunInApplicationDomain]
+            public void WithInsertIntoPlusPattern() => RegressionRunner.Run(_session, EPLInsertInto.WithInsertIntoPlusPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithInsertFromPattern() => RegressionRunner.Run(_session, EPLInsertInto.WithInsertFromPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithStaggeredWithWildcard() => RegressionRunner.Run(_session, EPLInsertInto.WithStaggeredWithWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithOutputLimitAndSort() => RegressionRunner.Run(_session, EPLInsertInto.WithWithOutputLimitAndSort());
+
+            [Test]
+            public void WithJoinWildcard() => RegressionRunner.Run(_session, EPLInsertInto.WithJoinWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithAssertionWildcardRecast() => RegressionRunner.Run(_session, EPLInsertInto.WithAssertionWildcardRecast());
         }
 
         private static void Configure(Configuration configuration)

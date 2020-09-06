@@ -42,11 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean theEvent = eventsPerStream[streamNum];
-            if (theEvent != null) {
-                return theEvent.Underlying;
-            }
-
-            return null;
+            return theEvent?.Underlying;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -37,25 +38,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@Name('A') \n" +
-				             "on SupportBean_S0 event insert into AStream select transpose(" +
-				             typeof(EPLInsertIntoWrapper).Name +
-				             ".transpose(event));\n" +
+				             "on SupportBean_S0 event insert into AStream select transpose(" + typeof(EPLInsertIntoWrapper).MaskTypeName() + ".Transpose(event));\n" +
 				             "\n" +
-				             "@Name('B') on AStream insert into BStream select * where propOne;\n" +
+				             "@Name('B') on AStream insert into BStream select * where PropOne;\n" +
 				             "\n" +
 				             "@Name('C') select * from AStream;\n" +
 				             "\n" +
 				             "@Name('D') \n" +
 				             "on BStream insert into DStreamOne \n" +
-				             "select * where propTwo\n" +
-				             "insert into DStreamTwo select * where not propTwo;\n" +
+				             "select * where PropTwo\n" +
+				             "insert into DStreamTwo select * where not PropTwo;\n" +
 				             "\n" +
 				             "@Name('E') on DStreamTwo\n" +
 				             "insert into FinalStream select * insert into otherstream select * output all;\n" +
 				             "\n" +
 				             "@Name('F') on DStreamOne\n" +
-				             "insert into FStreamOne select * where propThree\n" +
-				             "insert into FStreamTwo select * where not propThree;\n" +
+				             "insert into FStreamOne select * where PropThree\n" +
+				             "insert into FStreamTwo select * where not PropThree;\n" +
 				             "\n" +
 				             "@Name('G') on FStreamTwo\n" +
 				             "insert into FinalStream select * insert into otherstream select * output all;\n" +
@@ -66,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				env.Milestone(0);
 
 				env.SendEventBean(new SupportBean_S0(1, "true", "true", "false"));
-				Assert.AreEqual(1, env.Listener("final").AssertOneGetNewAndReset().Get("id"));
+				Assert.AreEqual(1, env.Listener("final").AssertOneGetNewAndReset().Get("Id"));
 
 				env.Milestone(1);
 
@@ -103,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			public void Run(RegressionEnvironment env)
 			{
 				string statementOne = "@Name('s0') insert into StreamA select irstream * from SupportBeanSimple#length(2)";
-				string statementTwo = "@Name('s1') insert into StreamB select irstream *, myString||'A' as propA from StreamA#length(2)";
+				string statementTwo = "@Name('s1') insert into StreamB select irstream *, MyString||'A' as propA from StreamA#length(2)";
 				string statementThree = "@Name('s2') insert into StreamC select irstream *, propA||'B' as propB from StreamB#length(2)";
 
 				RegressionPath path = new RegressionPath();
@@ -115,22 +114,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
 				env.SendEventBean(new SupportBeanSimple("e1", 1));
 				EventBean @event = env.Listener("s2").AssertOneGetNewAndReset();
-				Assert.AreEqual("e1", @event.Get("myString"));
+				Assert.AreEqual("e1", @event.Get("MyString"));
 				Assert.AreEqual("e1AB", @event.Get("propB"));
 
 				env.Milestone(1);
 
 				env.SendEventBean(new SupportBeanSimple("e2", 1));
 				@event = env.Listener("s2").AssertOneGetNewAndReset();
-				Assert.AreEqual("e2", @event.Get("myString"));
+				Assert.AreEqual("e2", @event.Get("MyString"));
 				Assert.AreEqual("e2AB", @event.Get("propB"));
 
 				env.SendEventBean(new SupportBeanSimple("e3", 1));
 				@event = env.Listener("s2").LastNewData[0];
-				Assert.AreEqual("e3", @event.Get("myString"));
+				Assert.AreEqual("e3", @event.Get("MyString"));
 				Assert.AreEqual("e3AB", @event.Get("propB"));
 				@event = env.Listener("s2").LastOldData[0];
-				Assert.AreEqual("e1", @event.Get("myString"));
+				Assert.AreEqual("e1", @event.Get("MyString"));
 				Assert.AreEqual("e1AB", @event.Get("propB"));
 
 				env.UndeployAll();
@@ -154,19 +153,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				bool propTwo,
 				bool propThree)
 			{
-				this.Id = id;
-				this.IsPropOne = propOne;
-				this.IsPropTwo = propTwo;
-				this.IsPropThree = propThree;
+				Id = id;
+				PropOne = propOne;
+				PropTwo = propTwo;
+				PropThree = propThree;
 			}
 
 			public int Id { get; }
 
-			public bool IsPropOne { get; }
+			public bool PropOne { get; }
 
-			public bool IsPropTwo { get; }
+			public bool PropTwo { get; }
 
-			public bool IsPropThree { get; }
+			public bool PropThree { get; }
 		}
 	}
 } // end of namespace

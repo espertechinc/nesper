@@ -11,30 +11,31 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.multikey
 {
-	public class MultiKeyClassRefWSerde : MultiKeyClassRef {
-	    private readonly DataInputOutputSerdeForge forge;
-	    private readonly Type[] types;
+	public class MultiKeyClassRefWSerde : MultiKeyClassRef
+	{
+		private readonly DataInputOutputSerdeForge forge;
+		private readonly Type[] types;
 
-	    public MultiKeyClassRefWSerde(DataInputOutputSerdeForge forge, Type[] types) {
-	        this.forge = forge;
-	        this.types = types;
-	    }
+		public MultiKeyClassRefWSerde(
+			DataInputOutputSerdeForge forge,
+			Type[] types)
+		{
+			this.forge = forge;
+			this.types = types;
+		}
 
-	    public string ClassNameMK {
-		    get { return null; }
-	    }
+		public NameOrType ClassNameMK => null;
 
-	    public Type[] MKTypes {
-		    get { return types; }
-	    }
+		public Type[] MKTypes => types;
 
-	    public CodegenExpression GetExprMKSerde(CodegenMethod method, CodegenClassScope classScope) {
-	        return forge.Codegen(method, classScope, null);
-	    }
+		public CodegenExpression GetExprMKSerde(
+			CodegenMethod method,
+			CodegenClassScope classScope)
+		{
+			return forge.Codegen(method, classScope, null);
+		}
 	}
 } // end of namespace

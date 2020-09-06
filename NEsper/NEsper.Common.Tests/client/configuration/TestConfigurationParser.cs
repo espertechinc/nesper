@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.configuration
 {
     public class TestConfigurationParser : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRegressionFileConfig()
         {
             var config = new Configuration(container);
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.client.configuration
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestConfigurationDefaults()
         {
             var config = new Configuration(container);
@@ -82,6 +82,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsFalse(byteCode.IsIncludeDebugSymbols);
             Assert.IsTrue(byteCode.IsAttachEPL);
             Assert.IsFalse(byteCode.IsAttachModuleEPL);
+            Assert.IsFalse(byteCode.IsAttachPatternEPL);
             Assert.IsFalse(byteCode.IsInstrumented);
             Assert.IsFalse(byteCode.IsAllowSubscriber);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierContext);
@@ -507,6 +508,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(byteCode.IsIncludeDebugSymbols);
             Assert.IsFalse(byteCode.IsAttachEPL);
             Assert.IsTrue(byteCode.IsAttachModuleEPL);
+            Assert.IsTrue(byteCode.IsAttachPatternEPL);
             Assert.IsTrue(byteCode.IsInstrumented);
             Assert.IsTrue(byteCode.IsAllowSubscriber);
             Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierContext);

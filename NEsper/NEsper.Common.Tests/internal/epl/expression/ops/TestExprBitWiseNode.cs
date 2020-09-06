@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             log.Debug(".testEqualsNode");
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             log.Debug(".testEvaluate");
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(8, _bitWiseNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             log.Debug(".testGetType");
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(typeof(long?), _bitWiseNode.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             log.Debug(".testToExpressionString");
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("4&2", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_bitWiseNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // Must have exactly 2 subnodes

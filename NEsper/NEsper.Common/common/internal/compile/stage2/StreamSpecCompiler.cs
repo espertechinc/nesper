@@ -271,7 +271,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             // construct root : assigns factory node ids
             var top = streamSpecRaw.EvalForgeNode;
-            var root = new EvalRootForgeNode(top, statementRawInfo.Annotations);
+            var root = new EvalRootForgeNode(services.IsAttachPatternText, top, statementRawInfo.Annotations);
             var additionalForgeables = new List<StmtClassForgeableFactory>();
             
             RecursiveCompile(

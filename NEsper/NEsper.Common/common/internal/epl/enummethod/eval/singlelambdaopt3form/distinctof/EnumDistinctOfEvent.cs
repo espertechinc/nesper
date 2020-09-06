@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    }
 
 	    public override Type ReturnType() {
-	        return typeof(ICollection<object>);
+	        return typeof(FlexCollection);
 	    }
 
 	    public override CodegenExpression ReturnIfEmptyOptional() {
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    {
 	        block.IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
 	            .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-	            .DeclareVar<IDictionary<string, object>>("distinct", NewInstance(typeof(LinkedHashMap<string, object>)));
+	            .DeclareVar<IDictionary<object, EventBean>>("distinct", NewInstance(typeof(LinkedHashMap<object, EventBean>)));
 	    }
 
 	    public override void ForEachBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
@@ -88,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    }
 
 	    public override void ReturnResult(CodegenBlock block) {
-	        block.MethodReturn(ExprDotMethod(Ref("distinct"), "values"));
+	        block.MethodReturn(FlexWrap(ExprDotName(Ref("distinct"), "Values")));
 	    }
 	}
 } // end of namespace

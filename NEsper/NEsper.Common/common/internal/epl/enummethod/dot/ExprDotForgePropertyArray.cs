@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 					        Constant(" less than index "),
 					        Ref("index"),
 					        Constant(" for property '" + _propertyName + "'"))))
-		        .MethodReturn(CastSafeFromObjectType(type, ArrayAtIndex(Ref("array"), Cast(typeof(int), Ref("index")))));
+		        .MethodReturn(CastSafeFromObjectType(type, ArrayAtIndex(Ref("array"), ExprDotMethod(Ref("index"), "AsInt32"))));
 
 	        return LocalMethod(method, inner, _indexExpression.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope));
 	    }

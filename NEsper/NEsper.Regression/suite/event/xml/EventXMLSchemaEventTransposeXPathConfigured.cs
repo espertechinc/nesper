@@ -49,14 +49,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 	        public void Run(RegressionEnvironment env)
 	        {
 		        var resourceManager = env.Container.ResourceManager();
-		        var schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
+		        var schemaUriSimpleSchema = resourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
 		        var epl = "@public @buseventtype " +
-		                  "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
-		                  schemaUriSimpleSchema +
-		                  "', autoFragment=false)" +
-		                  "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
-		                  "@XMLSchemaField(name='nested1simple', xpath='/ss:simpleEvent/ss:nested1', type='NODE', eventTypeName='MyNestedEventXPC')" +
-		                  "@XMLSchemaField(name='nested4array', xpath='//ss:nested4', type='nodeset', eventTypeName='MyNestedArrayEventXPC')" +
+		                  "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" + schemaUriSimpleSchema + "', AutoFragment=false)" +
+		                  "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+		                  "@XMLSchemaField(Name='nested1simple', XPath='/ss:simpleEvent/ss:nested1', Type='ANY', EventTypeName='MyNestedEventXPC')" +
+		                  "@XMLSchemaField(Name='nested4array', XPath='//ss:nested4', Type='nodeset', EventTypeName='MyNestedArrayEventXPC')" +
 		                  "create xml schema MyEventCreateSchema()";
 		        var path = new RegressionPath();
 		        env.CompileDeploy(epl, path);

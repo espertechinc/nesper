@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				    return EPTypeHelper.CollectionOfEvents(inputEventType);
 			    }
 
-			    return EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+			    return EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
 		    };
 	    }
 

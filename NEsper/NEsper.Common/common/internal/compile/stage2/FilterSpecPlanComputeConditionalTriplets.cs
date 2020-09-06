@@ -55,11 +55,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<FilterValueSetParam[]> pathList = new List<FilterValueSetParam[]>(paths.Length);
             foreach (var path in paths) {
                 var pass = true;
-                if (path.PathNegate != null) {
-                    var controlResult = path.PathNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                    if (controlResult != null && false.Equals(controlResult)) {
-                        pass = false;
-                    }
+                var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (controlResult != null && false.Equals(controlResult)) {
+                    pass = false;
                 }
 
                 if (pass) {
@@ -87,11 +85,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var valueList = new List<FilterValueSetParam>(triplets.Length);
             var count = 0;
             foreach (var triplet in triplets) {
-                if (triplet.TripletConfirm != null) {
-                    var controlResult = triplet.TripletConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                    if (controlResult != null && true.Equals(controlResult)) {
-                        continue;
-                    }
+                var controlResult = triplet.TripletConfirm?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (controlResult != null && true.Equals(controlResult)) {
+                    continue;
                 }
 
                 FilterValueSetParam valueParam = triplet.Param.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);

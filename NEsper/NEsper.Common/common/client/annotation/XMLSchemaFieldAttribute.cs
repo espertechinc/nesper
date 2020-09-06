@@ -20,30 +20,30 @@ namespace com.espertech.esper.common.client.annotation
 	    ///     Property name
 	    /// </summary>
 	    /// <returns>name</returns>
-	    public string Name { get; set; }
+	    public virtual string Name { get; set; }
 
 	    /// <summary>
 	    ///     XPath expression
 	    /// </summary>
 	    /// <returns>xpath</returns>
-	    public string XPath { get; set; }
+	    public virtual string XPath { get; set; }
 
 	    /// <summary>
-	    ///     javax.xml.xpath.XPathConstants type as a string, i.e. "string" or "nodeset" and others
+	    ///     Type as a string, i.e. "string" or "nodeset" and others
 	    /// </summary>
 	    /// <returns>type</returns>
-	    public string Type { get; set; }
+	    public virtual string Type { get; set; }
 
 	    /// <summary>
 	    ///     For use when event properties themselves has an xml event type
 	    /// </summary>
 	    /// <returns>type name</returns>
-	    public string EventTypeName { get; set; } = "";
+	    public virtual string EventTypeName { get; set; } = "";
 
 	    /// <summary>
 	    ///     For casting the xpath evaluation result to a given type
 	    /// </summary>
 	    /// <returns>type to cast to</returns>
-	    public string CastToType { get; set; } = "";
+	    public virtual string CastToType { get; set; } = "";
     }
 } // end of namespace

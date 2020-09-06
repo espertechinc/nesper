@@ -59,17 +59,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 string epl = "@public @buseventtype " +
-                             "@XMLSchema(rootElementName='myevent'," +
-                             "  xpathFunctionResolver='" + typeof(SupportXPathFunctionResolver).MaskTypeName() + "'," +
-                             "  xpathVariableResolver='" + typeof(SupportXPathVariableResolver).MaskTypeName() + "')" +
-                             "@XMLSchemaField(name='xpathElement1', xpath='/myevent/element1', type='STRING')" +
-                             "@XMLSchemaField(name='xpathCountE21', xpath='count(/myevent/element2/element21)', type='NUMBER')" +
-                             "@XMLSchemaField(name='xpathAttrString', xpath='/myevent/element3/@attrString', type='STRING')" +
-                             "@XMLSchemaField(name='xpathAttrNum', xpath='/myevent/element3/@attrNum', type='NUMBER')" +
-                             "@XMLSchemaField(name='xpathAttrBool', xpath='/myevent/element3/@attrBool', type='BOOLEAN')" +
-                             "@XMLSchemaField(name='stringCastLong', xpath='/myevent/element3/@attrNum', type='STRING', castToType='long')" +
-                             "@XMLSchemaField(name='stringCastDouble', xpath='/myevent/element3/@attrNum', type='STRING', castToType='double')" +
-                             "@XMLSchemaField(name='numCastInt', xpath='/myevent/element3/@attrNum', type='NUMBER', castToType='int')" +
+                             "@XMLSchema(RootElementName='myevent'," +
+                             "  XPathFunctionResolver='" + typeof(SupportXPathFunctionResolver).MaskTypeName() + "'," +
+                             "  XPathVariableResolver='" + typeof(SupportXPathVariableResolver).MaskTypeName() + "')" +
+                             "@XMLSchemaField(Name='xpathElement1', XPath='/myevent/element1', Type='STRING')" +
+                             "@XMLSchemaField(Name='xpathCountE21', XPath='count(/myevent/element2/element21)', Type='NUMBER')" +
+                             "@XMLSchemaField(Name='xpathAttrString', XPath='/myevent/element3/@attrString', Type='STRING')" +
+                             "@XMLSchemaField(Name='xpathAttrNum', XPath='/myevent/element3/@attrNum', Type='NUMBER')" +
+                             "@XMLSchemaField(Name='xpathAttrBool', XPath='/myevent/element3/@attrBool', Type='BOOLEAN')" +
+                             "@XMLSchemaField(Name='stringCastLong', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='long')" +
+                             "@XMLSchemaField(Name='stringCastDouble', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='double')" +
+                             "@XMLSchemaField(Name='numCastInt', XPath='/myevent/element3/@attrNum', Type='NUMBER', CastToType='int')" +
                              "create xml schema MyEventCreateSchema()";
                 RegressionPath path = new RegressionPath();
                 env.CompileDeploy(epl, path);

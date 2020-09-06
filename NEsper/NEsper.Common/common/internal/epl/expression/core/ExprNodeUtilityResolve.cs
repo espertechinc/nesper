@@ -44,10 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var allowEventBeanCollType = new bool[parameters.Count];
             var childEvalsEventBeanReturnTypesForges = new ExprForge[parameters.Count];
             var allConstants = true;
+            
             foreach (var childNode in parameters) {
                 if (!EnumMethodResolver.IsEnumerationMethod(methodName, services.ImportServiceCompileTime) && childNode is ExprLambdaGoesNode) {
                     throw new ExprValidationException(
-                        "Unexpected lambda-expression encountered as parameter to UDF or static method '" +
+                        "Unrecognized lambda-expression encountered as parameter to UDF or static method '" +
                         methodName +
                         "'");
                 }

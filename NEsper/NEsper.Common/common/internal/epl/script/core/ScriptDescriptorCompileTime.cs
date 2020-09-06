@@ -84,6 +84,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                             EPStatementInitServicesConstants.IMPORTSERVICERUNTIME))
                 .SetProperty(
                     Ref("sd"),
+                    "ScriptCompiler",
+                    ExprDotName(
+                        EPStatementInitServicesConstants.REF,
+                        EPStatementInitServicesConstants.SCRIPTCOMPILER))
+                .SetProperty(
+                    Ref("sd"),
                     "Coercer",
                     ReturnType.IsNumeric()
                         ? StaticMethod(

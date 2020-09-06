@@ -156,11 +156,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					"@public create expression double MyScript(stringvalue) [0];\n" +
 					"@public create index MyIndexA on MyWindow(IntPrimitive);\n" +
 					"@public create index MyIndexB on MyTable(value);\n" +
-					"@public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"abc\"; } }\"\"\";\n";
+					"@public create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"abc\"; } }\"\"\";\n";
 				env.CompileDeploy(eplProvide, path);
 
 				var eplConsume = "@Name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
-				                 "select MyExpression(), MyScript('a'), MyClass.doIt() from MyEventType;\n" +
+				                 "select MyExpression(), MyScript('a'), MyClass.DoIt() from MyEventType;\n" +
 				                 "on SupportBean as sb merge MyWindow as mw where sb.IntPrimitive=mw.IntPrimitive when matched then delete;\n" +
 				                 "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.value when matched then delete;\n";
 				env.CompileDeploy(eplConsume, path);

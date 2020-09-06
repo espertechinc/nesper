@@ -137,7 +137,11 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var values = ExprDotMethod(underlyingExpression, "Get", Constant(_key.Name));
+            var values = StaticMethod(
+                typeof(GenericRecordExtensions),
+                "Get",
+                underlyingExpression,
+                Constant(_key.Name));
             return StaticMethod(GetType(), "GetAvroIndexedValue", values, Constant(_index));
         }
 
@@ -146,7 +150,11 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var values = ExprDotMethod(underlyingExpression, "Get", Constant(_key.Name));
+            var values = StaticMethod(
+                typeof(GenericRecordExtensions),
+                "Get",
+                underlyingExpression,
+                Constant(_key.Name));
             return StaticMethod(GetType(), "GetAvroIndexedExists", values, Constant(_index));
         }
         

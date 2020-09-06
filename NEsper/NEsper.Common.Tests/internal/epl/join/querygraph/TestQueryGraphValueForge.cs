@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             return ((ExprIdentNode) node).UnresolvedPropertyName;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNoDup()
         {
             var value = new QueryGraphValueForge();
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             AssertRanges(new[] { new object[] { null, "B", "C", QueryGraphRangeEnum.RANGE_CLOSED, "A" } }, value);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRangeRelOp()
         {
             TryAdd(

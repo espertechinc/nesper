@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.Milestone(1);
 
-                // Tell the runtimethe time after a join point as using external timer
+                // Tell the runtime the time after a join point as using external timer
                 SendTimer(env, 1500);
                 env.SendEventBean(MakeMarketDataEvent("E1"));
 

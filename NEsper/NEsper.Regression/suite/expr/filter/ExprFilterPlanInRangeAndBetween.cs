@@ -30,8 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 testCases,
                 "(TheString < 'b')",
                 "TheString",
-                new[] {"a", "b", "c", "d"},
-                new[] {true, false, false, false});
+                //new[] {"a", "b", "c", "d"},
+                //new[] {true, false, false, false}
+                new[] {"c"},
+                new[] {false}
+            );
             FilterTestCaseSingleField.AddCase(
                 testCases,
                 "(TheString >= 'b')",

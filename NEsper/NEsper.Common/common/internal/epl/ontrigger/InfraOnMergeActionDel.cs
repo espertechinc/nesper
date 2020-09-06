@@ -45,9 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             tableStateInstance.DeleteEvent(matchingEvent);
-            if (changeHandlerRemoved != null) {
-                changeHandlerRemoved.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
-            }
+            changeHandlerRemoved?.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
         }
 
         public override string Name {

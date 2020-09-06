@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
@@ -89,15 +90,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				.DeclareVar(innerTypeBoxed, "minKey", ConstantNull());
 
 			CodegenBlock forEach = block
-				.ForEach(typeof(object), "value", EnumForgeCodegenNames.REF_ENUMCOLL)
+				.ForEach(innerTypeBoxed, "value", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.IfRefNull("value")
 				.BlockContinue();
 
-			forEach.IfCondition(EqualsNull(Ref("minKey")))
-				.AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")))
+			var compareTo =
+				StaticMethod(
+					typeof(SmartCompare),
+					"Compare",
+					Ref("minKey"),
+					Ref("value"));
+			
+			forEach
+				.IfCondition(EqualsNull(Ref("minKey")))
+				.AssignRef("minKey", FlexCast(innerTypeBoxed, Ref("value")))
 				.IfElse()
-				.IfCondition(Relational(ExprDotMethod(Ref("minKey"), "CompareTo", Ref("value")), _max ? LT : GT, Constant(0)))
-				.AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")));
+				.IfCondition(Relational(compareTo, _max ? LT : GT, Constant(0)))
+				.AssignRef("minKey", FlexCast(innerTypeBoxed, Ref("value")));
 
 			CodegenMethod method = block.MethodReturn(Ref("minKey"));
 			return LocalMethod(method, args.Expressions);

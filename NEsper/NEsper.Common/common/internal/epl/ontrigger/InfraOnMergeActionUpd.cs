@@ -101,18 +101,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OnExprViewTableChangeHandler changeHandlerRemoved,
             AgentInstanceContext agentInstanceContext)
         {
-            if (changeHandlerRemoved != null) {
-                changeHandlerRemoved.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
-            }
+            changeHandlerRemoved?.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
 
             tableUpdateStrategy.UpdateTable(
                 Collections.SingletonList(matchingEvent),
                 tableStateInstance,
                 eventsPerStream,
                 agentInstanceContext);
-            if (changeHandlerAdded != null) {
-                changeHandlerAdded.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
-            }
+            changeHandlerAdded?.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
         }
     }
 } // end of namespace

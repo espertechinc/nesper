@@ -26,14 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             andNode = new ExprAndNodeImpl();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(andNode.EqualsNode(new ExprAndNodeImpl(), false));
             Assert.IsFalse(andNode.EqualsNode(new ExprOrNode(), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             andNode.AddChildNode(new SupportBoolExprNode(true));
@@ -48,13 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse((bool) andNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), andNode.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             andNode.AddChildNode(new SupportExprNode(true));
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("true and false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // test success

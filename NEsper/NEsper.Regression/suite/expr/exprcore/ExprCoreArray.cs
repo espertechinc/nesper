@@ -30,11 +30,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
 	public class ExprCoreArray
 	{
-
 		// for use in testing a static method accepting array parameters
-		private static int?[] callbackInts;
-		private static string[] callbackStrings;
-		private static object[] callbackObjects;
+		private static int[] _callbackInts;
+		private static string[] _callbackStrings;
+		private static object[] _callbackObjects;
 
 		public static ICollection<RegressionExecution> Executions()
 		{
@@ -59,10 +58,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.Verify(
 						"c0",
 						value => {
-							Assert.AreEqual(typeof(int?[]), value.GetType());
-							EPAssertionUtil.AssertEqualsExactOrder(
-								new int?[] {1, 2},
-								(int?[]) value);
+							Assert.AreEqual(typeof(int[]), value.GetType());
+							EPAssertionUtil.AssertEqualsExactOrder(new[] {1, 2}, value.Unwrap<int>());
 						});
 
 				builder.Run(env);
@@ -75,23 +72,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@Name('s0') select " +
-				          "{'a', 'b'} as stringArray," +
-				          "{} as emptyArray," +
-				          "{1} as oneEleArray," +
+				          "{'a', 'b'} as StringArray," +
+				          "{} as EmptyArray," +
+				          "{1} as OneEleArray," +
 				          "{1,2,3} as IntArray," +
-				          "{1,null} as intNullArray," +
+				          "{1,null} as IntNullArray," +
 				          "{1L,10L} as LongArray," +
-				          "{'a',1, 1e20} as mixedArray," +
-				          "{1, 1.1d, 1e20} as doubleArray," +
-				          "{5, 6L} as intLongArray," +
-				          "{null} as nullArray," +
-				          typeof(ExprCoreArray).Name + ".doIt({'a'}, {1}, {1, 'd', null, true}) as func," +
-				          "{true, false} as boolArray," +
-				          "{IntPrimitive} as dynIntArr," +
-				          "{IntPrimitive, LongPrimitive} as dynLongArr," +
-				          "{IntPrimitive, TheString} as dynMixedArr," +
-				          "{IntPrimitive, IntPrimitive * 2, IntPrimitive * 3} as dynCalcArr," +
-				          "{LongBoxed, DoubleBoxed * 2, TheString || 'a'} as dynCalcArrNulls" +
+				          "{'a',1, 1e20} as MixedArray," +
+				          "{1, 1.1d, 1e20} as DoubleArray," +
+				          "{5, 6L} as IntLongArray," +
+				          "{null} as NullArray," +
+				          typeof(ExprCoreArray).FullName + ".DoIt({'a'}, {1}, {1, 'd', null, true}) as Func," +
+				          "{true, false} as BoolArray," +
+				          "{IntPrimitive} as DynIntArr," +
+				          "{IntPrimitive, LongPrimitive} as DynLongArr," +
+				          "{IntPrimitive, TheString} as DynMixedArr," +
+				          "{IntPrimitive, IntPrimitive * 2, IntPrimitive * 3} as DynCalcArr," +
+				          "{LongBoxed, DoubleBoxed * 2, TheString || 'a'} as DynCalcArrNulls" +
 				          " from " +
 				          typeof(SupportBean).Name;
 				env.CompileDeploy(epl).AddListener("s0");
@@ -101,28 +98,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.SendEventBean(bean);
 
 				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("stringArray"), new[] {"a", "b"});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("emptyArray"), new object[0]);
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("IntArray"), new int?[] {1, 2, 3});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intNullArray"), new int?[] {1, null});
-				EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("LongArray"), new long?[] {1L, 10L});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("mixedArray"), new object[] {"a", 1, 1e20});
-				EPAssertionUtil.AssertEqualsExactOrder((double?[]) theEvent.Get("doubleArray"), new double?[] {1d, 1.1, 1e20});
-				EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("intLongArray"), new long?[] {5L, 6L});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("nullArray"), new object[] {null});
-				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("func"), new[] {"a", "b"});
-				EPAssertionUtil.AssertEqualsExactOrder((bool?[]) theEvent.Get("boolArray"), new bool?[] {true, false});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("dynIntArr"), new int?[] {10});
-				EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("dynLongArr"), new long?[] {10L, 999L});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("dynMixedArr"), new object[] {10, "a"});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("dynCalcArr"), new int?[] {10, 20, 30});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("dynCalcArrNulls"), new object[] {null, null, "aa"});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("StringArray").Unwrap<string>(), new[] {"a", "b"});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("EmptyArray").Unwrap<object>(), new object[0]);
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("OneEleArray").Unwrap<int>(), new int[] {1});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("IntArray").Unwrap<int>(), new int[] {1, 2, 3});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("IntNullArray").Unwrap<int?>(), new int?[] {1, null});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("LongArray").Unwrap<long>(), new long[] {1L, 10L});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("MixedArray").Unwrap<object>(), new object[] {"a", 1, 1e20});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("DoubleArray").Unwrap<double>(), new double[] {1d, 1.1, 1e20});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("IntLongArray").Unwrap<long>(), new long[] {5L, 6L});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("NullArray").Unwrap<object>(), new object[] {null});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("Func").Unwrap<string>(), new[] {"a", "b"});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("BoolArray").Unwrap<bool>(), new bool[] {true, false});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("DynIntArr").Unwrap<int>(), new int[] {10});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("DynLongArr").Unwrap<long>(), new long[] {10L, 999L});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("DynMixedArr").Unwrap<object>(), new object[] {10, "a"});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("DynCalcArr").Unwrap<int>(), new int[] {10, 20, 30});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("DynCalcArrNulls").Unwrap<object>(), new object[] {null, null, "aa"});
 
 				// assert function parameters
-				EPAssertionUtil.AssertEqualsExactOrder(callbackInts, new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder(callbackStrings, new[] {"a"});
-				EPAssertionUtil.AssertEqualsExactOrder(callbackObjects, new object[] {1, "d", null, true});
+				EPAssertionUtil.AssertEqualsExactOrder(_callbackInts, new int?[] {1});
+				EPAssertionUtil.AssertEqualsExactOrder(_callbackStrings, new[] {"a"});
+				EPAssertionUtil.AssertEqualsExactOrder(_callbackObjects, new object[] {1, "d", null, true});
 
 				env.UndeployAll();
 			}
@@ -132,9 +129,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select {\"a\",\"b\"} as stringArray, " +
-				          "{} as emptyArray, " +
-				          "{1} as oneEleArray, " +
+				var epl = "@Name('s0') select {\"a\",\"b\"} as StringArray, " +
+				          "{} as EmptyArray, " +
+				          "{1} as OneEleArray, " +
 				          "{1,2,3} as IntArray " +
 				          "from SupportBean";
 				env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
@@ -143,10 +140,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.SendEventBean(bean);
 
 				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("stringArray"), new[] {"a", "b"});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("emptyArray"), new object[0]);
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("IntArray"), new int?[] {1, 2, 3});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("StringArray").Unwrap<string>(), new[] {"a", "b"});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("EmptyArray").Unwrap<object>(), new object[0]);
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("OneEleArray").Unwrap<int>(), new int[] {1});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("IntArray").Unwrap<int>(), new int[] {1, 2, 3});
 
 				env.UndeployAll();
 			}
@@ -158,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				var fields = "c0".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBeanComplexProps")
-					.WithExpressions(fields, "{arrayProperty, nested}");
+					.WithExpressions(fields, "{ArrayProperty, Nested}");
 
 				var bean = SupportBeanComplexProps.MakeDefaultBean();
 				builder.WithAssertion(bean)
@@ -179,18 +176,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select {\"a\",\"b\"} as stringArray, " +
-				          "{} as emptyArray, " +
-				          "{1} as oneEleArray, " +
+				var epl = "@Name('s0') select {\"a\",\"b\"} as StringArray, " +
+				          "{} as EmptyArray, " +
+				          "{1} as OneEleArray, " +
 				          "{1,2,3} as IntArray " +
 				          "from " +
 				          typeof(SupportBean).Name;
 				var model = new EPStatementObjectModel();
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 				model.SelectClause = SelectClause.Create()
-					.Add(Expressions.Array().Add(Expressions.Constant("a")).Add(Expressions.Constant("b")), "stringArray")
-					.Add(Expressions.Array(), "emptyArray")
-					.Add(Expressions.Array().Add(Expressions.Constant(1)), "oneEleArray")
+					.Add(Expressions.Array().Add(Expressions.Constant("a")).Add(Expressions.Constant("b")), "StringArray")
+					.Add(Expressions.Array(), "EmptyArray")
+					.Add(Expressions.Array().Add(Expressions.Constant(1)), "OneEleArray")
 					.Add(Expressions.Array().Add(Expressions.Constant(1)).Add(2).Add(3), "IntArray");
 
 				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
@@ -201,10 +198,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.SendEventBean(bean);
 
 				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("stringArray"), new[] {"a", "b"});
-				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("emptyArray"), new object[0]);
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("IntArray"), new int?[] {1, 2, 3});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("StringArray").Unwrap<string>(), new[] {"a", "b"});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("EmptyArray").Unwrap<object>(), new object[0]);
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("OneEleArray").Unwrap<int>(), new int[] {1});
+				EPAssertionUtil.AssertEqualsExactOrder(theEvent.Get("IntArray").Unwrap<int>(), new int[] {1, 2, 3});
 
 				env.UndeployAll();
 			}
@@ -219,27 +216,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var nullArraySchema = SchemaBuilder.Array(NullType());
 
 				var stmtText =
-					"@Name('s0') @AvroSchemaField(name='emptyArray', schema='" +
-					intArraySchema.ToString() +
-					"')" +
-					"@AvroSchemaField(name='mixedArray', schema='" +
-					mixedArraySchema.ToString() +
-					"')" +
-					"@AvroSchemaField(name='nullArray', schema='" +
-					nullArraySchema.ToString() +
-					"')" +
+					"@Name('s0') " +
+					"@AvroSchemaField(Name='EmptyArray', Schema='" + intArraySchema + "')" +
+					"@AvroSchemaField(Name='MixedArray', Schema='" + mixedArraySchema + "')" +
+					"@AvroSchemaField(Name='NullArray', Schema='" + nullArraySchema + "')" +
 					EventRepresentationChoice.AVRO.GetAnnotationText() +
-					"select {'a', 'b'} as stringArray," +
-					"{} as emptyArray," +
-					"{1} as oneEleArray," +
+					"select {'a', 'b'} as StringArray," +
+					"{} as EmptyArray," +
+					"{1} as OneEleArray," +
 					"{1,2,3} as IntArray," +
-					"{1,null} as intNullArray," +
+					"{1,null} as IntNullArray," +
 					"{1L,10L} as LongArray," +
-					"{'a',1, 1e20} as mixedArray," +
-					"{1, 1.1d, 1e20} as doubleArray," +
-					"{5, 6L} as intLongArray," +
-					"{null} as nullArray," +
-					"{true, false} as boolArray" +
+					"{'a',1, 1e20} as MixedArray," +
+					"{1, 1.1d, 1e20} as DoubleArray," +
+					"{5, 6L} as IntLongArray," +
+					"{null} as NullArray," +
+					"{true, false} as BoolArray" +
 					" from SupportBean";
 				env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -248,17 +240,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
 				SupportAvroUtil.AvroToJson(theEvent);
 
-				CompareColl(theEvent, "stringArray", new[] {"a", "b"});
-				CompareColl(theEvent, "emptyArray", new object[0]);
-				CompareColl(theEvent, "oneEleArray", new int?[] {1});
+				CompareColl(theEvent, "StringArray", new[] {"a", "b"});
+				CompareColl(theEvent, "EmptyArray", new object[0]);
+				CompareColl(theEvent, "OneEleArray", new int?[] {1});
 				CompareColl(theEvent, "IntArray", new int?[] {1, 2, 3});
-				CompareColl(theEvent, "intNullArray", new int?[] {1, null});
+				CompareColl(theEvent, "IntNullArray", new int?[] {1, null});
 				CompareColl(theEvent, "LongArray", new long?[] {1L, 10L});
-				CompareColl(theEvent, "mixedArray", new object[] {"a", 1, 1e20});
-				CompareColl(theEvent, "doubleArray", new double?[] {1d, 1.1, 1e20});
-				CompareColl(theEvent, "intLongArray", new long?[] {5L, 6L});
-				CompareColl(theEvent, "nullArray", new object[] {null});
-				CompareColl(theEvent, "boolArray", new bool?[] {true, false});
+				CompareColl(theEvent, "MixedArray", new object[] {"a", 1, 1e20});
+				CompareColl(theEvent, "DoubleArray", new double?[] {1d, 1.1, 1e20});
+				CompareColl(theEvent, "IntLongArray", new long?[] {5L, 6L});
+				CompareColl(theEvent, "NullArray", new object[] {null});
+				CompareColl(theEvent, "BoolArray", new bool?[] {true, false});
 
 				env.UndeployAll();
 			}
@@ -276,12 +268,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static string[] DoIt(
 			string[] strings,
-			int?[] ints,
+			int[] ints,
 			object[] objects)
 		{
-			callbackInts = ints;
-			callbackStrings = strings;
-			callbackObjects = objects;
+			_callbackInts = ints;
+			_callbackStrings = strings;
+			_callbackObjects = objects;
 			return new[] {"a", "b"};
 		}
 	}

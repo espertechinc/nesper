@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -24,9 +23,7 @@ using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
-using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -39,13 +36,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 		ExprEnumerationForge,
 		ExprAggMultiFunctionNode
 	{
-		private readonly AggregationAccessorLinearType _stateType;
+		private readonly AggregationAccessorLinearType? _stateType;
 		private AggregationForgeFactory _aggregationForgeFactory;
 		private EventType _containedType;
 		private Type _scalarCollectionComponentType;
 		private EventType _streamType;
 
-		public ExprAggMultiFunctionLinearAccessNode(AggregationAccessorLinearType stateType) : base(false)
+		public ExprAggMultiFunctionLinearAccessNode(AggregationAccessorLinearType? stateType) : base(false)
 		{
 			_stateType = stateType;
 		}
@@ -71,27 +68,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			_containedType = desc.EnumerationEventType;
 			_scalarCollectionComponentType = desc.ScalarCollectionType;
 
-			EventType[] streamTypes = validationContext.StreamTypeService.EventTypes;
+			var streamTypes = validationContext.StreamTypeService.EventTypes;
 			_streamType = desc.StreamNum >= streamTypes.Length ? streamTypes[0] : streamTypes[desc.StreamNum];
 
 			_aggregationForgeFactory = desc.Factory;
 			return _aggregationForgeFactory;
 		}
 
-		public AggregationForgeFactory AggregationForgeFactory {
-			get { return _aggregationForgeFactory; }
-		}
+		public AggregationForgeFactory AggregationForgeFactory => _aggregationForgeFactory;
 
-		public ExprEnumerationEval ExprEvaluatorEnumeration {
-			get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-		}
+		public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
 		public CodegenExpression EvaluateGetROCollectionScalarCodegen(
 			CodegenMethodScope parent,
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenExpression future = GetAggFuture(codegenClassScope);
+			var future = GetAggFuture(codegenClassScope);
 			return ExprDotMethod(
 				future,
 				"GetCollectionScalar",
@@ -106,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenExpression future = GetAggFuture(codegenClassScope);
+			var future = GetAggFuture(codegenClassScope);
 			return ExprDotMethod(
 				future,
 				"GetEventBean",
@@ -121,22 +114,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenExpression future = GetAggFuture(codegenClassScope);
-			return ExprDotMethod(
-				future,
-				"GetCollectionOfEvents",
-				Constant(column),
-				exprSymbol.GetAddEPS(parent),
-				exprSymbol.GetAddIsNewData(parent),
-				exprSymbol.GetAddExprEvalCtx(parent));
+			var future = GetAggFuture(codegenClassScope);
+			return FlexWrap(
+				ExprDotMethod(
+					future,
+					"GetCollectionOfEvents",
+					Constant(column),
+					exprSymbol.GetAddEPS(parent),
+					exprSymbol.GetAddIsNewData(parent),
+					exprSymbol.GetAddExprEvalCtx(parent)));
 		}
 
 		private AggregationLinearFactoryDesc HandleNonIntoTable(
 			ExprNode[] childNodes,
-			AggregationAccessorLinearType stateType,
+			AggregationAccessorLinearType? stateType,
 			ExprValidationContext validationContext)
 		{
-			StreamTypeService streamTypeService = validationContext.StreamTypeService;
+			var streamTypeService = validationContext.StreamTypeService;
 			int streamNum;
 			Type resultType;
 			ExprForge forge;
@@ -146,13 +140,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			Type scalarCollectionComponentType = null;
 
 			// validate wildcard use
-			bool isWildcard = childNodes.Length == 0 || childNodes.Length > 0 && childNodes[0] is ExprWildcard;
+			var isWildcard = childNodes.Length == 0 || childNodes.Length > 0 && childNodes[0] is ExprWildcard;
 			if (isWildcard) {
-				ExprAggMultiFunctionUtil.ValidateWildcardStreamNumbers(validationContext.StreamTypeService, stateType.ToString().ToLowerInvariant());
+				ExprAggMultiFunctionUtil.ValidateWildcardStreamNumbers(validationContext.StreamTypeService, stateType?.GetNameInvariant());
 				streamNum = 0;
 				containedType = streamTypeService.EventTypes[0];
 				resultType = containedType.UnderlyingType;
-				TableMetaData tableMetadataX = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(containedType);
+				var tableMetadataX = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(containedType);
 				forge = ExprNodeUtilityMake.MakeUnderlyingForge(0, resultType, tableMetadataX);
 				istreamOnly = GetIstreamOnly(streamTypeService, 0);
 				if ((stateType == AggregationAccessorLinearType.WINDOW) && istreamOnly && !streamTypeService.IsOnDemandStreams) {
@@ -167,16 +161,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 					throw MakeUnboundValidationEx(stateType);
 				}
 
-				EventType type = streamTypeService.EventTypes[streamNum];
+				var type = streamTypeService.EventTypes[streamNum];
 				containedType = type;
 				resultType = type.UnderlyingType;
-				TableMetaData tableMetadataX = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(type);
+				var tableMetadataX = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(type);
 				forge = ExprNodeUtilityMake.MakeUnderlyingForge(streamNum, resultType, tableMetadataX);
 			}
 			else {
 				// validate when neither wildcard nor "stream.*"
-				ExprNode child = childNodes[0];
-				ISet<int> streams = ExprNodeUtilityQuery.GetIdentStreamNumbers(child);
+				var child = childNodes[0];
+				var streams = ExprNodeUtilityQuery.GetIdentStreamNumbers(child);
 				if (streams.IsEmpty() || (streams.Count > 1)) {
 					throw new ExprValidationException(
 						GetErrorPrefix(stateType) +
@@ -207,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				}
 
 				evaluatorIndex = childNodes[1];
-				Type indexResultType = evaluatorIndex.Forge.EvaluationType;
+				var indexResultType = evaluatorIndex.Forge.EvaluationType;
 				if (indexResultType != typeof(int?) && indexResultType != typeof(int)) {
 					throw new ExprValidationException(GetErrorPrefix(stateType) + " requires an index expression that returns an integer value");
 				}
@@ -216,8 +210,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			// determine accessor
 			AggregationAccessorForge accessor;
 			if (evaluatorIndex != null) {
-				bool isFirst = stateType == AggregationAccessorLinearType.FIRST;
-				int constant = -1;
+				var isFirst = stateType == AggregationAccessorLinearType.FIRST;
+				var constant = -1;
 				ExprForge forgeIndex;
 				if (evaluatorIndex.Forge.ForgeConstantType.IsCompileTimeConstant) {
 					constant = evaluatorIndex.Forge.ExprEvaluator.Evaluate(null, true, null).AsInt32();
@@ -244,35 +238,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				}
 			}
 
-			Type accessorResultType = resultType;
+			var accessorResultType = resultType;
 			if (stateType == AggregationAccessorLinearType.WINDOW) {
 				accessorResultType = TypeHelper.GetArrayType(resultType);
 			}
 
-			bool isFafWindow = streamTypeService.IsOnDemandStreams && stateType == AggregationAccessorLinearType.WINDOW;
-			TableMetaData tableMetadata = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(containedType);
+			var isFafWindow = streamTypeService.IsOnDemandStreams && stateType == AggregationAccessorLinearType.WINDOW;
+			var tableMetadata = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(containedType);
 
 			if (tableMetadata == null && !isFafWindow && (istreamOnly || streamTypeService.IsOnDemandStreams)) {
 				if (optionalFilter != null) {
 					positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
 				}
 
-				DataInputOutputSerdeForge serde = validationContext.SerdeResolver.SerdeForAggregation(accessorResultType, validationContext.StatementRawInfo);
+				var serde = validationContext.SerdeResolver.SerdeForAggregation(accessorResultType, validationContext.StatementRawInfo);
 				AggregationForgeFactory factoryX = new AggregationForgeFactoryFirstLastUnbound(this, accessorResultType, optionalFilter != null, serde);
 				return new AggregationLinearFactoryDesc(factoryX, containedType, scalarCollectionComponentType, streamNum);
 			}
 
-			AggregationStateKeyWStream stateKey = new AggregationStateKeyWStream(
+			var stateKey = new AggregationStateKeyWStream(
 				streamNum,
 				containedType,
 				AggregationStateTypeWStream.DATAWINDOWACCESS_LINEAR,
 				ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY,
 				optionalFilter);
 
-			ExprForge optionalFilterForge = optionalFilter == null ? null : optionalFilter.Forge;
+			var optionalFilterForge = optionalFilter == null ? null : optionalFilter.Forge;
 			AggregationStateFactoryForge stateFactory = new AggregationStateLinearForge(this, streamNum, optionalFilterForge);
 
-			AggregationForgeFactoryAccessLinear factory = new AggregationForgeFactoryAccessLinear(
+			var factory = new AggregationForgeFactoryAccessLinear(
 				this,
 				accessor,
 				accessorResultType,
@@ -280,9 +274,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				stateFactory,
 				AggregationAgentDefault.INSTANCE,
 				containedType);
-			EventType enumerationType = scalarCollectionComponentType == null ? containedType : null;
+			var enumerationType = scalarCollectionComponentType == null ? containedType : null;
 
-			IList<StmtClassForgeableFactory> serdeForgables = SerdeEventTypeUtility.Plan(
+			var serdeForgables = SerdeEventTypeUtility.Plan(
 				containedType,
 				validationContext.StatementRawInfo,
 				validationContext.SerdeEventTypeRegistry,
@@ -294,12 +288,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
 		private AggregationLinearFactoryDesc HandleCreateTable(
 			ExprNode[] childNodes,
-			AggregationAccessorLinearType stateType,
+			AggregationAccessorLinearType? stateType,
 			ExprValidationContext validationContext)
 		{
-			string message = "For tables columns, the " +
-			                 stateType.GetName().ToLowerInvariant() +
-			                 " aggregation function requires the 'window(*)' declaration";
+			var message = "For tables columns, the " +
+			              stateType?.GetNameInvariant() +
+			              " aggregation function requires the 'window(*)' declaration";
 			if (stateType != AggregationAccessorLinearType.WINDOW) {
 				throw new ExprValidationException(message);
 			}
@@ -312,11 +306,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				throw new ExprValidationException(GetErrorPrefix(stateType) + " requires that the event type is provided");
 			}
 
-			EventType containedType = validationContext.StreamTypeService.EventTypes[0];
-			Type componentType = containedType.UnderlyingType;
+			var containedType = validationContext.StreamTypeService.EventTypes[0];
+			var componentType = containedType.UnderlyingType;
 			AggregationAccessorForge accessor = new AggregationAccessorWindowNoEvalForge(componentType);
 			AggregationStateFactoryForge stateFactory = new AggregationStateLinearForge(this, 0, null);
-			AggregationForgeFactoryAccessLinear factory = new AggregationForgeFactoryAccessLinear(
+			var factory = new AggregationForgeFactoryAccessLinear(
 				this,
 				accessor,
 				TypeHelper.GetArrayType(componentType),
@@ -325,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				null,
 				containedType);
 
-			IList<StmtClassForgeableFactory> additionalForgeables = SerdeEventTypeUtility.Plan(
+			var additionalForgeables = SerdeEventTypeUtility.Plan(
 				containedType,
 				validationContext.StatementRawInfo,
 				validationContext.SerdeEventTypeRegistry,
@@ -337,10 +331,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
 		private AggregationLinearFactoryDesc HandleIntoTable(
 			ExprNode[] childNodes,
-			AggregationAccessorLinearType stateType,
+			AggregationAccessorLinearType? stateType,
 			ExprValidationContext validationContext)
 		{
-			string message = "For into-table use 'window(*)' or 'window(stream.*)' instead";
+			var message = "For into-table use 'window(*)' or 'window(stream.*)' instead";
 			if (stateType != AggregationAccessorLinearType.WINDOW) {
 				throw new ExprValidationException(message);
 			}
@@ -362,23 +356,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				streamNum = 0;
 			}
 			else if (childNodes[0] is ExprStreamUnderlyingNode) {
-				ExprStreamUnderlyingNode und = (ExprStreamUnderlyingNode) childNodes[0];
+				var und = (ExprStreamUnderlyingNode) childNodes[0];
 				streamNum = und.StreamId;
 			}
 			else {
 				throw new ExprValidationException(message);
 			}
 
-			EventType containedType = validationContext.StreamTypeService.EventTypes[streamNum];
-			Type componentType = containedType.UnderlyingType;
+			var containedType = validationContext.StreamTypeService.EventTypes[streamNum];
+			var componentType = containedType.UnderlyingType;
 			AggregationAccessorForge accessor = new AggregationAccessorWindowNoEvalForge(componentType);
-			AggregationAgentForge agent = AggregationAgentForgeFactory.Make(
+			var agent = AggregationAgentForgeFactory.Make(
 				streamNum,
 				optionalFilter,
 				validationContext.ImportService,
 				validationContext.StreamTypeService.IsOnDemandStreams,
 				validationContext.StatementName);
-			AggregationForgeFactoryAccessLinear factory = new AggregationForgeFactoryAccessLinear(
+			var factory = new AggregationForgeFactoryAccessLinear(
 				this,
 				accessor,
 				TypeHelper.GetArrayType(componentType),
@@ -401,42 +395,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			return streamTypeService.IStreamOnly[0];
 		}
 
-		public override string AggregationFunctionName {
-			get { return _stateType.ToString().ToLowerInvariant(); }
-		}
+		public override string AggregationFunctionName => _stateType?.GetNameInvariant();
 
 		public override void ToPrecedenceFreeEPL(
 			TextWriter writer,
 			ExprNodeRenderableFlags flags)
 		{
-			writer.Write(_stateType.ToString().ToLowerInvariant());
+			writer.Write(_stateType?.GetNameInvariant());
 			ExprNodeUtilityPrint.ToExpressionStringParams(writer, this.ChildNodes);
 		}
 
-		public AggregationAccessorLinearType StateType {
-			get { return _stateType; }
-		}
+		public AggregationAccessorLinearType? StateType => _stateType;
 
 		public EventType GetEventTypeCollection(
 			StatementRawInfo statementRawInfo,
 			StatementCompileTimeServices compileTimeServices)
 		{
-			if (_stateType == AggregationAccessorLinearType.FIRST || _stateType == AggregationAccessorLinearType.LAST) {
+			if (_stateType == AggregationAccessorLinearType.FIRST ||
+			    _stateType == AggregationAccessorLinearType.LAST) {
 				return null;
 			}
 
 			return _containedType;
 		}
 
-		public Type ComponentTypeCollection {
-			get { return _scalarCollectionComponentType; }
-		}
+		public Type ComponentTypeCollection => _scalarCollectionComponentType;
 
 		public EventType GetEventTypeSingle(
 			StatementRawInfo statementRawInfo,
 			StatementCompileTimeServices compileTimeServices)
 		{
-			if (_stateType == AggregationAccessorLinearType.FIRST || _stateType == AggregationAccessorLinearType.LAST) {
+			if (_stateType == AggregationAccessorLinearType.FIRST ||
+			    _stateType == AggregationAccessorLinearType.LAST) {
 				return _containedType;
 			}
 
@@ -445,32 +435,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
 		public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 		{
-			if (!(node is ExprAggMultiFunctionLinearAccessNode)) {
-				return false;
+			if (node is ExprAggMultiFunctionLinearAccessNode other) {
+				return _stateType == other._stateType &&
+				       _containedType == other._containedType &&
+				       _scalarCollectionComponentType == other._scalarCollectionComponentType;
 			}
 
-			ExprAggMultiFunctionLinearAccessNode other = (ExprAggMultiFunctionLinearAccessNode) node;
-			return _stateType == other._stateType && _containedType == other._containedType && _scalarCollectionComponentType == other._scalarCollectionComponentType;
+			return false;
+
 		}
 
-		private static ExprValidationException MakeUnboundValidationEx(AggregationAccessorLinearType stateType)
+		private static ExprValidationException MakeUnboundValidationEx(AggregationAccessorLinearType? stateType)
 		{
 			return new ExprValidationException(
 				GetErrorPrefix(stateType) +
 				" requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
 		}
 
-		private static string GetErrorPrefix(AggregationAccessorLinearType stateType)
+		private static string GetErrorPrefix(AggregationAccessorLinearType? stateType)
 		{
-			return ExprAggMultiFunctionUtil.GetErrorPrefix(stateType.ToString().ToLowerInvariant());
+			var stateTypeString = stateType?.GetNameInvariant();
+			return ExprAggMultiFunctionUtil.GetErrorPrefix(stateTypeString);
 		}
 
-		public override bool IsFilterExpressionAsLastParameter {
-			get { return false; }
-		}
+		public override bool IsFilterExpressionAsLastParameter => false;
 
-		public EventType StreamType {
-			get { return _streamType; }
-		}
+		public EventType StreamType => _streamType;
 	}
 } // end of namespace

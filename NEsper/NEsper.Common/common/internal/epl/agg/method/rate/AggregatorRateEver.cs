@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block.IfCondition(Not(ExprDotMethod(_points, "IsEmpty")))
-                .DeclareVar<long>("newest", Cast(typeof(long), ExprDotName(_points, "Last")))
+                .DeclareVar<long>("newest", ExprDotMethod(ExprDotName(_points, "Last"), "AsInt64"))
                 .DeclareVar<bool>(
                     "leave",
                     StaticMethod(

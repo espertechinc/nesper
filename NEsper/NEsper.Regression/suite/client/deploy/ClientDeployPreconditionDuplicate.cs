@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\"";
+                var epl = "create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\"";
                 env.CompileDeploy(epl, path);
                 TryInvalidDeploy(env, epl, "An application-inlined class by name 'MyClass'", MODULE_NAME_UNNAMED);
                 env.UndeployAll();

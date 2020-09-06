@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidBuild()
         {
             // root stream out of bounds
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             TryInvalidBuild(0, Convert(new[] { new[] { 1 }, new int[] { }, new int[] { } }), new[] { true, true });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidBuildCartesian()
         {
             var nodeFactory = AssemblyStrategyTreeBuilder.Build(
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             Assert.AreEqual(top, leaf2.ParentNode);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidBuildSimpleOptReq()
         {
             var nodeFactory = AssemblyStrategyTreeBuilder.Build(
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             Assert.AreEqual(child1_1, leaf1_2.ParentNode);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidBuildSimpleReqOpt()
         {
             var nodeFactory = AssemblyStrategyTreeBuilder.Build(

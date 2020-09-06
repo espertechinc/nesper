@@ -42,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             public override object Parse(string input)
             {
-                return StringToDateTimeOffsetWStaticFormatParse(input, DateTimeFormat.ISO_DATE_TIME);
+                return StringToDateTimeOffsetWStaticFormatParse(input, dateFormat);
+                // return StringToDateTimeOffsetWStaticFormatParse(input, DateTimeFormat.ISO_DATE_TIME);
             }
 
             public override CodegenExpression CodegenPremade(

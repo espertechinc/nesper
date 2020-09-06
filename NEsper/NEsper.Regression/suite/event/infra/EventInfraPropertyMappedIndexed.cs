@@ -14,6 +14,7 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -41,36 +42,39 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var path = new RegressionPath();
 
-			RunAssertion(env, BEAN_TYPE.Name, FBEAN, new MyIMEvent(new string[] {"v1", "v2"}, Collections.SingletonMap("k1", "v1")), path);
+			RunAssertion(
+				env,
+				BEAN_TYPE.Name,
+				FBEAN,
+				new MyIMEvent(new string[] {"v1", "v2"}, Collections.SingletonDataMap("k1", "v1")),
+				path);
 
 			RunAssertion(
 				env,
 				MAP_TYPENAME,
 				FMAP,
-				TwoEntryMap<string, object>("indexed", new string[] {"v1", "v2"}, "mapped", Collections.SingletonMap("k1", "v1")),
+				TwoEntryMap<string, object>("Indexed", new string[] {"v1", "v2"}, "Mapped", Collections.SingletonDataMap("k1", "v1")),
 				path);
 
-			RunAssertion(env, OA_TYPENAME, FOA, new object[] {new string[] {"v1", "v2"}, Collections.SingletonMap("k1", "v1")}, path);
+			RunAssertion(env, OA_TYPENAME, FOA, new object[] {new string[] {"v1", "v2"}, Collections.SingletonDataMap("k1", "v1")}, path);
 
 			// Avro
 			var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
 			var datum = new GenericRecord(avroSchema);
-			datum.Put("indexed", Arrays.AsList("v1", "v2"));
-			datum.Put("mapped", Collections.SingletonMap("k1", "v1"));
+			datum.Put("Indexed", Arrays.AsList("v1", "v2"));
+			datum.Put("Mapped", Collections.SingletonMap("k1", "v1"));
 			RunAssertion(env, AVRO_TYPENAME, FAVRO, datum, path);
 
 			// Json
-			env.CompileDeploy("@public @buseventtype @name('schema') create json schema " + JSON_TYPENAME + "(indexed string[], mapped java.util.Map)", path);
-			var json = "{\"mapped\":{\"k1\":\"v1\"},\"indexed\":[\"v1\",\"v2\"]}";
+			var mapType = typeof(IDictionary<string, object>).CleanName();
+			env.CompileDeploy($"@public @buseventtype @name('schema') create json schema {JSON_TYPENAME} (Indexed string[], Mapped `{mapType}`)", path);
+			var json = "{\"Mapped\":{\"k1\":\"v1\"},\"Indexed\":[\"v1\",\"v2\"]}";
 			RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
 
 			// Json+ProvidedClass
 			env.CompileDeploy(
-				"@public @buseventtype @name('schema') @JsonSchema(className='" +
-				nameof(MyLocalJsonProvided) +
-				"') create json schema " +
-				JSONPROVIDED_TYPENAME +
-				"()",
+				$"@public @buseventtype @name('schema') @JsonSchema(ClassName='{typeof(MyLocalJsonProvided).FullName}') " +
+				$"create json schema {JSONPROVIDED_TYPENAME}()",
 				path);
 			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
 		}
@@ -82,7 +86,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			object underlying,
 			RegressionPath path)
 		{
-
 			RunAssertionTypeValidProp(env, typename, underlying);
 			RunAssertionTypeInvalidProp(env, typename);
 
@@ -92,10 +95,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			send.Invoke(env, underlying, typename);
 			var @event = env.Listener("s0").AssertOneGetNewAndReset();
 
-			var mappedGetter = @event.EventType.GetGetterMapped("mapped");
+			var mappedGetter = @event.EventType.GetGetterMapped("Mapped");
 			Assert.AreEqual("v1", mappedGetter.Get(@event, "k1"));
 
-			var indexedGetter = @event.EventType.GetGetterIndexed("indexed");
+			var indexedGetter = @event.EventType.GetGetterIndexed("Indexed");
 			Assert.AreEqual("v2", indexedGetter.Get(@event, 1));
 
 			RunAssertionEventInvalidProp(@event);
@@ -106,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 		private void RunAssertionEventInvalidProp(EventBean @event)
 		{
-			foreach (var prop in Arrays.AsList("xxxx", "mapped[1]", "indexed('a')", "mapped.x", "indexed.x")) {
+			foreach (var prop in Arrays.AsList("xxxx", "Mapped[1]", "Indexed('a')", "Mapped.x", "Indexed.x")) {
 				SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
 				SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
 			}
@@ -129,50 +132,51 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			};
 			SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
-			EPAssertionUtil.AssertEqualsAnyOrder(new string[] {"indexed", "mapped"}, eventType.PropertyNames);
+			EPAssertionUtil.AssertEqualsAnyOrder(new string[] {"Indexed", "Mapped"}, eventType.PropertyNames);
 
-			Assert.IsNotNull(eventType.GetGetter("mapped"));
-			Assert.IsNotNull(eventType.GetGetter("mapped('a')"));
-			Assert.IsNotNull(eventType.GetGetter("indexed"));
-			Assert.IsNotNull(eventType.GetGetter("indexed[0]"));
-			Assert.IsTrue(eventType.IsProperty("mapped"));
-			Assert.IsTrue(eventType.IsProperty("mapped('a')"));
-			Assert.IsTrue(eventType.IsProperty("indexed"));
-			Assert.IsTrue(eventType.IsProperty("indexed[0]"));
+			Assert.IsNotNull(eventType.GetGetter("Mapped"));
+			Assert.IsNotNull(eventType.GetGetter("Mapped('a')"));
+			Assert.IsNotNull(eventType.GetGetter("Indexed"));
+			Assert.IsNotNull(eventType.GetGetter("Indexed[0]"));
+			Assert.IsTrue(eventType.IsProperty("Mapped"));
+			Assert.IsTrue(eventType.IsProperty("Mapped('a')"));
+			Assert.IsTrue(eventType.IsProperty("Indexed"));
+			Assert.IsTrue(eventType.IsProperty("Indexed[0]"));
 			
 			Assert.AreEqual(mapType, eventType.GetPropertyType("Mapped"));
 			Assert.AreEqual(mapValueType, eventType.GetPropertyType("Mapped('a')"));
 			
-			// underlying is GenericRecord ? typeof(ICollection) : typeof(string[]), eventType.GetPropertyType("indexed")
+			// underlying is GenericRecord ? typeof(ICollection) : typeof(string[]), eventType.GetPropertyType("Indexed")
 			
 			Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("Indexed"));
-			Assert.AreEqual(typeof(string), eventType.GetPropertyType("indexed[0]"));
+			Assert.AreEqual(typeof(string), eventType.GetPropertyType("Indexed[0]"));
 
 			Assert.AreEqual(
 				new EventPropertyDescriptor(
-					"indexed",
-					underlying is GenericRecord ? typeof(ICollection<string>) : typeof(string[]),
+					"Indexed",
+					typeof(string[]),
 					typeof(string),
 					false,
 					false,
 					true,
 					false,
 					false),
-				eventType.GetPropertyDescriptor("indexed"));
+				eventType.GetPropertyDescriptor("Indexed"));
+			
 			Assert.AreEqual(
 				new EventPropertyDescriptor(
-					"mapped",
-					typeof(IDictionary<string, object>),
-					typeof(string),
+					"Mapped",
+					mapType,
+					mapValueType,
 					false,
 					false,
 					false,
 					true,
 					false),
-				eventType.GetPropertyDescriptor("mapped"));
+				eventType.GetPropertyDescriptor("Mapped"));
 
-			Assert.IsNull(eventType.GetFragmentType("indexed"));
-			Assert.IsNull(eventType.GetFragmentType("mapped"));
+			Assert.IsNull(eventType.GetFragmentType("Indexed"));
+			Assert.IsNull(eventType.GetFragmentType("Mapped"));
 		}
 
 		private void RunAssertionTypeInvalidProp(
@@ -181,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
 
-			foreach (var prop in Arrays.AsList("xxxx", "myString[0]", "indexed('a')", "indexed.x", "mapped[0]", "mapped.x")) {
+			foreach (var prop in Arrays.AsList("xxxx", "myString[0]", "Indexed('a')", "Indexed.x", "Mapped[0]", "Mapped.x")) {
 				Assert.AreEqual(false, eventType.IsProperty(prop));
 				Assert.AreEqual(null, eventType.GetPropertyType(prop));
 				Assert.IsNull(eventType.GetPropertyDescriptor(prop));
@@ -190,27 +194,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 		public class MyIMEvent
 		{
-			private readonly string[] indexed;
-			private readonly IDictionary<string, string> mapped;
-
 			public MyIMEvent(
 				string[] indexed,
-				IDictionary<string, string> mapped)
+				IDictionary<string, object> mapped)
 			{
-				this.indexed = indexed;
-				this.mapped = mapped;
+				this.Indexed = indexed;
+				this.Mapped = mapped;
 			}
 
-			public string[] Indexed => indexed;
+			public string[] Indexed { get; }
 
-			public IDictionary<string, string> Mapped => mapped;
+			public IDictionary<string, object> Mapped { get; }
 		}
 
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public string[] indexed;
-			public IDictionary<string, string> mapped;
+			public string[] Indexed;
+			public IDictionary<string, object> Mapped;
 		}
 	}
 } // end of namespace

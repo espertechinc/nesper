@@ -37,13 +37,13 @@ namespace NEsper.Avro.Getter
         public object Get(EventBean eventBean)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = (IDictionary<string, object>) record.Get(_pos);
+            var values = record.Get(_pos).AsStringDictionary();
             return GetAvroMappedValueWNullCheck(values, _key);
         }
 
         public object GetAvroFieldValue(GenericRecord record)
         {
-            var values = (IDictionary<string, object>) record.Get(_pos);
+            var values = record.Get(_pos).AsStringDictionary();
             return GetAvroMappedValueWNullCheck(values, _key);
         }
 
@@ -54,8 +54,8 @@ namespace NEsper.Avro.Getter
 
         public bool IsExistsPropertyAvro(GenericRecord record)
         {
-            var values = (IDictionary<string, object>) record.Get(_pos);
-            return values == null ? false : values.ContainsKey(_key);
+            var values = record.Get(_pos).AsStringDictionary();
+            return values?.ContainsKey(_key) ?? false;
         }
 
         public object GetFragment(EventBean eventBean)
@@ -130,13 +130,15 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            return codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(GenericRecord), "record")
                 .Block
                 .DeclareVar<IDictionary<string, object>>(
                     "values",
-                    CodegenExpressionBuilder.Cast(
-                        typeof(IDictionary<string, object>),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(CompatExtensions),
+                        "AsStringDictionary",
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(GenericRecordExtensions),
                             "Get",
@@ -149,15 +151,20 @@ namespace NEsper.Avro.Getter
                         "Get",
                         CodegenExpressionBuilder.Constant(_key)));
         }
-        
-        private CodegenMethod GetAvroFieldExistsCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-            return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
+
+        private CodegenMethod GetAvroFieldExistsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope
+                .MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(GenericRecord), "record")
                 .Block
                 .DeclareVar<IDictionary<string, object>>(
                     "values",
-                    CodegenExpressionBuilder.Cast(
-                        typeof(IDictionary<string, object>),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(CompatExtensions),
+                        "AsStringDictionary",
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(GenericRecordExtensions),
                             "Get",

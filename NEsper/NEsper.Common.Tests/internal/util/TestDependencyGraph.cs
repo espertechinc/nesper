@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestDependencyGraph : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetRootNodes()
         {
             // 1 needs 3 and 4; 2 need 0

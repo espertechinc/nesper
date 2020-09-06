@@ -96,7 +96,6 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterValueSetParam[][] valueSet)
         {
             var rootNode = eventTypeIndex.Get(eventType);
-
             if (rootNode != null) {
                 if (valueSet.Length == 0) {
                     IndexTreeBuilderRemove.Remove(eventType, filterCallback, FilterSpecParam.EMPTY_VALUE_ARRAY, rootNode);

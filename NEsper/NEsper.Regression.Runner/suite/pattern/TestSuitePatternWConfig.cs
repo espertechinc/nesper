@@ -61,8 +61,8 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             session.Destroy();
         }
 
-        [Test, RunInApplicationDomain]
-        public void testPatternMicrosecondResolutionCrontab()
+        [Test]
+        public void TestPatternMicrosecondResolutionCrontab()
         {
             RegressionSession session = RegressionRunner.Session();
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;

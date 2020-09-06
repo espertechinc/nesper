@@ -18,13 +18,9 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     {
         private readonly Type _componentType;
         private readonly List<object> _events = new List<object>();
-        private readonly JsonSerializationContext _factory;
 
-        public JsonDeserializerEventObjectArray(
-            JsonSerializationContext factory,
-            Type componentType)
+        public JsonDeserializerEventObjectArray(Type componentType)
         {
-            _factory = factory;
             _componentType = componentType;
         }
 

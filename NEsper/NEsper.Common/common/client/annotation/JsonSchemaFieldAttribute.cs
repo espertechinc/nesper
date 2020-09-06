@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.client.annotation
 	/// </summary>
 	public class JsonSchemaFieldAttribute : Attribute
     {
-        public string Name { get; set; }
-        public string Adapter { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string Adapter { get; set; }
     }
 } // end of namespace

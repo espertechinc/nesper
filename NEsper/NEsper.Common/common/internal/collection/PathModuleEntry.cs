@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 

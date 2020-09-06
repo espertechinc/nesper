@@ -294,7 +294,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             if (!onExprContextName.Equals(desiredContextName)) {
                 string text = desiredContextName == null ?
                     "without a context" :
-                    "with context '" + desiredContextName + "', please use the same context instead";
+                    "with context \"" + desiredContextName + "\", please use the same context instead";
                 throw new ExprValidationException($"Cannot create on-trigger expression: {title} was declared {text}");
             }
         }

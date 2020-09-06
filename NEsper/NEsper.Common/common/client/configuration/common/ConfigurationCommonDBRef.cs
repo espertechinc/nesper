@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.client.configuration.common
         public MetadataOriginEnum MetadataRetrievalEnum { get; set; }
 
         /// <summary>
-        ///     Returns enum value determining how the runtimechanges case on output column names
+        ///     Returns enum value determining how the runtime changes case on output column names
         ///     returned from statement or statement result set metadata.
         /// </summary>
         /// <returns>change case enums</returns>

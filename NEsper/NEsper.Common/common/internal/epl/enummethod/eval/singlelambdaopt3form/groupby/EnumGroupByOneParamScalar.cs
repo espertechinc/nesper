@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
 					ProcEvaluateEnumMethod = (
 						eventsLambda,
@@ -45,21 +45,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						}
 
 						IDictionary<object, ICollection<object>> result = new LinkedHashMap<object, ICollection<object>>();
-						ICollection<object> values = (ICollection<object>) enumcoll;
-						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var values = (ICollection<object>) enumcoll;
+						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
-						object[] props = resultEvent.Properties;
+						var props = resultEvent.Properties;
 						props[2] = enumcoll.Count;
 
-						int count = -1;
-						foreach (object next in values) {
+						var count = -1;
+						foreach (var next in values) {
 							count++;
 							props[1] = count;
 							props[0] = next;
 
-							object key = inner.Evaluate(eventsLambda, isNewData, context);
+							var key = inner.Evaluate(eventsLambda, isNewData, context);
 
-							ICollection<object> value = result.Get(key);
+							var value = result.Get(key);
 							if (value == null) {
 								value = new List<object>();
 								result.Put(key, value);
@@ -76,12 +76,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override Type ReturnType()
 		{
-			return typeof(IDictionary<object, ICollection<object>>);
+			return typeof(IDictionary<object, object>);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
 		{
-			return EnumValue(typeof(EmptyDictionary<object, ICollection<object>>), "Instance");
+			return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
 		}
 
 		public override void InitBlock(
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar<IDictionary<object, ICollection<object>>>("result", NewInstance<LinkedHashMap<object, ICollection<object>>>());
+			block.DeclareVar<IDictionary<object, object>>("result", NewInstance<LinkedHashMap<object, object>>());
 		}
 
 		public override void ForEachBlock(

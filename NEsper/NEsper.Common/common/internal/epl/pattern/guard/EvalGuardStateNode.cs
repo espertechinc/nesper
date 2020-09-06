@@ -115,9 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             // It is possible that the child node has already been quit such as when the parent wait time was shorter.
             // 1. parent node's guard indicates quit to all children
             // 2. this node's guards also indicates quit, however that already occured
-            if (activeChildNode != null) {
-                activeChildNode.Quit();
-            }
+            activeChildNode?.Quit();
 
             activeChildNode = null;
 
@@ -138,9 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                 ParentEvaluator.EvaluateFalse(this, true);
             }
             else {
-                if (activeChildNode != null) {
-                    activeChildNode.RemoveMatch(matchEvent);
-                }
+                activeChildNode?.RemoveMatch(matchEvent);
             }
         }
 
@@ -186,9 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitGuard(evalGuardNode.FactoryNode, this, guard);
-            if (activeChildNode != null) {
-                activeChildNode.Accept(visitor);
-            }
+            activeChildNode?.Accept(visitor);
         }
 
         public override string ToString()

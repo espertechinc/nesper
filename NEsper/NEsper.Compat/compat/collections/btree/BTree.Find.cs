@@ -1,4 +1,6 @@
-﻿namespace com.espertech.esper.compat.collections.btree
+﻿using System;
+
+namespace com.espertech.esper.compat.collections.btree
 {
     public partial class BTree<TK, TV>
     {
@@ -12,6 +14,7 @@
         /// <returns></returns>
         internal Cursor InternalLast(Cursor cursor)
         {
+            cursor = new Cursor(cursor);
             while ((cursor.Node != null) && (cursor.Position == cursor.Node.Count)) {
                 cursor.Position = cursor.Node.Position;
                 cursor.Node = cursor.Node.Parent;
@@ -58,19 +61,25 @@
             TK key,
             Cursor cursor)
         {
+            var cursorX = new Cursor(cursor);
             for (;;) {
-                cursor.Position = cursor.Node.LowerBound(key, _comparer, out var isExactMatch);
+                cursorX.Position = cursorX.Node.LowerBound(key, _comparer, out var isExactMatch);
                 if (isExactMatch) {
                     // We have located the exact item at this position.  Return immediately.
-                    return new LocateResult(cursor, true);
+                    return new LocateResult(cursorX, true);
                 }
                 
                 // We didnt the item, but we have identified the node that precedes the key
                 // we are looking for.  If the node is a leaf, we can return immediately.  Leaves
                 // do not have children and as such there is no further depth.
 
-                if (cursor.Node.IsLeaf) {
-                    return new LocateResult(cursor, false);
+                if (cursorX.Node.IsLeaf) {
+                    return new LocateResult(cursorX, false);
+                }
+
+                // Reset the position if its -1 but not a leaf.
+                if (cursorX.Position == -1) {
+                    cursorX.Position = 0;
                 }
 
                 // This is an internal node.  Internal nodes have children.  The posn that we
@@ -78,7 +87,7 @@
                 // the position just before or equal to the key we are looking for.  Change the
                 // node on the enumerator (proceed down into the child).
                 
-                cursor.Node = cursor.Node.GetChild(cursor.Position);
+                cursorX.Node = cursorX.Node.GetChild(cursorX.Position);
             }
         }
 

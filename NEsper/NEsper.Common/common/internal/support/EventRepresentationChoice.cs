@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static string GetAnnotationTextWJsonProvided(this EventRepresentationChoice enumValue, Type jsonProvidedClass) {
             if (enumValue == EventRepresentationChoice.JSONCLASSPROVIDED) {
-                return "@JsonSchema(className='" + jsonProvidedClass.Name + "') " + 
+                return "@JsonSchema(ClassName='" + jsonProvidedClass.FullName + "') " + 
                        "@EventRepresentation('json')";
             }
 

@@ -47,18 +47,13 @@ namespace com.espertech.esper.common.client.util
         /// <returns>default underlying type class name</returns>
         public static string GetUnderlyingClassName(this EventUnderlyingType underlyingType)
         {
-            switch (underlyingType) {
-                case EventUnderlyingType.OBJECTARRAY:
-                    return typeof(object[]).FullName;
-                case EventUnderlyingType.MAP:
-                    return typeof(IDictionary<string, object>).FullName;
-                case EventUnderlyingType.AVRO:
-                    return AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME;
-                case EventUnderlyingType.JSON:
-                    return typeof(object).FullName;
-            }
-
-            throw new ArgumentException("invalid value", nameof(underlyingType));
+            return underlyingType switch {
+                EventUnderlyingType.OBJECTARRAY => typeof(object[]).FullName,
+                EventUnderlyingType.MAP => typeof(IDictionary<string, object>).FullName,
+                EventUnderlyingType.AVRO => AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME,
+                EventUnderlyingType.JSON => typeof(object).FullName,
+                _ => throw new ArgumentException("invalid value", nameof(underlyingType))
+            };
         }
 
         /// <summary>

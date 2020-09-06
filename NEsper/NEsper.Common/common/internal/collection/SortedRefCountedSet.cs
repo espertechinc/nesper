@@ -21,39 +21,45 @@ namespace com.espertech.esper.common.@internal.collection
     /// </summary>
     public class SortedRefCountedSet<TK>
     {
+        private readonly SortedList<TK, AtomicLong> _refSet;
+        private long _countPoints;
+
         /// <summary>
         ///     Constructor.
         /// </summary>
         public SortedRefCountedSet()
         {
-            CountPoints = 0;
-            RefSet = new SortedList<TK, AtomicLong>();
+            _countPoints = 0;
+            _refSet = new SortedList<TK, AtomicLong>();
         }
 
         /// <summary>
         ///     Gets the number of data points.
         /// </summary>
-        public long CountPoints { get; set; }
+        public long CountPoints {
+            get => _countPoints;
+            set => _countPoints = value;
+        }
 
         /// <summary>
         ///     Gets the ref set.
         /// </summary>
         /// <value>The ref set.</value>
-        public SortedList<TK, AtomicLong> RefSet { get; }
+        public SortedList<TK, AtomicLong> RefSet => _refSet;
 
         /// <summary> Returns the largest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     largest key value, null if none
         /// </returns>
 
-        public virtual TK MaxValue => RefSet.Count != 0 ? RefSet.Keys[RefSet.Count - 1] : default(TK);
+        public virtual TK MaxValue => _refSet.Count != 0 ? _refSet.Keys[RefSet.Count - 1] : default(TK);
 
         /// <summary> Returns the smallest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     smallest key value, default(K) if none
         /// </returns>
 
-        public virtual TK MinValue => RefSet.Count != 0 ? RefSet.Keys[0] : default(TK);
+        public virtual TK MinValue => _refSet.Count != 0 ? _refSet.Keys[0] : default(TK);
 
         /// <summary>
         ///     Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
@@ -65,9 +71,9 @@ namespace com.espertech.esper.common.@internal.collection
         public virtual void Add(TK key)
         {
             AtomicLong value;
-            if (!RefSet.TryGetValue(key, out value)) {
-                RefSet.Add(key, new AtomicLong());
-                CountPoints++;
+            if (!_refSet.TryGetValue(key, out value)) {
+                _refSet[key] = new AtomicLong(1);
+                _countPoints++;
             }
             else {
                 value.IncrementAndGet();
@@ -84,8 +90,8 @@ namespace com.espertech.esper.common.@internal.collection
             int numReferences)
         {
             AtomicLong value;
-            if (!RefSet.TryGetValue(key, out value)) {
-                RefSet[key] = new AtomicLong(numReferences);
+            if (!_refSet.TryGetValue(key, out value)) {
+                _refSet[key] = new AtomicLong(numReferences);
                 return;
             }
 
@@ -97,8 +103,8 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         public void Clear()
         {
-            RefSet.Clear();
-            CountPoints = 0;
+            _refSet.Clear();
+            _countPoints = 0;
         }
 
         /// <summary>
@@ -113,24 +119,18 @@ namespace com.espertech.esper.common.@internal.collection
         {
             AtomicLong value;
 
-            if (!RefSet.TryGetValue(key, out value)) {
+            if (!_refSet.TryGetValue(key, out value)) {
                 // This could happen if a sort operation gets a remove stream that duplicates events.
                 // Generally points to an invalid combination of data windows.
                 // throw new IllegalStateException("Attempting to remove key from map that wasn't added");
                 return;
             }
 
-            --CountPoints;
+            --_countPoints;
             
-            //if (value.Get() == 1)
-
             if (value.DecrementAndGet() == 0) {
-                RefSet.Remove(key);
-                return;
+                _refSet.Remove(key);
             }
-
-            //value.DecrementAndGet();
-            //refSet[key] = value;
         }
     }
 }

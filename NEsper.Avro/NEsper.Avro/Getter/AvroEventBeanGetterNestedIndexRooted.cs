@@ -58,7 +58,7 @@ namespace NEsper.Avro.Getter
                         GetType(),
                         "GetAtIndex",
                         Ref("record"),
-                        Constant(_posTop),
+                        Constant(_posTop.Name),
                         Constant(_index)))
                 .IfRefNullReturnFalse("inner")
                 .MethodReturn(

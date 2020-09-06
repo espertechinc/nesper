@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -22,23 +20,28 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// <returns>evaluator</returns>
         public static ScriptEvaluator CompileScriptEval(ScriptDescriptorRuntime descriptor)
         {
-            var dialect = descriptor.OptionalDialect == null ? descriptor.DefaultDialect : descriptor.OptionalDialect;
-            ExpressionScriptCompiled compiled;
+            var dialect = descriptor.OptionalDialect ?? descriptor.DefaultDialect;
             try {
-                compiled = ExpressionNodeScriptCompiler.CompileScript(
+                var compiled = ExpressionNodeScriptCompiler.CompileScript(
                     dialect,
                     descriptor.ScriptName,
                     descriptor.Expression,
                     descriptor.ParameterNames,
                     descriptor.EvaluationTypes,
                     null,
-                    descriptor.ImportService);
+                    descriptor.ImportService,
+                    descriptor.ScriptCompiler);
+
+                return new ScriptEvaluatorLambda(
+                    descriptor.ScriptName,
+                    descriptor.ParameterNames,
+                    descriptor.Parameters,
+                    descriptor.Coercer,
+                    compiled);
             }
             catch (ExprValidationException ex) {
                 throw new EPException("Failed to compile script '" + descriptor.ScriptName + "': " + ex.Message);
             }
-
-            throw new NotImplementedException();
         }
     }
 } // end of namespace

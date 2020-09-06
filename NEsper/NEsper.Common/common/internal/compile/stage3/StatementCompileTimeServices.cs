@@ -110,8 +110,6 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry => _services.ScriptCompileTimeRegistry;
 
-        public ScriptServiceCompileTime ScriptServiceCompileTime => _services.ScriptServiceCompileTime;
-
         public ModuleDependenciesCompileTime ModuleDependenciesCompileTime => _services.ModuleDependencies;
 
         public EventTypeNameGeneratorStatement EventTypeNameGeneratorStatement => _eventTypeNameGeneratorStatement;
@@ -121,6 +119,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public EventTypeCompileTimeResolver EventTypeCompileTimeResolver => _services.EventTypeCompileTimeResolver;
 
         public CompilerServices CompilerServices => _services.CompilerServices;
+
+        public ScriptCompiler ScriptCompiler => _services.ScriptCompiler;
 
         public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry => _services.DataFlowCompileTimeRegistry;
 
@@ -141,6 +141,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public ModuleCompileTimeServices Services => _services;
 
+        public bool IsAttachPatternText => _services.Configuration.Compiler.ByteCode.IsAttachPatternEPL;
+        
         public string Namespace => _services.Namespace;
 
         public ClassLoader ParentClassLoader => _services.ParentClassLoader;

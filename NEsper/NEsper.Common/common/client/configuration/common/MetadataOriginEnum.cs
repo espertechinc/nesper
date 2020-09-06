@@ -9,7 +9,7 @@
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
-    ///     Indicates how the runtimeretrieves metadata about a statement's output columns.
+    ///     Indicates how the runtime retrieves metadata about a statement's output columns.
     /// </summary>
     public enum MetadataOriginEnum
     {

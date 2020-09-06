@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestMethodExecutableRank : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRank()
         {
             Assert.AreEqual(-1, "a".CompareTo("b"));

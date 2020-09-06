@@ -40,14 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						    return EmptyDictionary<object, ICollection<object>>.Instance;
 					    }
 
-					    IDictionary<object, ICollection<object>> result = new Dictionary<object, ICollection<object>>();
-					    ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
+					    var result = new Dictionary<object, ICollection<object>>();
+					    var beans = (ICollection<EventBean>) enumcoll;
 					    foreach (EventBean next in beans) {
 						    eventsLambda[StreamNumLambda] = next;
 
-						    object key = inner.Evaluate(eventsLambda, isNewData, context);
-
-						    ICollection<object> value = result.Get(key);
+						    var key = inner.Evaluate(eventsLambda, isNewData, context);
+						    var value = result.Get(key);
 						    if (value == null) {
 							    value = new List<object>();
 							    result.Put(key, value);
@@ -68,11 +67,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 	    public override CodegenExpression ReturnIfEmptyOptional()
 	    {
-		    return EnumValue(typeof(EmptyDictionary<object, ICollection<object>>), "Instance");
+		    return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
 	    }
 
-	    public override void InitBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
-	        block.DeclareVar<IDictionary<object,ICollection<object>>>("result", NewInstance(typeof(Dictionary<object,ICollection<object>>)));
+	    public override void InitBlock(
+		    CodegenBlock block,
+		    CodegenMethod methodNode,
+		    ExprForgeCodegenSymbol scope,
+		    CodegenClassScope codegenClassScope)
+	    {
+		    block.DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(NullableDictionary<object, object>)));
 	    }
 
 	    public override void ForEachBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {

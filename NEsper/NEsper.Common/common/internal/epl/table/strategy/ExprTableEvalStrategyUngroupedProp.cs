@@ -29,11 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var row = LockTableReadAndGet(exprEvaluatorContext);
-            if (row == null) {
-                return null;
-            }
 
-            return row.Properties[Factory.PropertyIndex];
+            return row?.Properties[Factory.PropertyIndex];
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(

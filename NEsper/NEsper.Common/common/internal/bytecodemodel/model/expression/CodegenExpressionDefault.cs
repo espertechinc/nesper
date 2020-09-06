@@ -25,6 +25,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private readonly Type _type;
 
+        public CodegenExpressionDefault()
+        {
+            _type = null;
+        }
+        
         public CodegenExpressionDefault(Type type)
         {
             _type = type;
@@ -36,9 +41,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append("default(");
-            builder.Append(_type.CleanName());
-            builder.Append(")");
+            builder.Append("default");
+            if (_type != null) {
+                builder.Append("(");
+                builder.Append(_type.CleanName());
+                builder.Append(")");
+            }
         }
 
         public void MergeClasses(ISet<Type> classes)

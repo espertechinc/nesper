@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
-using System.Text.Json;
 
 using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
 using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.compat.logging;
 
@@ -27,13 +25,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			string value)
 		{
+			var writer = context.Writer;
 			if (value == null) {
 				writer.WriteNullValue();
 			}
@@ -45,13 +44,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableStringToString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object value)
 		{
+			var writer = context.Writer;
 			if (value == null) {
 				writer.WriteNullValue();
 			}
@@ -63,13 +63,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableBoolean(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			bool? value)
 		{
+			var writer = context.Writer;
 			if (value == null) {
 				writer.WriteNullValue();
 			}
@@ -81,13 +82,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteBigInteger(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			BigInteger value)
 		{
+			var writer = context.Writer;
 			var asByteArray = value.ToByteArray();
 			writer.WriteStartObject();
 			writer.WriteString("$type", typeof(BigInteger).FullName);
@@ -98,13 +100,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableNumber(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object value)
 		{
+			var writer = context.Writer;
 			if (value == null) {
 				writer.WriteNullValue();
 			} else if (value is long longValue) {
@@ -120,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 			} else if (value is float floatValue) {
 				writer.WriteNumberValue(floatValue);
 			} else if (value is BigInteger bigIntegerValue) {
-				WriteBigInteger(writer, bigIntegerValue);
+				WriteBigInteger(context, bigIntegerValue);
 			} else {
 				throw new InvalidDataException("unable to determine number type");
 			}
@@ -129,13 +132,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNumber(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object value)
 		{
+			var writer = context.Writer;
 			if (value is long longValue) {
 				writer.WriteNumberValue(longValue);
 			} else if (value is int intValue) {
@@ -156,13 +160,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			string[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -171,7 +176,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 			writer.WriteStartArray();
 			
 			foreach (var strings in array) {
-				WriteArrayString(writer, strings);
+				WriteArrayString(context, strings);
 			}
 
 			writer.WriteEndArray();
@@ -180,13 +185,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimCharacter(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			char?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -194,7 +200,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var characters in array) {
-				WriteArrayCharacter(writer, characters);
+				WriteArrayCharacter(context, characters);
 			}
 
 			writer.WriteEndArray();
@@ -203,13 +209,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimLong(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			long?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -217,7 +224,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var longs in array) {
-				WriteArrayLong(writer, longs);
+				WriteArrayLong(context, longs);
 			}
 
 			writer.WriteEndArray();
@@ -226,13 +233,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimInteger(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			int?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -240,7 +248,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var ints in array) {
-				WriteArrayInteger(writer, ints);
+				WriteArrayInteger(context, ints);
 			}
 
 			writer.WriteEndArray();
@@ -249,15 +257,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
-		/// <param name="factory">write class</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimAppClass(
-			Utf8JsonWriter writer,
-			object[][] array,
-			JsonSerializationContext factory)
+			JsonSerializationContext context,
+			object[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -265,7 +272,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var values in array) {
-				WriteArrayAppClass(writer, values, factory);
+				WriteArrayAppClass(context, values);
 			}
 
 			writer.WriteEndArray();
@@ -274,13 +281,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimShort(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			short?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -288,7 +296,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var shorts in array) {
-				WriteArrayShort(writer, shorts);
+				WriteArrayShort(context, shorts);
 			}
 
 			writer.WriteEndArray();
@@ -297,13 +305,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimDouble(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			double?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -311,7 +320,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var doubles in array) {
-				WriteArrayDouble(writer, doubles);
+				WriteArrayDouble(context, doubles);
 			}
 
 			writer.WriteEndArray();
@@ -320,13 +329,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimFloat(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			float?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -334,7 +344,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var floats in array) {
-				WriteArrayFloat(writer, floats);
+				WriteArrayFloat(context, floats);
 			}
 
 			writer.WriteEndArray();
@@ -343,13 +353,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimByte(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			byte?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -357,7 +368,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteArrayByte(writer, b);
+				WriteArrayByte(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -366,13 +377,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBoolean(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			bool?[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -380,7 +392,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var bools in array) {
-				WriteArrayBoolean(writer, bools);
+				WriteArrayBoolean(context, bools);
 			}
 
 			writer.WriteEndArray();
@@ -389,13 +401,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBigInteger(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			BigInteger[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -403,7 +416,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteArrayBigInteger(writer, b);
+				WriteArrayBigInteger(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -412,13 +425,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimObjectToString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -426,7 +440,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteArrayObjectToString(writer, b);
+				WriteArrayObjectToString(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -435,13 +449,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBooleanPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			bool[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -449,7 +464,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteArrayBooleanPrimitive(writer, b);
+				WriteArrayBooleanPrimitive(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -458,13 +473,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBytePrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			byte[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -472,7 +488,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var bytes in array) {
-				WriteArrayBytePrimitive(writer, bytes);
+				WriteArrayBytePrimitive(context, bytes);
 			}
 
 			writer.WriteEndArray();
@@ -481,13 +497,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimShortPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			short[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -495,7 +512,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var shorts in array) {
-				WriteArrayShortPrimitive(writer, shorts);
+				WriteArrayShortPrimitive(context, shorts);
 			}
 
 			writer.WriteEndArray();
@@ -504,13 +521,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimIntPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			int[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -518,7 +536,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var ints in array) {
-				WriteArrayIntPrimitive(writer, ints);
+				WriteArrayIntPrimitive(context, ints);
 			}
 
 			writer.WriteEndArray();
@@ -527,13 +545,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimLongPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			long[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -541,7 +560,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var longs in array) {
-				WriteArrayLongPrimitive(writer, longs);
+				WriteArrayLongPrimitive(context, longs);
 			}
 
 			writer.WriteEndArray();
@@ -550,13 +569,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimFloatPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			float[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -564,7 +584,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var floats in array) {
-				WriteArrayFloatPrimitive(writer, floats);
+				WriteArrayFloatPrimitive(context, floats);
 			}
 
 			writer.WriteEndArray();
@@ -573,13 +593,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimDoublePrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			double[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -587,7 +608,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var doubles in array) {
-				WriteArrayDoublePrimitive(writer, doubles);
+				WriteArrayDoublePrimitive(context, doubles);
 			}
 
 			writer.WriteEndArray();
@@ -596,13 +617,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimCharPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			char[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -610,7 +632,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var chars in array) {
-				WriteArrayCharPrimitive(writer, chars);
+				WriteArrayCharPrimitive(context, chars);
 			}
 
 			writer.WriteEndArray();
@@ -619,13 +641,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			string[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -633,7 +656,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var value in array) {
-				WriteNullableString(writer, value);
+				WriteNullableString(context, value);
 			}
 			writer.WriteEndArray();
 		}
@@ -641,49 +664,52 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			ICollection<string> values)
 		{
 			if (values == null) {
+				var writer = context.Writer;
 				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteStartArray();
+			context.Writer.WriteStartArray();
 			foreach (var value in values) {
-				WriteNullableString(writer, value);
+				WriteNullableString(context, value);
 			}
-			writer.WriteEndArray();
+			context.Writer.WriteEndArray();
 		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">value</param>
-		/// <param name="context">serialization context</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionAppClass(
-			Utf8JsonWriter writer,
-			ICollection<object> values,
-			JsonSerializationContext context)
+			JsonSerializationContext context,
+			ICollection<object> values)
 		{
+			var writer = context.Writer;
 			if (values == null) {
 				writer.WriteNullValue();
 				return;
 			}
 
 			writer.WriteStartArray();
+			
 			foreach (var value in values) {
 				if (value == null) {
 					writer.WriteNullValue();
 				}
 				else {
-					context.Serializer.Invoke(writer, value);
+					context
+						.SerializerFor(value.GetType())
+						.Serialize(context, value);
 				}
 			}
 
@@ -693,27 +719,29 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">value</param>
-		/// <param name="context">serialization context</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayAppClass(
-			Utf8JsonWriter writer,
-			object[] values,
-			JsonSerializationContext context)
+			JsonSerializationContext context,
+			object[] values)
 		{
+			var writer = context.Writer;
 			if (values == null) {
 				writer.WriteNullValue();
 				return;
 			}
 
 			writer.WriteStartArray();
+			
 			foreach (var value in values) {
 				if (value == null) {
 					writer.WriteNullValue();
 				}
 				else {
-					context.Serializer.Invoke(writer, value);
+					context
+						.SerializerFor(value.GetType())
+						.Serialize(context, value);
 				}
 			}
 
@@ -723,13 +751,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayCharacter(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			char?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -737,7 +766,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var character in array) {
-				WriteNullableStringToString(writer, character);
+				WriteNullableStringToString(context, character);
 			}
 
 			writer.WriteEndArray();
@@ -746,13 +775,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayLong(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			long?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -760,7 +790,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var l in array) {
-				WriteNullableNumber(writer, l);
+				WriteNullableNumber(context, l);
 			}
 
 			writer.WriteEndArray();
@@ -769,13 +799,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayInteger(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			int?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -783,7 +814,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var i in array) {
-				WriteNullableNumber(writer, i);
+				WriteNullableNumber(context, i);
 			}
 
 			writer.WriteEndArray();
@@ -792,13 +823,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionNumber(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			ICollection<object> values)
 		{
+			var writer = context.Writer;
 			if (values == null) {
 				writer.WriteNullValue();
 				return;
@@ -806,7 +838,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var i in values) {
-				WriteNullableNumber(writer, i);
+				WriteNullableNumber(context, i);
 			}
 
 			writer.WriteEndArray();
@@ -815,13 +847,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayShort(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			short?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -829,7 +862,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var s in array) {
-				WriteNullableNumber(writer, s);
+				WriteNullableNumber(context, s);
 			}
 
 			writer.WriteEndArray();
@@ -838,13 +871,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayDouble(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			double?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -852,7 +886,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var d in array) {
-				WriteNullableNumber(writer, d);
+				WriteNullableNumber(context, d);
 			}
 
 			writer.WriteEndArray();
@@ -861,13 +895,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayFloat(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			float?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -875,7 +910,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var f in array) {
-				WriteNullableNumber(writer, f);
+				WriteNullableNumber(context, f);
 			}
 
 			writer.WriteEndArray();
@@ -884,13 +919,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayByte(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			byte?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -898,7 +934,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteNullableNumber(writer, b);
+				WriteNullableNumber(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -907,13 +943,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBoolean(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			bool?[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -921,7 +958,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteNullableBoolean(writer, b);
+				WriteNullableBoolean(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -930,13 +967,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionBoolean(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			ICollection<bool?> values)
 		{
+			var writer = context.Writer;
 			if (values == null) {
 				writer.WriteNullValue();
 				return;
@@ -944,7 +982,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in values) {
-				WriteNullableBoolean(writer, b);
+				WriteNullableBoolean(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -953,13 +991,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBigInteger(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			BigInteger[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -967,7 +1006,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var b in array) {
-				WriteNullableNumber(writer, b);
+				WriteNullableNumber(context, b);
 			}
 
 			writer.WriteEndArray();
@@ -976,13 +1015,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBooleanPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			bool[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -999,13 +1039,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBytePrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			byte[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1025,13 +1066,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayShortPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			short[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1048,13 +1090,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayIntPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			int[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1071,13 +1114,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayLongPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			long[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1094,13 +1138,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayFloatPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			float[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1117,13 +1162,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayDoublePrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			double[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1140,13 +1186,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayCharPrimitive(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			char[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1163,13 +1210,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayObjectToString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1191,55 +1239,56 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteEnumArray(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object[] array)
 		{
-			WriteObjectArrayWToString(writer, array);
+			WriteObjectArrayWToString(context, array);
 		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteEnumCollection<T>(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			ICollection<T> values)
 			where T : Enum
 		{
-			WriteCollectionWToString(writer, values);
+			WriteCollectionWToString(context, values);
 		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteEnumArray2Dim(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object[][] array)
 		{
-			WriteObjectArray2DimWToString(writer, array);
+			WriteObjectArray2DimWToString(context, array);
 		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
 		/// <param name="name">name</param>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="jsonValue">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteJsonValue(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			string name,
 			object jsonValue)
 		{
+			var writer = context.Writer;
 			if (jsonValue == null) {
 				writer.WriteNullValue();
 			}
@@ -1262,16 +1311,13 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 			} else if (jsonValue is float floatValue) {
 				writer.WriteNumberValue(floatValue);
 			}
-			else if (jsonValue is object[]) {
-				WriteJsonArray(writer, name, (object[]) jsonValue);
-			}
 			else if (jsonValue is JsonEventObjectBase jsonEventObjectBase) {
 				writer.WriteStartObject();
-				jsonEventObjectBase.WriteTo(writer);
+				jsonEventObjectBase.WriteTo(context);
 				writer.WriteEndObject();
 			}
 			else if (jsonValue is IDictionary<string, object> mapValue) {
-				WriteJsonMap(writer, mapValue);
+				WriteJsonMap(context, mapValue);
 			}
 			else {
 				Log.Warn("Unknown json value of type " + jsonValue.GetType() + " encountered, skipping member '" + name + "'");
@@ -1281,13 +1327,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="map">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteJsonMap(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			IDictionary<string, object> map)
 		{
+			var writer = context.Writer;
 			if (map == null) {
 				writer.WriteNullValue();
 				return;
@@ -1297,7 +1344,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			foreach (var entry in map) {
 				writer.WritePropertyName(entry.Key);
-				WriteJsonValue(writer, entry.Key, entry.Value);
+				WriteJsonValue(context, entry.Key, entry.Value);
 			}
 
 			writer.WriteEndObject();
@@ -1306,15 +1353,50 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="name">name</param>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
+		/// <param name="map">value</param>
+		/// <param name="serializer"></param>
+		/// <throws>IOException io error</throws>
+		public static void WriteJsonMap<T>(
+			JsonSerializationContext context,
+			IDictionary<string, T> map,
+			Action<JsonSerializationContext, T> serializer)
+		{
+			var writer = context.Writer;
+			if (map == null) {
+				writer.WriteNullValue();
+				return;
+			}
+			
+			writer.WriteStartObject();
+
+			foreach (var entry in map) {
+				writer.WritePropertyName(entry.Key);
+				serializer.Invoke(context, entry.Value);
+			}
+
+			writer.WriteEndObject();
+		}
+
+
+// Deprecating this behavior.  It assumes that every item should be encoded into an
+// array of objects.  It transfers the responsibility of figuring out the wrapping
+// from the serializer to this method.  Use WriteArray instead.
+
+#if false
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="itemName">name</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteJsonArray(
-			Utf8JsonWriter writer,
-			string name,
+			JsonSerializationContext context,
+			string itemName,
 			object[] array)
 		{
+			var writer = context.JsonWriter;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1322,7 +1404,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var item in array) {
-				WriteJsonValue(writer, name, item);
+				WriteJsonValue(context, itemName, item);
 			}
 
 			writer.WriteEndArray();
@@ -1331,61 +1413,118 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="name">name</param>
+		/// <param name="context">the serialization context</param>
+		/// <param name="list">value</param>
+		/// <throws>IOException io error</throws>
+		public static void WriteJsonList<T>(
+			JsonSerializationContext context,
+			string name,
+			IList<T>[] list)
+		{
+			var writer = context.JsonWriter;
+			if (list == null) {
+				writer.WriteNullValue();
+				return;
+			}
+
+			writer.WriteStartArray();
+			foreach (var item in list) {
+				WriteJsonValue(context, name, item);
+			}
+
+			writer.WriteEndArray();
+		}
+#endif
+
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="context">the serialization context</param>
 		/// <param name="nested">value</param>
-		/// <param name="context">serialization context</param>
+		/// <param name="serializer">the serializer</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNested(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object nested,
-			JsonSerializationContext context)
+			IJsonSerializer serializer)
 		{
+			var writer = context.Writer;
 			if (nested == null) {
 				writer.WriteNullValue();
 				return;
 			}
 
-			context.Serializer.Invoke(writer, nested);
+			serializer.Serialize(context, nested);
 		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="nested">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNested(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			JsonEventObjectBase nested)
 		{
+			var writer = context.Writer;
 			if (nested == null) {
 				writer.WriteNullValue();
 				return;
 			}
 
-			nested.WriteTo(writer);
+			nested.WriteTo(context);
 		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
-		/// <param name="nesteds">value</param>
-		/// <param name="context">serialization context</param>
+		/// <param name="context">the serialization context</param>
+		/// <param name="values">value</param>
+		/// <param name="serializer">serializer for the values</param>
 		/// <throws>IOException io error</throws>
-		public static void WriteNestedArray(
-			Utf8JsonWriter writer,
-			object[] nesteds,
-			JsonSerializationContext context)
+		public static void WriteNestedArray<T>(
+			JsonSerializationContext context,
+			T[] values,
+			Action<JsonSerializationContext, T> serializer)
 		{
-			if (nesteds == null) {
+			var writer = context.Writer;
+			if (values == null) {
 				writer.WriteNullValue();
 				return;
 			}
 
 			writer.WriteStartArray();
-			foreach (var nested in nesteds) {
-				context.Serializer.Invoke(writer, nested);
+			foreach (var nested in values) {
+				serializer.Invoke(context, nested);
+			}
+
+			writer.WriteEndArray();
+		}
+
+		
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="context">the serialization context</param>
+		/// <param name="values">value</param>
+		/// <param name="serializer">serializer for the values</param>
+		/// <throws>IOException io error</throws>
+		public static void WriteNestedArray(
+			JsonSerializationContext context,
+			object[] values,
+			IJsonSerializer serializer)
+		{
+			var writer = context.Writer;
+			if (values == null) {
+				writer.WriteNullValue();
+				return;
+			}
+
+			writer.WriteStartArray();
+			foreach (var nested in values) {
+				serializer.Serialize(context, nested);
 			}
 
 			writer.WriteEndArray();
@@ -1394,30 +1533,32 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
-		/// <param name="nesteds">value</param>
+		/// <param name="context">the serialization context</param>
+		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNestedArray(
-			Utf8JsonWriter writer,
-			JsonEventObjectBase[] nesteds)
+			JsonSerializationContext context,
+			JsonEventObjectBase[] values)
 		{
-			if (nesteds == null) {
+			var writer = context.Writer;
+			if (values == null) {
 				writer.WriteNullValue();
 				return;
 			}
 
 			writer.WriteStartArray();
-			foreach (var nested in nesteds) {
-				nested.WriteTo(writer);
+			foreach (var nested in values) {
+				nested.WriteTo(context);
 			}
 
 			writer.WriteEndArray();
 		}
 
 		private static void WriteObjectArrayWToString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object[] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1439,13 +1580,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
-		/// <param name="writer">writer</param>
+		/// <param name="context">the serialization context</param>
 		/// <param name="values">collection</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionWToString<T>(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			ICollection<T> values)
 		{
+			var writer = context.Writer;
 			if (values == null) {
 				writer.WriteNullValue();
 				return;
@@ -1465,9 +1607,10 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 		}
 
 		private static void WriteObjectArray2DimWToString(
-			Utf8JsonWriter writer,
+			JsonSerializationContext context,
 			object[][] array)
 		{
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1475,7 +1618,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteStartArray();
 			foreach (var objects in array) {
-				WriteObjectArrayWToString(writer, objects);
+				WriteObjectArrayWToString(context, objects);
 			}
 
 			writer.WriteEndArray();

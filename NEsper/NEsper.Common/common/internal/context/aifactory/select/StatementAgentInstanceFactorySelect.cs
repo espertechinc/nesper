@@ -261,9 +261,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			Runnable postContextMergeRunnable = () => {
 				for (var stream = 0; stream < numStreams; stream++) {
 					var activationResult = activationResults[stream];
-					if (activationResult.OptPostContextMergeRunnable != null) {
-						activationResult.OptPostContextMergeRunnable.Invoke();
-					}
+					activationResult.OptPostContextMergeRunnable?.Invoke();
 				}
 			};
 

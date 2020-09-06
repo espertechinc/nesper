@@ -37,16 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (eventsPerStream == null) {
-                return null;
-            }
+            EventBean @event = eventsPerStream?[_streamNum];
 
-            EventBean @event = eventsPerStream[_streamNum];
-            if (@event == null) {
-                return null;
-            }
-
-            return @event.Underlying;
+            return @event?.Underlying;
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -69,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .IfNullReturnNull(refEPS)
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(Cast(requiredType, ExprDotName(Ref("@event"), "Underlying")));
+                .MethodReturn(FlexCast(requiredType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 

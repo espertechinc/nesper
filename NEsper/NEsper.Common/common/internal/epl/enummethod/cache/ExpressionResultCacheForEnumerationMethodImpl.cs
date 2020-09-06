@@ -26,11 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         public ExpressionResultCacheEntryLongArrayAndObj GetEnumerationMethodLastValue(object node)
         {
             SoftReference<ExpressionResultCacheEntryLongArrayAndObj> cacheRef = enumMethodCache.Get(node);
-            if (cacheRef == null) {
-                return null;
-            }
 
-            ExpressionResultCacheEntryLongArrayAndObj entry = cacheRef.Get();
+            ExpressionResultCacheEntryLongArrayAndObj entry = cacheRef?.Get();
             if (entry == null) {
                 return null;
             }

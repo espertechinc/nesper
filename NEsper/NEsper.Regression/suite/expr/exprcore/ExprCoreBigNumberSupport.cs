@@ -24,16 +24,86 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ExprCoreBigNumberEquals());
-			execs.Add(new ExprCoreBigNumberRelOp());
-			execs.Add(new ExprCoreBigNumberBetween());
-			execs.Add(new ExprCoreBigNumberIn());
-			execs.Add(new ExprCoreBigNumberMath());
-			execs.Add(new ExprCoreBigNumberAggregation());
-			execs.Add(new ExprCoreBigNumberMinMax());
-			execs.Add(new ExprCoreBigNumberFilterEquals());
-			execs.Add(new ExprCoreBigNumberJoin());
+			WithEquals(execs);
+			WithRelOp(execs);
+			WithBetween(execs);
+			WithIn(execs);
+			WithMath(execs);
+			WithAggregation(execs);
+			WithMinMax(execs);
+			WithFilterEquals(execs);
+			WithJoin(execs);
+			WithCastAndUDF(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithCastAndUDF(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberCastAndUDF());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberJoin());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithFilterEquals(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberFilterEquals());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMinMax(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberMinMax());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberAggregation());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMath(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberMath());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithIn(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberIn());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithBetween(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberBetween());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithRelOp(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberRelOp());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEquals(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprCoreBigNumberEquals());
 			return execs;
 		}
 
@@ -112,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.UndeployAll();
 
 				// test float
-				env.CompileDeployAddListenerMile("@Name('s0') select * from SupportBeanNumeric where floatOne < 10f and floatTwo > 10f", "s0", 1);
+				env.CompileDeployAddListenerMile("@Name('s0') select * from SupportBeanNumeric where FloatOne < 10f and FloatTwo > 10f", "s0", 1);
 
 				env.SendEventBean(new SupportBeanNumeric(true, 1f, 20f));
 				Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
@@ -235,8 +305,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				// test aggregation-sum, multiplication and division all together; test for ESPER-340
 				env.UndeployAll();
 
-				env.CompileDeployAddListenerMile("@Name('s0') select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric", "s0", 2);
-				Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("avgRate"));
+				env.CompileDeployAddListenerMile(
+					"@Name('s0') select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric",
+					"s0",
+					2);
+				Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("avgRate"));
 				SendBigNumEvent(env, 0, 5m);
 				var avgRate = env.Listener("s0").AssertOneGetNewAndReset().Get("avgRate");
 				Assert.That(avgRate, Is.InstanceOf<decimal>());
@@ -272,18 +345,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertProps(
 					theEvent,
 					fields,
-					BigInteger.One,
-					2m,
-					1m,
-					2m,
-					1d,
-					2d,
-					null,
-					null,
-					0.0,
-					0.0,
-					BigInteger.One,
-					2m);
+					BigInteger.One, // sum(Bigint)
+					2m, // sum(DecimalOne)
+					BigInteger.One, // avg(Bigint)
+					2m, // avg(DecimalOne)
+					// TBD - do better
+					1.0d, // median(Bigint)
+					2.0d, // median(DecimalOne)
+					null, // stddev(Bigint)
+					null, // stddev(DecimalOne)
+					0.0d, // avedev(Bigint)
+					0.0d, // avedev(DecimalOne)
+					BigInteger.One, // min(Bigint)
+					2m // min(DecimalOne)
+				);
 
 				env.Milestone(1);
 
@@ -419,13 +494,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var epl =
 					"@Name('s0') select " +
 					"SupportStaticMethodLib.MyBigIntFunc(cast(2, BigInteger)) as v1, " +
-					"SupportStaticMethodLib.MyDecimalFunc(cast(3d, BigDecimal)) as v2 from SupportBeanNumeric";
+					"SupportStaticMethodLib.MyDecimalFunc(cast(3d, decimal)) as v2 from SupportBeanNumeric";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var fieldList = "v1,v2".SplitCsv();
 				SendBigNumEvent(env, 0, 2m);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldList,
-					new object[] { new BigInteger(2), 3m });
+				EPAssertionUtil.AssertProps(
+					env.Listener("s0").AssertOneGetNewAndReset(),
+					fieldList,
+					new object[] {new BigInteger(2), 3m});
 
 				env.UndeployAll();
 			}

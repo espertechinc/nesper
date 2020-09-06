@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -27,6 +30,14 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public ExprNode CompileValidate(string expression)
         {
+            return CompileValidate(expression, null, null);
+        }
+
+        public ExprNode CompileValidate(
+            string expression,
+            EventType[] eventTypes,
+            string[] streamNames)
+        {
             var services = new StatementCompileTimeServices(0, moduleServices);
 
             ExprNode node;
@@ -43,7 +54,17 @@ namespace com.espertech.esper.compiler.@internal.util
             try {
                 ExprNodeUtilityValidate.ValidatePlainExpression(ExprNodeOrigin.API, node);
 
-                StreamTypeService streamTypeService = new StreamTypeServiceImpl(true);
+                StreamTypeService streamTypeService;
+
+                if (eventTypes == null || eventTypes.Length == 0) {
+                    streamTypeService = new StreamTypeServiceImpl(true);
+                }
+                else {
+                    var istreamOnly = new bool[eventTypes.Length];
+                    istreamOnly.Fill(true);
+                    streamTypeService = new StreamTypeServiceImpl(eventTypes, streamNames, istreamOnly, true, false);
+                }
+                
                 var statementRawInfo = new StatementRawInfo(
                     0,
                     "API-provided",
@@ -53,8 +74,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     null,
                     new CompilableEPL(expression),
                     "API-provided");
-                var validationContext =
-                    new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
+                var validationContext = new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
                 node = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.API, node, validationContext);
             }
             catch (ExprValidationException e) {

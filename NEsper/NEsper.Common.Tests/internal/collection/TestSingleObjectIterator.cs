@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.collection
     [TestFixture]
     public class TestSingleObjectIterator : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNext()
         {
             IEnumerator<string> enumerator = EnumerationHelper.Singleton("a");

@@ -13,11 +13,11 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq;
-using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@orderby;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile;
-using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@where;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.where;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.groupby;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tomap;
 using com.espertech.esper.common.@internal.epl.methodbase;

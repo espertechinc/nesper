@@ -20,12 +20,11 @@ using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.serdeset.additional;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // constant;
-using static com.espertech.esper.common.@internal.context.aifactory.createtable.StmtForgeMethodCreateTable; // INTERNAL_RESERVED_PROPERTY;
-using static com.espertech.esper.common.@internal.@event.core.EventTypeUtility; // resolveTypeCodegenGivenResolver;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.context.aifactory.createtable.StmtForgeMethodCreateTable;
+using static com.espertech.esper.common.@internal.@event.core.EventTypeUtility;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 {
@@ -44,18 +43,17 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 				return new SerdeEventPropertyDesc(new DataInputOutputSerdeForgeSingleton(typeof(DIOSkipSerde)), EmptySet<EventType>.Instance);
 			}
 
-			if (propertyType is Type) {
-
+			if (propertyType is Type propertyTypeType) {
 				// handle special Json catch-all types
 				if (eventTypeSerde is JsonEventType) {
 					forge = null;
-					if (propertyType == typeof(IDictionary<string, object>)) {
+					if (propertyTypeType == typeof(IDictionary<string, object>)) {
 						forge = new DataInputOutputSerdeForgeSingleton(typeof(DIOJsonObjectSerde));
 					}
-					else if (propertyType == typeof(object[])) {
+					else if (propertyTypeType == typeof(object[])) {
 						forge = new DataInputOutputSerdeForgeSingleton(typeof(DIOJsonArraySerde));
 					}
-					else if (propertyType == typeof(object)) {
+					else if (propertyTypeType == typeof(object)) {
 						forge = new DataInputOutputSerdeForgeSingleton(typeof(DIOJsonAnyValueSerde));
 					}
 
@@ -81,28 +79,28 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 				var eventType = (EventType) propertyType;
 				Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression> func = vars =>
 					ResolveTypeCodegenGivenResolver(eventType, vars.OptionalEventTypeResolver);
-				forge = new DataInputOutputSerdeForgeEventSerde("nullableEvent", func);
+				forge = new DataInputOutputSerdeForgeEventSerde("NullableEvent", func);
 				return new SerdeEventPropertyDesc(forge, Collections.SingletonSet(eventType));
 			}
 			else if (propertyType is EventType[]) {
 				var eventType = ((EventType[]) propertyType)[0];
 				Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression> func = vars =>
 					ResolveTypeCodegenGivenResolver(eventType, vars.OptionalEventTypeResolver);
-				forge = new DataInputOutputSerdeForgeEventSerde("nullableEventArray", func);
+				forge = new DataInputOutputSerdeForgeEventSerde("NullableEventArray", func);
 				return new SerdeEventPropertyDesc(forge, Collections.SingletonSet(eventType));
 			}
 			else if (propertyType is TypeBeanOrUnderlying) {
 				var eventType = ((TypeBeanOrUnderlying) propertyType).EventType;
 				Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression> func = vars =>
 					ResolveTypeCodegenGivenResolver(eventType, vars.OptionalEventTypeResolver);
-				forge = new DataInputOutputSerdeForgeEventSerde("nullableEventOrUnderlying", func);
+				forge = new DataInputOutputSerdeForgeEventSerde("NullableEventOrUnderlying", func);
 				return new SerdeEventPropertyDesc(forge, Collections.SingletonSet(eventType));
 			}
 			else if (propertyType is TypeBeanOrUnderlying[]) {
 				var eventType = ((TypeBeanOrUnderlying[]) propertyType)[0].EventType;
 				Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression> func = vars =>
 					ResolveTypeCodegenGivenResolver(eventType, vars.OptionalEventTypeResolver);
-				forge = new DataInputOutputSerdeForgeEventSerde("nullableEventArrayOrUnderlying", func);
+				forge = new DataInputOutputSerdeForgeEventSerde("NullableEventArrayOrUnderlying", func);
 				return new SerdeEventPropertyDesc(forge, Collections.SingletonSet(eventType));
 			}
 			else if (propertyType is IDictionary<string, object> keyValueProperties) {
@@ -118,7 +116,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 					.ToList()
 					.ForEach(
 						entry => {
-							var value = entry.Value.ToString().Trim();
+							var value = entry.Value.ToString()?.Trim();
 							var clazz = TypeHelper.GetPrimitiveTypeForName(value);
 							if (clazz != null) {
 								keyValueProperties[entry.Key] = clazz;

@@ -52,9 +52,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             AgentInstanceStopServices services)
         {
             view.Parent = null;
-            if (view is AgentInstanceMgmtCallback) {
-                ((AgentInstanceMgmtCallback) view).Stop(services);
-            }
+            (view as AgentInstanceMgmtCallback)?.Stop(services);
 
             RecursiveChildRemove(view, services);
         }
@@ -73,9 +71,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 mergeView.RemoveParentView(view);
             }
             else {
-                if (child is AgentInstanceMgmtCallback) {
-                    ((AgentInstanceMgmtCallback) child).Stop(services);
-                }
+                (child as AgentInstanceMgmtCallback)?.Stop(services);
 
                 RecursiveChildRemove(child, services);
             }

@@ -35,9 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this._sumMethodFactory = sumMethodFactory;
 		}
 
-		public override EnumEval EnumEvaluator {
-			get { return this; }
-		}
+		public override EnumEval EnumEvaluator => this;
 
 		public object EvaluateEnumMethod(
 			EventBean[] eventsLambda,

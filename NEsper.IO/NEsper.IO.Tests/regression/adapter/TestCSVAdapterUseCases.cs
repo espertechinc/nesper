@@ -109,7 +109,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using the application thread
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAppThread()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
@@ -128,7 +128,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(1, listener.GetNewDataList().Count);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCoordinated()
         {
             IDictionary<String, Object> priceProps = new Dictionary<String, Object>();
@@ -203,7 +203,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using no existing (dynamic) event type (no timestamp)
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDynamicType()
         {
             var spec = new CSVInputAdapterSpec(
@@ -231,7 +231,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using an engine thread
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEngineThread1000PerSec()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
@@ -256,7 +256,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using an engine thread.
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEngineThread1PerSec()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
@@ -287,7 +287,7 @@ namespace com.espertech.esperio.regression.adapter
         /// Play a CSV file using an existing event type definition (no timestamps).  Should
         /// not require a timestamp column, should block thread until played in.
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExistingTypeNoOptions()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
@@ -305,7 +305,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file that is from memory.
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPlayFromInputStream()
         {
             var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
@@ -316,7 +316,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file that is from memory.
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPlayFromStringReader()
         {
             var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";

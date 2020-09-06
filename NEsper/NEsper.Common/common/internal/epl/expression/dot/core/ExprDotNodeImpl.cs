@@ -20,7 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			    validationContext.TableCompileTimeResolver != null &&
 			    _chainSpec.Count > 1 &&
 			    _chainSpec[0] is ChainableName) {
-				Pair<ExprNode, IList<Chainable>> tableNode = TableCompileTimeUtil.GetTableNodeChainable(
+				var tableNode = TableCompileTimeUtil.GetTableNodeChainable(
 					validationContext.StreamTypeService,
 					_chainSpec,
 					validationContext.IsAllowTableAggReset,
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 			// handle aggregation methods: method on aggregation state coming from certain aggregations or from table column (both table-access or table-in-from-clause)
 			// this is done here as a walker does not have the information that the validated child node has
-			Pair<ExprDotNodeAggregationMethodRootNode, IList<Chainable>> aggregationMethodNode = HandleAggregationMethod(validationContext);
+			var aggregationMethodNode = HandleAggregationMethod(validationContext);
 			if (aggregationMethodNode != null) {
 				if (aggregationMethodNode.Second.IsEmpty()) {
 					return aggregationMethodNode.First;
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 
 			// The root node expression may provide the input value:
-			//   Such as "window(*).doIt(...)" or "(select * from Window).doIt()" or "prevwindow(sb).doIt(...)",
+			//   Such as "window(*).DoIt(...)" or "(select * from Window).DoIt()" or "prevwindow(sb).DoIt(...)",
 			//   in which case the expression to act on is a child expression
 			//
 			var streamTypeService = validationContext.StreamTypeService;
@@ -344,7 +344,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 
 			// There no root node, in this case the classname or property name is provided as part of the chain.
-			// Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.doIt(...)"
+			// Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.DoIt(...)"
 			//
 			IList<Chainable> modifiedChain = new List<Chainable>(_chainSpec);
 			var firstItem = modifiedChain.DeleteAt(0);
@@ -388,7 +388,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				ExprDotStaticMethodWrap wrap;
 				if (variable.Type.IsArray) {
 					typeInfoX = EPTypeHelper.CollectionOfSingleValue(
-						variable.Type.GetElementType());
+						variable.Type.GetElementType(),
+						variable.Type);
 					wrap = new ExprDotStaticMethodWrapArrayScalar(variable.VariableName, variable.Type);
 				}
 				else if (variable.EventType != null) {
@@ -412,7 +413,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 
 			// try resolve as enumeration class with value
-			ValueAndFieldDesc enumconstantDesc = ImportCompileTimeUtil.ResolveIdentAsEnumConst(
+			var enumconstantDesc = ImportCompileTimeUtil.ResolveIdentAsEnumConst(
 				firstItemName,
 				validationContext.ImportService,
 				validationContext.ClassProvidedExtension,
@@ -644,15 +645,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			try {
 				evals = ExprDotNodeUtility.GetChainEvaluators(streamId, inputType, chain, validationContext, myself._isDuckTyping, filterAnalyzerInputProp);
 			}
-			catch (ExprValidationException ex) {
+			catch (ExprValidationException) {
 				if (inputType is EventEPType || inputType is EventMultiValuedEPType) {
-					throw ex;
+					throw;
 				}
 
 				// try building the chain based on the fragment event type (i.e. A.after(B) based on A-configured start time where A is a fragment)
 				var fragment = propertyInfoPair.First.FragmentEventType;
 				if (fragment == null) {
-					throw ex;
+					throw;
 				}
 
 				rootIsEventBean = true;
@@ -808,11 +809,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			// validate
 			aggregationMethodForge.Validate(validationContext);
 
-			IList<Chainable> newChain = _chainSpec.Count == 1 
+			var newChain = _chainSpec.Count == 1 
 				? (IList<Chainable>) EmptyList<Chainable>.Instance
 				: new List<Chainable>(_chainSpec.SubList(1, _chainSpec.Count));
 			
-			ExprDotNodeAggregationMethodRootNode root = new ExprDotNodeAggregationMethodRootNode(aggregationMethodForge);
+			var root = new ExprDotNodeAggregationMethodRootNode(aggregationMethodForge);
 			root.AddChildNode(rootNode);
 			return new Pair<ExprDotNodeAggregationMethodRootNode, IList<Chainable>>(root, newChain);
 		}
@@ -1074,7 +1075,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				throw GetAppDocMethodException(lhsName, operationName);
 			}
 
-			string rhsName = compared.ChainSpec[0].GetRootNameOrEmptyString().ToLowerInvariant();
+			var rhsName = compared.ChainSpec[0].GetRootNameOrEmptyString().ToLowerInvariant();
 			var pointInsideRectangle = pointInside && rhsName.Equals("rectangle");
 			var rectangleIntersectsRectangle = rectangleIntersects && rhsName.Equals("rectangle");
 			if (!pointInsideRectangle && !rectangleIntersectsRectangle) {

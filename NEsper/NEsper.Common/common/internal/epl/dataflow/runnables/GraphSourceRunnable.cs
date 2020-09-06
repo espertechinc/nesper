@@ -110,11 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.Runnables
 
         private void HandleException(Exception ex)
         {
-            if (_optionalExceptionHandler == null) {
-                return;
-            }
-
-            _optionalExceptionHandler.Handle(
+            _optionalExceptionHandler?.Handle(
                 new EPDataFlowExceptionContext(
                     _dataFlowName,
                     _operatorName,

@@ -11,6 +11,7 @@ using System;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -34,16 +35,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				array) => {
 				env.SendEventBean(new LocalEvent(array));
 			};
-			var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+			var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()}";
 			RunAssertion(env, beanepl, bean);
 
 			// Map
 			BiConsumer<EventType, string[]> map = (
 				type,
 				array) => {
-				env.SendEventMap(Collections.SingletonDataMap("array", array), "LocalEvent");
+				env.SendEventMap(Collections.SingletonDataMap("Array", array), "LocalEvent");
 			};
-			var mapepl = "@public @buseventtype create schema LocalEvent(array string[]);\n";
+			var mapepl = "@public @buseventtype create schema LocalEvent(Array string[]);\n";
 			RunAssertion(env, mapepl, map);
 
 			// Object-array
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				array) => {
 				env.SendEventObjectArray(new object[] {array}, "LocalEvent");
 			};
-			var oaepl = "@public @buseventtype create objectarray schema LocalEvent(array string[]);\n";
+			var oaepl = "@public @buseventtype create objectarray schema LocalEvent(Array string[]);\n";
 			RunAssertion(env, oaepl, oa);
 
 			// Json
@@ -60,12 +61,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				type,
 				array) => {
 				if (array == null) {
-					env.SendEventJson(new JObject(new JProperty("array", null)).ToString(), "LocalEvent");
+					env.SendEventJson(new JObject(new JProperty("Array", null)).ToString(), "LocalEvent");
 				}
 				else {
 					var @event = new JObject();
 					var jsonarray = new JArray();
-					@event.Add("array", jsonarray);
+					@event.Add("Array", jsonarray);
 					foreach (string @string in array) {
 						jsonarray.Add(@string);
 					}
@@ -73,12 +74,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					env.SendEventJson(@event.ToString(), "LocalEvent");
 				}
 			};
-			RunAssertion(env, "@public @buseventtype create json schema LocalEvent(array string[]);\n", json);
+			RunAssertion(env, "@public @buseventtype create json schema LocalEvent(Array string[]);\n", json);
 
 			// Json-Class-Provided
 			RunAssertion(
 				env,
-				"@JsonSchema(className='" + typeof(MyLocalJsonProvided).FullName + "') @public @buseventtype create json schema LocalEvent();\n",
+				"@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') @public @buseventtype create json schema LocalEvent();\n",
 				json);
 
 			// Avro
@@ -86,10 +87,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				type,
 				array) => {
 				var @event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				@event.Put("array", array == null ? null : Arrays.AsList(array));
+				@event.Put("Array", array == null ? null : Arrays.AsList(array));
 				env.SendEventAvro(@event, "LocalEvent");
 			};
-			RunAssertion(env, "@public @buseventtype create avro schema LocalEvent(array string[]);\n", avro);
+			RunAssertion(env, "@public @buseventtype create avro schema LocalEvent(Array string[]);\n", avro);
 		}
 
 		public void RunAssertion(
@@ -103,12 +104,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			env.CompileDeploy("@Name('s0') select * from LocalEvent", path).AddListener("s0");
 			var eventType = env.Statement("s0").EventType;
-			var g0 = eventType.GetGetter("array[0]");
-			var g1 = eventType.GetGetter("array[1]");
+			var g0 = eventType.GetGetter("Array[0]");
+			var g1 = eventType.GetGetter("Array[1]");
 
-			var propepl = "@Name('s1') select array[0] as c0, array[1] as c1," +
-			              "exists(array[0]) as c2, exists(array[1]) as c3, " +
-			              "typeof(array[0]) as c4, typeof(array[1]) as c5 from LocalEvent;\n";
+			var propepl = "@Name('s1') select Array[0] as c0, Array[1] as c1," +
+			              "exists(Array[0]) as c2, exists(Array[1]) as c3, " +
+			              "typeof(Array[0]) as c4, typeof(Array[1]) as c5 from LocalEvent;\n";
 			env.CompileDeploy(propepl, path).AddListener("s1");
 
 			sender.Invoke(eventType, new string[] {"a", "b"});
@@ -182,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		[Serializable]
 		public class MyLocalJsonProvided
 		{
-			public string[] array;
+			public string[] Array;
 		}
 	}
 } // end of namespace

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+			return EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
@@ -40,13 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return lambda => {
-				if (inputEventType == null) {
-					return EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
-				}
-
-				return EPTypeHelper.CollectionOfEvents(inputEventType);
-			};
+			return lambda => inputEventType == null
+				? EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null)
+				: EPTypeHelper.CollectionOfEvents(inputEventType);
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)

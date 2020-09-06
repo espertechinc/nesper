@@ -104,6 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             block.IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block
+                .DebugStack()
                 .DeclareVar(listType, "result", NewInstance(listType))
                 .Expression(ExprDotMethod(Ref("result"), "AddAll", 
                     ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, subProperty)))

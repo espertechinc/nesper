@@ -17,7 +17,7 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     [TestFixture]
 	public class TestEPLModuleUtil  {
-		[Test]
+		[Test, RunInApplicationDomain]
 		public void TestParse()
 		{
 

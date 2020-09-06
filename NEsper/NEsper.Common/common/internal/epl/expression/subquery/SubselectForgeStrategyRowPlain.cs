@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .BlockReturn(ConstantNull());
                 if (subselect.SelectClause == null) {
                     method.Block.MethodReturn(
-                        Cast(
+                        FlexCast(
                             subselect.EvaluationType,
                             StaticMethod(
                                 typeof(EventBeanUtility),
@@ -291,9 +291,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         .Block
                         .IfCondition(
                             Relational(
-                                ExprDotMethod(
+                                ExprDotName(
                                     symbols.GetAddMatchingEvents(method),
-                                    "size"),
+                                    "Count"),
                                 CodegenExpressionRelational.CodegenRelational.GT,
                                 Constant(1)))
                         .BlockReturn(ConstantNull())
@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                     .DeclareVar(
                         typeof(EventBean),
-                        "SubSelectResult",
+                        "subSelectResult",
                         StaticMethod(
                             typeof(EventBeanUtility),
                             "EvaluateFilterExpectSingleMatch",

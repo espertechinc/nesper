@@ -112,12 +112,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		{
 			CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(_sharableCode);
 			var method = parent.MakeChild(typeof(object), typeof(DynamicPropertyGetterByFieldBase), codegenClassScope)
-				.AddParam(typeof(object), "object");
+				.AddParam(typeof(object), "@object");
 			method.Block
-				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
+				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("@object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Field")))
 				.BlockReturn(ConstantNull())
-				.MethodReturn(CallCodegen(Ref("desc"), Ref("object"), method, codegenClassScope));
+				.MethodReturn(CallCodegen(Ref("desc"), Ref("@object"), method, codegenClassScope));
 			return LocalMethod(method, underlyingExpression);
 		}
 
@@ -150,9 +150,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		{
 			CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(_sharableCode);
 			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByFieldBase), codegenClassScope)
-				.AddParam(typeof(object), "object");
+				.AddParam(typeof(object), "@object");
 			method.Block
-				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
+				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("@object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Field")))
 				.BlockReturn(ConstantFalse())
 				.MethodReturn(Constant(true));
