@@ -25,12 +25,54 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternOperatorNotWHarness());
-            execs.Add(new PatternOp());
-            execs.Add(new PatternUniformEvents());
-            execs.Add(new PatternNotFollowedBy());
-            execs.Add(new PatternNotTimeInterval());
+            WithOperatorNotWHarness(execs);
+            WithOp(execs);
+            WithUniformEvents(execs);
+            WithNotFollowedBy(execs);
+            WithNotTimeInterval(execs);
+            WithNotWithEvery(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotWithEvery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternNotWithEvery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotTimeInterval(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternNotTimeInterval());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotFollowedBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternNotFollowedBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUniformEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternUniformEvents());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOperatorNotWHarness(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOperatorNotWHarness());
             return execs;
         }
 
@@ -313,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 var epl =
                     "@Name('s0') select a.TheString as c0 from pattern [(every a=SupportBean(IntPrimitive>=0)) and not SupportBean(IntPrimitive<0)]";

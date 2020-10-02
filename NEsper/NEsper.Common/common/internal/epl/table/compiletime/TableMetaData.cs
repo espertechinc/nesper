@@ -19,13 +19,14 @@ using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
-    public class TableMetaData
+    public class TableMetaData : Copyable<TableMetaData>
     {
         public TableMetaData()
         {
@@ -62,6 +63,41 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             Init();
         }
 
+
+        private TableMetaData(
+            string tableName,
+            string tableModuleName,
+            NameAccessModifier tableVisibility,
+            string optionalContextName,
+            NameAccessModifier? optionalContextVisibility,
+            string optionalContextModule,
+            EventType internalEventType,
+            EventType publicEventType,
+            string[] keyColumns,
+            Type[] keyTypes,
+            int[] keyColNums,
+            IDictionary<string, TableMetadataColumn> columns,
+            int numMethodAggs,
+            IndexMultiKey keyIndexMultiKey,
+            EventTableIndexMetadata indexMetadata)
+        {
+            TableName = tableName;
+            TableModuleName = tableModuleName;
+            TableVisibility = tableVisibility;
+            OptionalContextName = optionalContextName;
+            OptionalContextVisibility = optionalContextVisibility;
+            OptionalContextModule = optionalContextModule;
+            InternalEventType = internalEventType;
+            PublicEventType = publicEventType;
+            KeyColumns = keyColumns;
+            KeyTypes = keyTypes;
+            KeyColNums = keyColNums;
+            Columns = columns;
+            NumMethodAggs = numMethodAggs;
+            KeyIndexMultiKey = keyIndexMultiKey;
+            IndexMetadata = indexMetadata;
+        }
+
         public EventType InternalEventType { get; set; }
 
         public EventType PublicEventType { get; set; }
@@ -94,6 +130,26 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public IDictionary<string, TableMetadataColumn> Columns { get; set; }
 
+        public TableMetaData Copy()
+        {
+            return new TableMetaData(
+                TableName,
+                TableModuleName,
+                TableVisibility,
+                OptionalContextName,
+                OptionalContextVisibility,
+                OptionalContextModule,
+                InternalEventType,
+                PublicEventType,
+                KeyColumns,
+                KeyTypes,
+                KeyColNums,
+                Columns,
+                NumMethodAggs,
+                KeyIndexMultiKey,
+                IndexMetadata.Copy());
+        }
+        
         public void Init()
         {
             // add index multi-key for implicit primary-key index

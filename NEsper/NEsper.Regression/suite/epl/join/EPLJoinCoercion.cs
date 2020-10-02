@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinCoercionRange());
+            WithnRange(execs);
+            Withn(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithnRange(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinJoinCoercionRange());
             return execs;
         }
 
@@ -51,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var milestone = new AtomicLong();
 
-                var fields = new [] { "sbs","sbi","sbri" };
+                var fields = new[] {"sbs", "sbi", "sbri"};
                 var epl =
                     "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
                     "where IntPrimitive between RangeStartLong and RangeEndLong";

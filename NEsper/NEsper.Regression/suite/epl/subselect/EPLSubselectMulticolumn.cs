@@ -22,10 +22,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectMulticolumnAgg());
-            execs.Add(new EPLSubselectInvalid());
-            execs.Add(new EPLSubselectColumnsUncorrelated());
+            WithMulticolumnAgg(execs);
+            WithInvalid(execs);
+            WithColumnsUncorrelated(execs);
+            WithCorrelatedAggregation(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCorrelatedAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectCorrelatedAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithColumnsUncorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectColumnsUncorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMulticolumnAgg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMulticolumnAgg());
             return execs;
         }
 
@@ -45,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 Assert.AreEqual(rows[i][1], prop.PropertyType, message);
             }
 
-            var fields = new [] { "subrow.v1","subrow.v2" };
+            var fields = new[] {"subrow.v1", "subrow.v2"};
 
             env.SendEventBean(new SupportBean_S0(1));
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
@@ -233,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     Assert.AreEqual(rows[i][1], prop.PropertyType, message);
                 }
 
-                var fields = new [] { "P00","subrow.v1","subrow.v2" };
+                var fields = new[] {"P00", "subrow.v1", "subrow.v2"};
 
                 env.SendEventBean(new SupportBean_S0(1, "T1"));
                 var row = env.Listener("s0").AssertOneGetNewAndReset();

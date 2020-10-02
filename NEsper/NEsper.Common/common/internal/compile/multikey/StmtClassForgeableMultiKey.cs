@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 		{
 			toStringMethod.Block
 				.DeclareVar<StringBuilder>("b", NewInstance(typeof(StringBuilder)))
-				.ExprDotMethod(Ref("b"), "Append", ExprDotName(ExprDotMethod(Ref("this"), "GetType"), "Name"))
+				.ExprDotMethod(Ref("b"), "Append", Constant(nameof(MultiKey)))
 				.ExprDotMethod(Ref("b"), "Append", Constant("<"));
 
 			for (var i = 0; i < _types.Length; i++) {

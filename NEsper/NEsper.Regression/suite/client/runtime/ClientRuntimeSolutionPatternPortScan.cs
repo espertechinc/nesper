@@ -24,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientRuntimePortScanPrimarySuccess());
-            execs.Add(new ClientRuntimePortScanKeepAlerting());
+            WithPrimarySuccess(execs);
+            WithKeepAlerting(execs);
+            WithFallsUnderThreshold(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFallsUnderThreshold(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimePortScanFallsUnderThreshold());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeepAlerting(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimePortScanKeepAlerting());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrimarySuccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimePortScanPrimarySuccess());
             return execs;
         }
 
@@ -115,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SendEventMultiple(env, 20, "A", "B");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    new [] { "type","cnt" },
+                    new[] {"type", "cnt"},
                     new object[] {"DETECTED", 20L});
                 env.UndeployAll();
             }
@@ -131,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SendEventMultiple(env, 20, "A", "B");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    new [] { "type","cnt" },
+                    new[] {"type", "cnt"},
                     new object[] {"DETECTED", 20L});
 
                 SetCurrentTime(env, "8:00:29");
@@ -144,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SetCurrentTime(env, "8:01:00");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    new [] { "type","cnt" },
+                    new[] {"type", "cnt"},
                     new object[] {"UPDATE", 20L});
 
                 env.UndeployAll();
@@ -161,13 +182,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SendEventMultiple(env, 20, "A", "B");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    new [] { "type","cnt" },
+                    new[] {"type", "cnt"},
                     new object[] {"DETECTED", 20L});
 
                 SetCurrentTime(env, "8:01:00");
                 EPAssertionUtil.AssertProps(
                     listener.GetAndResetLastNewData()[0],
-                    new [] { "type","cnt" },
+                    new[] {"type", "cnt"},
                     new object[] {"DONE", 0L});
 
                 env.UndeployAll();

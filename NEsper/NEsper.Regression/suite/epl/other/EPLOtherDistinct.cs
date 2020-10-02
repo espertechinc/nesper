@@ -33,130 +33,170 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-WithOutputSimpleColumn(execs);
-WithBatchWindow(execs);
-WithBatchWindowJoin(execs);
-WithBatchWindowInsertInto(execs);
-WithOnDemandAndOnSelect(execs);
-WithSubquery(execs);
-WithBeanEventWildcardThisProperty(execs);
-WithBeanEventWildcardSODA(execs);
-WithBeanEventWildcardPlusCols(execs);
-WithMapEventWildcard(execs);
-WithOutputLimitEveryColumn(execs);
-WithOutputRateSnapshotColumn(execs);
-WithDistinctWildcardJoinPatternOne(execs);
-WithDistinctWildcardJoinPatternTwo(execs);
-WithDistinctOutputLimitMultikeyWArraySingleArray(execs);
-WithDistinctOutputLimitMultikeyWArrayTwoArray(execs);
-WithDistinctFireAndForgetMultikeyWArray(execs);
-WithDistinctIterateMultikeyWArray(execs);
-WithDistinctOnSelectMultikeyWArray(execs);
-WithDistinctVariantStream(execs);
+            WithOutputSimpleColumn(execs);
+            WithBatchWindow(execs);
+            WithBatchWindowJoin(execs);
+            WithBatchWindowInsertInto(execs);
+            WithOnDemandAndOnSelect(execs);
+            WithSubquery(execs);
+            WithBeanEventWildcardThisProperty(execs);
+            WithBeanEventWildcardSODA(execs);
+            WithBeanEventWildcardPlusCols(execs);
+            WithMapEventWildcard(execs);
+            WithOutputLimitEveryColumn(execs);
+            WithOutputRateSnapshotColumn(execs);
+            WithDistinctWildcardJoinPatternOne(execs);
+            WithDistinctWildcardJoinPatternTwo(execs);
+            WithDistinctOutputLimitMultikeyWArraySingleArray(execs);
+            WithDistinctOutputLimitMultikeyWArrayTwoArray(execs);
+            WithDistinctFireAndForgetMultikeyWArray(execs);
+            WithDistinctIterateMultikeyWArray(execs);
+            WithDistinctOnSelectMultikeyWArray(execs);
+            WithDistinctVariantStream(execs);
 
             return execs;
         }
-public static IList<RegressionExecution> WithDistinctVariantStream(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctVariantStream());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctOnSelectMultikeyWArray(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctOnSelectMultikeyWArray());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctIterateMultikeyWArray(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctIterateMultikeyWArray());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctFireAndForgetMultikeyWArray(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctFireAndForgetMultikeyWArray());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctOutputLimitMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArrayTwoArray());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctOutputLimitMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArraySingleArray());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctWildcardJoinPatternTwo(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctWildcardJoinPatternTwo());
-    return execs;
-}public static IList<RegressionExecution> WithDistinctWildcardJoinPatternOne(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherDistinctWildcardJoinPatternOne());
-    return execs;
-}public static IList<RegressionExecution> WithOutputRateSnapshotColumn(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherOutputRateSnapshotColumn());
-    return execs;
-}public static IList<RegressionExecution> WithOutputLimitEveryColumn(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherOutputLimitEveryColumn());
-    return execs;
-}public static IList<RegressionExecution> WithMapEventWildcard(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherMapEventWildcard());
-    return execs;
-}public static IList<RegressionExecution> WithBeanEventWildcardPlusCols(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherBeanEventWildcardPlusCols());
-    return execs;
-}public static IList<RegressionExecution> WithBeanEventWildcardSODA(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherBeanEventWildcardSODA());
-    return execs;
-}public static IList<RegressionExecution> WithBeanEventWildcardThisProperty(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherBeanEventWildcardThisProperty());
-    return execs;
-}public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherSubquery());
-    return execs;
-}public static IList<RegressionExecution> WithOnDemandAndOnSelect(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherOnDemandAndOnSelect());
-    return execs;
-}public static IList<RegressionExecution> WithBatchWindowInsertInto(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherBatchWindowInsertInto());
-    return execs;
-}public static IList<RegressionExecution> WithBatchWindowJoin(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherBatchWindowJoin());
-    return execs;
-}public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherBatchWindow());
-    return execs;
-}public static IList<RegressionExecution> WithOutputSimpleColumn(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLOtherOutputSimpleColumn());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithDistinctVariantStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctVariantStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctOnSelectMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctOnSelectMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctIterateMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctIterateMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctFireAndForgetMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctFireAndForgetMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctOutputLimitMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArrayTwoArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctOutputLimitMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctOutputLimitMultikeyWArraySingleArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctWildcardJoinPatternTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctWildcardJoinPatternTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDistinctWildcardJoinPatternOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDistinctWildcardJoinPatternOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputRateSnapshotColumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherOutputRateSnapshotColumn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputLimitEveryColumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherOutputLimitEveryColumn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapEventWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherMapEventWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanEventWildcardPlusCols(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherBeanEventWildcardPlusCols());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanEventWildcardSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherBeanEventWildcardSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanEventWildcardThisProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherBeanEventWildcardThisProperty());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnDemandAndOnSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherOnDemandAndOnSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindowInsertInto(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherBatchWindowInsertInto());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindowJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherBatchWindowJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherBatchWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputSimpleColumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherOutputSimpleColumn());
+            return execs;
+        }
+
         private static void TryAssertionOutputEvery(
             RegressionEnvironment env,
             string[] fields)
@@ -407,18 +447,18 @@ public static IList<RegressionExecution> WithDistinctVariantStream(IList<Regress
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
                     "IntOne".SplitCsv(),
-                    new object[][] { 
-                        new object[] {new int[] {1, 2}},  
-                        new object[] {new int[] {3, 4}}});
+                    new object[][] {
+                        new object[] {new int[] {1, 2}},
+                        new object[] {new int[] {3, 4}}
+                    });
 
                 env.SendEventBean(new SupportBean_S1(0));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s1").GetAndResetLastNewData(),
                     "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
-                         
-                        new object[] {new int[] {1, 2}, new int[] {3, 4}},  
-                        new object[] {new int[] {3, 4}, new int[] {1, 2}},  
+                        new object[] {new int[] {1, 2}, new int[] {3, 4}},
+                        new object[] {new int[] {3, 4}, new int[] {1, 2}},
                         new object[] {new int[] {1, 2}, new int[] {3, 5}}
                     });
 
@@ -444,16 +484,17 @@ public static IList<RegressionExecution> WithDistinctVariantStream(IList<Regress
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     "IntOne".SplitCsv(),
-                    new object[][] { 
-                        new object[] {new int[] {1, 2}},  
-                        new object[] {new int[] {3, 4}}});
+                    new object[][] {
+                        new object[] {new int[] {1, 2}},
+                        new object[] {new int[] {3, 4}}
+                    });
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s1"),
                     "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
-                        new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
-                        new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
+                        new object[] {new int[] {1, 2}, new int[] {3, 4}},
+                        new object[] {new int[] {3, 4}, new int[] {1, 2}},
                         new object[] {new int[] {1, 2}, new int[] {3, 5}}
                     });
 
@@ -481,16 +522,17 @@ public static IList<RegressionExecution> WithDistinctVariantStream(IList<Regress
                     result.Array,
                     "IntOne".SplitCsv(),
                     new object[][] {
-                        new object[] {new int[] {1, 2}}, 
-                        new object[] {new int[] {3, 4}}});
+                        new object[] {new int[] {1, 2}},
+                        new object[] {new int[] {3, 4}}
+                    });
 
                 result = env.CompileExecuteFAF("select distinct IntOne, IntTwo from MyWindow", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
                     "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
-                        new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
-                        new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
+                        new object[] {new int[] {1, 2}, new int[] {3, 4}},
+                        new object[] {new int[] {3, 4}, new int[] {1, 2}},
                         new object[] {new int[] {1, 2}, new int[] {3, 5}}
                     });
 
@@ -518,8 +560,8 @@ public static IList<RegressionExecution> WithDistinctVariantStream(IList<Regress
                     env.Listener("s0").GetAndResetLastNewData(),
                     "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
-                        new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
-                        new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
+                        new object[] {new int[] {1, 2}, new int[] {3, 4}},
+                        new object[] {new int[] {3, 4}, new int[] {1, 2}},
                         new object[] {new int[] {1, 2}, new int[] {3, 5}}
                     });
 
@@ -546,10 +588,11 @@ public static IList<RegressionExecution> WithDistinctVariantStream(IList<Regress
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
                     "IntOne".SplitCsv(),
-                    new object[][] { 
-                        new object[] {new int[] {1, 2}},  
-                        new object[] {new int[] {2, 1}},  
-                        new object[] {new int[] {2, 3}}});
+                    new object[][] {
+                        new object[] {new int[] {1, 2}},
+                        new object[] {new int[] {2, 1}},
+                        new object[] {new int[] {2, 3}}
+                    });
 
                 env.UndeployAll();
             }

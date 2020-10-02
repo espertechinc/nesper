@@ -26,13 +26,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             this._field = field;
         }
 
-        public override string FieldName {
-            get { return _field.FieldName; }
-        }
+        public override string FieldName => _field.FieldName;
 
-        public override Type FieldType {
-            get { return _field.PropertyType; }
-        }
+        public override Type FieldType => _field.PropertyType;
 
         public override object GetJsonProp(object @object)
         {

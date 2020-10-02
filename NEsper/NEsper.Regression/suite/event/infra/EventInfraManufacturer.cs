@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			// Map
 			RunAssertion(
 				env,
-				"create map schema MapEvent(p1 string, p2 int)",
+				"create map schema MapEvent(P1 string, P2 int)",
 				und => {
 					EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", 1}, ((IDictionary<string, object>) und).Values);
 				});
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			// Object-array
 			RunAssertion(
 				env,
-				"create objectarray schema MapEvent(p1 string, p2 int)",
+				"create objectarray schema MapEvent(P1 string, P2 int)",
 				und => {
 					EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", 1}, (object[]) und);
 				});
@@ -63,14 +63,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"select * from " + AVRO_TYPENAME,
 				und => {
 					var rec = (GenericRecord) und;
-					Assert.AreEqual("a", rec.Get("p1"));
-					Assert.AreEqual(1, rec.Get("p2"));
+					Assert.AreEqual("a", rec.Get("P1"));
+					Assert.AreEqual(1, rec.Get("P2"));
 				});
 
 			// Json
 			RunAssertion(
 				env,
-				"create json schema JsonEvent(p1 string, p2 int)",
+				"create json schema JsonEvent(P1 string, P2 int)",
 				und => {
 					EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", 1}, ((IDictionary<string, object>) und).Values);
 				});

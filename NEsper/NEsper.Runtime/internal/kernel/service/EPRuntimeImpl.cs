@@ -22,7 +22,15 @@ using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.client.variable;
+using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.epl.classprovided.core;
+using com.espertech.esper.common.@internal.epl.namedwindow.path;
+using com.espertech.esper.common.@internal.epl.script.core;
+using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.metrics.audit;
@@ -409,13 +417,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 return new EPCompilerPathableImpl(
-                    services.VariablePathRegistry,
-                    services.EventTypePathRegistry,
-                    services.ExprDeclaredPathRegistry,
-                    services.NamedWindowPathRegistry,
-                    services.TablePathRegistry,
-                    services.ContextPathRegistry,
-                    services.ScriptPathRegistry,
+                    services.VariablePathRegistry.Copy(),
+                    services.EventTypePathRegistry.Copy(),
+                    services.ExprDeclaredPathRegistry.Copy(),
+                    services.NamedWindowPathRegistry.Copy(),
+                    services.TablePathRegistry.Copy(),
+                    services.ContextPathRegistry.Copy(),
+                    services.ScriptPathRegistry.Copy(),
                     services.ClassProvidedPathRegistry.Copy(),
                     eventTypes,
                     variables);

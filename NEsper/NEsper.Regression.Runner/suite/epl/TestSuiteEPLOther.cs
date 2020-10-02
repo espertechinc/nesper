@@ -182,39 +182,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLOtherAsKeywordBacktick()
-        {
-            RegressionRunner.Run(session, EPLOtherAsKeywordBacktick.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLOtherComments()
         {
             RegressionRunner.Run(session, new EPLOtherComments());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherCreateIndex()
-        {
-            RegressionRunner.Run(session, EPLOtherCreateIndex.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherForGroupDelivery()
-        {
-            RegressionRunner.Run(session, EPLOtherForGroupDelivery.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherInvalid()
-        {
-            RegressionRunner.Run(session, EPLOtherInvalid.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherIStreamRStreamKeywords()
-        {
-            RegressionRunner.Run(session, EPLOtherIStreamRStreamKeywords.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -224,89 +194,11 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLOtherPatternEventProperties()
-        {
-            RegressionRunner.Run(session, EPLOtherPatternEventProperties.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherPatternQueries()
-        {
-            RegressionRunner.Run(session, EPLOtherPatternQueries.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherPlanExcludeHint()
-        {
-            RegressionRunner.Run(session, EPLOtherPlanExcludeHint.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSelectExpr()
-        {
-            RegressionRunner.Run(session, EPLOtherSelectExpr.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSelectExprEventBeanAnnotation()
-        {
-            RegressionRunner.Run(session, EPLOtherSelectExprEventBeanAnnotation.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSelectExprSQLCompat()
-        {
-            RegressionRunner.Run(session, EPLOtherSelectExprSQLCompat.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSelectExprStreamSelector()
-        {
-            RegressionRunner.Run(session, EPLOtherSelectExprStreamSelector.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSelectJoin()
-        {
-            RegressionRunner.Run(session, EPLOtherSelectJoin.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSelectWildcardWAdditional()
-        {
-            RegressionRunner.Run(session, EPLOtherSelectWildcardWAdditional.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherSplitStream()
-        {
-            RegressionRunner.Run(session, EPLOtherSplitStream.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherStaticFunctions()
-        {
-            RegressionRunner.Run(session, EPLOtherStaticFunctions.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherStreamExpr()
-        {
-            RegressionRunner.Run(session, EPLOtherStreamExpr.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLOtherUnaryMinus()
         {
             RegressionRunner.Run(session, new EPLOtherUnaryMinus());
         }
-        
-        [Test, RunInApplicationDomain]
-        public void TestEPLOtherNestedClass()
-        {
-            RegressionRunner.Run(session, EPLOtherNestedClass.Executions());
-        }
-        
+
         /// <summary>
         /// Auto-test(s): EPLOtherPlanInKeywordQuery
         /// <code>
@@ -316,7 +208,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         public class TestEPLOtherPlanInKeywordQuery : AbstractTestBase
         {
-            public TestEPLOtherPlanInKeywordQuery() : base(Configure) { }
+            public TestEPLOtherPlanInKeywordQuery() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithQueryPlan2Stream() => RegressionRunner.Run(_session, EPLOtherPlanInKeywordQuery.WithQueryPlan2Stream());
@@ -345,7 +239,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             [Test, RunInApplicationDomain]
             public void WithNotIn() => RegressionRunner.Run(_session, EPLOtherPlanInKeywordQuery.WithNotIn());
         }
-        
+
         /// <summary>
         /// Auto-test(s): EPLOtherUpdateIStream
         /// <code>
@@ -355,7 +249,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         public class TestEPLOtherUpdateIStream : AbstractTestBase
         {
-            public TestEPLOtherUpdateIStream() : base(Configure) { }
+            public TestEPLOtherUpdateIStream() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithExpression() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithExpression());
@@ -429,7 +325,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             [Test, RunInApplicationDomain]
             public void WithBean() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithBean());
         }
-        
+
         /// <summary>
         /// Auto-test(s): EPLOtherCreateExpression
         /// <code>
@@ -439,7 +335,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         public class TestEPLOtherCreateExpression : AbstractTestBase
         {
-            public TestEPLOtherCreateExpression() : base(Configure) { }
+            public TestEPLOtherCreateExpression() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithExpressionUse() => RegressionRunner.Run(_session, EPLOtherCreateExpression.WithExpressionUse());
@@ -451,7 +349,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithExprAndScriptLifecycleAndFilter() => RegressionRunner.Run(_session, EPLOtherCreateExpression.WithExprAndScriptLifecycleAndFilter());
 
             [Test, RunInApplicationDomain]
-            public void WithParseSpecialAndMixedExprAndScript() => RegressionRunner.Run(_session, EPLOtherCreateExpression.WithParseSpecialAndMixedExprAndScript());
+            public void WithParseSpecialAndMixedExprAndScript() => RegressionRunner.Run(
+                _session,
+                EPLOtherCreateExpression.WithParseSpecialAndMixedExprAndScript());
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, EPLOtherCreateExpression.WithInvalid());
@@ -598,6 +498,640 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             [Test, RunInApplicationDomain]
             public void WithPathSimple() => RegressionRunner.Run(_session, EPLOtherCreateSchema.WithPathSimple());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherAsKeywordBacktick
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherAsKeywordBacktick : AbstractTestBase
+        {
+            public TestEPLOtherAsKeywordBacktick() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithOnSelectProperty() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithOnSelectProperty());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubselect() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithSubselect());
+
+            [Test, RunInApplicationDomain]
+            public void WithnMergeAndUpdateAndSelect() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithnMergeAndUpdateAndSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithUpdateIStream() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithUpdateIStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithOnTrigger() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithOnTrigger());
+
+            [Test, RunInApplicationDomain]
+            public void WithFromClause() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithFromClause());
+
+            [Test, RunInApplicationDomain]
+            public void WithFAFUpdateDelete() => RegressionRunner.Run(_session, EPLOtherAsKeywordBacktick.WithFAFUpdateDelete());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherCreateIndex
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherCreateIndex.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherCreateIndex : AbstractTestBase
+        {
+            public TestEPLOtherCreateIndex() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithThreeModule() => RegressionRunner.Run(_session, EPLOtherCreateIndex.WithThreeModule());
+
+            [Test, RunInApplicationDomain]
+            public void WithOneModule() => RegressionRunner.Run(_session, EPLOtherCreateIndex.WithOneModule());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherForGroupDelivery
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherForGroupDelivery.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherForGroupDelivery : AbstractTestBase
+        {
+            public TestEPLOtherForGroupDelivery() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithGroupDeliveryMultikeyWArrayTwoField() => RegressionRunner.Run(
+                _session,
+                EPLOtherForGroupDelivery.WithGroupDeliveryMultikeyWArrayTwoField());
+
+            [Test, RunInApplicationDomain]
+            public void WithGroupDeliveryMultikeyWArraySingleArray() => RegressionRunner.Run(
+                _session,
+                EPLOtherForGroupDelivery.WithGroupDeliveryMultikeyWArraySingleArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithGroupDelivery() => RegressionRunner.Run(_session, EPLOtherForGroupDelivery.WithGroupDelivery());
+
+            [Test, RunInApplicationDomain]
+            public void WithDiscreteDelivery() => RegressionRunner.Run(_session, EPLOtherForGroupDelivery.WithDiscreteDelivery());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubscriberOnly() => RegressionRunner.Run(_session, EPLOtherForGroupDelivery.WithSubscriberOnly());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLOtherForGroupDelivery.WithInvalid());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherInvalid
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherInvalid.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherInvalid : AbstractTestBase
+        {
+            public TestEPLOtherInvalid() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithDifferentJoins() => RegressionRunner.Run(_session, EPLOtherInvalid.WithDifferentJoins());
+
+            [Test, RunInApplicationDomain]
+            public void WithLongTypeConstant() => RegressionRunner.Run(_session, EPLOtherInvalid.WithLongTypeConstant());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidSyntax() => RegressionRunner.Run(_session, EPLOtherInvalid.WithInvalidSyntax());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidFuncParams() => RegressionRunner.Run(_session, EPLOtherInvalid.WithInvalidFuncParams());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherIStreamRStreamKeywords
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherIStreamRStreamKeywords : AbstractTestBase
+        {
+            public TestEPLOtherIStreamRStreamKeywords() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamOutputSnapshot() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamOutputSnapshot());
+
+            [Test, RunInApplicationDomain]
+            public void WithIStreamJoin() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithIStreamJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithIStreamInsertIntoRStream() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithIStreamInsertIntoRStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithIStreamOnly() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithIStreamOnly());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamJoin() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamInsertIntoRStream() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamInsertIntoRStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamInsertInto() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamInsertInto());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamOnly() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamOnly());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamOnlyCompile() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamOnlyCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithRStreamOnlyOM() => RegressionRunner.Run(_session, EPLOtherIStreamRStreamKeywords.WithRStreamOnlyOM());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherPatternEventProperties
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherPatternEventProperties.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherPatternEventProperties : AbstractTestBase
+        {
+            public TestEPLOtherPatternEventProperties() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithPropertiesOrPattern() => RegressionRunner.Run(_session, EPLOtherPatternEventProperties.WithPropertiesOrPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithPropertiesSimplePattern() => RegressionRunner.Run(_session, EPLOtherPatternEventProperties.WithPropertiesSimplePattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithWildcardOrPattern() => RegressionRunner.Run(_session, EPLOtherPatternEventProperties.WithWildcardOrPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithWildcardSimplePattern() => RegressionRunner.Run(_session, EPLOtherPatternEventProperties.WithWildcardSimplePattern());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherPatternQueries
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherPatternQueries.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherPatternQueries : AbstractTestBase
+        {
+            public TestEPLOtherPatternQueries() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithPatternWindow() => RegressionRunner.Run(_session, EPLOtherPatternQueries.WithPatternWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithFollowedByAndWindow() => RegressionRunner.Run(_session, EPLOtherPatternQueries.WithFollowedByAndWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithAggregation() => RegressionRunner.Run(_session, EPLOtherPatternQueries.WithAggregation());
+
+            [Test, RunInApplicationDomain]
+            public void WithWhere() => RegressionRunner.Run(_session, EPLOtherPatternQueries.WithWhere());
+
+            [Test, RunInApplicationDomain]
+            public void WithWhereCompile() => RegressionRunner.Run(_session, EPLOtherPatternQueries.WithWhereCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithWhereOM() => RegressionRunner.Run(_session, EPLOtherPatternQueries.WithWhereOM());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherPlanExcludeHint
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherPlanExcludeHint.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherPlanExcludeHint : AbstractTestBase
+        {
+            public TestEPLOtherPlanExcludeHint() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLOtherPlanExcludeHint.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoin() => RegressionRunner.Run(_session, EPLOtherPlanExcludeHint.WithJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithDocSample() => RegressionRunner.Run(_session, EPLOtherPlanExcludeHint.WithDocSample());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSelectExpr
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSelectExpr.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSelectExpr : AbstractTestBase
+        {
+            public TestEPLOtherSelectExpr() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowStats() => RegressionRunner.Run(_session, EPLOtherSelectExpr.WithWindowStats());
+
+            [Test, RunInApplicationDomain]
+            public void WithGetEventType() => RegressionRunner.Run(_session, EPLOtherSelectExpr.WithGetEventType());
+
+            [Test, RunInApplicationDomain]
+            public void WithEscapeString() => RegressionRunner.Run(_session, EPLOtherSelectExpr.WithEscapeString());
+
+            [Test, RunInApplicationDomain]
+            public void WithKeywordsAllowed() => RegressionRunner.Run(_session, EPLOtherSelectExpr.WithKeywordsAllowed());
+
+            [Test, RunInApplicationDomain]
+            public void WithGraphSelect() => RegressionRunner.Run(_session, EPLOtherSelectExpr.WithGraphSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithPrecedenceNoColumnName() => RegressionRunner.Run(_session, EPLOtherSelectExpr.WithPrecedenceNoColumnName());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSelectExprEventBeanAnnotation
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSelectExprEventBeanAnnotation.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSelectExprEventBeanAnnotation : AbstractTestBase
+        {
+            public TestEPLOtherSelectExprEventBeanAnnotation() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithWSubquery() => RegressionRunner.Run(_session, EPLOtherSelectExprEventBeanAnnotation.WithWSubquery());
+
+            [Test]
+            public void WithSimple() => RegressionRunner.Run(_session, EPLOtherSelectExprEventBeanAnnotation.WithSimple());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSelectExprSQLCompat
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSelectExprSQLCompat.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSelectExprSQLCompat : AbstractTestBase
+        {
+            public TestEPLOtherSelectExprSQLCompat() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void Withy() => RegressionRunner.Run(_session, EPLOtherSelectExprSQLCompat.Withy());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSelectExprStreamSelector
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSelectExprStreamSelector : AbstractTestBase
+        {
+            public TestEPLOtherSelectExprStreamSelector() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidSelect() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithInvalidSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithAloneJoinNoAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithAloneJoinNoAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithAloneJoinAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithAloneJoinAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithAloneNoJoinAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithAloneNoJoinAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithAloneNoJoinNoAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithAloneNoJoinNoAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinNoAliasWithProperties() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithJoinNoAliasWithProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoJoinNoAliasWithProperties() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithNoJoinNoAliasWithProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinWithAliasWithProperties() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithJoinWithAliasWithProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoJoinWithAliasWithProperties() => RegressionRunner.Run(
+                _session,
+                EPLOtherSelectExprStreamSelector.WithNoJoinWithAliasWithProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinWildcardWithAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithJoinWildcardWithAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoJoinWildcardWithAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithNoJoinWildcardWithAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinWildcardNoAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithJoinWildcardNoAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoJoinWildcardNoAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithNoJoinWildcardNoAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectModelJoinAlias() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithObjectModelJoinAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithInsertFromPattern() => RegressionRunner.Run(_session, EPLOtherSelectExprStreamSelector.WithInsertFromPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithInsertTransposeNestedProperty() => RegressionRunner.Run(
+                _session,
+                EPLOtherSelectExprStreamSelector.WithInsertTransposeNestedProperty());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidSelectWildcardProperty() => RegressionRunner.Run(
+                _session,
+                EPLOtherSelectExprStreamSelector.WithInvalidSelectWildcardProperty());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSelectJoin
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSelectJoin.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSelectJoin : AbstractTestBase
+        {
+            public TestEPLOtherSelectJoin() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithNonUniquePerId() => RegressionRunner.Run(_session, EPLOtherSelectJoin.WithNonUniquePerId());
+
+            [Test, RunInApplicationDomain]
+            public void WithUniquePerId() => RegressionRunner.Run(_session, EPLOtherSelectJoin.WithUniquePerId());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSelectWildcardWAdditional
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSelectWildcardWAdditional : AbstractTestBase
+        {
+            public TestEPLOtherSelectWildcardWAdditional() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidRepeatedProperties() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithInvalidRepeatedProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithWildcardMapEvent() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithWildcardMapEvent());
+
+            [Test, RunInApplicationDomain]
+            public void WithCombinedProperties() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithCombinedProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinCommonProperties() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithJoinCommonProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinNoCommonProperties() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithJoinNoCommonProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinInsertInto() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithJoinInsertInto());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleInsertInto() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithSingleInsertInto());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingle() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithSingle());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleOM() => RegressionRunner.Run(_session, EPLOtherSelectWildcardWAdditional.WithSingleOM());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherSplitStream
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherSplitStream.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherSplitStream : AbstractTestBase
+        {
+            public TestEPLOtherSplitStream() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithSubqueryMultikeyWArray() => RegressionRunner.Run(_session, EPLOtherSplitStream.WithSubqueryMultikeyWArray());
+
+            [Test, RunInApplicationDomain]
+            public void With4Split() => RegressionRunner.Run(_session, EPLOtherSplitStream.With4Split());
+
+            [Test, RunInApplicationDomain]
+            public void With3SplitDefaultOutputFirst() => RegressionRunner.Run(_session, EPLOtherSplitStream.With3SplitDefaultOutputFirst());
+
+            [Test, RunInApplicationDomain]
+            public void With3SplitOutputAll() => RegressionRunner.Run(_session, EPLOtherSplitStream.With3SplitOutputAll());
+
+            [Test, RunInApplicationDomain]
+            public void With2SplitNoDefaultOutputAll() => RegressionRunner.Run(_session, EPLOtherSplitStream.With2SplitNoDefaultOutputAll());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubquery() => RegressionRunner.Run(_session, EPLOtherSplitStream.WithSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void With1SplitDefault() => RegressionRunner.Run(_session, EPLOtherSplitStream.With1SplitDefault());
+
+            [Test, RunInApplicationDomain]
+            public void WithSplitPremptiveNamedWindow() => RegressionRunner.Run(_session, EPLOtherSplitStream.WithSplitPremptiveNamedWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithFromClause() => RegressionRunner.Run(_session, EPLOtherSplitStream.WithFromClause());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLOtherSplitStream.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void With2SplitNoDefaultOutputFirst() => RegressionRunner.Run(_session, EPLOtherSplitStream.With2SplitNoDefaultOutputFirst());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherStaticFunctions
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherStaticFunctions.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherStaticFunctions : AbstractTestBase
+        {
+            public TestEPLOtherStaticFunctions() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithStaticFuncEnumConstant() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithStaticFuncEnumConstant());
+
+            [Test, RunInApplicationDomain]
+            public void WithStaticFuncWCurrentTimeStamp() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithStaticFuncWCurrentTimeStamp());
+
+            [Test, RunInApplicationDomain]
+            public void WithPrimitiveConversion() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPrimitiveConversion());
+
+            [Test, RunInApplicationDomain]
+            public void WithPassthru() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPassthru());
+
+            [Test, RunInApplicationDomain]
+            public void WithNestedFunction() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithNestedFunction());
+
+            [Test, RunInApplicationDomain]
+            public void WithOtherClauses() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithOtherClauses());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultipleMethodInvocations() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithMultipleMethodInvocations());
+
+            [Test, RunInApplicationDomain]
+            public void WithComplexParameters() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithComplexParameters());
+
+            [Test, RunInApplicationDomain]
+            public void WithUserDefined() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithUserDefined());
+
+            [Test, RunInApplicationDomain]
+            public void WithTwoParameters() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithTwoParameters());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleParameter() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithSingleParameter());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleParameterCompile() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithSingleParameterCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleParameterOM() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithSingleParameterOM());
+
+            [Test, RunInApplicationDomain]
+            public void WithPerfConstantParametersNested() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPerfConstantParametersNested());
+
+            [Test, RunInApplicationDomain]
+            public void WithPerfConstantParameters() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPerfConstantParameters());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoParameters() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithNoParameters());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayParameter() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithArrayParameter());
+
+            [Test, RunInApplicationDomain]
+            public void WithException() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithException());
+
+            [Test, RunInApplicationDomain]
+            public void WithPattern() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithReturnsMapIndexProperty() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithReturnsMapIndexProperty());
+
+            [Test, RunInApplicationDomain]
+            public void WithEscape() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithEscape());
+
+            [Test, RunInApplicationDomain]
+            public void WithChainedStatic() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithChainedStatic());
+
+            [Test, RunInApplicationDomain]
+            public void WithChainedInstance() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithChainedInstance());
+
+            [Test, RunInApplicationDomain]
+            public void WithNullPrimitive() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithNullPrimitive());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherStreamExpr
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherStreamExpr.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherStreamExpr : AbstractTestBase
+        {
+            public TestEPLOtherStreamExpr() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidSelect() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithInvalidSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithPatternStreamSelectNoWildcard() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithPatternStreamSelectNoWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinStreamSelectNoWildcard() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithJoinStreamSelectNoWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithStreamInstanceMethodNoAlias() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithStreamInstanceMethodNoAlias());
+
+            [Test, RunInApplicationDomain]
+            public void WithStreamInstanceMethodAliased() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithStreamInstanceMethodAliased());
+
+            [Test, RunInApplicationDomain]
+            public void WithInstanceMethodStatic() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithInstanceMethodStatic());
+
+            [Test, RunInApplicationDomain]
+            public void WithInstanceMethodOuterJoin() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithInstanceMethodOuterJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithStreamFunction() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithStreamFunction());
+
+            [Test, RunInApplicationDomain]
+            public void WithChainedParameterized() => RegressionRunner.Run(_session, EPLOtherStreamExpr.WithChainedParameterized());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLOtherNestedClass
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLOtherNestedClass.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLOtherNestedClass : AbstractTestBase
+        {
+            public TestEPLOtherNestedClass() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithNestedClassEnum() => RegressionRunner.Run(_session, EPLOtherNestedClass.WithNestedClassEnum());
         }
     }
 } // end of namespace

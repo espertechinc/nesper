@@ -106,11 +106,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 			var methodNode = codegenMethodScope
 				.MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
-				.AddParam(innerType, "target");
+				.AddParam(instanceType, "target");
 
 			var block = methodNode.Block;
 
-            if (innerType.CanBeNull() && returnType != typeof(void)) {
+            if (instanceType.CanBeNull() && returnType != typeof(void)) {
 				block.IfRefNullReturnNull("target");
 			}
 

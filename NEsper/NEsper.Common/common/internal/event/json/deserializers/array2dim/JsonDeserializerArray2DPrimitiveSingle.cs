@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveSingle : JsonDeserializerArrayBase<float[]>
     {
         public JsonDeserializerArray2DPrimitiveSingle()
-            : base(_ => _.ElementToArray(v => v.GetSingle()))
+            : base(_ => _.ElementToArray(v => v.GetSmartSingle()))
         {
         }
     }

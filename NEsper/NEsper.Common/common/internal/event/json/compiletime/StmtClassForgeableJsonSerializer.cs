@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(JsonSerializationContext), "context")
 				.AddParam(typeof(object), "underlying")
-				.AddThrown(typeof(IOException));
-			writeStaticMethod.IsStatic = true;
+				.AddThrown(typeof(IOException))
+				.WithStatic(true);
 			if (_makeWriteMethod) {
 				MakeNativeWrite(writeStaticMethod, classScope);
 			}

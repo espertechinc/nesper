@@ -75,14 +75,14 @@ namespace com.espertech.esper.regressionrun.suite.client
                 Collections.SingletonDataMap("Ident", "string"));
             configuration.Common.AddEventType(
                 ClientRuntimeListener.OA_TYPENAME,
-                new[] { "Ident" },
+                new[] {"Ident"},
                 new[] {typeof(string)});
             configuration.Common.AddEventType(
                 ClientRuntimeListener.BEAN_TYPENAME,
                 typeof(ClientRuntimeListener.RoutedBeanEvent));
 
             configuration.Common.AddImportNamespace(typeof(MyAnnotationNestedAttribute));
-            
+
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -125,72 +125,6 @@ namespace com.espertech.esper.regressionrun.suite.client
             configuration.Runtime.Execution.IsPrioritized = true;
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeEPStatement()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeEPStatement.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeExceptionHandler()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeExceptionHandler.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeItself()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeItself.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeListener()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeListener.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimePriorityAndDropInstructions()
-        {
-            RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeRuntimeProvider()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeRuntimeProvider.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeSolutionPatternPortScan()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeStatementName()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeStatementName.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeSubscriber()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeSubscriber.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeTimeControl()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeTimeControl.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientRuntimeUnmatchedListener()
-        {
-            RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.Executions());
-        }
-        
         /// <summary>
         /// Auto-test(s): ClientRuntimeStatementAnnotation
         /// <code>
@@ -200,7 +134,9 @@ namespace com.espertech.esper.regressionrun.suite.client
 
         public class TestClientRuntimeStatementAnnotation : AbstractTestBase
         {
-            public TestClientRuntimeStatementAnnotation() : base(Configure) { }
+            public TestClientRuntimeStatementAnnotation() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithRecursive() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithRecursive());
@@ -219,6 +155,268 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             [Test, RunInApplicationDomain]
             public void WithBuiltin() => RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.WithBuiltin());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeEPStatement
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeEPStatement.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeEPStatement : AbstractTestBase
+        {
+            public TestClientRuntimeEPStatement() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithAlreadyDestroyed() => RegressionRunner.Run(_session, ClientRuntimeEPStatement.WithAlreadyDestroyed());
+
+            [Test, RunInApplicationDomain]
+            public void WithListenerWReplay() => RegressionRunner.Run(_session, ClientRuntimeEPStatement.WithListenerWReplay());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeExceptionHandler
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeExceptionHandler.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeExceptionHandler : AbstractTestBase
+        {
+            public TestClientRuntimeExceptionHandler() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void Withg() => RegressionRunner.Run(_session, ClientRuntimeExceptionHandler.Withg());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeItself
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeItself.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeItself : AbstractTestBase
+        {
+            public TestClientRuntimeItself() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithWrongCompileMethod() => RegressionRunner.Run(_session, ClientRuntimeItself.WithWrongCompileMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithSPIBeanAnonymousType() => RegressionRunner.Run(_session, ClientRuntimeItself.WithSPIBeanAnonymousType());
+
+            [Test, RunInApplicationDomain]
+            public void WithSPIStatementSelection() => RegressionRunner.Run(_session, ClientRuntimeItself.WithSPIStatementSelection());
+
+            [Test, RunInApplicationDomain]
+            public void WithSPICompileReflective() => RegressionRunner.Run(_session, ClientRuntimeItself.WithSPICompileReflective());
+
+            [Test, RunInApplicationDomain]
+            public void WithItselfTransientConfiguration() => RegressionRunner.Run(_session, ClientRuntimeItself.WithItselfTransientConfiguration());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeListener
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeListener.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeListener : AbstractTestBase
+        {
+            public TestClientRuntimeListener() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void Withe() => RegressionRunner.Run(_session, ClientRuntimeListener.Withe());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimePriorityAndDropInstructions
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimePriorityAndDropInstructions : AbstractTestBase
+        {
+            public TestClientRuntimePriorityAndDropInstructions() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithAddRemoveStmts() => RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.WithAddRemoveStmts());
+
+            [Test, RunInApplicationDomain]
+            public void WithPriority() => RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.WithPriority());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowDrop() => RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.WithNamedWindowDrop());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowPriority() => RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.WithNamedWindowPriority());
+
+            [Test, RunInApplicationDomain]
+            public void WithSchedulingDrop() => RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.WithSchedulingDrop());
+
+            [Test, RunInApplicationDomain]
+            public void WithSchedulingPriority() => RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.WithSchedulingPriority());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeRuntimeProvider
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeRuntimeProvider.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeRuntimeProvider : AbstractTestBase
+        {
+            public TestClientRuntimeRuntimeProvider() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void Withk() => RegressionRunner.Run(_session, ClientRuntimeRuntimeProvider.Withk());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeSolutionPatternPortScan
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeSolutionPatternPortScan : AbstractTestBase
+        {
+            public TestClientRuntimeSolutionPatternPortScan() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithFallsUnderThreshold() => RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.WithFallsUnderThreshold());
+
+            [Test, RunInApplicationDomain]
+            public void WithKeepAlerting() => RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.WithKeepAlerting());
+
+            [Test, RunInApplicationDomain]
+            public void WithPrimarySuccess() => RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.WithPrimarySuccess());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeStatementName
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeStatementName.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeStatementName : AbstractTestBase
+        {
+            public TestClientRuntimeStatementName() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithingleModuleTwoStatementsNoDep() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithingleModuleTwoStatementsNoDep());
+
+            [Test, RunInApplicationDomain]
+            public void WithtatementNameDuplicate() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithtatementNameDuplicate());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeSubscriber
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeSubscriber.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeSubscriber : AbstractTestBase
+        {
+            public TestClientRuntimeSubscriber() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithPerformanceSynthetic() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithPerformanceSynthetic());
+
+            [Test, RunInApplicationDomain]
+            public void WithPerformanceSyntheticUndelivered() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithPerformanceSyntheticUndelivered());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleSelectUpdateOnly() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithSimpleSelectUpdateOnly());
+
+            [Test, RunInApplicationDomain]
+            public void WithVariables() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithVariables());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartStopStatement() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithStartStopStatement());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindow() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithNamedWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvocationTargetEx() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithInvocationTargetEx());
+
+            [Test, RunInApplicationDomain]
+            public void WithBindWildcardJoin() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithBindWildcardJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubscriberAndListener() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithSubscriberAndListener());
+
+            [Test]
+            public void WithBindings() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithBindings());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeTimeControl
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeTimeControl.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeTimeControl : AbstractTestBase
+        {
+            public TestClientRuntimeTimeControl() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithNextScheduledTime() => RegressionRunner.Run(_session, ClientRuntimeTimeControl.WithNextScheduledTime());
+
+            [Test, RunInApplicationDomain]
+            public void WithSendTimeSpan() => RegressionRunner.Run(_session, ClientRuntimeTimeControl.WithSendTimeSpan());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ClientRuntimeUnmatchedListener
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientRuntimeUnmatchedListener : AbstractTestBase
+        {
+            public TestClientRuntimeUnmatchedListener() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInsertInto() => RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.WithInsertInto());
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateStatement() => RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.WithCreateStatement());
+
+            [Test, RunInApplicationDomain]
+            public void WithSendEvent() => RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.WithSendEvent());
         }
     }
 } // end of namespace

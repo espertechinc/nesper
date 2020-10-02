@@ -7,10 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
+using System.Text.Json;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
+using com.espertech.esper.common.@internal.@event.json.serde;
 
 namespace com.espertech.esper.common.@internal.@event.json.writer
 {
@@ -30,12 +33,44 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
+        public EventBean CopyUsingSerialization(EventBean theEvent)
+        {
+            // Serialize
+            byte[] streamBytes;
+            using (var stream = new MemoryStream()) {
+                using (var writer = new Utf8JsonWriter(stream)) {
+                    var context = new JsonSerializationContext(writer);
+                    _eventType.Serializer.Serialize(context, theEvent.Underlying);
+                    writer.Flush();
+                }
+
+                stream.Flush();
+                streamBytes = stream.ToArray();
+            }
+            
+            // Deserialize
+            
+            var jsonDocumentOptions = new JsonDocumentOptions();
+            var jsonDocument = JsonDocument.Parse(streamBytes, jsonDocumentOptions);
+            var underlying = _eventType.Deserializer.Deserialize(jsonDocument.RootElement);
+            
+            return _eventBeanTypedEventFactory.AdapterForTypedJson(underlying, _eventType);
+        }
+        
         public EventBean Copy(EventBean theEvent)
         {
-            throw new NotImplementedException("broken: 14bb56f1-459c-4ea8-932a-8460cae602cf");
-            // var source = theEvent.Underlying;
-            // var copy = _eventType.SerializationContext.Copy(source);
-            // return _eventBeanTypedEventFactory.AdapterForTypedJson(copy, _eventType);
+            var source = theEvent.Underlying;
+            if (source is IJsonComposite sourceComposite) {
+                var targetComposite = _eventType.AllocateComposite();
+                foreach (var propertyName in sourceComposite.PropertyNames) {
+                    var sourceValue = sourceComposite[propertyName];
+                    targetComposite[propertyName] = sourceValue;
+                }
+
+                return _eventBeanTypedEventFactory.AdapterForTypedJson(targetComposite, _eventType);
+            }
+
+            return CopyUsingSerialization(theEvent);
         }
     }
 } // end of namespace

@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveDecimal : JsonDeserializerArrayBase<decimal[]>
     {
         public JsonDeserializerArray2DPrimitiveDecimal()
-            : base(_ => _.ElementToArray(v => v.GetDecimal()))
+            : base(_ => _.ElementToArray(v => v.GetSmartDecimal()))
         {
         }
     }

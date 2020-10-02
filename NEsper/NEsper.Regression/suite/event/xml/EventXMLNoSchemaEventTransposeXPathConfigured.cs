@@ -26,8 +26,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredPreconfig());
             return execs;
         }
 
@@ -60,7 +74,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             String eventTypeName,
             RegressionPath path)
         {
-
             env.CompileDeploy("@Name('insert') insert into Nested3Stream select nested1simple, nested4array from " + eventTypeName, path);
             env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path);
 
@@ -129,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.IsTrue(eventType.IsIndexed);
             Assert.IsFalse(eventType.IsNative);
             Assert.AreEqual("MyNestedArrayEvent", eventType.FragmentType.Name);
-            
+
             var eventsArray = (EventBean[]) wildcardStmtEvent.GetFragment("nested4array");
             Assert.AreEqual(3, eventsArray.Length);
             Assert.AreEqual("SAMPLE_V8", eventsArray[0].Get("prop5[1]"));

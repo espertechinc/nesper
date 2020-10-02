@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -17,9 +18,10 @@ namespace com.espertech.esper.common.@internal.context.module
     {
         public static ModuleProviderCLPair Analyze(
             EPCompiled compiled,
-            ClassLoader classLoader,
+            ClassLoader classLoaderParent,
             PathRegistry<String, ClassProvided> classProvidedPathRegistry)
         {
+            var classLoader = new PriorityClassLoader(classLoaderParent, compiled.Assemblies);
             var resourceClassName = compiled.Manifest.ModuleProviderClassName;
 
             // load module resource class

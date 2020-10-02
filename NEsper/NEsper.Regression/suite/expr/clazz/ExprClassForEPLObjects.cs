@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -172,19 +173,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 					"       };\n" +
 					"    }\n" +
 					"    public class MyBean {\n" +
-					"      public MyBean(int id) {this.Id = Id;}\n" +
+					"      public MyBean(int id) {Id = id;}\n" +
 					"      public int Id { get; set; }\n" +
 					"    }\n" +
 					"  }\n" +
 					"\"\"\" \n";
 				env.CompileDeploy(eplCreateClass, path);
 
-				var epl = "@Name('s0')" +
-				          "@Name('s0') select s.Id as c0 from SupportBean as e,\n" +
-				          "method:MyFromClauseMethod.GetBeans() as s";
+				var epl =
+					"@Name('s0')" +
+				    "@Name('s0') select s.Id as c0 from SupportBean as e,\n" +
+				    "method:MyFromClauseMethod.GetBeans() as s";
 				var compiled = env.Compile(epl, path);
-				var assembly = compiled.Assembly;
-				var assemblyTypes = assembly.GetExportedTypes();
+				var assemblies = compiled.Assemblies;
+				var assemblyTypes = assemblies.SelectMany(_ => _.GetExportedTypes());
 				foreach (var assemblyType in assemblyTypes) {
 					if (assemblyType.Name.Contains("MyFromClauseMethod")) {
 						Assert.Fail("EPCompiled should not contain create-class class");

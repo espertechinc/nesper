@@ -162,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			var returnType = expression.Forge.EvaluationType;
-			if (returnType.IsBoolean()) {
+			if (!returnType.IsBoolean()) {
 				throw new EPException(
 					"Invalid expression, expected a boolean return type for expression and received '" +
 					returnType.CleanName() +
@@ -177,8 +177,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				var row = GetRow(stmt);
 				EventBean rowBean = new BeanEventBean(row, _statementRowType);
 
-				var pass = (Boolean) evaluator.Evaluate(new EventBean[] {rowBean}, true, null);
-				return !((pass == null) || (!pass));
+				var pass = evaluator.Evaluate(new EventBean[] {rowBean}, true, null);
+				return true.Equals(pass);
+				//return !((pass == null) || (false.Equals(pass)));
 			}
 			catch (Exception ex) {
 				log.Error("Unexpected exception filtering statements by expression, skipping statement: " + ex.Message, ex);

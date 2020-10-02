@@ -36,8 +36,8 @@ namespace com.espertech.esper.compat.threading.threadlocal
         /// <value>The value.</value>
         public T Value
         {
-            get { return (T) Thread.GetData(_dataStoreSlot); }
-            set { Thread.SetData(_dataStoreSlot, value); }
+            get => (T) Thread.GetData(_dataStoreSlot);
+            set => Thread.SetData(_dataStoreSlot, value);
         }
 
         /// <summary>

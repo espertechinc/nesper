@@ -53,12 +53,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoEmptyPropType()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoEmptyPropType.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoIRStreamFunc()
         {
             RegressionRunner.Run(session, new EPLInsertIntoIRStreamFunc());
@@ -71,38 +65,72 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoPopulateCreateStreamAvro()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoPopulateCreateStreamAvro.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateSingleColByMethodCall()
         {
             RegressionRunner.Run(session, new EPLInsertIntoPopulateSingleColByMethodCall());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoTransposePattern()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoTransposePattern.Executions());
-        }
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoEventTypedColumnFromProp
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoEventTypedColumnFromProp.Executions());
+        /// </code>
+        /// </summary>
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoFromPattern()
+        public class TestEPLInsertIntoEventTypedColumnFromProp : AbstractTestBase
         {
-            RegressionRunner.Run(session, EPLInsertIntoFromPattern.Executions());
-        }
+            public TestEPLInsertIntoEventTypedColumnFromProp() : base(Configure) { }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoWrapper()
-        {
-            RegressionRunner.Run(session, EPLInsertIntoWrapper.Executions());
+            [Test, RunInApplicationDomain]
+            public void WithPONOTypedColumnOnMerge() => RegressionRunner.Run(_session, EPLInsertIntoEventTypedColumnFromProp.WithPONOTypedColumnOnMerge());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventTypedColumnOnMerge() => RegressionRunner.Run(_session, EPLInsertIntoEventTypedColumnFromProp.WithEventTypedColumnOnMerge());
         }
         
-        [Test, RunInApplicationDomain]
-        public void TestEPLInsertIntoEventTypedColumnFromProp() {
-            RegressionRunner.Run(session, EPLInsertIntoEventTypedColumnFromProp.Executions());
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoWrapper
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoWrapper.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoWrapper : AbstractTestBase
+        {
+            public TestEPLInsertIntoWrapper() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithOnSplitForkJoin() => RegressionRunner.Run(_session, EPLInsertIntoWrapper.WithOnSplitForkJoin());
+
+            [Test, RunInApplicationDomain]
+            public void With3StreamWrapper() => RegressionRunner.Run(_session, EPLInsertIntoWrapper.With3StreamWrapper());
+
+            [Test, RunInApplicationDomain]
+            public void WithWrapperBean() => RegressionRunner.Run(_session, EPLInsertIntoWrapper.WithWrapperBean());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoFromPattern
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoFromPattern.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoFromPattern : AbstractTestBase
+        {
+            public TestEPLInsertIntoFromPattern() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithFromPatternNamedWindow() => RegressionRunner.Run(_session, EPLInsertIntoFromPattern.WithFromPatternNamedWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoProps() => RegressionRunner.Run(_session, EPLInsertIntoFromPattern.WithNoProps());
+
+            [Test, RunInApplicationDomain]
+            public void WithProps() => RegressionRunner.Run(_session, EPLInsertIntoFromPattern.WithProps());
+
+            [Test, RunInApplicationDomain]
+            public void WithPropsWildcard() => RegressionRunner.Run(_session, EPLInsertIntoFromPattern.WithPropsWildcard());
         }
         
         /// <summary>
@@ -114,7 +142,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         public class TestEPLInsertIntoPopulateEventTypeColumn : AbstractTestBase
         {
-            public TestEPLInsertIntoPopulateEventTypeColumn() : base(Configure) { }
+            public TestEPLInsertIntoPopulateEventTypeColumn() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithEnumerationSubquery() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithEnumerationSubquery());
@@ -126,7 +156,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithTypableAndCaseNew() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithTypableAndCaseNew());
 
             [Test, RunInApplicationDomain]
-            public void WithTypableNewOperatorDocSample() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithTypableNewOperatorDocSample());
+            public void WithTypableNewOperatorDocSample() => RegressionRunner.Run(
+                _session,
+                EPLInsertIntoPopulateEventTypeColumn.WithTypableNewOperatorDocSample());
 
             [Test, RunInApplicationDomain]
             public void WithTypableSubquery() => RegressionRunner.Run(_session, EPLInsertIntoPopulateEventTypeColumn.WithTypableSubquery());
@@ -182,7 +214,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             [Test, RunInApplicationDomain]
             public void WithCtor() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithCtor());
         }
-        
+
         /// <summary>
         /// Auto-test(s): EPLInsertIntoPopulateUndStreamSelect
         /// <code>
@@ -192,7 +224,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         public class TestEPLInsertIntoPopulateUndStreamSelect : AbstractTestBase
         {
-            public TestEPLInsertIntoPopulateUndStreamSelect() : base(Configure) { }
+            public TestEPLInsertIntoPopulateUndStreamSelect() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithInvalid());
@@ -216,7 +250,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         public class TestEPLInsertIntoTransposeStream : AbstractTestBase
         {
-            public TestEPLInsertIntoTransposeStream() : base(Configure) { }
+            public TestEPLInsertIntoTransposeStream() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithInvalidTranspose() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithInvalidTranspose());
@@ -237,13 +273,37 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithTransposeFunctionToStream() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeFunctionToStream());
 
             [Test, RunInApplicationDomain]
-            public void WithTransposeFunctionToStreamWithProps() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeFunctionToStreamWithProps());
+            public void WithTransposeFunctionToStreamWithProps() => RegressionRunner.Run(
+                _session,
+                EPLInsertIntoTransposeStream.WithTransposeFunctionToStreamWithProps());
 
             [Test, RunInApplicationDomain]
-            public void WithTransposeMapAndObjectArrayAndOthers() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeMapAndObjectArrayAndOthers());
+            public void WithTransposeMapAndObjectArrayAndOthers() => RegressionRunner.Run(
+                _session,
+                EPLInsertIntoTransposeStream.WithTransposeMapAndObjectArrayAndOthers());
 
             [Test, RunInApplicationDomain]
             public void WithTransposeCreateSchemaPONO() => RegressionRunner.Run(_session, EPLInsertIntoTransposeStream.WithTransposeCreateSchemaPONO());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoPopulateCreateStreamAvro
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoPopulateCreateStreamAvro.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoPopulateCreateStreamAvro : AbstractTestBase
+        {
+            public TestEPLInsertIntoPopulateCreateStreamAvro() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithNewSchema() => RegressionRunner.Run(_session, EPLInsertIntoPopulateCreateStreamAvro.WithNewSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithCompatExisting() => RegressionRunner.Run(_session, EPLInsertIntoPopulateCreateStreamAvro.WithCompatExisting());
         }
 
         /// <summary>
@@ -325,13 +385,52 @@ namespace com.espertech.esper.regressionrun.suite.epl
             [Test, RunInApplicationDomain]
             public void WithWithOutputLimitAndSort() => RegressionRunner.Run(_session, EPLInsertInto.WithWithOutputLimitAndSort());
 
-            [Test]
+            [Test, RunInApplicationDomain]
             public void WithJoinWildcard() => RegressionRunner.Run(_session, EPLInsertInto.WithJoinWildcard());
 
             [Test, RunInApplicationDomain]
             public void WithAssertionWildcardRecast() => RegressionRunner.Run(_session, EPLInsertInto.WithAssertionWildcardRecast());
         }
+        
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoEmptyPropType
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoEmptyPropType.Executions());
+        /// </code>
+        /// </summary>
 
+        public class TestEPLInsertIntoEmptyPropType : AbstractTestBase
+        {
+            public TestEPLInsertIntoEmptyPropType() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchemaInsertInto() => RegressionRunner.Run(_session, EPLInsertIntoEmptyPropType.WithCreateSchemaInsertInto());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowModelAfter() => RegressionRunner.Run(_session, EPLInsertIntoEmptyPropType.WithNamedWindowModelAfter());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLInsertIntoTransposePattern
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLInsertIntoTransposePattern.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLInsertIntoTransposePattern : AbstractTestBase
+        {
+            public TestEPLInsertIntoTransposePattern() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithransposeMapEventPattern() => RegressionRunner.Run(_session, EPLInsertIntoTransposePattern.WithransposeMapEventPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithransposePONOEventPattern() => RegressionRunner.Run(_session, EPLInsertIntoTransposePattern.WithransposePONOEventPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithhisAsColumn() => RegressionRunner.Run(_session, EPLInsertIntoTransposePattern.WithhisAsColumn());
+        }
+        
         private static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new[] {
@@ -367,20 +466,24 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportBean_A),
                 typeof(SupportBean_B),
                 typeof(SupportEventContainsSupportBean)
-            })
-            {
+            }) {
                 configuration.Common.AddEventType(clazz);
             }
 
-            Schema avroExistingTypeSchema = SchemaBuilder.Record("name",
-                    TypeBuilder.RequiredLong("MyLong"),
-                    TypeBuilder.Field("MyLongArray",
-                            TypeBuilder.Array(TypeBuilder.LongType())),
-                    TypeBuilder.Field("MyByteArray", TypeBuilder.BytesType()),
-                    TypeBuilder.Field("MyMap", TypeBuilder.Map(
-                            TypeBuilder.StringType(TypeBuilder.Property(
-                                    AvroConstant.PROP_STRING_KEY, 
-                                    AvroConstant.PROP_STRING_VALUE)))));
+            Schema avroExistingTypeSchema = SchemaBuilder.Record(
+                "name",
+                TypeBuilder.RequiredLong("MyLong"),
+                TypeBuilder.Field(
+                    "MyLongArray",
+                    TypeBuilder.Array(TypeBuilder.LongType())),
+                TypeBuilder.Field("MyByteArray", TypeBuilder.BytesType()),
+                TypeBuilder.Field(
+                    "MyMap",
+                    TypeBuilder.Map(
+                        TypeBuilder.StringType(
+                            TypeBuilder.Property(
+                                AvroConstant.PROP_STRING_KEY,
+                                AvroConstant.PROP_STRING_VALUE)))));
             configuration.Common.AddEventTypeAvro("AvroExistingType", new ConfigurationCommonEventTypeAvro(avroExistingTypeSchema));
 
             IDictionary<string, object> mapTypeInfo = new Dictionary<string, object>();
@@ -389,12 +492,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("MapOne", mapTypeInfo);
             configuration.Common.AddEventType("MapTwo", mapTypeInfo);
 
-            string[] props = { "one", "two" };
-            object[] types = { typeof(string), typeof(string) };
+            string[] props = {"one", "two"};
+            object[] types = {typeof(string), typeof(string)};
             configuration.Common.AddEventType("OAOne", props, types);
             configuration.Common.AddEventType("OATwo", props, types);
 
-            Schema avroOneAndTwoSchema = SchemaBuilder.Record("name",
+            Schema avroOneAndTwoSchema = SchemaBuilder.Record(
+                "name",
                 TypeBuilder.RequiredString("one"),
                 TypeBuilder.RequiredString("two"));
             configuration.Common.AddEventTypeAvro("AvroOne", new ConfigurationCommonEventTypeAvro(avroOneAndTwoSchema));
@@ -429,15 +533,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
             defMap.Put("nullVal", null);
             configuration.Common.AddEventType("MyMapType", defMap);
 
-            string[] propsMyOAType = new string[] { "intVal", "stringVal", "doubleVal", "nullVal" };
-            object[] typesMyOAType = new object[] { typeof(int), typeof(string), typeof(double?), null };
+            string[] propsMyOAType = new string[] {"intVal", "stringVal", "doubleVal", "nullVal"};
+            object[] typesMyOAType = new object[] {typeof(int), typeof(string), typeof(double?), null};
             configuration.Common.AddEventType("MyOAType", propsMyOAType, typesMyOAType);
 
-            Schema schema = SchemaBuilder.Record("MyAvroType",
-                    TypeBuilder.RequiredInt("intVal"),
-                    TypeBuilder.RequiredString("stringVal"),
-                    TypeBuilder.RequiredDouble("doubleVal"),
-                    TypeBuilder.Field("nullVal", TypeBuilder.NullType()));
+            Schema schema = SchemaBuilder.Record(
+                "MyAvroType",
+                TypeBuilder.RequiredInt("intVal"),
+                TypeBuilder.RequiredString("stringVal"),
+                TypeBuilder.RequiredDouble("doubleVal"),
+                TypeBuilder.Field("nullVal", TypeBuilder.NullType()));
             configuration.Common.AddEventTypeAvro("MyAvroType", new ConfigurationCommonEventTypeAvro(schema));
 
             ConfigurationCommonEventTypeXMLDOM xml = new ConfigurationCommonEventTypeXMLDOM();
@@ -451,25 +556,30 @@ namespace com.espertech.esper.regressionrun.suite.epl
             mapDef.Put("BoolPrimitive", typeof(bool?));
             configuration.Common.AddEventType("MySupportMap", mapDef);
 
-            IDictionary<string, object> type = MakeMap(new object[][] {
-                new object[]{"Id", typeof(string)}
-            });
+            IDictionary<string, object> type = MakeMap(
+                new object[][] {
+                    new object[] {"Id", typeof(string)}
+                });
             configuration.Common.AddEventType("AEventMap", type);
             configuration.Common.AddEventType("BEventMap", type);
 
             IDictionary<string, object> metadata = MakeMap(
-                new object[][] { new object[] { "Id", typeof(string) } });
+                new object[][] {new object[] {"Id", typeof(string)}});
             configuration.Common.AddEventType("AEventTE", metadata);
             configuration.Common.AddEventType("BEventTE", metadata);
 
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
             configuration.Common.AddImportNamespace(typeof(EPLInsertIntoPopulateUnderlying));
 
-            IDictionary<string, object> complexMapMetadata = MakeMap(new object[][]{
-                new object[] {"Nested", MakeMap(new object[][] {
-                    new object[]{"NestedValue", typeof(string)}
-                })}
-            });
+            IDictionary<string, object> complexMapMetadata = MakeMap(
+                new object[][] {
+                    new object[] {
+                        "Nested", MakeMap(
+                            new object[][] {
+                                new object[] {"NestedValue", typeof(string)}
+                            })
+                    }
+                });
             configuration.Common.AddEventType("ComplexMap", complexMapMetadata);
 
             configuration.Compiler.ByteCode.AllowSubscriber = true;
@@ -485,10 +595,10 @@ namespace com.espertech.esper.regressionrun.suite.epl
         private static IDictionary<string, object> MakeMap(object[][] entries)
         {
             var result = new Dictionary<string, object>();
-            foreach (object[] entry in entries)
-            {
+            foreach (object[] entry in entries) {
                 result.Put((string) entry[0], entry[1]);
             }
+
             return result;
         }
     }

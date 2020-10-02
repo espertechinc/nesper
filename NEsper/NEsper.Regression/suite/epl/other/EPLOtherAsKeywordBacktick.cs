@@ -22,13 +22,62 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherFAFUpdateDelete());
-            execs.Add(new EPLOtherFromClause());
-            execs.Add(new EPLOtherOnTrigger());
-            execs.Add(new EPLOtherUpdateIStream());
-            execs.Add(new EPLOthernMergeAndUpdateAndSelect());
-            execs.Add(new EPLOtherSubselect());
+            WithFAFUpdateDelete(execs);
+            WithFromClause(execs);
+            WithOnTrigger(execs);
+            WithUpdateIStream(execs);
+            WithnMergeAndUpdateAndSelect(execs);
+            WithSubselect(execs);
+            WithOnSelectProperty(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnSelectProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherOnSelectProperty());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSubselect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithnMergeAndUpdateAndSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOthernMergeAndUpdateAndSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdateIStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherUpdateIStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnTrigger(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherOnTrigger());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFromClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherFromClause());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFAFUpdateDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherFAFUpdateDelete());
             return execs;
         }
 
@@ -41,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             EPAssertionUtil.AssertProps(
                 env.CompileExecuteFAF("select * from " + windowName, path).Array[0],
-                new [] { "p0","p1" },
+                new[] {"p0", "p1"},
                 new object[] {p0, p1});
         }
 
@@ -178,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(s1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "order","select","order.P00","select.P10" },
+                    new[] {"order", "select", "order.P00", "select.P10"},
                     new object[] {s0, s1, "S0_1", "S1_1"});
 
                 env.UndeployAll();

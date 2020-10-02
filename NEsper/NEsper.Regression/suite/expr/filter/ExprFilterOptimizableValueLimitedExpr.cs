@@ -30,25 +30,100 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprFilterOptValEqualsIsConstant());
-			executions.Add(new ExprFilterOptValEqualsFromPatternSingle());
-			executions.Add(new ExprFilterOptValEqualsFromPatternMulti());
-			executions.Add(new ExprFilterOptValEqualsFromPatternConstant());
-			executions.Add(new ExprFilterOptValEqualsFromPatternHalfConstant());
-			executions.Add(new ExprFilterOptValEqualsFromPatternWithDotMethod());
-			executions.Add(new ExprFilterOptValEqualsContextWithStart());
-			executions.Add(new ExprFilterOptValEqualsSubstitutionParams());
-			executions.Add(new ExprFilterOptValEqualsConstantVariable());
-			executions.Add(new ExprFilterOptValEqualsCoercion());
-			executions.Add(new ExprFilterOptValRelOpCoercion());
-			executions.Add(new ExprFilterOptValDisqualify());
-			executions.Add(new ExprFilterOptValInSetOfValueWPatternWCoercion());
-			executions.Add(new ExprFilterOptValInRangeWCoercion());
-			executions.Add(new ExprFilterOptValOrRewrite());
-			return executions;
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+WithEqualsIsConstant(execs);
+WithEqualsFromPatternSingle(execs);
+WithEqualsFromPatternMulti(execs);
+WithEqualsFromPatternConstant(execs);
+WithEqualsFromPatternHalfConstant(execs);
+WithEqualsFromPatternWithDotMethod(execs);
+WithEqualsContextWithStart(execs);
+WithEqualsSubstitutionParams(execs);
+WithEqualsConstantVariable(execs);
+WithEqualsCoercion(execs);
+WithRelOpCoercion(execs);
+WithDisqualify(execs);
+WithInSetOfValueWPatternWCoercion(execs);
+WithInRangeWCoercion(execs);
+WithOrRewrite(execs);
+			return execs;
 		}
-
+public static IList<RegressionExecution> WithOrRewrite(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValOrRewrite());
+    return execs;
+}public static IList<RegressionExecution> WithInRangeWCoercion(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValInRangeWCoercion());
+    return execs;
+}public static IList<RegressionExecution> WithInSetOfValueWPatternWCoercion(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValInSetOfValueWPatternWCoercion());
+    return execs;
+}public static IList<RegressionExecution> WithDisqualify(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValDisqualify());
+    return execs;
+}public static IList<RegressionExecution> WithRelOpCoercion(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValRelOpCoercion());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsCoercion(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsCoercion());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsConstantVariable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsConstantVariable());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsSubstitutionParams(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsSubstitutionParams());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsContextWithStart(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsContextWithStart());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsFromPatternWithDotMethod(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsFromPatternWithDotMethod());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsFromPatternHalfConstant(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsFromPatternHalfConstant());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsFromPatternConstant(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsFromPatternConstant());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsFromPatternMulti(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsFromPatternMulti());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsFromPatternSingle(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsFromPatternSingle());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsIsConstant(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptValEqualsIsConstant());
+    return execs;
+}
 		private class ExprFilterOptValOrRewrite : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
@@ -355,7 +430,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 				                 "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
 				env.Compile(objects, path);
 
-				#if false
 				AssertDisqualified(env, path, "SupportBean", "TheString=Convert.ToString(IntPrimitive)");
 				AssertDisqualified(env, path, "SupportBean", "TheString=MYVARIABLE_NONCONSTANT");
 				AssertDisqualified(env, path, "SupportBean", "TheString=MyTable.tablecol");
@@ -365,7 +439,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 				AssertDisqualified(env, path, "SupportBean", $"TheString={namespc}.Helper.Doit(me)");
 				AssertDisqualified(env, path, "SupportBean", "BoolPrimitive=event_identity_equals(me, me)");
 				AssertDisqualified(env, path, "SupportBean", "TheString=MyDeclaredExpr()");
-				#endif
 				AssertDisqualified(env, path, "SupportBean", "IntPrimitive=me.TheString.Length");
 				AssertDisqualified(env, path, "SupportBean", "IntPrimitive = funcOne('hello')");
 				AssertDisqualified(env, path, "SupportBean", "BoolPrimitive = exists(TheString)");

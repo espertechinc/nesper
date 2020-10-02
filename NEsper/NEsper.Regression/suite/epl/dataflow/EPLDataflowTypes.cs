@@ -33,11 +33,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowBeanType());
-            execs.Add(new EPLDataflowMapType());
+WithBeanType(execs);
+WithMapType(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowMapType());
+    return execs;
+}public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeanType());
+    return execs;
+}
         private static IDictionary<string, object> MakeMap(
             string p0,
             int p1)

@@ -28,11 +28,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowCreateStartStop());
-            execs.Add(new EPLDataflowDeploymentAdmin());
+WithCreateStartStop(execs);
+WithDeploymentAdmin(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowDeploymentAdmin());
+    return execs;
+}public static IList<RegressionExecution> WithCreateStartStop(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowCreateStartStop());
+    return execs;
+}
         private static void TryInstantiate(
             RegressionEnvironment env,
             string deploymentId,

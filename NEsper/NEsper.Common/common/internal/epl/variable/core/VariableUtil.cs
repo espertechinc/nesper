@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             foreach (var entry in variables) {
                 string variableName = entry.Key.Trim();
                 if (repo.GetMetadata(variableName) != null) {
-                    throw new ConfigurationException(
-                        "Variable by name '" + entry.Key + "' has already been configured");
+                    continue;
                 }
 
                 VariableMetaData meta;

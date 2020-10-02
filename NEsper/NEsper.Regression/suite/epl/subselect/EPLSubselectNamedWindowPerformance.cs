@@ -25,21 +25,73 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectConstantValue(false, false));
-            execs.Add(new EPLSubselectConstantValue(true, true));
+            WithConstantValue(execs);
+            WithKeyAndRange(execs);
+            WithRange(execs);
+            WithKeyedRange(execs);
+            WithNoShare(execs);
+            WithShareCreate(execs);
+            WithDisableShare(execs);
+            WithDisableShareCreate(execs);
+            return execs;
+        }
 
-            execs.Add(new EPLSubselectKeyAndRange(false, false));
-            execs.Add(new EPLSubselectKeyAndRange(true, true));
+        public static IList<RegressionExecution> WithDisableShareCreate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectDisableShareCreate());
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithDisableShare(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectDisableShare());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithShareCreate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectShareCreate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoShare(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNoShare());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeyedRange(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectKeyedRange());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRange(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectRange(false, false));
             execs.Add(new EPLSubselectRange(true, true));
+            return execs;
+        }
 
-            execs.Add(new EPLSubselectKeyedRange());
-            execs.Add(new EPLSubselectNoShare());
+        public static IList<RegressionExecution> WithKeyAndRange(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectKeyAndRange(false, false));
+            execs.Add(new EPLSubselectKeyAndRange(true, true));
+            return execs;
+        }
 
-            execs.Add(new EPLSubselectShareCreate());
-            execs.Add(new EPLSubselectDisableShare());
-            execs.Add(new EPLSubselectDisableShareCreate());
+        public static IList<RegressionExecution> WithConstantValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectConstantValue(false, false));
+            execs.Add(new EPLSubselectConstantValue(true, true));
             return execs;
         }
 
@@ -76,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-            var fields = new [] { "e0","val" };
+            var fields = new[] {"e0", "val"};
 
             // test once
             env.SendEventBean(new SupportBean("WX", 10));
@@ -162,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 // single-field compare
-                var fields = new [] { "val" };
+                var fields = new[] {"val"};
                 var eplSingle =
                     "@Name('s0') select (select IntPrimitive from MyWindow where TheString = 'E9734') as val from SupportBeanRange sbr";
                 env.CompileDeploy(eplSingle, path).AddListener("s0");
@@ -278,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env.SendEventBean(new SupportBean(theString, i));
                 }
 
-                var fields = new [] { "cols.mini","cols.maxi" };
+                var fields = new[] {"cols.mini", "cols.maxi"};
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where TheString = sbr.Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
@@ -334,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env.SendEventBean(new SupportBean("E1", i));
                 }
 
-                var fields = new [] { "cols.mini","cols.maxi" };
+                var fields = new[] {"cols.mini", "cols.maxi"};
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
@@ -370,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env.SendEventBean(new SupportBean(key, i));
                 }
 
-                var fields = new [] { "cols.mini","cols.maxi" };
+                var fields = new[] {"cols.mini", "cols.maxi"};
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow " +
                     "where TheString = sbr.Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";

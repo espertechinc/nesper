@@ -972,7 +972,7 @@ public static IList<RegressionExecution> WithOnInsertPremptiveTwoWindow(IList<Re
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     if (!rep.IsAvroOrJsonEvent()) {
                         TryAssertionBeanContained(env, rep);
                     }

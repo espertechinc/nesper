@@ -23,6 +23,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withy(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectHavingSubselectWithGroupBy(true));
             execs.Add(new EPLSubselectHavingSubselectWithGroupBy(false));
             return execs;
@@ -52,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                                "having sum(IntPrimitive) > (select MaxAmount from MyInfra as mw where sb.TheString = mw.Key)";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 // set some amounts
                 env.SendEventBean(new SupportMaxAmountEvent("G1", 10));

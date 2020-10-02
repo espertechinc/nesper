@@ -24,8 +24,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectIndexChoicesOverdefinedWhere());
+            WithIndexChoicesOverdefinedWhere(execs);
+            WithUniqueIndexCorrelated(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUniqueIndexCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectUniqueIndexCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIndexChoicesOverdefinedWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectIndexChoicesOverdefinedWhere());
             return execs;
         }
 
@@ -89,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // test no where clause with unique
                 IndexAssertionEventSend assertNoWhere = () => {
-                    var fields = new [] { "c0", "c1" };
+                    var fields = new[] {"c0", "c1"};
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 1, 2, 3));
 
                     env.MilestoneInc(milestone);
@@ -114,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // test no where clause with unique on multiple props, exact specification of where-clause
                 IndexAssertionEventSend assertSendEvents = () => {
-                    var fields = new [] { "c0", "c1" };
+                    var fields = new[] {"c0", "c1"};
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 1, 3, 10));
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 1, 2, 0));
                     env.SendEventBean(new SupportSimpleBeanTwo("E3", 1, 3, 9));
@@ -211,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // greater
                 IndexAssertionEventSend assertGreater = () => {
-                    var fields = new [] { "c0", "c1" };
+                    var fields = new[] {"c0", "c1"};
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 1));
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 2));
 
@@ -252,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // greater-equals
                 IndexAssertionEventSend assertGreaterEquals = () => {
-                    var fields = new [] { "c0", "c1" };
+                    var fields = new[] {"c0", "c1"};
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 2));
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 4));
 
@@ -293,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // less
                 IndexAssertionEventSend assertLess = () => {
-                    var fields = new [] { "c0", "c1" };
+                    var fields = new[] {"c0", "c1"};
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 2));
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 3));
 
@@ -334,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // less-equals
                 IndexAssertionEventSend assertLessEquals = () => {
-                    var fields = new [] { "c0", "c1" };
+                    var fields = new[] {"c0", "c1"};
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 1));
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 3));
 
@@ -379,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var milestone = new AtomicLong();
 
                 // test std:unique

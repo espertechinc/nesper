@@ -21,11 +21,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaDotEscapePreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaDotEscapeCreateSchema());
             return execs;
         }
 
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaDotEscapePreconfig());
+            return execs;
+        }
 
         public class EventXMLNoSchemaDotEscapePreconfig : RegressionExecution
         {
@@ -53,7 +66,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-
             var stmt = "@Name('s0') select a\\.b.c\\.d as val from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 

@@ -8,10 +8,13 @@
 
 using System;
 
+using com.espertech.esper.compat.attributes;
+
 namespace com.espertech.esper.regressionlib.support.client
 {
     public class MyAnnotationValueAttribute : Attribute
     {
+        [Required]
         public string Value { get; set; }
     }
 } // end of namespace

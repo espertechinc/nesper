@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.runtime.client;
 
 using NEsper.Avro.Core;
@@ -34,7 +35,7 @@ namespace com.espertech.esper.regressionrun.Runner
         {
             var session = Session();
             configurable.Configure(session.Configuration);
-            Run(session, configurable);
+            Run(session, configurable, true);
             session.Destroy();
         }
 
@@ -43,27 +44,48 @@ namespace com.espertech.esper.regressionrun.Runner
             return new RegressionSession(SupportConfigFactory.GetConfiguration());
         }
 
-        public static void Run<T>(
+        public static void RunPerformanceSensitive<T>(
             RegressionSession session,
             ICollection<T> executions)
             where T : RegressionExecution
         {
-            foreach (var execution in RegressionFilter.FilterBySystemProperty(executions))
-            {
-                Run(session, execution);
+            Run<T>(session, executions, true);
+        }
+        
+        public static void Run<T>(
+            RegressionSession session,
+            ICollection<T> executions,
+            bool usePerfContext = false)
+            where T : RegressionExecution
+        {
+            foreach (var execution in RegressionFilter.FilterBySystemProperty(executions)) {
+                Run(session, execution, usePerfContext);
             }
         }
 
         public static void Run(
             RegressionSession session,
+            RegressionExecution execution,
+            bool usePerfContext = false)
+        {
+            if (usePerfContext) {
+                using (new PerformanceContext()) {
+                    RunInternal(session, execution);
+                }
+            }
+            else {
+                RunInternal(session, execution);
+            }
+        }
+
+        private static void RunInternal(
+            RegressionSession session,
             RegressionExecution execution)
         {
-            if (session.Runtime == null)
-            {
+            if (session.Runtime == null) {
                 var exists = EPRuntimeProvider.HasRuntime(EPRuntimeProvider.DEFAULT_RUNTIME_URI);
                 var runtime = EPRuntimeProvider.GetDefaultRuntime(session.Configuration);
-                if (exists)
-                {
+                if (exists) {
                     runtime.Initialize();
                 }
 

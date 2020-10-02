@@ -36,6 +36,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeListenerRoute());
             return execs;
         }
@@ -45,11 +52,21 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('bean') select * from " + BEAN_TYPENAME + ";\n" +
-                    "@Name('map') select * from " + MAP_TYPENAME + ";\n" +
-                    "@Name('oa') select * from " + OA_TYPENAME + ";\n" +
-                    "@Name('xml') select * from " + XML_TYPENAME + ";\n" +
-                    "@Name('avro') select * from " + AVRO_TYPENAME + ";\n" +
+                    "@Name('bean') select * from " +
+                    BEAN_TYPENAME +
+                    ";\n" +
+                    "@Name('map') select * from " +
+                    MAP_TYPENAME +
+                    ";\n" +
+                    "@Name('oa') select * from " +
+                    OA_TYPENAME +
+                    ";\n" +
+                    "@Name('xml') select * from " +
+                    XML_TYPENAME +
+                    ";\n" +
+                    "@Name('avro') select * from " +
+                    AVRO_TYPENAME +
+                    ";\n" +
                     "@public @buseventtype create json schema JsonEvent(Ident string);\n" +
                     "@Name('json') select * from JsonEvent;\n" +
                     "@Name('trigger') select * from SupportBean;";
@@ -86,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.SendEventBean(new SupportBean("xy", -1));
 
-                foreach (var name in new[] { "map", "bean", "oa", "xml", "avro", "json" }) {
+                foreach (var name in new[] {"map", "bean", "oa", "xml", "avro", "json"}) {
                     var listener = env.Listener(name);
                     Assert.IsTrue(listener.IsInvoked, "failed for " + name);
                     Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));

@@ -419,10 +419,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventRepresentationChoice? rep)
         {
             string schema;
-            
+
             if (bean) {
-                schema = "@Name('schema1') create schema S0 as " + typeof(SupportBean).FullName + ";\n" +
-                         "@Name('schema2') create schema S1 as " + typeof(SupportBean_A).FullName + ";\n";
+                schema = "@Name('schema1') create schema S0 as " +
+                         typeof(SupportBean).FullName +
+                         ";\n" +
+                         "@Name('schema2') create schema S1 as " +
+                         typeof(SupportBean_A).FullName +
+                         ";\n";
             }
             else if (rep == null) {
                 throw new ArgumentException(nameof(rep));
@@ -449,8 +453,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (rep.Value.IsJsonProvidedClassEvent()) {
                 Console.WriteLine($"Rep = {rep.Value}");
-                schema = "@Name('schema1') @JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedS0).FullName + "') create json schema S0 as ();\n" +
-                         "@Name('schema2') @JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedS1).FullName + "') create json schema S1 as ();\n";
+                schema = "@Name('schema1') @JsonSchema(ClassName='" +
+                         typeof(MyLocalJsonProvidedS0).FullName +
+                         "') create json schema S0 as ();\n" +
+                         "@Name('schema2') @JsonSchema(ClassName='" +
+                         typeof(MyLocalJsonProvidedS1).FullName +
+                         "') create json schema S1 as ();\n";
             }
             else {
                 schema = null;
@@ -705,7 +713,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual(10, rec.IntPrimitive);
                     });
 
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionRepresentationSimple(env, rep, assertions);
                 }
             }
@@ -994,7 +1002,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 // bean to OA/Map/bean
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionWildcardRecast(env, true, null, false, rep);
                 }
 
@@ -1178,7 +1186,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 TryAssertionJoinWildcard(env, true, null);
 
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionJoinWildcard(env, false, rep);
                 }
             }

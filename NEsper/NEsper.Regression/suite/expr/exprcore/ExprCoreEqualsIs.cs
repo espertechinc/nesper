@@ -64,7 +64,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select IntOne=BooleanOne from SupportEventWithManyArray",
-					"Failed to validate select-clause expression 'IntOne=BooleanOne': Implicit conversion from datatype 'System.Boolean[]' to 'System.Int32[]' is not allowed");
+					"Failed to validate select-clause expression 'IntOne=BooleanOne': Cannot convert datatype 'System.Array' to a value that fits both type 'System.Int32[]' and type 'System.Boolean[]'");
+					//"Failed to validate select-clause expression 'IntOne=BooleanOne': Implicit conversion from datatype 'System.Boolean[]' to 'System.Int32[]' is not allowed"
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
@@ -88,26 +89,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpression("c6", "ObjectOne=ObjectTwo")
 					.WithExpression("c7", "ObjectOne is ObjectTwo");
 
-				SupportEventWithManyArray array = new SupportEventWithManyArray("E1");
-				array.WithIntOne(new[] {1, 2});
-				array.WithIntTwo(new[] {1, 2});
-				array.WithIntBoxedOne(new int?[] {1, 2});
-				array.WithIntBoxedTwo(new int?[] {1, 2});
-				array.WithObjectOne(new object[] {'a', new object[] {1}});
-				array.WithObjectTwo(new object[] {'a', new object[] {1}});
-				array.WithInt2DimOne(new[] {new[] {1, 2}, new[] {3, 4}});
-				array.WithInt2DimTwo(new[] {new[] {1, 2}, new[] {3, 4}});
+				var array = new SupportEventWithManyArray("E1")
+					.WithIntOne(new[] {1, 2})
+					.WithIntTwo(new[] {1, 2})
+					.WithIntBoxedOne(new int?[] {1, 2})
+					.WithIntBoxedTwo(new int?[] {1, 2})
+					.WithObjectOne(new object[] {'a', new object[] {1}})
+					.WithObjectTwo(new object[] {'a', new object[] {1}})
+					.WithInt2DimOne(new[] {new[] {1, 2}, new[] {3, 4}})
+					.WithInt2DimTwo(new[] {new[] {1, 2}, new[] {3, 4}});
 				builder.WithAssertion(array).Expect(fields, true, true, true, true, true, true, true, true);
 
-				array = new SupportEventWithManyArray("E1");
-				array.WithIntOne(new[] {1, 2});
-				array.WithIntTwo(new[] {1});
-				array.WithIntBoxedOne(new int?[] {1, 2});
-				array.WithIntBoxedTwo(new int?[] {1});
-				array.WithObjectOne(new object[] {'a', 2});
-				array.WithObjectTwo(new object[] {'a'});
-				array.WithInt2DimOne(new[] {new[] {1, 2}, new[] {3, 4}});
-				array.WithInt2DimTwo(new[] {new[] {1, 2}, new[] {3}});
+				array = new SupportEventWithManyArray("E1")
+					.WithIntOne(new[] {1, 2})
+					.WithIntTwo(new[] {1})
+					.WithIntBoxedOne(new int?[] {1, 2})
+					.WithIntBoxedTwo(new int?[] {1})
+					.WithObjectOne(new object[] {'a', 2})
+					.WithObjectTwo(new object[] {'a'})
+					.WithInt2DimOne(new[] {new[] {1, 2}, new[] {3, 4}})
+					.WithInt2DimTwo(new[] {new[] {1, 2}, new[] {3}});
 				builder.WithAssertion(array).Expect(fields, false, false, false, false, false, false, false, false);
 
 				builder.Run(env);

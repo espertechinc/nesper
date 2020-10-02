@@ -46,9 +46,9 @@ namespace com.espertech.esper.compat.collections
         public T this[int index]
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _subList[index]; }
+            get => _subList[index];
             [MethodImpl(MethodImplOptions.Synchronized)]
-            set { _subList[index] = value; }
+            set => _subList[index] = value;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -84,13 +84,13 @@ namespace com.espertech.esper.compat.collections
         public int Count
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _subList.Count; }
+            get => _subList.Count;
         }
 
         public bool IsReadOnly
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _subList.IsReadOnly; }
+            get => _subList.IsReadOnly;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

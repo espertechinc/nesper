@@ -612,16 +612,16 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public TestExprCoreEqualsIs() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void Withnvalid() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithInvalid());
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithsMultikeyWArray() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithIsMultikeyWArray());
+            public void WithIsMultikeyWArray() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithIsMultikeyWArray());
 
             [Test, RunInApplicationDomain]
-            public void WithsCoercionSameType() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithIsCoercionSameType());
+            public void WithIsCoercionSameType() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithIsCoercionSameType());
 
             [Test, RunInApplicationDomain]
-            public void WithsCoercion() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithIsCoercion());
+            public void WithIsCoercion() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithIsCoercion());
         }
 
         /// <summary>

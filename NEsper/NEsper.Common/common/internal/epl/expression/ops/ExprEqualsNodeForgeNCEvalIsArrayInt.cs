@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 result = right == null;
             }
             else {
-                result = right != null && Equals(left, right);
+                result = right != null && Arrays.AreEqual(left, right);
             }
 
             result = result ^ parent.IsNotEquals;

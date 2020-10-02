@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> With3StreamInnerJoin(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new Infra3StreamInnerJoin(rep, true));
                 execs.Add(new Infra3StreamInnerJoin(rep, false));
             }

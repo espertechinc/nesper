@@ -23,16 +23,86 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewTimeLengthBatchSceneOne());
-            execs.Add(new ViewTimeLengthBatchSceneTwo());
-            execs.Add(new ViewTimeLengthBatchForceOutputOne());
-            execs.Add(new ViewTimeLengthBatchForceOutputTwo());
-            execs.Add(new ViewTimeLengthBatchForceOutputSum());
-            execs.Add(new ViewTimeLengthBatchStartEager());
-            execs.Add(new ViewTimeLengthBatchForceOutputStartEagerSum());
-            execs.Add(new ViewTimeLengthBatchForceOutputStartNoEagerSum());
-            execs.Add(new ViewTimeLengthBatchPreviousAndPrior());
+            WithSceneOne(execs);
+            WithSceneTwo(execs);
+            WithForceOutputOne(execs);
+            WithForceOutputTwo(execs);
+            WithForceOutputSum(execs);
+            WithStartEager(execs);
+            WithForceOutputStartEagerSum(execs);
+            WithForceOutputStartNoEagerSum(execs);
+            WithPreviousAndPrior(execs);
+            WithGroupBySumStartEager(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupBySumStartEager(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchGroupBySumStartEager());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreviousAndPrior(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchPreviousAndPrior());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithForceOutputStartNoEagerSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchForceOutputStartNoEagerSum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithForceOutputStartEagerSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchForceOutputStartEagerSum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEager(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchStartEager());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithForceOutputSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchForceOutputSum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithForceOutputTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchForceOutputTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithForceOutputOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchForceOutputOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeLengthBatchSceneOne());
             return execs;
         }
 

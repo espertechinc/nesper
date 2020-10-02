@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     RunTransposeMapAndObjectArray(env, rep);
                 }
             }
@@ -395,13 +395,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     Assert.Fail();
                 }
                 catch (EPCompileException ex) {
-                    Assert.AreEqual(
-                        "Expression-returned value of type '" +
-                        typeof(SupportBean).CleanName() +
-                        "' cannot be converted to target event type 'SomeOtherStream' with underlying type '" +
-                        typeof(IDictionary<string, object>).CleanName() +
-                        "' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]",
-                        ex.Message);
+                    Assert.That(
+                        ex.Message,
+                        Does.StartWith(
+                            "Error during compilation: " +
+                            "Expression-returned value of type '" +
+                            typeof(SupportBean).CleanName() +
+                            "' cannot be converted to target event type 'SomeOtherStream' with underlying type '" +
+                            typeof(IDictionary<string, object>).CleanName() +
+                            "' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]"));
                 }
 
                 env.UndeployAll();

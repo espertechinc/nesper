@@ -30,30 +30,123 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewTimeWindowSceneOne());
-            execs.Add(new ViewTimeWindowSceneTwo());
-            execs.Add(new ViewTimeJustSelectStar());
-            execs.Add(new ViewTimeSum());
-            execs.Add(new ViewTimeSumGroupBy());
-            execs.Add(new ViewTimeSumWFilter());
-            execs.Add(new ViewTimeWindowMonthScoped());
-            execs.Add(new ViewTimeWindowWPrev());
-            execs.Add(new ViewTimeWindowPreparedStmt());
-            execs.Add(new ViewTimeWindowVariableStmt());
-            execs.Add(new ViewTimeWindowTimePeriod());
-            execs.Add(new ViewTimeWindowVariableTimePeriodStmt());
-            execs.Add(new ViewTimeWindowTimePeriodParams());
+            WithWindowSceneOne(execs);
+            WithWindowSceneTwo(execs);
+            WithJustSelectStar(execs);
+            WithSum(execs);
+            WithSumGroupBy(execs);
+            WithSumWFilter(execs);
+            WithWindowMonthScoped(execs);
+            WithWindowWPrev(execs);
+            WithWindowPreparedStmt(execs);
+            WithWindowVariableStmt(execs);
+            WithWindowTimePeriod(execs);
+            WithWindowVariableTimePeriodStmt(execs);
+            WithWindowTimePeriodParams(execs);
+            WithWindowFlipTimer(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowFlipTimer(IList<RegressionExecution> execs = null)
+        {
+            var currentTime = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-1T08:00:01.999");
+
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowFlipTimer(0, "1", 1000));
             execs.Add(new ViewTimeWindowFlipTimer(123456789, "10", 123456789 + 10 * 1000));
             execs.Add(new ViewTimeWindowFlipTimer(0, "1 months 10 milliseconds", TimePlusMonth(0, 1) + 10));
+            execs.Add(new ViewTimeWindowFlipTimer(currentTime, "1 months 50 milliseconds", TimePlusMonth(currentTime, 1) + 50));
+            return execs;
+        }
 
-            var currentTime = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-1T08:00:01.999");
-            execs.Add(
-                new ViewTimeWindowFlipTimer(
-                    currentTime,
-                    "1 months 50 milliseconds",
-                    TimePlusMonth(currentTime, 1) + 50));
+        public static IList<RegressionExecution> WithWindowTimePeriodParams(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowTimePeriodParams());
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithWindowVariableTimePeriodStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowVariableTimePeriodStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowTimePeriod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowTimePeriod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowVariableStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowVariableStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowPreparedStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowPreparedStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowWPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowWPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumWFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeSumWFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumGroupBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeSumGroupBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeSum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJustSelectStar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeJustSelectStar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeWindowSceneOne());
             return execs;
         }
 
@@ -248,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time(10 sec)";
@@ -389,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
                 env.AdvanceTime(1000);
                 var epl = "@Name('s0') select irstream * from SupportBean#time(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -471,7 +564,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
 
                 SendCurrentTimeWithMinus(env, "2002-03-15T09:00:00.000", 1);
@@ -480,7 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-15T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E2"});
 
                 env.UndeployAll();
@@ -673,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1600);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
                 env.Listener("s0").Reset();
 
@@ -804,7 +897,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(startTime);
 
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
                 var epl = "@Name('s0') select * from SupportBean#time(" + size + ")";
                 env.CompileDeploy(epl).AddListener("s0");
 

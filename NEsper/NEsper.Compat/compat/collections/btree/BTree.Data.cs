@@ -39,9 +39,7 @@ namespace com.espertech.esper.compat.collections.btree
                 if (Root.IsLeaf) return Root.Count;
                 return Root.Size;
             }
-            internal set {
-                Root.Size = value;
-            }
+            internal set => Root.Size = value;
         }
 
         /// <summary>

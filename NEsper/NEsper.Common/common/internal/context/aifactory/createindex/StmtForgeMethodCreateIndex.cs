@@ -168,6 +168,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, spec.IndexName);
+
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgeableStmtProvider(

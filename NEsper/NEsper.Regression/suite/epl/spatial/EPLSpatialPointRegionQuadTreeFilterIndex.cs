@@ -32,13 +32,62 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSpatialPRFilterIndexPerfStatement());
-            execs.Add(new EPLSpatialPRFilterIndexPerfContextPartition());
-            execs.Add(new EPLSpatialPRFilterIndexPerfPattern());
-            execs.Add(new EPLSpatialPRFilterIndexUnoptimized());
-            execs.Add(new EPLSpatialPRFilterIndexTypeAssertion());
-            execs.Add(new EPLSpatialPRFilterIndexPatternSimple());
+            WithPerfStatement(execs);
+            WithPerfContextPartition(execs);
+            WithPerfPattern(execs);
+            WithUnoptimized(execs);
+            WithTypeAssertion(execs);
+            WithPatternSimple(execs);
+            WithContext(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPatternSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypeAssertion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexTypeAssertion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnoptimized(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexUnoptimized());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPerfPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfContextPartition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPerfContextPartition());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfStatement(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPerfStatement());
             return execs;
         }
 

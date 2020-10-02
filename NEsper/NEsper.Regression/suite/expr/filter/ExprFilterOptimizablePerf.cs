@@ -25,15 +25,40 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprFilterOptimizablePerfOr());
-			executions.Add(new ExprFilterOptimizablePerfEqualsWithFunc());
-			executions.Add(new ExprFilterOptimizablePerfTrueWithFunc());
-			executions.Add(new ExprFilterOptimizablePerfEqualsDeclaredExpr());
-			executions.Add(new ExprFilterOptimizablePerfTrueDeclaredExpr());
-			return executions;
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+WithOr(execs);
+WithEqualsWithFunc(execs);
+WithTrueWithFunc(execs);
+WithEqualsDeclaredExpr(execs);
+WithTrueDeclaredExpr(execs);
+			return execs;
 		}
-
+public static IList<RegressionExecution> WithTrueDeclaredExpr(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptimizablePerfTrueDeclaredExpr());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsDeclaredExpr(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptimizablePerfEqualsDeclaredExpr());
+    return execs;
+}public static IList<RegressionExecution> WithTrueWithFunc(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptimizablePerfTrueWithFunc());
+    return execs;
+}public static IList<RegressionExecution> WithEqualsWithFunc(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptimizablePerfEqualsWithFunc());
+    return execs;
+}public static IList<RegressionExecution> WithOr(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprFilterOptimizablePerfOr());
+    return execs;
+}
 		private class ExprFilterOptimizablePerfEqualsWithFunc : RegressionExecution
 		{
 			public bool ExcludeWhenInstrumented()

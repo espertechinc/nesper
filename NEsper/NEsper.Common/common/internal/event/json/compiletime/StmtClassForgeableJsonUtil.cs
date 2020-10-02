@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             var cases = new CodegenExpression[desc.PropertiesThisType.Count];
             var index = 0;
             foreach (var property in desc.PropertiesThisType) {
-                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-                cases[index] = Constant(field.FieldName);
+                //var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                cases[index] = Constant(property.Key);
                 index++;
             }
 

@@ -49,10 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OneEventCollection oldData,
             AgentInstanceContext agentInstanceContext)
         {
-            EventBean theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
+            var theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
 
             if (insertIntoTable != null) {
-                TableInstance tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
                 tableInstance.AddEventUnadorned(theEvent);
                 return;
             }
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
             
             if (insertIntoTable != null) {
-                TableInstance tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
                 tableInstance.AddEventUnadorned(theEvent);
                 return;
             }
@@ -83,13 +83,19 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OnExprViewTableChangeHandler changeHandlerRemoved,
             AgentInstanceContext agentInstanceContext)
         {
-            EventBean theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
+            var theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
             if (!route) {
-                AggregationRow aggs = tableStateInstance.Table.AggregationRowFactory.Make();
-                ((object[]) theEvent.Underlying)[0] = aggs;
+                var aggs = tableStateInstance.Table.AggregationRowFactory.Make();
+                ((Array) theEvent.Underlying).SetValue(aggs, 0);
                 tableStateInstance.AddEvent(theEvent);
                 changeHandlerAdded?.Add(theEvent, eventsPerStream, true, agentInstanceContext);
 
+                return;
+            }
+            
+            if (insertIntoTable != null) {
+                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                tableInstance.AddEventUnadorned(theEvent);
                 return;
             }
 

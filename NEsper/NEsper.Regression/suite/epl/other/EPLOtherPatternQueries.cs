@@ -24,12 +24,54 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherWhereOM());
-            execs.Add(new EPLOtherWhereCompile());
-            execs.Add(new EPLOtherWhere());
-            execs.Add(new EPLOtherAggregation());
-            execs.Add(new EPLOtherFollowedByAndWindow());
+            WithWhereOM(execs);
+            WithWhereCompile(execs);
+            WithWhere(execs);
+            WithAggregation(execs);
+            WithFollowedByAndWindow(execs);
+            WithPatternWindow(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherPatternWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFollowedByAndWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherFollowedByAndWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWhereCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWhereOM());
             return execs;
         }
 
@@ -205,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select S0.Id as idS0, S1.Id as idS1 " +
-                               "from pattern [every S0=SupportBean_S0" + 
+                               "from pattern [every S0=SupportBean_S0" +
                                " or every S1=SupportBean_S1] " +
                                "where (S0.Id is not null and S0.Id < 100) or (S1.Id is not null and S1.Id >= 100)";
                 env.CompileDeploy(stmtText).AddListener("s0");

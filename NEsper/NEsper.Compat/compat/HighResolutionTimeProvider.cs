@@ -29,20 +29,14 @@ namespace com.espertech.esper.compat
         /// when we reset the baseline.  It is used to determine the starting
         /// point from which all other performance measurements are calculated.
         /// </summary>
-        public long BaseNano
-        {
-            get { return _baseNano; }
-        }
+        public long BaseNano => _baseNano;
 
         /// <summary>
         /// Gets the # of nano-seconds reported by NanoTime when we
         /// initialized the timer.
         /// </summary>
         /// <value>The base time.</value>
-        public long BaseTime
-        {
-            get { return _baseTime; }
-        }
+        public long BaseTime => _baseTime;
 
         private long _frequency;
 

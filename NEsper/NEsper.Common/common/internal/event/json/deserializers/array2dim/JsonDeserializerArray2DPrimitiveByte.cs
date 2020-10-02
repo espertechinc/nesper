@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveByte : JsonDeserializerArrayBase<byte[]>
     {
         public JsonDeserializerArray2DPrimitiveByte()
-            : base(_ => _.ElementToArray(v => v.GetByte()))
+            : base(_ => _.ElementToArray(v => v.GetSmartByte()))
         {
         }
     }

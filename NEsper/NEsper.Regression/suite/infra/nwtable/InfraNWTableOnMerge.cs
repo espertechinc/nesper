@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> WithInsertOtherStream(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraInsertOtherStream(true, rep));
                 execs.Add(new InfraInsertOtherStream(false, rep));
             }
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> WithInnerTypeAndVariable(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 if (!rep.IsAvroOrJsonEvent()) {
                     execs.Add(new InfraInnerTypeAndVariable(true, rep));
                     execs.Add(new InfraInnerTypeAndVariable(false, rep));

@@ -30,11 +30,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowInvalidCompile());
-            execs.Add(new EPLDataflowInvalidInstantiate());
+WithCompile(execs);
+WithInstantiate(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithInstantiate(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalidInstantiate());
+    return execs;
+}public static IList<RegressionExecution> WithCompile(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalidCompile());
+    return execs;
+}
         internal class EPLDataflowInvalidCompile : RegressionExecution
         {
             public void Run(RegressionEnvironment env)

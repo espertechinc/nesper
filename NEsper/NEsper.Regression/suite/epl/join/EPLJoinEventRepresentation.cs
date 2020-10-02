@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.SendEventAvro(theEvent, name);
             }
             else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-                String json = "{\"id\": \"" + id + "\", \"p00\": " + p00 + "}";
+                String json = "{\"Id\": \"" + id + "\", \"P00\": " + p00 + "}";
                 env.EventService.SendEventJson(json, name);
             }
             else {
@@ -107,31 +107,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var jsonSchemas =
-                    "@public @buseventtype create json schema S0_JSON(id String, p00 int);\n" +
-                    "@public @buseventtype create json schema S1_JSON(id String, p00 int);\n" +
-                    "@public @buseventtype @JsonSchema(ClassName='" +
-                    nameof(MyLocalJsonProvidedS0) +
-                    "') create json schema S0_JSONCLASSPROVIDED();\n" +
-                    "@public @buseventtype @JsonSchema(ClassName='" +
-                    nameof(MyLocalJsonProvidedS1) +
-                    "') create json schema S1_JSONCLASSPROVIDED();\n";
+                    "@public @buseventtype create json schema S0_JSON(Id String, P00 int);\n" +
+                    "@public @buseventtype create json schema S1_JSON(Id String, P00 int);\n" +
+                    "@public @buseventtype @JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedS0).FullName + "') create json schema S0_JSONCLASSPROVIDED();\n" +
+                    "@public @buseventtype @JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedS1).FullName + "') create json schema S1_JSONCLASSPROVIDED();\n";
                 env.CompileDeploy(jsonSchemas, path);
 
                 var milestone = new AtomicLong();
 
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     var s0Type = "S0_" + rep.GetName();
                     var s1Type = "S1_" + rep.GetName();
-                    var eplOne = "select S0.Id as s0id, S1.Id as s1id, S0.P00 as s0p00, S1.P00 as s1p00 from " +
-                                 s0Type +
-                                 "#keepall as S0, " +
-                                 s1Type +
-                                 "#keepall as S1 " +
-                                 " where S0.Id = S1.Id";
+                    var eplOne = 
+                        "select S0.Id as s0id, S1.Id as s1id, S0.P00 as s0p00, S1.P00 as s1p00 from "
+                        + s0Type + "#keepall as S0, "
+                        + s1Type + "#keepall as S1 "
+                        + " where S0.Id = S1.Id";
                     TryJoinAssertion(env, eplOne, rep, "s0id,s1id,s0p00,s1p00", milestone, path, typeof(MyLocalJsonProvidedWFields));
                 }
 
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     var s0Type = "S0_" + rep.GetName();
                     var s1Type = "S1_" + rep.GetName();
                     var eplTwo = "select * from " +
@@ -225,15 +220,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         [Serializable]
         public class MyLocalJsonProvidedS0
         {
-            public string id;
-            public int p00;
+            public string Id;
+            public int P00;
         }
 
         [Serializable]
         public class MyLocalJsonProvidedS1
         {
-            public string id;
-            public int p00;
+            public string Id;
+            public int P00;
         }
 
         [Serializable]

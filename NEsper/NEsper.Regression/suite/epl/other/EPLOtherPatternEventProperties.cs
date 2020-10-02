@@ -22,10 +22,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherWildcardSimplePattern());
-            execs.Add(new EPLOtherWildcardOrPattern());
-            execs.Add(new EPLOtherPropertiesSimplePattern());
+            WithWildcardSimplePattern(execs);
+            WithWildcardOrPattern(execs);
+            WithPropertiesSimplePattern(execs);
+            WithPropertiesOrPattern(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertiesOrPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherPropertiesOrPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertiesSimplePattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPropertiesSimplePattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardOrPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWildcardOrPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardSimplePattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWildcardSimplePattern());
             return execs;
         }
 

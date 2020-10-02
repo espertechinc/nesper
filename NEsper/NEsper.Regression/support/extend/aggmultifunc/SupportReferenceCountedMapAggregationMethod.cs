@@ -34,7 +34,11 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 		{
 			var state = (SupportReferenceCountedMapState) row.GetAccessState(aggColNum);
 			var lookupKey = _factory.Eval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-			return state.CountPerReference.Get(lookupKey);
+			if (state.CountPerReference.TryGetValue(lookupKey, out var result)) {
+				return result;
+			}
+
+			return null;
 		}
 
 		public ICollection<EventBean> GetValueCollectionEvents(

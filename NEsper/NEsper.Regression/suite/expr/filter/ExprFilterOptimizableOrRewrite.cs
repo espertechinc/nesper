@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> executions = new List<RegressionExecution>();
+			var executions = new List<RegressionExecution>();
 			executions.Add(new ExprFilterOrRewriteTwoOr());
 			executions.Add(new ExprFilterOrRewriteOrRewriteThreeOr());
 			executions.Add(new ExprFilterOrRewriteOrRewriteWithAnd());
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Hint('MAX_FILTER_WIDTH=0') @name('s0') select * from SupportBean_IntAlphabetic((B=1 or C=1) and (D=1 or E=1))";
+				var epl = "@Hint('MAX_FILTER_WIDTH=0') @name('s0') select * from SupportBean_IntAlphabetic((B=1 or C=1) and (D=1 or E=1))";
 				env.CompileDeployAddListenerMile(epl, "s0", 0);
 				SupportFilterServiceHelper.AssertFilterSvcSingle(env.Statement("s0"), ".boolean_expression", FilterOperator.BOOLEAN_EXPRESSION);
 				env.UndeployAll();
@@ -63,11 +63,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string epl = "@Name('s0') select (select * from SupportBean_IntAlphabetic(A=1 or B=1)#keepall) as c0 from SupportBean";
+				var milestone = new AtomicLong();
+				var epl = "@Name('s0') select (select * from SupportBean_IntAlphabetic(A=1 or B=1)#keepall) as c0 from SupportBean";
 				env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
-				SupportBean_IntAlphabetic iaOne = IntEvent(1, 1);
+				var iaOne = IntEvent(1, 1);
 				env.SendEventBean(iaOne);
 				env.SendEventBean(new SupportBean());
 				Assert.AreEqual(iaOne, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
@@ -80,11 +80,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('ctx') create context MyContext \n" +
-				             "  group A=1 or B=1 as g1,\n" +
-				             "  group C=1 as g1\n" +
-				             "  from SupportBean_IntAlphabetic;" +
-				             "@Name('s0') context MyContext select * from SupportBean_IntAlphabetic(D=1 or E=1)";
+				var epl = "@Name('ctx') create context MyContext \n" +
+				          "  group A=1 or B=1 as g1,\n" +
+				          "  group C=1 as g1\n" +
+				          "  from SupportBean_IntAlphabetic;" +
+				          "@Name('s0') context MyContext select * from SupportBean_IntAlphabetic(D=1 or E=1)";
 				env.CompileDeployAddListenerMile(epl, "s0", 0);
 
 				SendAssertEvents(
@@ -101,9 +101,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "create context MyContext " +
-				             "coalesce by consistent_hash_crc32(A) from SupportBean_IntAlphabetic(B=1) granularity 16 preallocate;" +
-				             "@Name('s0') context MyContext select * from SupportBean_IntAlphabetic(C=1 or D=1)";
+				var epl = "create context MyContext " +
+				          "coalesce by consistent_hash_crc32(A) from SupportBean_IntAlphabetic(B=1) granularity 16 preallocate;" +
+				          "@Name('s0') context MyContext select * from SupportBean_IntAlphabetic(C=1 or D=1)";
 				env.CompileDeployAddListenerMile(epl, "s0", 0);
 
 				SendAssertEvents(
@@ -119,8 +119,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "create context MyContext partition by A from SupportBean_IntAlphabetic(B=1 or C=1);" +
-				             "@Name('s0') context MyContext select * from SupportBean_IntAlphabetic(D=1)";
+				var epl = "create context MyContext partition by A from SupportBean_IntAlphabetic(B=1 or C=1);" +
+				          "@Name('s0') context MyContext select * from SupportBean_IntAlphabetic(D=1)";
 				env.CompileDeployAddListenerMile(epl, "s0", 0);
 
 				SendAssertEvents(
@@ -136,12 +136,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filters = new[] {
+				var milestone = new AtomicLong();
+				var filters = new[] {
 					"(A='a' or A like 'A%') and (B='b' or B like 'B%')",
 				};
-				foreach (string filter in filters) {
-					string epl = "@Name('s0') select * from SupportBean_StringAlphabetic(" + filter + ")";
+				foreach (var filter in filters) {
+					var epl = "@Name('s0') select * from SupportBean_StringAlphabetic(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasic(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -169,12 +169,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filters = new[] {
+				var milestone = new AtomicLong();
+				var filters = new[] {
 					"A like 'a%' and (B='b' or C='c')",
 				};
-				foreach (string filter in filters) {
-					string epl = "@Name('s0') select * from SupportBean_StringAlphabetic(" + filter + ")";
+				foreach (var filter in filters) {
+					var epl = "@Name('s0') select * from SupportBean_StringAlphabetic(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasic(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -200,12 +200,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filters = new[] {
+				var milestone = new AtomicLong();
+				var filters = new[] {
 					"A!=1 and A!=2 and ((A!=3 and A!=4) or (A!=5 and A!=6))",
 				};
-				foreach (string filter in filters) {
-					string epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
+				foreach (var filter in filters) {
+					var epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -231,12 +231,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filters = new[] {
+				var milestone = new AtomicLong();
+				var filters = new[] {
 					"A!=1 and A!=2 and (A!=3 or A!=4)",
 				};
-				foreach (string filter in filters) {
-					string epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
+				foreach (var filter in filters) {
+					var epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -262,12 +262,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filters = new[] {
+				var milestone = new AtomicLong();
+				var filters = new[] {
 					"A!=1 and A!=2 and (B=1 or C=1)",
 				};
-				foreach (string filter in filters) {
-					string epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
+				foreach (var filter in filters) {
+					var epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -293,12 +293,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"TheString='a' and (IntPrimitive=1 or LongPrimitive=10)",
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -324,12 +324,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"A=1 and (B=1 or C=1) and (D=1 or E=1)",
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -369,15 +369,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"TheString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100 or BoolPrimitive=true or " +
 					"IntBoxed=2 or LongBoxed=20 or DoubleBoxed=200",
 					"LongBoxed=20 or TheString = 'a' or BoolPrimitive=true or IntBoxed=2 or LongPrimitive=10 or DoublePrimitive=100 or " +
 					"IntPrimitive=1 or DoubleBoxed=200",
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -413,12 +413,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"TheString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100",
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -446,8 +446,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('ctx') create context MyContext initiated by SupportBean(TheString='A' or IntPrimitive=1) terminated after 24 hours;\n" +
-				             "@Name('s0') context MyContext select * from SupportBean;\n";
+				var epl = "@Name('ctx') create context MyContext initiated by SupportBean(TheString='A' or IntPrimitive=1) terminated after 24 hours;\n" +
+				          "@Name('s0') context MyContext select * from SupportBean;\n";
 				env.CompileDeployAddListenerMile(epl, "s0", 0);
 
 				env.SendEventBean(new SupportBean("A", 1));
@@ -461,8 +461,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "create context MyContext initiated by SupportBean terminated after 24 hours;" +
-				             "@Name('s0') context MyContext select * from SupportBean(TheString='A' or IntPrimitive=1)";
+				var epl = "create context MyContext initiated by SupportBean terminated after 24 hours;" +
+				          "@Name('s0') context MyContext select * from SupportBean(TheString='A' or IntPrimitive=1)";
 				env.CompileDeployAddListenerMile(epl, "s0", 0);
 
 				env.SendEventBean(new SupportBean("A", 1));
@@ -476,13 +476,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"TheString = 'a' or IntPrimitive = 1 or LongPrimitive = 2",
 					"2 = LongPrimitive or 1 = IntPrimitive or TheString = 'a'"
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -512,13 +512,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			object[] nonMatches)
 		{
 			env.Listener("s0").Reset();
-			foreach (object match in matches) {
+			foreach (var match in matches) {
 				env.SendEventBean(match);
 				Assert.AreSame(match, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
 			}
 
 			env.Listener("s0").Reset();
-			foreach (object nonMatch in nonMatches) {
+			foreach (var nonMatch in nonMatches) {
 				env.SendEventBean(nonMatch);
 				Assert.IsFalse(env.Listener("s0").IsInvoked);
 			}
@@ -528,13 +528,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"TheString = 'a' or TheString = 'b' or IntPrimitive=1",
 					"IntPrimitive = 1 or TheString = 'b' or TheString = 'a'",
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -561,17 +561,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
+				var milestone = new AtomicLong();
 
 				// test 'or' rewrite
-				string[] filtersAB = new[] {
+				var filtersAB = new[] {
 					"select * from SupportBean(TheString = 'a' or IntPrimitive = 1)",
 					"select * from SupportBean(TheString = 'a' or 1 = IntPrimitive)",
 					"select * from SupportBean('a' = TheString or 1 = IntPrimitive)",
 					"select * from SupportBean('a' = TheString or IntPrimitive = 1)",
 				};
 
-				foreach (string filter in filtersAB) {
+				foreach (var filter in filtersAB) {
 					env.CompileDeployAddListenerMile("@Name('s0')" + filter, "s0", milestone.GetAndIncrement());
 
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
@@ -600,14 +600,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				AtomicLong milestone = new AtomicLong();
-				string[] filtersAB = new[] {
+				var milestone = new AtomicLong();
+				var filtersAB = new[] {
 					"(TheString = 'a' and IntPrimitive = 1) or (TheString = 'b' and IntPrimitive = 2)",
 					"(IntPrimitive = 1 and TheString = 'a') or (IntPrimitive = 2 and TheString = 'b')",
 					"(TheString = 'b' and IntPrimitive = 2) or (TheString = 'a' and IntPrimitive = 1)",
 				};
-				foreach (string filter in filtersAB) {
-					string epl = "@Name('s0') select * from SupportBean(" + filter + ")";
+				foreach (var filter in filtersAB) {
+					var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
 					env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 					if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
 						SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
@@ -704,7 +704,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			long longPrimitive,
 			double doublePrimitive)
 		{
-			SupportBean @event = new SupportBean(theString, intPrimitive);
+			var @event = new SupportBean(theString, intPrimitive);
 			@event.LongPrimitive = longPrimitive;
 			@event.DoublePrimitive = doublePrimitive;
 			return @event;
@@ -720,7 +720,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 			long longBoxed,
 			double doubleBoxed)
 		{
-			SupportBean @event = new SupportBean(theString, intPrimitive);
+			var @event = new SupportBean(theString, intPrimitive);
 			@event.LongPrimitive = longPrimitive;
 			@event.DoublePrimitive = doublePrimitive;
 			@event.BoolPrimitive = boolPrimitive;

@@ -66,7 +66,7 @@ namespace com.espertech.esper.compat.collections
         public bool ShuffleOnAccess
         {
             get => _shuffleOnAccess;
-            set { _shuffleOnAccess = value; }
+            set => _shuffleOnAccess = value;
         }
 
         /// <summary>

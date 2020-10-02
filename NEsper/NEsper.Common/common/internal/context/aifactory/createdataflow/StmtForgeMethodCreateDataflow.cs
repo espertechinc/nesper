@@ -123,6 +123,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, createDataFlowDesc.GraphName);
+
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgeableStmtProvider(

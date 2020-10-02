@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -260,9 +261,9 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			}
 			else {
 				var expressions = new CodegenExpression[optionalMultiKeyClasses.MKTypes.Length];
-				fromLambda.Block.DeclareVar<MultiKeyArrayOfKeys<object>>("mk", Cast(typeof(MultiKeyArrayOfKeys<object>), Ref("key")));
+				fromLambda.Block.DeclareVar<MultiKey>("mk", Cast(typeof(MultiKey), Ref("key")));
 				for (var i = 0; i < expressions.Length; i++) {
-					expressions[i] = FlexCast(optionalMultiKeyClasses.MKTypes[i], ExprDotMethod(Ref("mk"), "Get", Constant(i)));
+					expressions[i] = FlexCast(optionalMultiKeyClasses.MKTypes[i], ExprDotMethod(Ref("mk"), "GetKey", Constant(i)));
 				}
 
 				var instance = optionalMultiKeyClasses.ClassNameMK.Type != null

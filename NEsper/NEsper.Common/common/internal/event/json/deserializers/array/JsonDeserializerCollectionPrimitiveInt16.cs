@@ -6,12 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.@event.json.parser.core;
+
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 {
     public class JsonDeserializerCollectionPrimitiveInt16 : JsonDeserializerCollectionBase<short>
     {
         public JsonDeserializerCollectionPrimitiveInt16()
-            : base(_ => _.GetInt16())
+            : base(_ => _.GetSmartInt16())
         {
         }
     }

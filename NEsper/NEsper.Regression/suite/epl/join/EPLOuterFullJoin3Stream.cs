@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinFullJoin2SidesMulticolumn());
+            WithsMulticolumn(execs);
+            Withs(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinFullJoin2Sides());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithsMulticolumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinFullJoin2SidesMulticolumn());
             return execs;
         }
 
@@ -476,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
+                var fields = new[] {"S0.Id", " S0.P00", " S0.P01", " S1.Id", " S1.P10", " S1.P11", " S2.Id", " S2.P20", " S2.P21"};
 
                 var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvided>() +
                           " @Name('s0') select * from " +

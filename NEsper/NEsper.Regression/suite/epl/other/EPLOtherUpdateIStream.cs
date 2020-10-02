@@ -5,9 +5,12 @@
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
+
 using Avro.Generic;
+
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
@@ -19,10 +22,14 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.scopetest;
+
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
 using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
+
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -320,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "update istream MyEvent set dbls[3-2] = 1;\n" +
                     "@Name('s0') select dbls as c0 from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0");
-                env.SendEventMap(Collections.SingletonDataMap("dbls", new Double[3]), "MyEvent");
+                env.SendEventMap(Collections.SingletonDataMap("dbls", new double?[3]), "MyEvent");
                 CollectionAssert.AreEquivalent(
                     new double?[] {null, 1d, null},
                     env.Listener("s0").AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<double?>());
@@ -611,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionFieldsWithPriority(env, rep);
                 }
             }
@@ -623,27 +630,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create schema BaseInterface as " +
-                    typeof(BaseInterface).MaskTypeName() +
-                    ";\n" +
-                    "create schema BaseOne as " +
-                    typeof(BaseOne).MaskTypeName() +
-                    ";\n" +
-                    "create schema BaseOneA as " +
-                    typeof(BaseOneA).MaskTypeName() +
-                    ";\n" +
-                    "create schema BaseOneB as " +
-                    typeof(BaseOneB).MaskTypeName() +
-                    ";\n" +
-                    "create schema BaseTwo as " +
-                    typeof(BaseTwo).MaskTypeName() +
-                    ";\n";
+                    "create schema BaseInterface as " + typeof(BaseInterface).MaskTypeName() + ";\n" +
+                    "create schema BaseOne as " + typeof(BaseOne).MaskTypeName() + ";\n" +
+                    "create schema BaseOneA as " + typeof(BaseOneA).MaskTypeName() + ";\n" +
+                    "create schema BaseOneB as " + typeof(BaseOneB).MaskTypeName() + ";\n" +
+                    "create schema BaseTwo as " + typeof(BaseTwo).MaskTypeName() + ";\n";
+
                 env.CompileDeploy(epl, path);
+
                 // test update applies to child types via interface
                 env.CompileDeploy("@Name('insert') insert into BaseOne select P0 as I, P1 as P from MyMapTypeIDB", path);
                 env.CompileDeploy("@Name('a') update istream BaseInterface set I='XYZ' where I like 'E%'", path);
                 env.CompileDeploy("@Name('s0') select * from BaseOne", path).AddListener("s0");
                 var fields = "I,P".SplitCsv();
+
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"XYZ", "E1"});
                 env.SendEventMap(MakeMap("P0", "F1", "P1", "E2"), "MyMapTypeIDB");
@@ -655,16 +655,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E4"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"BLANK", "E4"});
                 env.UndeployModuleContaining("insert");
+                
                 env.CompileDeploy("@Name('insert') insert into BaseOneA select P0 as I, P1 as P, 'a' as pa from MyMapTypeIDB", path);
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E5"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"FINAL", "E5"});
                 env.UndeployModuleContaining("insert");
+                
                 env.CompileDeploy("@Name('insert') insert into BaseOneB select P0 as I, P1 as P, 'b' as pb from MyMapTypeIDB", path);
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E6"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"BLANK", "E6"});
                 env.UndeployModuleContaining("insert");
+                
                 env.CompileDeploy("@Name('insert') insert into BaseTwo select P0 as I, P1 as P from MyMapTypeIDB", path);
                 env.UndeployModuleContaining("s0");
+                
                 env.CompileDeploy("@Name('s0') select * from BaseInterface", path).AddListener("s0");
                 env.SendEventMap(MakeMap("P0", "E2", "P1", "E7"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), new[] {"I"}, new object[] {"XYZ"});
@@ -672,7 +676,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        internal class EPLOtherUpdateNamedWindow : RegressionExecution
+        internal class EPLOtherUpdateNamedWindow: RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -1029,11 +1033,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 RunAssertionSetMapPropsBean(env);
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     RunAssertionUpdateIStreamSetMapProps(env, rep);
                 }
 
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     RunAssertionNamedWindowSetMapProps(env, rep);
                 }
             }
@@ -1311,6 +1315,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public string P { get; set; }
         }
 
+        [Serializable]
         public class BaseTwo : BaseInterface
         {
             public BaseTwo()
@@ -1327,6 +1332,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public string P { get; set; }
         }
 
+        [Serializable]
         public class BaseOneA : BaseOne
         {
             public BaseOneA()
@@ -1344,6 +1350,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public string Pa { get; set; }
         }
 
+        [Serializable]
         public class BaseOneB : BaseOne
         {
             public BaseOneB()

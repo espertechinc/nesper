@@ -31,11 +31,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraTableSelectStarPublicTypeVisibility());
-            execs.Add(new InfraTableSelectEnum());
-            execs.Add(new InfraTableSelectMultikeyWArraySingleArray());
-            execs.Add(new InfraTableSelectMultikeyWArrayTwoArray());
+            WithStarPublicTypeVisibility(execs);
+            WithEnum(execs);
+            WithMultikeyWArraySingleArray(execs);
+            WithMultikeyWArrayTwoArray(execs);
+            WithMultikeyWArrayComposite(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArrayComposite(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableSelectMultikeyWArrayComposite());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectMultikeyWArrayTwoArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectMultikeyWArraySingleArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectEnum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStarPublicTypeVisibility(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectStarPublicTypeVisibility());
             return execs;
         }
 
@@ -421,8 +456,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 RegressionPath path = new RegressionPath();
                 string epl = "create table MyTable(k0 string primary key, k1 string primary key, k2 string primary key, v string);\n" +
                              "create index MyIndex on MyTable(k0, k1, v btree);\n" +
-                             "insert into MyTable select p00 as k0, p01 as k1, p02 as k2, p03 as v from SupportBean_S0;\n" +
-                             "@Name('s0') select t.v as v from SupportBean_S1, MyTable as t where k0 = p10 and k1 = p11 and v > p12;\n";
+                             "insert into MyTable select P00 as k0, P01 as k1, P02 as k2, P03 as v from SupportBean_S0;\n" +
+                             "@Name('s0') select t.v as v from SupportBean_S1, MyTable as t where k0 = P10 and k1 = P11 and v > P12;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendS0(env, "A", "BB", "CCC", "X1");
@@ -473,8 +508,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 RegressionPath path = new RegressionPath();
                 string epl = "create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
-                             "insert into MyTable select IntOne as k1, intTwo as k2, value from SupportEventWithManyArray(id = 'I');\n" +
-                             "@Name('s0') select t.value as c0 from SupportEventWithManyArray(id='Q'), MyTable as t where k1 = IntOne and k2 = intTwo;\n";
+                             "insert into MyTable select IntOne as k1, IntTwo as k2, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                             "@Name('s0') select t.value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = IntOne and k2 = IntTwo;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendManyArray(env, "I", new int[] {1, 2}, new int[] {3, 4}, 10);
@@ -518,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 RegressionPath path = new RegressionPath();
                 string epl = "create table MyTable(k int[primitive] primary key, value int);\n" +
-                             "insert into MyTable select array as k, value from SupportEventWithIntArray;\n" +
+                             "insert into MyTable select Array as k, Value as value from SupportEventWithIntArray;\n" +
                              "@Name('s0') select t.value as c0 from SupportEventWithManyArray, MyTable as t where k = IntOne;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -565,7 +600,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileExecuteFAF("insert into MyTable select 'a' as p", path);
 
                 var @event = env.GetEnumerator("s0").Advance();
-                var row = (object[]) @event.Get("c0");
+                var raw = @event.Get("c0");
+                var row = (object[]) raw;
                 Assert.AreEqual("a", row[0]);
 
                 env.UndeployAll();

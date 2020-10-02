@@ -87,12 +87,6 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             RegressionRunner.Run(session, ResultSetAggregateFirstEverLastEver.Executions());
         }
 
-        [Test]
-        public void TestResultSetAggregateFirstLastWindow()
-        {
-            RegressionRunner.Run(session, ResultSetAggregateFirstLastWindow.Executions());
-        }
-
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateLeaving()
         {
@@ -376,6 +370,97 @@ namespace com.espertech.esper.regressionrun.suite.resultset
 
             [Test, RunInApplicationDomain]
             public void WithNonTable() => RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.WithNonTable());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateFirstLastWindow
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestResultSetAggregateFirstLastWindow : AbstractTestBase
+        {
+            public TestResultSetAggregateFirstLastWindow() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithOnDemandQuery() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOnDemandQuery());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoParamChainedAndProperty() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithNoParamChainedAndProperty());
+
+            [Test, RunInApplicationDomain]
+            public void WithMixedNamedWindow() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithMixedNamedWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithLateInitialize() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithLateInitialize());
+
+            [Test, RunInApplicationDomain]
+            public void WithLastMaxMixedOnSelect() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithLastMaxMixedOnSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithOnDelete() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOnDelete());
+
+            [Test, RunInApplicationDomain]
+            public void WithOutputRateLimiting() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOutputRateLimiting());
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowAndSumWGroup() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithWindowAndSumWGroup());
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstLastWindowGroup() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithFirstLastWindowGroup());
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstLastWindowNoGroup() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithFirstLastWindowNoGroup());
+
+            [Test, RunInApplicationDomain]
+            public void WithBatchWindowGrouped() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithBatchWindowGrouped());
+
+            [Test, RunInApplicationDomain]
+            public void WithBatchWindow() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithBatchWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoin1Access() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOuterJoin1Access());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoin2Access() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithJoin2Access());
+
+            [Test, RunInApplicationDomain]
+            public void WithTypeAndColNameAndEquivalency() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithTypeAndColNameAndEquivalency());
+
+            [Test, RunInApplicationDomain]
+            public void WithMethodAndAccessTogether() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithMethodAndAccessTogether());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubquery() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithPrevNthIndexedFirstLast() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithPrevNthIndexedFirstLast());
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstLastIndexed() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithFirstLastIndexed());
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowedGrouped() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithWindowedGrouped());
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowedUnGrouped() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithWindowedUnGrouped());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnboundedStream() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithUnboundedStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnboundedSimple() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithUnboundedSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithStar() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithStar());
         }
     }
 } // end of namespace

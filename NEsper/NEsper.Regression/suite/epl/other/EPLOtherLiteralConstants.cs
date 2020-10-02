@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "mybyte","myunicode","zero8","zero9","zeroZero8" },
+                new[] {"mybyte", "myunicode", "zero8", "zero9", "zeroZero8"},
                 new object[] {(byte) 35, "A", 8, 9, 8});
 
             env.UndeployAll();

@@ -22,21 +22,126 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewUnionFirstUniqueAndFirstLength());
-            execs.Add(new ViewUnionBatchWindow());
-            execs.Add(new ViewUnionAndDerivedValue());
-            execs.Add(new ViewUnionGroupBy());
-            execs.Add(new ViewUnionThreeUnique());
-            execs.Add(new ViewUnionPattern());
-            execs.Add(new ViewUnionTwoUnique());
-            execs.Add(new ViewUnionSorted());
-            execs.Add(new ViewUnionTimeWin());
-            execs.Add(new ViewUnionTimeWinSODA());
-            execs.Add(new ViewUnionInvalid());
-            execs.Add(new ViewUnionSubselect());
-            execs.Add(new ViewUnionFirstUniqueAndLengthOnDelete());
-            execs.Add(new ViewUnionTimeWinNamedWindow());
+            WithFirstUniqueAndFirstLength(execs);
+            WithBatchWindow(execs);
+            WithAndDerivedValue(execs);
+            WithGroupBy(execs);
+            WithThreeUnique(execs);
+            WithPattern(execs);
+            WithTwoUnique(execs);
+            WithSorted(execs);
+            WithTimeWin(execs);
+            WithTimeWinSODA(execs);
+            WithInvalid(execs);
+            WithSubselect(execs);
+            WithFirstUniqueAndLengthOnDelete(execs);
+            WithTimeWinNamedWindow(execs);
+            WithTimeWinNamedWindowDelete(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinNamedWindowDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewUnionTimeWinNamedWindowDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionTimeWinNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstUniqueAndLengthOnDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionFirstUniqueAndLengthOnDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionSubselect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionTimeWinSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionTimeWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSorted(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionSorted());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionTwoUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithThreeUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionThreeUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionGroupBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAndDerivedValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionAndDerivedValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionBatchWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstUniqueAndFirstLength(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUnionFirstUniqueAndFirstLength());
             return execs;
         }
 
@@ -354,11 +459,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {"E2", 2}});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastOldData[0],
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastOldData[1],
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
                 env.Listener("s0").Reset();
 

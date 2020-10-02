@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.@internal.util
     public class TypeWidenerFactory
     {
         private static readonly TypeWidenerSPI STRING_TO_CHAR_COERCER = new ProxyTypeWidenerSPI {
+            ProcWidenResultType = () => typeof(char),
             ProcWiden = input => SimpleTypeCasterFactory.CharTypeCaster.Cast(input),
             ProcWidenCodegen = (
                     expression,
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="allowObjectArrayToCollectionConversion">whether we widen object-array to collection</param>
         /// <param name="customizer">customization if any</param>
         /// <param name="statementName">statement name</param>
-        /// <returns>type widender</returns>
+        /// <returns>type widener</returns>
         /// <throws>TypeWidenerException if type validation fails</throws>
         public static TypeWidenerSPI GetCheckPropertyAssignType(
             string columnName,
@@ -229,17 +230,24 @@ namespace com.espertech.esper.common.@internal.util
             Type generator,
             CodegenClassScope codegenClassScope)
         {
-            var collectionType = typeof(ICollection<>).MakeGenericType(arrayType.GetElementType());
-            var method = codegenMethodScope.MakeChild(collectionType, generator, codegenClassScope)
+            var elementType = arrayType.GetElementType();
+            var collectionType = typeof(ICollection<>).MakeGenericType(elementType);
+            var method = codegenMethodScope
+                .MakeChild(collectionType, generator, codegenClassScope)
                 .AddParam(typeof(object), "input")
                 .Block
                 .IfRefNullReturnNull("input")
-                .MethodReturn(StaticMethod(typeof(Arrays), "AsList", new Type[0], Cast(arrayType, Ref("input"))));
+                .MethodReturn(Unwrap(elementType, Ref("input")));
+            
             return LocalMethodBuild(method).Pass(expression).Call();
         }
 
         internal class TypeWidenerByteArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<byte>);
+            }
+
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((byte[]) input);
@@ -261,6 +269,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerShortArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<short>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((short[]) input);
@@ -282,6 +294,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerIntArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<int>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((int[]) input);
@@ -303,6 +319,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerLongArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<long>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((long[]) input);
@@ -324,6 +344,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerFloatArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<float>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((float[]) input);
@@ -345,6 +369,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerDoubleArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<double>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((double[]) input);
@@ -366,6 +394,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerBooleanArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<bool>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((bool[]) input);
@@ -387,6 +419,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerCharArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<char>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((char[]) input);

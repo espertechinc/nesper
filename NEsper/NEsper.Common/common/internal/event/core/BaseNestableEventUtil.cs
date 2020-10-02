@@ -50,7 +50,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 throw new ArgumentException("Invalid application type " + metadata.ApplicationType);
             }
 
-            IDictionary<string, object> verified = ResolvePropertyTypes(propertyTypes, eventTypeCompileTimeResolver);
+            IDictionary<string, object> verified = ResolvePropertyTypes(
+                propertyTypes, eventTypeCompileTimeResolver);
             return new MapEventType(
                 metadata,
                 verified,
@@ -131,11 +132,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                     continue;
                 }
 
-                if (!(propertyType is string)) {
+                if (!(propertyType is string propertyTypeName)) {
                     throw MakeUnexpectedTypeException(propertyType.ToString(), propertyName);
                 }
 
-                var propertyTypeName = propertyType.ToString();
                 var isArray = EventTypeUtility.IsPropertyArray(propertyTypeName);
                 if (isArray) {
                     propertyTypeName = EventTypeUtility.GetPropertyRemoveArray(propertyTypeName);
@@ -914,7 +914,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (wrapper != null) {
                 var array = Array.CreateInstance(underlyingType, wrapper.Length);
                 for (var i = 0; i < wrapper.Length; i++) {
-                    array.SetValue(wrapper[i].Underlying, i);
+                    try {
+                        array.SetValue(wrapper[i].Underlying, i);
+                    }
+                    catch (InvalidCastException e) {
+                        Console.WriteLine("Exception: {0}", e);
+                        throw;
+                    }
                 }
 
                 return array;

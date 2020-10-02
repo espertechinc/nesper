@@ -26,11 +26,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             object @object)
         {
             var und = (JsonEventObjectBase) @object;
-            if (und.TryGetNativeValue(field.FieldName, out var value)) {
+            if (und.TryGetNativeValue(field.PropertyName, out var value)) {
                 return value;
             }
 
-            throw new KeyNotFoundException(field.FieldName);
+            throw new KeyNotFoundException(field.PropertyName);
         }
 
         /// <summary>

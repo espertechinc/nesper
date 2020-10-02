@@ -25,11 +25,46 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileSODACreateFromOM());
-            execs.Add(new ClientCompileSODACreateFromOMComplete());
-            execs.Add(new ClientCompileSODAEPLtoOMtoStmt());
-            execs.Add(new ClientCompileSODAPrecedenceExpressions());
+            WithCreateFromOM(execs);
+            WithCreateFromOMComplete(execs);
+            WithEPLtoOMtoStmt(execs);
+            WithPrecedenceExpressions(execs);
+            WithPrecedencePatterns(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrecedencePatterns(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAPrecedencePatterns());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrecedenceExpressions(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODAPrecedenceExpressions());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEPLtoOMtoStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODAEPLtoOMtoStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateFromOMComplete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODACreateFromOMComplete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateFromOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODACreateFromOM());
             return execs;
         }
 

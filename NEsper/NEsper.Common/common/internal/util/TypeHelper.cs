@@ -880,6 +880,11 @@ namespace com.espertech.esper.common.@internal.util
                 return GetArithmaticCoercionType(typeOne, typeTwo);
             }
 
+            if (IsArray(typeOne) && IsArray(typeTwo))
+            {
+                return typeof(Array);
+            }
+            
             if (!IsBuiltinDataType(typeOne) && !IsBuiltinDataType(typeTwo) && typeOne != typeTwo)
             {
                 return typeof(object);

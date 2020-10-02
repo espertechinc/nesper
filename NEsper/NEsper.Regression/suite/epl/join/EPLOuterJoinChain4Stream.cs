@@ -23,10 +23,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinLeftOuterJoinRootS0());
-            execs.Add(new EPLJoinLeftOuterJoinRootS1());
-            execs.Add(new EPLJoinLeftOuterJoinRootS2());
+            With0(execs);
+            With1(execs);
+            With2(execs);
+            With3(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftOuterJoinRootS3());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftOuterJoinRootS2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftOuterJoinRootS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftOuterJoinRootS0());
             return execs;
         }
 
@@ -480,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             var newEvents = env.Listener("s0").LastNewData;
             env.Listener("s0").Reset();
-            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] { "S0", "S1", "S2", "S3" });
+            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] {"S0", "S1", "S2", "S3"});
         }
 
         internal class EPLJoinLeftOuterJoinRootS0 : RegressionExecution

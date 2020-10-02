@@ -33,12 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 
         public override ISet<EventBean> Lookup(object key)
         {
-            var @event = _propertyIndex.Get(key);
-            if (@event != null) {
-                return Collections.SingletonSet(@event);
-            }
-
-            return null;
+            return _propertyIndex.TryGetValue(key, out var @event)
+                ? Collections.SingletonSet(@event)
+                : null;
         }
 
         public override int NumKeys => _propertyIndex.Count;
@@ -77,8 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object key = GetKey(theEvent);
-
+            var key = GetKey(theEvent);
+            
             var existing = _propertyIndex.Push(key, theEvent);
             if (existing != null && !existing.Equals(theEvent)) {
                 throw HandleUniqueIndexViolation(base.Factory.Organization.IndexName, key);
@@ -89,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object key = GetKey(theEvent);
+            var key = GetKey(theEvent);
             _propertyIndex.Remove(key);
         }
 

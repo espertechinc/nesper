@@ -5,10 +5,13 @@
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
@@ -37,7 +40,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             return execs;
         }
 
-        private static object MakeSupportEvent(string theString, int intPrimitive, long longBoxed)
+        private static object MakeSupportEvent(
+            string theString,
+            int intPrimitive,
+            long longBoxed)
         {
             var bean = new SupportBean();
             bean.TheString = theString;
@@ -50,20 +56,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@Name('s0') select A.LongBoxed as value from " + "SupportBean(TheString='A')#length(1000000) as A," + "SupportBean(TheString='B')#length(1000000) as B" + " where A.LongBoxed=B.IntPrimitive";
+                var stmt = "@Name('s0') select A.LongBoxed as value from " +
+                           "SupportBean(TheString='A')#length(1000000) as A," +
+                           "SupportBean(TheString='B')#length(1000000) as B" +
+                           " where A.LongBoxed=B.IntPrimitive";
                 env.CompileDeployAddListenerMileZero(stmt, "s0");
                 // preload
-                for (var i = 0; i < 10000; i++)
-                {
+                for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(MakeSupportEvent("A", 0, i));
                 }
 
                 var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 5000; i++)
-                {
+                for (var i = 0; i < 5000; i++) {
                     var index = 5000 + i % 1000;
                     env.SendEventBean(MakeSupportEvent("B", index, 0));
-                    Assert.AreEqual((long)index, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+                    Assert.AreEqual((long) index, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
                 }
 
                 var endTime = PerformanceObserver.MilliTime;
@@ -77,17 +84,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@Name('s0') select A.IntPrimitive as value from " + "SupportBean(TheString='A')#length(1000000) as A," + "SupportBean(TheString='B')#length(1000000) as B" + " where A.IntPrimitive=B.LongBoxed";
+                var stmt = "@Name('s0') select A.IntPrimitive as value from " +
+                           "SupportBean(TheString='A')#length(1000000) as A," +
+                           "SupportBean(TheString='B')#length(1000000) as B" +
+                           " where A.IntPrimitive=B.LongBoxed";
                 env.CompileDeployAddListenerMileZero(stmt, "s0");
                 // preload
-                for (var i = 0; i < 10000; i++)
-                {
+                for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(MakeSupportEvent("A", i, 0));
                 }
 
                 var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 5000; i++)
-                {
+                for (var i = 0; i < 5000; i++) {
                     var index = 5000 + i % 1000;
                     env.SendEventBean(MakeSupportEvent("B", 0, index));
                     Assert.AreEqual(index, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));

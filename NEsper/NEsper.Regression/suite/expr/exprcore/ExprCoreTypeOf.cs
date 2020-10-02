@@ -114,7 +114,7 @@ public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecu
 
 			public void Run(RegressionEnvironment env)
 			{
-				foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+				foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
 					TryAssertionVariantStream(env, rep);
 				}
 			}
@@ -141,7 +141,7 @@ public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecu
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+				foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
 					TryAssertionFragment(env, rep);
 				}
 			}

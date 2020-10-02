@@ -174,10 +174,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
                 return default(T);
             }
 
-            set
-            {
-                SetValue(value, Thread.CurrentThread.ManagedThreadId);
-            }
+            set => SetValue(value, Thread.CurrentThread.ManagedThreadId);
         }
 
         /// <summary>

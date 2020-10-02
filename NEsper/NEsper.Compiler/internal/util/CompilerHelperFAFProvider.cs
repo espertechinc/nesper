@@ -181,7 +181,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     new EmptyList<EPCompileExceptionItem>());
             }
 
-            return new EPCompiled(assembly, manifest);
+            return new EPCompiled(new [] { assembly }, manifest);
         }
 
         private static EPCompiledManifest CompileToAssembly(

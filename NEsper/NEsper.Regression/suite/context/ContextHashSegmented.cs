@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionScoringUseCase(env, rep, milestone);
                 }
             }

@@ -223,7 +223,7 @@ namespace com.espertech.esper.compat.collections
         public TV1 this[TK1 key]
         {
             get => ExtCast(SubDictionary[IntCast(key)]);
-            set { SubDictionary[IntCast(key)] = IntCast(value); }
+            set => SubDictionary[IntCast(key)] = IntCast(value);
         }
 
         /// <summary>
@@ -257,7 +257,15 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="System.NotImplementedException"></exception>
         public void CopyTo(KeyValuePair<TK1, TV1>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            using (var enumerator = SubDictionary.GetEnumerator()) {
+                var arrayLength = array.Length;
+                while (arrayIndex < arrayLength && enumerator.MoveNext()) {
+                    var current = enumerator.Current;
+                    array[arrayIndex++] = new KeyValuePair<TK1, TV1>(
+                        KeyOut(current.Key),
+                        ValueOut(current.Value));
+                }
+            }
         }
 
         /// <summary>

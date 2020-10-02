@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
+using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -10,27 +13,32 @@ namespace com.espertech.esper.common.@internal.context.util
         private readonly ClassLoader _parent;
 
         /// <summary>
-        /// Priority types
+        /// Priority assemblies
         /// </summary>
-        private readonly IDictionary<string, Type> _priorityTypes;
+        private readonly ICollection<Assembly> _priorityAssemblies;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="priorityTypes"></param>
-        public PriorityClassLoader(ClassLoader parent, IDictionary<string, Type> priorityTypes)
+        /// <param name="priorityAssemblies"></param>
+        public PriorityClassLoader(ClassLoader parent, ICollection<Assembly> priorityAssemblies)
         {
             _parent = parent;
-            _priorityTypes = priorityTypes;
+            _priorityAssemblies = priorityAssemblies;
         }
 
         /// <inheritdoc />
         public Type GetClass(string typeName)
         {
-            return _priorityTypes.TryGetValue(typeName, out var typeValue)
-                ? typeValue 
-                : _parent.GetClass(typeName);
+            foreach (var priorityAssembly in _priorityAssemblies) {
+                var priorityType = priorityAssembly.GetType(typeName, false, false);
+                if (priorityType != null) {
+                    return priorityType;
+                }
+            }
+
+            return _parent.GetClass(typeName);
         }
     }
 }

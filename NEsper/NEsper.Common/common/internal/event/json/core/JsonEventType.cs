@@ -34,6 +34,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		
 		// Type of the underlying json representation - usually an native object (class)
 		private Type _underlyingType;
+		// Indicates that the underlying type is transient and must be replaced.
+		private bool _underlyingTypeIsTransient;
 		// Type of the deserializer
 		private Type _deserializerType;
 		// Type of the serializer
@@ -68,7 +70,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventTypeNestableGetterFactory getterFactory,
 			BeanEventTypeFactory beanEventTypeFactory,
 			JsonEventTypeDetail detail,
-			Type underlyingStandInClass)
+			Type underlyingStandInClass,
+			bool underlyingTypeIsTransient)
 			: base(
 				metadata,
 				propertyTypes,
@@ -82,6 +85,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		{
 			_detail = detail;
 			_underlyingType = underlyingStandInClass;
+			_underlyingTypeIsTransient = underlyingTypeIsTransient;
 		}
 
 		/// <summary>
@@ -191,12 +195,13 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			return new JsonEventBeanWriterPerProp(writers);
 		}
 
+		public bool UnderlyingTypeIsTransient => _underlyingTypeIsTransient;
+
 		public override Type UnderlyingType {
 			get {
 				if (_underlyingType == null) {
 					throw new EPException("Underlying type has not been set");
 				}
-
 				return _underlyingType;
 			}
 		}

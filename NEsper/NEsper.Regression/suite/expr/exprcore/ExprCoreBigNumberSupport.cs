@@ -367,18 +367,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertProps(
 					theEvent,
 					fields,
-					new BigInteger(5),
-					7m,
-					2.5m,
-					3.5m,
-					2.5d,
-					3.5d,
-					2.1213203435596424,
-					2.1213203435596424,
-					1.5,
-					1.5,
-					BigInteger.One,
-					2m);
+					new BigInteger(5), // sum(Bigint)
+					7m, // sum(DecimalOne)
+					new BigInteger(2), // avg(Bigint)
+					3.5m, // avg(DecimalOne)
+					2.5d, // median(Bigint)
+					3.5d, // median(DecimalOne)
+					2.1213203435596424, // stddev(Bigint)
+					2.1213203435596424, // stddev(DecimalOne)
+					1.5, // avedev(Bigint)
+					1.5, // avedev(DecimalOne)
+					BigInteger.One, // min(Bigint)
+					2m // min(DecimalOne)
+					); 
 
 				env.UndeployAll();
 			}

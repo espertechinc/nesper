@@ -37,29 +37,169 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileSubstParamNamedParameter(false));
-            execs.Add(new ClientCompileSubstParamNamedParameter(true));
-            execs.Add(new ClientCompileSubstParamMethodInvocation());
-            execs.Add(new ClientCompileSubstParamUnnamedParameterWType(false));
-            execs.Add(new ClientCompileSubstParamUnnamedParameterWType(true));
-            execs.Add(new ClientCompileSubstParamPattern());
-            execs.Add(new ClientCompileSubstParamSimpleOneParameterWCast());
-            execs.Add(new ClientCompileSubstParamWInheritance());
-            execs.Add(new ClientCompileSubstParamSimpleTwoParameterFilter());
-            execs.Add(new ClientCompileSubstParamSimpleTwoParameterWhere());
-            execs.Add(new ClientCompileSubstParamSimpleNoParameter());
-            execs.Add(new ClientCompileSubstParamPrimitiveVsBoxed());
-            execs.Add(new ClientCompileSubstParamSubselect());
-            execs.Add(new ClientCompileSubstParamInvalidUse());
-            execs.Add(new ClientCompileSubstParamInvalidNoCallback());
-            execs.Add(new ClientCompileSubstParamInvalidInsufficientValues());
-            execs.Add(new ClientCompileSubstParamInvalidParametersUntyped());
-            execs.Add(new ClientCompileSubstParamInvalidParametersTyped());
-            execs.Add(new ClientCompileSubstParamResolverContext());
-            execs.Add(new ClientCompileSubstParamMultiStmt());
+            WithSubstParamNamedParameter(execs);
+            WithSubstParamMethodInvocation(execs);
+            WithSubstParamUnnamedParameterWType(execs);
+            WithSubstParamPattern(execs);
+            WithSubstParamSimpleOneParameterWCast(execs);
+            WithSubstParamWInheritance(execs);
+            WithSubstParamSimpleTwoParameterFilter(execs);
+            WithSubstParamSimpleTwoParameterWhere(execs);
+            WithSubstParamSimpleNoParameter(execs);
+            WithSubstParamPrimitiveVsBoxed(execs);
+            WithSubstParamSubselect(execs);
+            WithSubstParamInvalidUse(execs);
+            WithSubstParamInvalidNoCallback(execs);
+            WithSubstParamInvalidInsufficientValues(execs);
+            WithSubstParamInvalidParametersUntyped(execs);
+            WithSubstParamInvalidParametersTyped(execs);
+            WithSubstParamResolverContext(execs);
+            WithSubstParamMultiStmt(execs);
+            WithSubstParamArray(execs);
+            WithODAInvalidConstantUseSubsParamsInstead(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithODAInvalidConstantUseSubsParamsInstead(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODAInvalidConstantUseSubsParamsInstead());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamArray(false));
             execs.Add(new ClientCompileSubstParamArray(true));
-            execs.Add(new ClientCompileSODAInvalidConstantUseSubsParamsInstead());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamMultiStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamMultiStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamResolverContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamResolverContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamInvalidParametersTyped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamInvalidParametersTyped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamInvalidParametersUntyped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamInvalidParametersUntyped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamInvalidInsufficientValues(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamInvalidInsufficientValues());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamInvalidNoCallback(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamInvalidNoCallback());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamInvalidUse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamInvalidUse());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamSubselect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamSubselect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamPrimitiveVsBoxed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamPrimitiveVsBoxed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamSimpleNoParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamSimpleNoParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamSimpleTwoParameterWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamSimpleTwoParameterFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamWInheritance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamWInheritance());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamSimpleOneParameterWCast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamSimpleOneParameterWCast());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamUnnamedParameterWType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamUnnamedParameterWType(false));
+            execs.Add(new ClientCompileSubstParamUnnamedParameterWType(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamMethodInvocation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamMethodInvocation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstParamNamedParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamNamedParameter(false));
+            execs.Add(new ClientCompileSubstParamNamedParameter(true));
             return execs;
         }
 
@@ -212,7 +352,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 catch (EPCompileException ex) {
                     AssertMessage(
                         ex,
-                        "Exception processing statement: Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
+                        "Error during compilation: " +
+                        "Exception processing statement: " +
+                        "Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
                 }
             }
         }

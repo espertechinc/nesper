@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 propertyNode.GetterBlock,
                 propertyNode.SetterBlock,
                 true,
-                propertyNode.IsOverride);
+                propertyNode.Modifiers);
 
             propertyNode.AssignedProperty = property;
             properties.PublicProperties.Add(property);
@@ -51,8 +51,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     child,
                     currentSymbols,
                     methods,
-                    properties,
-                    propertyNode.IsStatic);
+                    properties);
             }
         }
 
@@ -80,8 +79,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     footprint,
                     methodNode.Block,
                     true,
-                    methodNode.IsOverride,
-                    methodNode.IsStatic,
+                    methodNode.Modifiers,
                     methodNode);
 
                 methodNode.AssignedMethod = method;
@@ -93,8 +91,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     child,
                     currentSymbols,
                     methods,
-                    properties,
-                    methodNode.IsStatic);
+                    properties);
             }
         }
 
@@ -102,8 +99,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             CodegenMethod methodNode,
             IDictionary<string, Type> currentSymbols,
             CodegenClassMethods classMethods,
-            CodegenClassProperties classProperties,
-            bool isStatic)
+            CodegenClassProperties classProperties)
         {
             ISet<string> namesPassed = GetNamesPassed(methodNode);
             methodNode.DeepParameters = namesPassed;
@@ -147,8 +143,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 footprint,
                 methodNode.Block,
                 false,
-                methodNode.IsOverride,
-                isStatic,
+                methodNode.Modifiers,
                 methodNode);
 
             methodNode.AssignedMethod = method;
@@ -159,8 +154,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     child,
                     currentSymbols,
                     classMethods,
-                    classProperties,
-                    isStatic);
+                    classProperties);
             }
         }
 
@@ -168,8 +162,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             CodegenProperty propertyNode,
             IDictionary<string, Type> currentSymbols,
             CodegenClassMethods classMethods,
-            CodegenClassProperties classProperties,
-            bool isStatic)
+            CodegenClassProperties classProperties)
         {
             // add pass-thru for those methods that do not have their own scope
             if (propertyNode.OptionalSymbolProvider != null) {
@@ -186,7 +179,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 propertyNode.GetterBlock,
                 propertyNode.SetterBlock,
                 false,
-                false);
+                default);
 
             propertyNode.AssignedProperty = propertyWGraph;
             classProperties.PrivateProperties.Add(propertyWGraph);
@@ -196,8 +189,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     child,
                     currentSymbols,
                     classMethods,
-                    classProperties,
-                    isStatic);
+                    classProperties);
             }
         }
 

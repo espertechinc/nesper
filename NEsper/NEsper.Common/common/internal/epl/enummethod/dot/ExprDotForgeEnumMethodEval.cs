@@ -96,6 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             if (innerType == typeof(EventBean)) {
                 block.DeclareVar<FlexCollection>("coll", FlexEvent(Ref("param")));
             }
+            else if (innerType == typeof(object[])) {
+                block.DeclareVar<FlexCollection>("coll", FlexWrap(Ref("param")));
+            }
             else if (innerType.IsGenericCollection()) {
                 block.DeclareVar(innerType, "coll", Ref("param"));
             }

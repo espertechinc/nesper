@@ -27,16 +27,86 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new PatternTimerAtSimple());
-            execs.Add(new PatternOp());
-            execs.Add(new PatternCronParameter());
-            execs.Add(new PatternAtWeekdays());
-            execs.Add(new PatternAtWeekdaysPrepared());
-            execs.Add(new PatternAtWeekdaysVariable());
-            execs.Add(new PatternExpression());
-            execs.Add(new PatternPropertyAndSODAAndTimezone());
-            execs.Add(new PatternEvery15thMonth());
+            WithTimerAtSimple(execs);
+            WithOp(execs);
+            WithCronParameter(execs);
+            WithAtWeekdays(execs);
+            WithAtWeekdaysPrepared(execs);
+            WithAtWeekdaysVariable(execs);
+            WithExpression(execs);
+            WithPropertyAndSODAAndTimezone(execs);
+            WithEvery15thMonth(execs);
+            WithWMilliseconds(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWMilliseconds(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternWMilliseconds());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEvery15thMonth(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEvery15thMonth());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyAndSODAAndTimezone(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternPropertyAndSODAAndTimezone());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAtWeekdaysVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAtWeekdaysVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAtWeekdaysPrepared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAtWeekdaysPrepared());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAtWeekdays(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAtWeekdays());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCronParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternCronParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerAtSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerAtSimple());
             return execs;
         }
 

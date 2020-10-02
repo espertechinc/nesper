@@ -33,8 +33,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaPropertyDynamicDOMGetterPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaPropertyDynamicDOMGetterCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaPropertyDynamicDOMGetterPreconfig());
             return execs;
         }
 
@@ -64,7 +78,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-
             var stmtText = "@Name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 

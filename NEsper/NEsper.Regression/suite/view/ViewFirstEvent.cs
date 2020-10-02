@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewFirstEventSceneOne());
+            WithSceneOne(execs);
+            WithMarketData(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMarketData(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewFirstEventMarketData());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewFirstEventSceneOne());
             return execs;
         }
 
@@ -45,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstevent()";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

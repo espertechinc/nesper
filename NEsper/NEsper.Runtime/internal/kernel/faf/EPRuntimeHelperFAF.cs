@@ -29,13 +29,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             EPCompiled compiled,
             EPServicesContext services)
         {
-            var classLoader = services.ImportServiceRuntime.ClassLoader;
-            
-            //var classLoader = ClassProvidedImportClassLoaderFactory.GetClassLoader(
-            //    compiled.Classes,
-            //    services.ClassLoaderParent,
-            //    services.ClassProvidedPathRegistry);
-            
+            var classLoader = ClassProvidedImportClassLoaderFactory.GetClassLoader(
+                compiled.Assemblies,
+                services.ClassLoaderParent,
+                services.ClassProvidedPathRegistry);
+
+            if (compiled.Manifest.QueryProviderClassName == null) {
+                if (compiled.Manifest.ModuleProviderClassName != null) {
+                    throw new EPException(
+                        "Cannot execute a fire-and-forget query that was compiled as module EPL, make sure to use the 'compileQuery' method of the compiler");
+                }
+
+                throw new EPException(
+                    "Failed to find query provider class name in manifest (is this a compiled fire-and-forget query?)");
+            }
+
             var className = compiled.Manifest.QueryProviderClassName;
 
             // load module resource class

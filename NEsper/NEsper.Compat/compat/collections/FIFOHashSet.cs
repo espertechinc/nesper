@@ -70,10 +70,7 @@ namespace com.espertech.esper.collection
         /// </summary>
         private int _collisions;
 
-        public double Load
-        {
-            get { return (_collisions * 100.0) / _hashIndex.Length; }
-        }
+        public double Load => (_collisions * 100.0) / _hashIndex.Length;
 
         private static readonly int[] PrimeTable =
         {
@@ -652,10 +649,7 @@ namespace com.espertech.esper.collection
         /// <returns>
         /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </returns>
-        public int Count
-        {
-            get { return _nodeCount; }
-        }
+        public int Count => _nodeCount;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
@@ -663,10 +657,7 @@ namespace com.espertech.esper.collection
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Each node contains the content for the node and references to

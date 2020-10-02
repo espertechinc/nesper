@@ -93,7 +93,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             if (_namespaceScope.FieldsClassName != null) {
-                assignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Assign", Ref("assignments"));
+                assignMethod.Block
+                    .Debug("Assign", Ref("assignments"))
+                    .ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Assign", Ref("assignments"));
                 //assignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
             }
 

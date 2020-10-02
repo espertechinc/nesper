@@ -34,9 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             AgentInstanceContext agentInstanceContext)
             : base(table, agentInstanceContext)
         {
-            var eventTable =
-                (PropertyHashedEventTableUnique) table.PrimaryIndexFactory.MakeEventTables(agentInstanceContext, null)
-                    [0];
+            var eventTable = (PropertyHashedEventTableUnique) table.PrimaryIndexFactory.MakeEventTables(agentInstanceContext, null)[0];
             rows = eventTable.PropertyIndex.TransformLeft<object, EventBean, ObjectArrayBackedEventBean>();
             indexRepository.AddIndex(
                 table.MetaData.KeyIndexMultiKey,

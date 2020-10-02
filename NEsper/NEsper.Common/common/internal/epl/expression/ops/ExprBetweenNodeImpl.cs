@@ -658,9 +658,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     return false;
                 }
 
-                BigInteger valueD = _numberCoercerValue.CoerceBoxedBigInt(value);
-                BigInteger lowerD = _numberCoercerLower.CoerceBoxedBigInt(lower);
-                BigInteger upperD = _numberCoercerUpper.CoerceBoxedBigInt(upper);
+                var valueD = _numberCoercerValue.CoerceBoxedBigInt(value);
+                var lowerD = _numberCoercerLower.CoerceBoxedBigInt(lower);
+                var upperD = _numberCoercerUpper.CoerceBoxedBigInt(upper);
 
                 if (lowerD.CompareTo(upperD) > 0) {
                     var temp = upperD;

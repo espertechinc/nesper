@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
@@ -102,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             catch (EPCompileException ex) {
                 var first = ex.Items[0];
                 Assert.AreEqual(isSyntax, first is EPCompileExceptionSyntaxItem);
-                Assert.AreEqual(message, ex.Message);
+                Assert.That(ex.Message, Does.StartWith(message));
             }
         }
 
@@ -259,36 +260,42 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env,
                     "@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationNestableNestableAttribute' requires a value for attribute 'Value' [@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationNestedAttribute' requires a MyAnnotationNestableSimpleAttribute-typed value for attribute 'NestableSimple' but received a Int32-typed value [@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean]");
-                
+
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValuePair(StringVal='abc') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationValuePairAttribute' requires a value for attribute 'BooleanVal' [@MyAnnotationValuePair(StringVal='abc') select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "MyAnnotationValueArray(Value=5) select * from Bean",
                     true,
+                    "Error during compilation: " +
                     "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(Value=5) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueArray(Value=null) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a value for attribute 'DoubleArray' [@MyAnnotationValueArray(Value=null) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a non-null value for array elements for attribute 'StringArray' [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean]");
 
 #if WORKS_IN_DOTNET // In dotnet, we find a caster for int to string, in java they do not
@@ -303,28 +310,33 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env,
                     "@MyAnnotationValue(Value='a', Value='a') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueAttribute' has duplicate attribute values for attribute 'Value' [@MyAnnotationValue(Value='a', Value='a') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@ABC select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load annotation class by name 'ABC', please check imports [@ABC select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationSimple(5) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationSimpleAttribute' does not have an attribute 'Value' [@MyAnnotationSimple(5) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationSimple(null) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationSimpleAttribute' does not have an attribute 'Value' [@MyAnnotationSimple(null) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValue select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueAttribute' requires a value for attribute 'Value' [@MyAnnotationValue select * from Bean]");
 
 #if WORKS_IN_DOTNET // In dotnet, we find a caster for int to string, in java they do not
@@ -339,52 +351,62 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env,
                     "@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a Int64[]-typed value for attribute 'Value' but received a String-typed value [@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueEnum(a.b.CC) select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Annotation enumeration value 'a.b.CC' not recognized as an enumeration class, please check imports or type used [@MyAnnotationValueEnum(a.b.CC) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@Hint('XXX') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint annotation value 'XXX' is not one of the known values [@Hint('XXX') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('ITERATE_ONLY,XYZ') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint annotation value 'XYZ' is not one of the known values [@Hint('ITERATE_ONLY,XYZ') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('testit=5') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint annotation value 'testit' is not one of the known values [@Hint('testit=5') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('RECLAIM_GROUP_AGED') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint 'RECLAIM_GROUP_AGED' requires a parameter value [@Hint('RECLAIM_GROUP_AGED') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('ITERATE_ONLY,RECLAIM_GROUP_AGED') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint 'RECLAIM_GROUP_AGED' requires a parameter value [@Hint('ITERATE_ONLY,RECLAIM_GROUP_AGED') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('ITERATE_ONLY=5,RECLAIM_GROUP_AGED=5') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint 'ITERATE_ONLY' does not accept a parameter value [@Hint('ITERATE_ONLY=5,RECLAIM_GROUP_AGED=5') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('index(name)xxx') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint 'INDEX' has additional text after parentheses [@Hint('index(name)xxx') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@Hint('index') select * from Bean",
                     false,
+                    "Error during compilation: " +
                     "Failed to process statement annotations: Hint 'INDEX' requires additional parameters in parentheses [@Hint('index') select * from Bean]");
             }
         }

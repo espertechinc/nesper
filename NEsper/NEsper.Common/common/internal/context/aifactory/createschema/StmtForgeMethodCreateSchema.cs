@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -82,6 +83,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, spec.SchemaName);
+
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgeableStmtProvider(

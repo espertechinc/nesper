@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -99,5 +100,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             return typeName;
         }
+
+        public static string CodeInclusionTypeName(this Type type)
+        {
+            return CodeInclusionTypeName(type.FullName);
+        }
+        
+        public static string CodeInclusionTypeName<T>()
+        {
+            return CodeInclusionTypeName(typeof(T));
+        }
+
     }
 } // end of namespace

@@ -51,7 +51,13 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                AssertMessage(ex, message);
+                var exceptionMessage = ex.Message;
+                if (exceptionMessage.StartsWith("Error during compilation: ")) {
+                    AssertMessage(ex, "Error during compilation: " + message);
+                }
+                else {
+                    AssertMessage(ex, message);
+                }
             }
         }
 
@@ -66,15 +72,13 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-#if false
-                for (Exception eq = ex; eq != null ; eq = eq.InnerException)
-                {
-                    Console.WriteLine("{0}[>>]: {1}", eq.GetType().Name, eq.Message);
-                    Console.WriteLine(eq.StackTrace);
+                var exceptionMessage = ex.Message;
+                if (exceptionMessage.StartsWith("Error during compilation: ")) {
+                    AssertMessage(ex, "Error during compilation: " + message);
                 }
-#endif
-
-                AssertMessage(ex, message);
+                else {
+                    AssertMessage(ex, message);
+                }
             }
         }
 
@@ -99,18 +103,17 @@ namespace com.espertech.esper.regressionlib.framework
                 return; // skip message validation
             }
 
+            var exceptionMessage = ex.Message;
             try {
-                StringAssert.StartsWith(message, ex.Message);
+                StringAssert.StartsWith(message, exceptionMessage);
             }
             catch {
-                Console.WriteLine("Underlying Exception: " + ex.GetType().FullName + " => " + ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                ex = ex.InnerException;
-
-                while (ex != null) {
-                    Console.WriteLine("--" + ex.GetType().FullName + " => " + ex.Message);
+                for (;ex != null; ex = ex.InnerException) {
+                    Console.WriteLine();
+                    Console.WriteLine("Exception: " + ex.GetType().FullName);
+                    Console.WriteLine("Message: " + exceptionMessage);
+                    Console.WriteLine("StackTrace:");
                     Console.WriteLine(ex.StackTrace);
-                    ex = ex.InnerException;
                 }
 
                 throw;

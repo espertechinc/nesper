@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             bool audit,
             string statementName)
             : base(parent, innerForge, isCache, audit, statementName)
-
         {
         }
 

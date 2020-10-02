@@ -33,17 +33,94 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherSplitStream2SplitNoDefaultOutputFirst());
-            execs.Add(new EPLOtherSplitStreamInvalid());
-            execs.Add(new EPLOtherSplitStreamFromClause());
-            execs.Add(new EPLOtherSplitStreamSplitPremptiveNamedWindow());
-            execs.Add(new EPLOtherSplitStream1SplitDefault());
-            execs.Add(new EPLOtherSplitStreamSubquery());
-            execs.Add(new EPLOtherSplitStream2SplitNoDefaultOutputAll());
-            execs.Add(new EPLOtherSplitStream3SplitOutputAll());
-            execs.Add(new EPLOtherSplitStream3SplitDefaultOutputFirst());
-            execs.Add(new EPLOtherSplitStream4Split());
+            With2SplitNoDefaultOutputFirst(execs);
+            WithInvalid(execs);
+            WithFromClause(execs);
+            WithSplitPremptiveNamedWindow(execs);
+            With1SplitDefault(execs);
+            WithSubquery(execs);
+            With2SplitNoDefaultOutputAll(execs);
+            With3SplitOutputAll(execs);
+            With3SplitDefaultOutputFirst(execs);
+            With4Split(execs);
+            WithSubqueryMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStreamSubqueryMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With4Split(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStream4Split());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3SplitDefaultOutputFirst(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStream3SplitDefaultOutputFirst());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3SplitOutputAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStream3SplitOutputAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2SplitNoDefaultOutputAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStream2SplitNoDefaultOutputAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStreamSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With1SplitDefault(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStream1SplitDefault());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSplitPremptiveNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStreamSplitPremptiveNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFromClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStreamFromClause());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStreamInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2SplitNoDefaultOutputFirst(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSplitStream2SplitNoDefaultOutputFirst());
             return execs;
         }
 
@@ -130,9 +207,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             EventRepresentationChoice eventRepresentationEnum)
         {
             var path = new RegressionPath();
-            env.CompileDeployWBusPublicType(eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTrigger>() + " create schema TypeTrigger(trigger int)", path);
+            env.CompileDeployWBusPublicType(
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTrigger>() + " create schema TypeTrigger(trigger int)",
+                path);
             env.CompileDeploy(eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTypeTwo>() + " create schema TypeTwo(col2 int)", path);
-            env.CompileDeploy(eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTypeTwo>() + " create window WinTwo#keepall as TypeTwo", path);
+            env.CompileDeploy(
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTypeTwo>() + " create window WinTwo#keepall as TypeTwo",
+                path);
 
             var stmtOrigText = "on TypeTrigger " +
                                "insert into OtherStream select 1 " +
@@ -199,8 +280,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy("@Name('s2') select * from MoreEvent", path).AddListener("s2", listeners[2]);
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
-            var fieldsOrderId = new [] { "oi" };
-            var fieldsItems = new [] { "oi","ItemId" };
+            var fieldsOrderId = new[] {"oi"};
+            var fieldsItems = new[] {"oi", "ItemId"};
             EPAssertionUtil.AssertProps(
                 listeners[0].AssertOneGetNewAndReset(),
                 fieldsOrderId,
@@ -275,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var fieldsOrderId = new [] { "oe.OrderDetail.OrderId" };
+            var fieldsOrderId = new[] {"oe.OrderDetail.OrderId"};
             var epl = "on OrderBean as oe " +
                       "insert into HeaderEvent select OrderDetail.OrderId as OrderId where 1=2 " +
                       "insert into StreamOne select * from [select oe, * from OrderDetail.Items] where ProductId=\"10020\" " +
@@ -357,8 +438,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             string orderId,
             object[][] expected)
         {
-            var fieldsOrderId = new [] { "OrderId" };
-            var fieldsItems = new [] { "OrderId","ItemId" };
+            var fieldsOrderId = new[] {"OrderId"};
+            var fieldsItems = new[] {"OrderId", "ItemId"};
             EPAssertionUtil.AssertProps(
                 listeners[0].AssertOneGetNewAndReset(),
                 fieldsOrderId,
@@ -459,7 +540,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionSplitPremptiveNamedWindow(env, rep);
                 }
             }

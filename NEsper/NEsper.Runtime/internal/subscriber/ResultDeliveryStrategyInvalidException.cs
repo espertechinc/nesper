@@ -7,12 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.runtime.@internal.subscriber
 {
+    [Serializable]
     public class ResultDeliveryStrategyInvalidException : Exception
     {
         public ResultDeliveryStrategyInvalidException(string message) : base(message)
+        {
+        }
+
+        protected ResultDeliveryStrategyInvalidException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

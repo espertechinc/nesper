@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -164,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             // Test valid case of array insert
             var validEpl =
-                "@Name('s0') INSERT INTO FinalEventValId SELECT s as StartEvent, e as EndEvent FROM PATTERN [" +
+                "@Name('s0') INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
                 "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             env.CompileDeploy(validEpl, path).AddListener("s0");
 
@@ -177,21 +178,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventBean endEventOne;
             EventBean endEventTwo;
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                var outArray = (object[]) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
+                var underlying = env.Listener("s0").AssertOneGetNewAndReset().Underlying;
+                var outArray = underlying.UnwrapIntoArray<object>();
                 startEventOne = (EventBean) outArray[0];
                 endEventOne = ((EventBean[]) outArray[1])[0];
                 endEventTwo = ((EventBean[]) outArray[1])[1];
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 var outMap = (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
-                startEventOne = (EventBean) outMap.Get("StartEvent");
-                endEventOne = ((EventBean[]) outMap.Get("EndEvent"))[0];
-                endEventTwo = ((EventBean[]) outMap.Get("EndEvent"))[1];
+                startEventOne = (EventBean) outMap.Get("startEvent");
+                endEventOne = ((EventBean[]) outMap.Get("endEvent"))[0];
+                endEventTwo = ((EventBean[]) outMap.Get("endEvent"))[1];
             }
             else if (eventRepresentationEnum.IsAvroEvent() || eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var received = env.Listener("s0").AssertOneGetNewAndReset();
-                startEventOne = (EventBean) received.GetFragment("StartEvent");
-                var endEvents = (EventBean[]) received.GetFragment("EndEvent");
+                startEventOne = (EventBean) received.GetFragment("startEvent");
+                var endEvents = (EventBean[]) received.GetFragment("endEvent");
                 endEventOne = endEvents[0];
                 endEventTwo = endEvents[1];
             }
@@ -205,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             // Test invalid case of non-array destination insert
             var invalidEpl =
-                "INSERT INTO FinalEventInvalidNonArray SELECT s as StartEvent, e as EndEvent FROM PATTERN [" +
+                "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
                 "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             try {
                 env.CompileWCheckedEx(invalidEpl, path);
@@ -215,18 +217,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 string expected;
                 if (eventRepresentationEnum.IsAvroEvent()) {
                     expected =
-                        "Property 'EndEvent' is incompatible, expecting an array of compatible schema 'EventTwo' but received schema 'EventTwo'";
+                        "Property 'endEvent' is incompatible, expecting an array of compatible schema 'EventTwo' but received schema 'EventTwo'";
                 }
                 else {
                     expected =
-                        "Event type named 'FinalEventInvalidNonArray' has already been declared with differing column name or type information: Type by name 'FinalEventInvalidNonArray' in property 'EndEvent' expected event type 'EventTwo' but receives event type array 'EventTwo'";
+                        "Event type named 'FinalEventInvalidNonArray' has already been declared with differing column name or type information: Type by name 'FinalEventInvalidNonArray' in property 'endEvent' expected event type 'EventTwo' but receives event type array 'EventTwo'";
                 }
 
                 AssertMessage(ex, expected);
             }
 
             // Test invalid case of array destination insert from non-array var
-            invalidEpl = "INSERT INTO FinalEventInvalidArray SELECT s as StartEvent, e as EndEvent FROM PATTERN [" +
+            invalidEpl = "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
                          "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             try {
                 env.CompileWCheckedEx(invalidEpl, path);
@@ -236,11 +238,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 string expected;
                 if (eventRepresentationEnum.IsAvroEvent()) {
                     expected =
-                        "Property 'EndEvent' is incompatible, expecting an array of compatible schema 'EventTwo' but received schema 'EventTwo'";
+                        "Property 'endEvent' is incompatible, expecting an array of compatible schema 'EventTwo' but received schema 'EventTwo'";
                 }
                 else {
                     expected =
-                        "Event type named 'FinalEventInvalidArray' has already been declared with differing column name or type information: Type by name 'FinalEventInvalidArray' in property 'EndEvent' expected event type 'EventTwo' but receives event type array 'EventTwo'";
+                        "Event type named 'FinalEventInvalidArray' has already been declared with differing column name or type information: Type by name 'FinalEventInvalidArray' in property 'endEvent' expected event type 'EventTwo' but receives event type array 'EventTwo'";
                 }
 
                 AssertMessage(ex, expected);
@@ -888,7 +890,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
                         continue; // Json doesn't allow CharSequence by itself unless registering an adapter
                     }
@@ -951,7 +953,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                           "create schema FinalEventInvalidArray as " +
                           typeof(FinalEventInvalidArray).MaskTypeName() +
                           ";\n" +
-                          "create schema FinalEventValId as " +
+                          "create schema FinalEventValid as " +
                           typeof(FinalEventValid).MaskTypeName() +
                           ";\n";
                 env.CompileDeploy(epl, path);
@@ -959,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // Test valid case of array insert
                 var validEpl =
-                    "@Name('s0') INSERT INTO FinalEventValId SELECT s as StartEvent, e as EndEvent FROM PATTERN [" +
+                    "@Name('s0') INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
                     "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 env.CompileDeploy(validEpl, path).AddListener("s0");
 
@@ -977,31 +979,31 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // Test invalid case of non-array destination insert
                 var invalidEpl =
-                    "INSERT INTO FinalEventInvalidNonArray SELECT s as StartEvent, e as EndEvent FROM PATTERN [" +
+                    "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
                     "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 TryInvalidCompile(
                     env,
                     path,
                     invalidEpl,
-                    "Invalid assignment of column 'EndEvent' of type '" +
+                    "Invalid assignment of column 'endEvent' of type '" +
                     typeof(SupportBean).CleanName() +
-                    "[]' to event property 'EndEvent' typed as '" +
+                    "[]' to event property 'endEvent' typed as '" +
                     typeof(SupportBean).CleanName() +
-                    "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as StartEvent, e as EndEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
+                    "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 // Test invalid case of array destination insert from non-array var
                 var invalidEplTwo =
-                    "INSERT INTO FinalEventInvalidArray SELECT s as StartEvent, e as EndEvent FROM PATTERN [" +
+                    "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
                     "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 TryInvalidCompile(
                     env,
                     path,
                     invalidEplTwo,
-                    "Invalid assignment of column 'StartEvent' of type '" +
+                    "Invalid assignment of column 'startEvent' of type '" +
                     typeof(SupportBean_S0).CleanName() +
-                    "' to event property 'StartEvent' typed as '" +
+                    "' to event property 'startEvent' typed as '" +
                     typeof(SupportBean_S0).CleanName() +
-                    "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as StartEvent, e as EndEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
+                    "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 env.UndeployAll();
             }
@@ -1011,7 +1013,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionArrayMapInsert(env, rep);
                 }
             }
@@ -1019,22 +1021,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public class FinalEventInvalidNonArray
         {
-            public SupportBean EndEvent { get; set; }
+            [PropertyName("endEvent")]
+            public SupportBean endEvent { get; set; }
 
-            public SupportBean_S0 StartEvent { get; set; }
+            [PropertyName("startEvent")]
+            public SupportBean_S0 startEvent { get; set; }
         }
 
         public class FinalEventInvalidArray
         {
-            public SupportBean[] EndEvent { get; set; }
+            [PropertyName("endEvent")]
+            public SupportBean[] endEvent { get; set; }
 
-            public SupportBean_S0[] StartEvent { get; set; }
+            [PropertyName("startEvent")]
+            public SupportBean_S0[] startEvent { get; set; }
         }
 
         public class FinalEventValid
         {
+            [PropertyName("endEvent")]
             public SupportBean[] EndEvent { get; set; }
 
+            [PropertyName("startEvent")]
             public SupportBean_S0 StartEvent { get; set; }
         }
 

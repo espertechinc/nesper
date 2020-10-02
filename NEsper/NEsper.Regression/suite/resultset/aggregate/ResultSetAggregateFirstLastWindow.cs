@@ -28,33 +28,206 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
-            execs.Add(new ResultSetAggregateStar());
-            execs.Add(new ResultSetAggregateUnboundedSimple());
-            execs.Add(new ResultSetAggregateUnboundedStream());
-            execs.Add(new ResultSetAggregateWindowedUnGrouped());
-            execs.Add(new ResultSetAggregateWindowedGrouped());
-            execs.Add(new ResultSetAggregateFirstLastIndexed());
-            execs.Add(new ResultSetAggregatePrevNthIndexedFirstLast());
-            execs.Add(new ResultSetAggregateInvalid());
-            execs.Add(new ResultSetAggregateSubquery());
-            execs.Add(new ResultSetAggregateMethodAndAccessTogether());
-            execs.Add(new ResultSetAggregateTypeAndColNameAndEquivalency());
-            execs.Add(new ResultSetAggregateJoin2Access());
-            execs.Add(new ResultSetAggregateOuterJoin1Access());
-            execs.Add(new ResultSetAggregateBatchWindow());
-            execs.Add(new ResultSetAggregateBatchWindowGrouped());
-            execs.Add(new ResultSetAggregateFirstLastWindowNoGroup());
-            execs.Add(new ResultSetAggregateFirstLastWindowGroup());
-            execs.Add(new ResultSetAggregateWindowAndSumWGroup());
-            execs.Add(new ResultSetAggregateOutputRateLimiting());
-            execs.Add(new ResultSetAggregateOnDelete());
-            #endif
-            execs.Add(new ResultSetAggregateLastMaxMixedOnSelect());
-            execs.Add(new ResultSetAggregateLateInitialize());
-            execs.Add(new ResultSetAggregateMixedNamedWindow());
-            execs.Add(new ResultSetAggregateNoParamChainedAndProperty());
+            WithStar(execs);
+            WithUnboundedSimple(execs);
+            WithUnboundedStream(execs);
+            WithWindowedUnGrouped(execs);
+            WithWindowedGrouped(execs);
+            WithFirstLastIndexed(execs);
+            WithPrevNthIndexedFirstLast(execs);
+            WithInvalid(execs);
+            WithSubquery(execs);
+            WithMethodAndAccessTogether(execs);
+            WithTypeAndColNameAndEquivalency(execs);
+            WithJoin2Access(execs);
+            WithOuterJoin1Access(execs);
+            WithBatchWindow(execs);
+            WithBatchWindowGrouped(execs);
+            WithFirstLastWindowNoGroup(execs);
+            WithFirstLastWindowGroup(execs);
+            WithWindowAndSumWGroup(execs);
+            WithOutputRateLimiting(execs);
+            WithOnDelete(execs);
+            WithLastMaxMixedOnSelect(execs);
+            WithLateInitialize(execs);
+            WithMixedNamedWindow(execs);
+            WithNoParamChainedAndProperty(execs);
+            WithOnDemandQuery(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnDemandQuery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateOnDemandQuery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoParamChainedAndProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateNoParamChainedAndProperty());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMixedNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMixedNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLateInitialize(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateLateInitialize());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLastMaxMixedOnSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateLastMaxMixedOnSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateOnDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputRateLimiting(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateOutputRateLimiting());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowAndSumWGroup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateWindowAndSumWGroup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstLastWindowGroup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateFirstLastWindowGroup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstLastWindowNoGroup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateFirstLastWindowNoGroup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindowGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateBatchWindowGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateBatchWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoin1Access(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateOuterJoin1Access());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoin2Access(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateJoin2Access());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypeAndColNameAndEquivalency(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateTypeAndColNameAndEquivalency());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMethodAndAccessTogether(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMethodAndAccessTogether());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevNthIndexedFirstLast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregatePrevNthIndexedFirstLast());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstLastIndexed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateFirstLastIndexed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowedGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateWindowedGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowedUnGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateWindowedUnGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundedStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateUnboundedStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnboundedSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateUnboundedSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateStar());
             return execs;
         }
 
@@ -62,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "TheString","firststring","firstint","laststring","lastint","allint" };
+            var fields = new[] {"TheString", "firststring", "firstint", "laststring", "lastint", "allint"};
 
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
@@ -121,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "f0","f1","f2","f3","l0","l1","l2","l3" };
+            var fields = new[] {"f0", "f1", "f2", "f3", "l0", "l1", "l2", "l3"};
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -193,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "firststring","firstint","laststring","lastint","allint" };
+            var fields = new[] {"firststring", "firstint", "laststring", "lastint", "allint"};
 
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
@@ -300,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length(5) group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString","firststring","firstint","laststring","lastint","allint" };
+                var fields = new[] {"TheString", "firststring", "firstint", "laststring", "lastint", "allint"};
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -377,7 +550,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean.win:length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "firststring","firstint","laststring","lastint","allint" };
+                var fields = new[] {"firststring", "firstint", "laststring", "lastint", "allint"};
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -440,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "@Name('s0') on SupportBean(TheString like 'B%') select last(mw.IntPrimitive) as li, max(mw.IntPrimitive) as mi from MyWindowOne mw;";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "li","mi" };
+                var fields = new[] {"li", "mi"};
 
                 env.SendEventBean(new SupportBean("A1", 10));
                 env.SendEventBean(new SupportBean("B1", -1));
@@ -497,7 +670,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length(3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                var fields = new [] { "p0","p1","p2","n0","n1","n2","l1","l2","l3" };
+                var fields = new[] {"p0", "p1", "p2", "n0", "n1", "n2", "l1", "l2", "l3"};
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -568,7 +741,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 epl = "@Name('s0') select first(IntPrimitive, indexvar) as f0 from SupportBean#keepall";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                var fields = new [] { "f0" };
+                var fields = new[] {"f0"};
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E1", 11));
                 env.Listener("s0").Reset();
@@ -654,7 +827,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select Id, (select window(sb.*) from SupportBean#length(2) as sb) as w from SupportBean_A";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "Id","w" };
+                var fields = new[] {"Id", "w"};
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 EPAssertionUtil.AssertProps(
@@ -712,7 +885,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#length(2) as sa";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "si","wi" };
+                var fields = new[] {"si", "wi"};
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
@@ -782,7 +955,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "si","wi" };
+                var fields = new[] {"si", "wi"};
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 2));
@@ -866,7 +1039,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 RegressionEnvironment env,
                 bool isCheckStatic)
             {
-                var fields = new [] { "f1","f2","w1","l1" };
+                var fields = new[] {"f1", "f2", "w1", "l1"};
                 SupportStaticMethodLib.Invocations.Clear();
 
                 var beanOne = SendEvent(env, "E1", 10d, 100);
@@ -900,7 +1073,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "order by ast, bst";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "ast","bst","fas","was","las","fbs","wbs","lbs" };
+                var fields = new[] {"ast", "bst", "fas", "was", "las", "fbs", "wbs", "lbs"};
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
@@ -982,7 +1155,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "on sa.Id = sb.Id";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "aId","bId","fb","wb","lb" };
+                var fields = new[] {"aId", "bId", "fb", "wb", "lb"};
 
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertProps(
@@ -1033,7 +1206,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length_batch(2) as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "fs","ws","ls" };
+                var fields = new[] {"fs", "ws", "ls"};
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -1092,7 +1265,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length_batch(6) as sb group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString","fi","wi","li" };
+                var fields = new[] {"TheString", "fi", "wi", "li"};
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
@@ -1148,7 +1321,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
 
-                var fields = new [] { "firststring","windowstring","laststring" };
+                var fields = new[] {"firststring", "windowstring", "laststring"};
                 epl = "@Name('s0') select " +
                       "first(TheString) as firststring, " +
                       "window(TheString) as windowstring, " +
@@ -1170,7 +1343,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "firststring","windowstring","laststring" };
+                var fields = new[] {"firststring", "windowstring", "laststring"};
                 var epl = "create window MyWindowThree#keepall as select * from SupportBean;\n" +
                           "insert into MyWindowThree select * from SupportBean;\n" +
                           "on SupportBean_A delete from MyWindowThree where TheString = Id;\n" +
@@ -1275,13 +1448,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var q = env.Runtime.FireAndForgetService.PrepareQuery(qc);
                 EPAssertionUtil.AssertPropsPerRow(
                     q.Execute().Array,
-                    new [] { "f","w","l" },
+                    new[] {"f", "w", "l"},
                     new[] {new object[] {10, IntArray(10, 20, 30, 31, 11, 12), 12}});
 
                 env.SendEventBean(new SupportBean("E1", 13));
                 EPAssertionUtil.AssertPropsPerRow(
                     q.Execute().Array,
-                    new [] { "f","w","l" },
+                    new[] {"f", "w", "l"},
                     new[] {new object[] {10, IntArray(10, 20, 30, 31, 11, 12, 13), 13}});
 
                 qc = env.CompileFAF(
@@ -1293,8 +1466,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     new object[] {"E2", 20, IntArray(20), 20},
                     new object[] {"E3", 30, IntArray(30, 31), 31}
                 };
-                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, new [] { "s","f","w","l" }, expected);
-                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, new [] { "s","f","w","l" }, expected);
+                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, new[] {"s", "f", "w", "l"}, expected);
+                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, new[] {"s", "f", "w", "l"}, expected);
 
                 env.UndeployAll();
             }
@@ -1343,7 +1516,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "@Name('s0') select first(TheString) as c0, last(TheString) as c1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 env.Milestone(0);
 
@@ -1387,7 +1560,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "f1","f2","f3","l1","l2","l3" };
+                var fields = new[] {"f1", "f2", "f3", "l1", "l2", "l3"};
 
                 var beanOne = SendEvent(env, "E1", 1d, 1);
                 EPAssertionUtil.AssertProps(
@@ -1508,7 +1681,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from ABCWin where IntPrimitive = Id;\n" +
@@ -1583,7 +1756,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 var epl = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
                           "window(IntPrimitive*LongPrimitive) as c2 from SupportBean#length(3) group by TheString order by TheString asc";

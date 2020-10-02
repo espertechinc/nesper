@@ -44,10 +44,7 @@ namespace com.espertech.esper.compat.xml
             return _nodeList.GetEnumerator();
         }
 
-        public override int Count
-        {
-            get { return _nodeList.Count; }
-        }
+        public override int Count => _nodeList.Count;
 
         #endregion
     }

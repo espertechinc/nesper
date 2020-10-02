@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			Func<IList<Chainable>, ExprDotNodeImpl> dotNodeFunction)
 		{
 			var chainFirst = chain[0];
-			string chainFirstName = chainFirst.GetRootNameOrEmptyString();
-			IList<ExprNode> chainFirstParams = chainFirst.GetParametersOrEmpty();
+			var chainFirstName = chainFirst.GetRootNameOrEmptyString();
+			var chainFirstParams = chainFirst.GetParametersOrEmpty();
 
 			// Handle script
 			var scriptNode = ExprDeclaredHelper.GetExistsScript(
@@ -116,13 +116,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			}
 
 			// Handle plug-in single-row functions
-			Pair<Type, ImportSingleRowDesc> singleRow = TrySingleRow(mapContext, chainFirstName);
+			var singleRow = TrySingleRow(mapContext, chainFirstName);
 			if (singleRow != null) {
 				return HandleSingleRow(singleRow, chain);
 			}
 
 			// try additional built-in single-row function
-			ExprNode singleRowExtNode = mapContext.ImportService.ResolveSingleRowExtendedBuiltin(chainFirstName);
+			var singleRowExtNode = mapContext.ImportService.ResolveSingleRowExtendedBuiltin(chainFirstName);
 			if (singleRowExtNode != null) {
 				return HandleSingleRowExt(singleRowExtNode, chain, dotNodeFunction);
 			}
@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			}
 
 			// Handle min-max case
-			string chainFirstLowerCase = chainFirstName.ToLowerInvariant();
+			var chainFirstLowerCase = chainFirstName.ToLowerInvariant();
 			if (!(chainFirst is ChainableName) &&
 			    (chainFirstLowerCase.Equals("max", StringComparison.InvariantCultureIgnoreCase) ||
 			     chainFirstLowerCase.Equals("min", StringComparison.InvariantCultureIgnoreCase) ||
@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 				throw new ValidationException("Uncountered unrecognized min or max node '" + spec.GetRootNameOrEmptyString() + "'");
 			}
 
-			IList<ExprNode> args = spec.GetParametersOrEmpty();
+			var args = spec.GetParametersOrEmpty();
 			var distinct = spec.IsDistinct;
 			var numArgsPositional = ExprAggregateNodeUtil.CountPositionalArgs(args);
 			if (numArgsPositional > 1 && spec.IsDistinct && !filtered) {
@@ -271,8 +271,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			IList<Chainable> chain)
 		{
 			IList<Chainable> spec = new List<Chainable>();
-			string methodName = singleRow.Second.MethodName;
-			string nameUsed = chain[0].GetRootNameOrEmptyString();
+			var methodName = singleRow.Second.MethodName;
+			var nameUsed = chain[0].GetRootNameOrEmptyString();
 			var call = new ChainableCall(methodName, chain[0].GetParametersOrEmpty());
 			spec.Add(call);
 			spec.AddAll(chain.SubList(1, chain.Count));
@@ -390,7 +390,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 		{
 			var indexOfLastProp = -1;
 			for (var i = 0; i < chain.Count; i++) {
-				Chainable spec = chain[i];
+				var spec = chain[i];
 				if (!(spec is ChainableName) || spec.IsOptional) {
 					return indexOfLastProp;
 				}
@@ -451,7 +451,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			}
 
 			// Handle properties that can be prefixed by a stream name
-			string leadingIdentifier = chain[0].GetRootNameOrEmptyString();
+			var leadingIdentifier = chain[0].GetRootNameOrEmptyString();
 			var streamOrNestedPropertyName = DotEscaper.EscapeDot(leadingIdentifier);
 			var propertyName = ToPlainPropertyString(chain, 1);
 			return new ExprIdentNodeImpl(propertyName, streamOrNestedPropertyName);
@@ -484,7 +484,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			IList<Chainable> chain,
 			Func<IList<Chainable>, ExprDotNodeImpl> dotNodeFunction)
 		{
-			Chainable firstSpec = chain.DeleteAt(0);
+			var firstSpec = chain.DeleteAt(0);
 			aggregationNode.AddChildNodes(firstSpec.GetParametersOrEmpty());
 			ExprNode exprNode;
 			if (chain.IsEmpty()) {
@@ -583,7 +583,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 
 			// We make an exception when the table is keyed and the column is found and there are no table keys provided.
 			// This accommodates the case "select MyTable.a from MyTable".
-			string columnOrOtherName = chain[0].GetRootNameOrEmptyString();
+			var columnOrOtherName = chain[0].GetRootNameOrEmptyString();
 			var tableColumn = table.Columns.Get(columnOrOtherName);
 			if (tableColumn != null && table.IsKeyed && tableKeys.IsEmpty()) {
 				return null; // let this be resolved as an identifier

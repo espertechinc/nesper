@@ -52,6 +52,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			bool includeDebugSymbols,
 			bool fireAndForget)
 		{
+			var makeVirtual = (_desc.OptionalSupertype == null);
+
 			var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
 			
 			// make members
@@ -71,7 +73,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				//.MakeParentNode(_underlyingClassName, GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.MakeParentNode(typeof(object), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(JsonElement), JsonDeserializeRefs.INSTANCE.ElementName);
-
+			deserializeMethod = makeVirtual 
+				? deserializeMethod.WithVirtual()
+				: deserializeMethod.WithOverride();
+			
 			var elementRef = JsonDeserializeRefs.INSTANCE.Element;
 			
 			deserializeMethod
@@ -167,6 +172,9 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			var allocatorProp = CodegenProperty
 				.MakePropertyNode(typeof(Func<object>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+			allocatorProp = makeVirtual 
+				? allocatorProp.WithVirtual()
+				: allocatorProp.WithOverride();
 			// we know this underlying class has a default constructor otherwise it is not json and deep-class eligible
 			allocatorProp.GetterBlock.BlockReturn(
 				new CodegenExpressionLambda(allocatorProp.GetterBlock).WithBody(
@@ -178,6 +186,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			var propertiesProp = CodegenProperty
 				.MakePropertyNode(typeof(ILookup<string, IJsonDeserializer>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+			propertiesProp = makeVirtual 
+				? propertiesProp.WithVirtual()
+				: propertiesProp.WithOverride();
+
 			propertiesProp.GetterBlock.BlockReturn(ConstantNull()); // TBD
 
 			// --------------------------------------------------------------------------------

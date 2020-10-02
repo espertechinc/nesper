@@ -21,12 +21,54 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewSortSceneOne());
-            execs.Add(new ViewSortSceneTwo());
-            execs.Add(new ViewSortedSingleKeyBuiltin());
-            execs.Add(new ViewSortedMultikey());
-            execs.Add(new ViewSortedPrimitiveKey());
+            WithSceneOne(execs);
+            WithSceneTwo(execs);
+            WithedSingleKeyBuiltin(execs);
+            WithedMultikey(execs);
+            WithedPrimitiveKey(execs);
+            WithedPrev(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewSortedPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedPrimitiveKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSortedPrimitiveKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedMultikey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSortedMultikey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedSingleKeyBuiltin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSortedSingleKeyBuiltin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSortSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSortSceneOne());
             return execs;
         }
 
@@ -64,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl = "@Name('s0') select irstream * from SupportBean#sort(3, IntPrimitive desc, LongPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
-                var fields = new [] { "TheString","IntPrimitive","LongPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive"};
 
                 env.SendEventBean(MakeEvent("E1", 100, 0L));
                 EPAssertionUtil.AssertProps(
@@ -152,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString","IntPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive"};
 
                 var epl = "@Name('s0') select irstream * from SupportBean#sort(3, TheString)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

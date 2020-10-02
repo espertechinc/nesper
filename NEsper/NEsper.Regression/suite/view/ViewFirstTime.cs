@@ -24,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewFirstTimeSimple());
-            execs.Add(new ViewFirstTimeSceneOne());
+            Withimple(execs);
+            WithceneOne(execs);
+            WithceneTwo(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewFirstTimeSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewFirstTimeSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewFirstTimeSimple());
             return execs;
         }
 
@@ -62,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 env.AdvanceTime(0);
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firsttime(10 sec)";
@@ -185,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.UndeployAll();

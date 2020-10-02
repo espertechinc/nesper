@@ -22,6 +22,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 using Microsoft.ClearScript;
+using Microsoft.ClearScript.V8;
 using Microsoft.ClearScript.Windows;
 
 namespace NEsper.Scripting.ClearScript
@@ -170,7 +171,8 @@ namespace NEsper.Scripting.ClearScript
             engine.AddHostType("typeHelper", typeof(TypeHelper));
             engine.AddHostType("Collections", typeof(com.espertech.esper.compat.collections.Collections));
             engine.AddHostType("EventBean", typeof(EventBean));
-            engine.AddHostType("EventBean", typeof(EventBean));
+            engine.AddHostType("Console", typeof(Console));
+            engine.AddHostType("Compat", typeof(CompatExtensions));
             //engine.AddHostType("EPRuntime", typeof(com.espertech.esper.client.EPRuntime));
         }
         

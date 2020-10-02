@@ -151,7 +151,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 if (child.EvaluationType.CanNotBeNull()) {
                     if (!forge.IsMustCoerce) {
                         block
-                            .Debug("ExprArrayNodeForgeEval-1.1: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
                             .AssignArrayElement(
                                 "array",
                                 Constant(i),
@@ -159,7 +158,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                     else {
                         block
-                            .Debug("ExprArrayNodeForgeEval-1.2: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
                             .AssignArrayElement(
                                 "array",
                                 Constant(i),
@@ -170,7 +168,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     if (!forge.IsMustCoerce) {
                         ifNotNull
-                            .Debug("ExprArrayNodeForgeEval-2.1: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
                             .AssignArrayElement(
                                 "array",
                                 Constant(i),
@@ -178,7 +175,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                     else {
                         ifNotNull
-                            .Debug("ExprArrayNodeForgeEval-2.2: {0} => {1}", Constant(childType.CleanName()), Constant(arrayType.CleanName()))
                             .AssignArrayElement(
                                 "array",
                                 Constant(i),

@@ -263,7 +263,7 @@ namespace com.espertech.esper.compat.collections
         public V this[string key]
         {
             get => _subDictionary[_normalizeKey(key)];
-            set { _subDictionary[_normalizeKey(key)] = value; }
+            set => _subDictionary[_normalizeKey(key)] = value;
         }
 
         /// <summary>

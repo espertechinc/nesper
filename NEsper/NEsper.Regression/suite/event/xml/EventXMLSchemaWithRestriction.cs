@@ -22,8 +22,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLSchemaWithRestrictionPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaWithRestrictionCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaWithRestrictionPreconfig());
             return execs;
         }
 
@@ -44,7 +58,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.IsNotNull(schemaStream);
                 var schemaTextSimpleSchemaWithRestriction = schemaStream.ConsumeStream();
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(RootElementName='order', SchemaText='" + schemaTextSimpleSchemaWithRestriction + "')" +
+                          "@XMLSchema(RootElementName='order', SchemaText='" +
+                          schemaTextSimpleSchemaWithRestriction +
+                          "')" +
                           "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);

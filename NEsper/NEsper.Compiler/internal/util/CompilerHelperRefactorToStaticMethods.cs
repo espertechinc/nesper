@@ -97,8 +97,8 @@ namespace com.espertech.esper.compiler.@internal.util
 				var properties = new CodegenClassProperties();
 				var methods = new CodegenClassMethods();
 				methods.PrivateMethods.AddAll(bucket);
-				foreach (var privateMethod in bucket) {
-					privateMethod.IsStatic = true;
+				foreach (CodegenMethodWGraph privateMethod in bucket) {
+					privateMethod.WithStatic();
 				}
 
 				var utilClass = new CodegenInnerClass(

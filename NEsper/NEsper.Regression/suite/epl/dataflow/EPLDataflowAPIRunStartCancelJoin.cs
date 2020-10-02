@@ -34,23 +34,93 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowNonBlockingJoinCancel());
-            execs.Add(new EPLDataflowNonBlockingJoinException());
-            execs.Add(new EPLDataflowNonBlockingException());
-            execs.Add(new EPLDataflowBlockingException());
-            execs.Add(new EPLDataflowBlockingCancel());
-            execs.Add(new EPLDataflowNonBlockingCancel());
-            execs.Add(new EPLDataflowInvalidJoinRun());
-            execs.Add(new EPLDataflowNonBlockingJoinMultipleRunnable());
-            execs.Add(new EPLDataflowBlockingMultipleRunnable());
-            execs.Add(new EPLDataflowNonBlockingJoinSingleRunnable());
-            execs.Add(new EPLDataflowFastCompleteBlocking());
-            execs.Add(new EPLDataflowRunBlocking());
-            execs.Add(new EPLDataflowFastCompleteNonBlocking());
-            execs.Add(new EPLDataflowBlockingRunJoin());
+WithNonBlockingJoinCancel(execs);
+WithNonBlockingJoinException(execs);
+WithNonBlockingException(execs);
+WithBlockingException(execs);
+WithBlockingCancel(execs);
+WithNonBlockingCancel(execs);
+WithInvalidJoinRun(execs);
+WithNonBlockingJoinMultipleRunnable(execs);
+WithBlockingMultipleRunnable(execs);
+WithNonBlockingJoinSingleRunnable(execs);
+WithFastCompleteBlocking(execs);
+WithRunBlocking(execs);
+WithFastCompleteNonBlocking(execs);
+WithBlockingRunJoin(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBlockingRunJoin());
+    return execs;
+}public static IList<RegressionExecution> WithFastCompleteNonBlocking(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowFastCompleteNonBlocking());
+    return execs;
+}public static IList<RegressionExecution> WithRunBlocking(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowRunBlocking());
+    return execs;
+}public static IList<RegressionExecution> WithFastCompleteBlocking(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowFastCompleteBlocking());
+    return execs;
+}public static IList<RegressionExecution> WithNonBlockingJoinSingleRunnable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowNonBlockingJoinSingleRunnable());
+    return execs;
+}public static IList<RegressionExecution> WithBlockingMultipleRunnable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBlockingMultipleRunnable());
+    return execs;
+}public static IList<RegressionExecution> WithNonBlockingJoinMultipleRunnable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowNonBlockingJoinMultipleRunnable());
+    return execs;
+}public static IList<RegressionExecution> WithInvalidJoinRun(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalidJoinRun());
+    return execs;
+}public static IList<RegressionExecution> WithNonBlockingCancel(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowNonBlockingCancel());
+    return execs;
+}public static IList<RegressionExecution> WithBlockingCancel(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBlockingCancel());
+    return execs;
+}public static IList<RegressionExecution> WithBlockingException(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBlockingException());
+    return execs;
+}public static IList<RegressionExecution> WithNonBlockingException(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowNonBlockingException());
+    return execs;
+}public static IList<RegressionExecution> WithNonBlockingJoinException(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowNonBlockingJoinException());
+    return execs;
+}public static IList<RegressionExecution> WithNonBlockingJoinCancel(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowNonBlockingJoinCancel());
+    return execs;
+}
         private static void TryAssertionAfterExec(EPDataFlowInstance df)
         {
             // cancel and join ignored

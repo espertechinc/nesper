@@ -20,8 +20,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaSimpleXMLDOMGetterPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaSimpleXMLDOMGetterCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaSimpleXMLDOMGetterPreconfig());
             return execs;
         }
 
@@ -58,7 +72,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                        "element2.element21('e21_2') as mappedElement," +
                        "element2.element21[1] as indexedElement," +
                        "element3.myattribute as invalidattribute " +
-                       "from " + eventTypeName + "#length(100)";
+                       "from " +
+                       eventTypeName +
+                       "#length(100)";
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             // Generate document with the specified in element1 to confirm we have independent events

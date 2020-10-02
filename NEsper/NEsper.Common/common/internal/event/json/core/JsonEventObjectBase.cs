@@ -20,6 +20,8 @@ using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using Microsoft.CodeAnalysis.Emit;
+
 using static com.espertech.esper.common.@internal.@event.json.serializers.JsonSerializerUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.core
@@ -43,22 +45,20 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		/// Returns the dynamic property values (the non-predefined values)
 		/// </summary>
 		/// <value>map</value>
-		public virtual IDictionary<string, object> JsonValues {
-			get => EmptyDictionary<string, object>.Instance;
-		}
+		public virtual IDictionary<string, object> JsonValues => EmptyDictionary<string, object>.Instance;
 
 		/// <summary>
 		/// Returns the set of property names that are visible to the caller.
 		/// </summary>
-		public ICollection<string> PropertyNames => JsonValues.Select(_ => _.Key).ToList();
-
+		public ICollection<string> PropertyNames => Enumerable.Concat(JsonValues.Select(_ => _.Key),NativeKeys).ToList();
+		
 		#region Native
 
 		/// <summary>
 		/// Returns the total number of pre-declared properties available including properties of the parent event type if any
 		/// </summary>
 		/// <value>size</value>
-		public abstract int NativeCount { get; }
+		public virtual int NativeCount => 0;
 
 		/// <summary>
 		/// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
@@ -67,9 +67,13 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		/// <param name="name"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public abstract bool TryGetNativeEntry(
+		public virtual bool TryGetNativeEntry(
 			string name,
-			out KeyValuePair<string, object> value);
+			out KeyValuePair<string, object> value)
+		{
+			value = default;
+			return false;
+		}
 
 		/// <summary>
 		/// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
@@ -87,6 +91,20 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			return value;
 		}
 
+		/// <summary>
+		/// Attempts to find the native value of the same name and assigns the value.  If found, the method assigns the
+		/// property, otherwise it return false.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public virtual bool TrySetNativeValue(
+			string name,
+			object value)
+		{
+			return false;
+		}
+		
 		/// <summary>
 		/// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
 		/// the method places the value into the out var and returns true.  Otherwise, false.
@@ -129,7 +147,10 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		/// </summary>
 		/// <param name="key">property name</param>
 		/// <returns>flag</returns>
-		public abstract bool NativeContainsKey(string key);
+		public virtual bool NativeContainsKey(string key)
+		{
+			return false;
+		}
 
 		/// <summary>
 		/// Returns the flag whether the value exists as the value element of a pre-declared property.  Not
@@ -159,14 +180,18 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		/// Returns an enumerable for the native key-value pairs.
 		/// </summary>
 		/// <value></value>
-		public abstract IEnumerable<KeyValuePair<string, object>> NativeEnumerable { get; }
+		public virtual IEnumerable<KeyValuePair<string, object>> NativeEnumerable {
+			get => EmptyList<KeyValuePair<string, object>>.Instance;
+		}
 
 		/// <summary>
 		/// Write the pre-declared properties to the writer
 		/// </summary>
 		/// <param name="context">serialization context</param>
 		/// <throws>IOException for IO exceptions</throws>
-		public abstract void NativeWrite(JsonSerializationContext context);
+		public virtual void NativeWrite(JsonSerializationContext context)
+		{
+		}
 
 		#endregion
 
@@ -220,7 +245,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public void Clear()
 		{
-			throw new UnsupportedOperationException();
+			JsonValues.Clear();
 		}
 
 		public ICollection<string> Keys => new JsonEventUnderlyingKeyCollection(this);
@@ -285,7 +310,11 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 				return JsonValues[key];
 			}
-			set => throw new NotSupportedException();
+			set {
+				if (!TrySetNativeValue(key, value)) {
+					JsonValues[key] = value;
+				}
+			}
 		}
 
 		// ----------------------------------------------------------------------

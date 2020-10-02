@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             exceptionText = GetSyntaxExceptionProperty("a[]", theEvent);
             Assert.IsTrue(exceptionText.StartsWith("Property named 'a[]' is not a valid property name for this type"));
-            
+
             env.UndeployAll();
         }
 

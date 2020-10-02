@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveDouble : JsonDeserializerArrayBase<double[]>
     {
         public JsonDeserializerArray2DPrimitiveDouble()
-            : base(_ => _.ElementToArray(v => v.GetDouble()))
+            : base(_ => _.ElementToArray(v => v.GetSmartDouble()))
         {
         }
     }

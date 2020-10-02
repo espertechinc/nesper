@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService)
                 .BeanInstantiator;
 
-            writeMembersReflection = new MethodInfo[properties.Length];
+            writeMembersReflection = new MemberInfo[properties.Length];
             var primitiveTypeCheck = false;
             primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {

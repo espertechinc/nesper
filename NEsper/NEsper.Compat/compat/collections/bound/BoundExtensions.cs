@@ -33,6 +33,10 @@ namespace com.espertech.esper.compat.collections.bound
             Bound<TV> other,
             IComparer<TV> comparer)
         {
+            if (other == null) {
+                return bound;
+            }
+            
             return MergeLower(bound, other.Value, other.IsInclusive, comparer);
         }
 
@@ -59,6 +63,10 @@ namespace com.espertech.esper.compat.collections.bound
             Bound<TV> other,
             IComparer<TV> comparer)
         {
+            if (other == null) {
+                return bound;
+            }
+
             return MergeUpper(bound, other.Value, other.IsInclusive, comparer);
         }
         

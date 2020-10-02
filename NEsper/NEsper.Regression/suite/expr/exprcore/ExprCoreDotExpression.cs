@@ -133,16 +133,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype create schema MyEvent(mycoll Collection);\n" +
-				          "@Name('s0') select mycoll.toArray() as c0," +
-				          "  mycoll.toArray(new Object[0]) as c1," +
-				          "  mycoll.toArray(new Object[]{}) as c2 " +
-				          "from MyEvent";
+				var epl =
+					"@public @buseventtype create schema MyEvent(mycoll `System.Collections.Generic.ICollection<object>`);\n" +
+					"@Name('s0') select mycoll.ToArray() as c0 " +
+					"from MyEvent";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventMap(Collections.SingletonDataMap("mycoll", Collections.List(1, 2)), "MyEvent");
 				var expected = new object[] {1, 2};
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1,c2".SplitCsv(), expected, expected, expected);
+				EPAssertionUtil.AssertProps(
+					env.Listener("s0").AssertOneGetNewAndReset(),
+					new[] {"c0"},
+					new object[] {expected});
 
 				env.UndeployAll();
 			}

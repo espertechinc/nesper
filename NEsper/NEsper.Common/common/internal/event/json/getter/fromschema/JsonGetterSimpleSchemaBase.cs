@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         public object GetJsonProp(object @object)
         {
             var und = (JsonEventObjectBase) @object;
-            return und.GetNativeValue(Field.FieldName);
+            return und.GetNativeValue(Field.PropertyName);
         }
 
         public CodegenExpression EventBeanGetCodegen(

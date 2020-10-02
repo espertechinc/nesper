@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> WithEventTypeColumnDef(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraEventTypeColumnDef(rep));
             }
 
@@ -434,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionCreateSchemaModelAfter(env, rep);
                 }
 

@@ -125,17 +125,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
+         
             IDictionary<object, CompositeIndexEntry> submap;
-            try {
+            if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) <= 0) {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException) {
-                if (allowRangeReversal) {
-                    submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
-                }
-                else {
-                    return;
-                }
+            else if (allowRangeReversal) {
+                submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
+            }
+            else {
+                return;
             }
 
             Normalize(result, submap, postProcessor);

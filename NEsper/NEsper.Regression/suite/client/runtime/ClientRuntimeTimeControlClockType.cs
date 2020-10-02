@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.IsFalse(runtime.EventService.IsExternalClockingEnabled());
             var waitStart = DateTimeHelper.CurrentTimeMillis;
             var waitTarget = waitStart + 10000;
-            
+
             long currMillis;
             while ((currMillis = DateTimeHelper.CurrentTimeMillis) < waitTarget) {
                 if (runtime.EventService.CurrentTime > 0) {

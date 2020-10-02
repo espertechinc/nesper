@@ -32,11 +32,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowInvalid());
-            execs.Add(new EPLDataflowCustomProps());
+WithInvalid(execs);
+WithCustomProps(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowCustomProps());
+    return execs;
+}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalid());
+    return execs;
+}
         /// <summary>
         ///     - GraphSource always has output ports:
         ///     (A) Either as declared through @OutputTypes annotation

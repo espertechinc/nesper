@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 		}
 
-		public void Completed(IDictionary<string, Type> moduleTypes)
+		public void Completed(ICollection<Assembly> assemblies)
 		{
 		}
 	}

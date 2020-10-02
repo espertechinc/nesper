@@ -499,6 +499,18 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
+        /// Determines whether the specified value is Int16 (short).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified value is short; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsInt16(this object value)
+        {
+            return (value is short);
+        }
+        
+        /// <summary>
         /// Determines whether [is date time] [the specified value].
         /// </summary>
         /// <param name="value">The value.</param>

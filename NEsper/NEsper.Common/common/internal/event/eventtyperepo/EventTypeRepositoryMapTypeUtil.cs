@@ -34,42 +34,22 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             BeanEventTypeFactory beanEventTypeFactory,
             ImportService importService)
         {
-            ICollection<string> dependentMapOrder;
-            try {
-                var typesReferences = ToTypesReferences(mapTypeConfigurations);
-                dependentMapOrder = GraphUtil.GetTopDownOrder(typesReferences);
-            }
-            catch (GraphCircularDependencyException e) {
-                throw new ConfigurationException(
-                    "Error configuring event types, dependency graph between map type names is circular: " + e.Message,
-                    e);
-            }
+            var creationOrder = EventTypeRepositoryUtil.GetCreationOrder(mapTypes.Keys, nestableMapEvents.Keys, mapTypeConfigurations);
+            foreach (var mapName in creationOrder) {
+                if (repo.GetTypeByName(mapName) != null) {
+                    continue;
+                }
 
-            dependentMapOrder.AddAll(mapTypes.Keys);
-            dependentMapOrder.AddAll(nestableMapEvents.Keys);
-            foreach (var mapName in dependentMapOrder) {
                 var mapConfig = mapTypeConfigurations.Get(mapName);
-                var propertiesUnnested = mapTypes.Get(mapName);
-                if (propertiesUnnested != null) {
-                    var propertyTypes = CreatePropertyTypes(
-                        propertiesUnnested,
-                        importService);
-                    var propertyTypesCompiled =
-                        EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
+                if (mapTypes.TryGetValue(mapName, out var propertiesUnnested)) {
+                    var propertyTypes = CreatePropertyTypes(propertiesUnnested, importService);
+                    var propertyTypesCompiled = EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
                     AddNestableMapType(mapName, propertyTypesCompiled, mapConfig, repo, beanEventTypeFactory, repo);
                 }
 
-                var propertiesNestable = nestableMapEvents.Get(mapName);
-                if (propertiesNestable != null) {
-                    var propertiesNestableCompiled = EventTypeUtility
-                        .CompileMapTypeProperties(propertiesNestable, repo);
-                    AddNestableMapType(
-                        mapName,
-                        propertiesNestableCompiled,
-                        mapConfig,
-                        repo,
-                        beanEventTypeFactory,
-                        repo);
+                if (nestableMapEvents.TryGetValue(mapName, out var propertiesNestable)) {
+                    var propertiesNestableCompiled = EventTypeUtility.CompileMapTypeProperties(propertiesNestable, repo);
+                    AddNestableMapType(mapName, propertiesNestableCompiled, mapConfig, repo, beanEventTypeFactory, repo);
                 }
             }
         }

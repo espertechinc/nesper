@@ -83,13 +83,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public TestEPLContainedEventSplitExpr() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithingleRowSplitAndType() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithingleRowSplitAndType());
+            public void WithSingleRowSplitAndType() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithSingleRowSplitAndType());
 
             [Test, RunInApplicationDomain]
-            public void WithplitExprReturnsEventBean() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithplitExprReturnsEventBean());
+            public void WithSplitExprReturnsEventBean() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithSplitExprReturnsEventBean());
 
             [Test, RunInApplicationDomain]
-            public void WithcriptContextValue() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithcriptContextValue());
+            public void WithScriptContextValue() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithScriptContextValue());
         }
         
         private static void Configure(Configuration configuration)
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var funcs = new [] { "SplitSentence","SplitSentenceBean","SplitWord" };
             for (var i = 0; i < funcs.Length; i++) {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     string[] methods;
                     if (rep.IsObjectArrayEvent()) {
                         methods = new string[] {

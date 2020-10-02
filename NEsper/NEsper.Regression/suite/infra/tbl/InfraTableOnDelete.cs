@@ -25,8 +25,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraDeleteFlow());
+            WithFlow(execs);
+            WithSecondaryIndexUpd(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSecondaryIndexUpd(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraDeleteSecondaryIndexUpd());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFlow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDeleteFlow());
             return execs;
         }
 
@@ -123,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = new [] { "key","thesum" };
+                var fields = new[] {"key", "thesum"};
                 env.CompileDeploy("create table varagg as (key string primary key, thesum sum(int))", path);
                 env.CompileDeploy(
                     "into table varagg select sum(IntPrimitive) as thesum from SupportBean group by TheString",

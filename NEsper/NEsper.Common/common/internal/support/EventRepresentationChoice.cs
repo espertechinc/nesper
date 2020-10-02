@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.soda;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.support
 {
@@ -30,6 +32,12 @@ namespace com.espertech.esper.common.@internal.support
 
     public static class EventRepresentationChoiceExtensions
     {
+        public static IEnumerable<EventRepresentationChoice> Values()
+        {
+            return EnumHelper.GetValues<EventRepresentationChoice>()
+                .Where(_ => _ != EventRepresentationChoice.DEFAULT);
+        }
+        
         public static string GetPublicName(this EventRepresentationChoice enumValue)
         {
             if (enumValue == EventRepresentationChoice.DEFAULT) {
@@ -135,11 +143,15 @@ namespace com.espertech.esper.common.@internal.support
 
         public static string GetAnnotationTextForNonMap(this EventRepresentationChoice enumValue)
         {
-            if (enumValue == EventRepresentationChoice.DEFAULT || enumValue == EventRepresentationChoice.MAP) {
-                return "";
-            }
-
-            return GetAnnotationText(enumValue);
+            return enumValue switch {
+                EventRepresentationChoice.OBJECTARRAY => "@EventRepresentation('objectarray')",
+                EventRepresentationChoice.MAP => "",
+                EventRepresentationChoice.AVRO => "@EventRepresentation('avro')",
+                EventRepresentationChoice.JSON => "@EventRepresentation('json')",
+                EventRepresentationChoice.JSONCLASSPROVIDED => "@EventRepresentation('json')",
+                EventRepresentationChoice.DEFAULT => "",
+                _ => throw new ArgumentException("invalid value for EnumValue", nameof(enumValue))
+            };
         }
 
         public static void AddAnnotationForNonMap(

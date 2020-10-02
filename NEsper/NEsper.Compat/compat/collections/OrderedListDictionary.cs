@@ -77,7 +77,8 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         public OrderedListDictionary()
         {
-            var comparer = Comparer<TK>.Default;
+            var comparer = Comparers.Default<TK>();
+            //var comparer = Comparer<TK>.Default;
             _itemList = new List<KeyValuePair<TK, TV>>();
             _itemComparer = new KeyValuePairComparer(comparer, false);
 

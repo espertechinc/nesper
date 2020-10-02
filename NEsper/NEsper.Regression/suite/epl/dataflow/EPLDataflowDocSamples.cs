@@ -23,11 +23,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowDocSamplesRun());
-            execs.Add(new EPLDataflowSODA());
+WithDocSamplesRun(execs);
+WithSODA(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowSODA());
+    return execs;
+}public static IList<RegressionExecution> WithDocSamplesRun(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowDocSamplesRun());
+    return execs;
+}
         private static void TryEpl(
             RegressionEnvironment env,
             string epl)

@@ -26,10 +26,38 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewLengthWindowSceneOne());
-            execs.Add(new ViewLengthWindowWPrevPrior());
-            execs.Add(new ViewLengthWinWPropertyDetail());
+            WithdowSceneOne(execs);
+            WithdowWPrevPrior(execs);
+            WithWPropertyDetail(execs);
+            WithdowIterator(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithdowIterator(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewLengthWindowIterator());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWPropertyDetail(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthWinWPropertyDetail());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithdowWPrevPrior(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthWindowWPrevPrior());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithdowSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthWindowSceneOne());
             return execs;
         }
 
@@ -58,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 env.Milestone(0);
 

@@ -28,6 +28,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withk(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withk(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeObtainEngineWideRWLock());
             return execs;
         }
@@ -165,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 runtime.Destroy();
             }
         }
-        
+
         private static void TryAssertDestroyed(Runnable r)
         {
             Assert.That(() => r.Invoke(), Throws.Exception.InstanceOf<EPRuntimeDestroyedException>());

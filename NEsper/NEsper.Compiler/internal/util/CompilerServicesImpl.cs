@@ -77,14 +77,19 @@ namespace com.espertech.esper.compiler.@internal.util
                 new CodegenClassProperties(),
                 EmptyList<CodegenInnerClass>.Instance);
             
-            // this mechanism is not fully baked, we need a better mechanism that allows us to output
-            // the contents of the assembly that we are generating items into.
-
+            // This is a bit hacky... basically, Esper has to generate a "Type" that can be returned and
+            // included as the "Underlying" type for the JsonEventType.  This method is called during the
+            // portion of the sequence where we are attempting to build the forgeables, so the real type
+            // doesnt exist yet.  Esper builds the stand-in but expects that the real type will be used
+            // at runtime.  In Java, type erasure allows this to happen because there is no real type in
+            // backing arrays and collections.  In .NET we need the types to match.
+            //
+            // We are creating a "capsule" class which will act as a placeholder.  When we detect that
+            // the type is a capsule type in the JsonEventType, we will attempt to "resolve" and replace
+            // it.
+            
             var classNameFull = namespaceScope.Namespace + '.' + classNameSimple;
-            var capsuleClass = CapsuleEmitter.CreateCapsule(
-                classNameFull,
-                new CapsuleField[] {
-                });
+            var capsuleClass = CapsuleEmitter.CreateCapsule(classNameFull);
 
             return capsuleClass.TargetType;
         }

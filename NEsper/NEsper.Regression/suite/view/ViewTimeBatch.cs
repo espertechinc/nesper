@@ -25,16 +25,86 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewTimeBatchSceneOne());
-            execs.Add(new ViewTimeBatch10Sec());
-            execs.Add(new ViewTimeBatchStartEagerForceUpdateSceneTwo());
-            execs.Add(new ViewTimeBatchMonthScoped());
-            execs.Add(new ViewTimeBatchStartEagerForceUpdate());
-            execs.Add(new ViewTimeBatchLonger());
-            execs.Add(new ViewTimeBatchMultirow());
-            execs.Add(new ViewTimeBatchMultiBatch());
-            execs.Add(new ViewTimeBatchNoRefPoint());
+            WithSceneOne(execs);
+            With10Sec(execs);
+            WithStartEagerForceUpdateSceneTwo(execs);
+            WithMonthScoped(execs);
+            WithStartEagerForceUpdate(execs);
+            WithLonger(execs);
+            WithMultirow(execs);
+            WithMultiBatch(execs);
+            WithNoRefPoint(execs);
+            WithRefPoint(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRefPoint(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchRefPoint());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoRefPoint(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchNoRefPoint());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchMultiBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultirow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchMultirow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLonger(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchLonger());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEagerForceUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchStartEagerForceUpdate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEagerForceUpdateSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchStartEagerForceUpdateSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With10Sec(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatch10Sec());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeBatchSceneOne());
             return execs;
         }
 
@@ -101,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 0);
 
-                var fields = new [] { "Symbol" };
+                var fields = new[] {"Symbol"};
                 var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -230,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 SendTimer(env, 0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
@@ -324,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
 
                 env.SendEventBean(new SupportBean("E2", 1));
@@ -334,14 +404,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-04-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E2"});
 
                 env.SendEventBean(new SupportBean("E3", 1));
                 SendCurrentTime(env, "2002-05-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E3"});
 
                 env.UndeployAll();
@@ -376,13 +446,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 4000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
 
                 SendTimer(env, 5000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
 
                 SendTimer(env, 5999);
@@ -482,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 SendTimer(env, 0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
@@ -569,7 +639,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 SendTimer(env, 0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";

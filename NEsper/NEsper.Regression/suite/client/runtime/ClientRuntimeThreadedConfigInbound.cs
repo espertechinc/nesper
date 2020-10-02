@@ -26,131 +26,130 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
-	public class ClientRuntimeThreadedConfigInbound : RegressionExecutionWithConfigure
-	{
-		public bool EnableHATest => true;
-		public bool HAWithCOnly => false;
-		
-		public void Configure(Configuration configuration)
-		{
-			SupportExceptionHandlerFactory.FactoryContexts.Clear();
-			SupportExceptionHandlerFactory.Handlers.Clear();
-			configuration.Runtime.ExceptionHandling.HandlerFactories.Clear();
-			configuration.Runtime.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactory));
+    public class ClientRuntimeThreadedConfigInbound : RegressionExecutionWithConfigure
+    {
+        public bool EnableHATest => true;
+        public bool HAWithCOnly => false;
 
-			configuration.Runtime.Threading.IsInternalTimerEnabled = false;
-			configuration.Runtime.Threading.IsThreadPoolInbound = true;
-			configuration.Runtime.Threading.ThreadPoolInboundNumThreads = 4;
-			configuration.Compiler.Expression.UdfCache = false;
-			configuration.Common.AddEventType("MyMap", new Dictionary<string, object>());
-			configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
-			configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
-			configuration.Common.AddEventType("MyOA", new string[0], new object[0]);
+        public void Configure(Configuration configuration)
+        {
+            SupportExceptionHandlerFactory.FactoryContexts.Clear();
+            SupportExceptionHandlerFactory.Handlers.Clear();
+            configuration.Runtime.ExceptionHandling.HandlerFactories.Clear();
+            configuration.Runtime.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactory));
 
-			var xmlDOMEventTypeDesc = new ConfigurationCommonEventTypeXMLDOM();
-			xmlDOMEventTypeDesc.RootElementName = "myevent";
-			configuration.Common.AddEventType("XMLType", xmlDOMEventTypeDesc);
+            configuration.Runtime.Threading.IsInternalTimerEnabled = false;
+            configuration.Runtime.Threading.IsThreadPoolInbound = true;
+            configuration.Runtime.Threading.ThreadPoolInboundNumThreads = 4;
+            configuration.Compiler.Expression.UdfCache = false;
+            configuration.Common.AddEventType("MyMap", new Dictionary<string, object>());
+            configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
+            configuration.Common.AddEventType("MyOA", new string[0], new object[0]);
 
-			configuration.Compiler.AddPlugInSingleRowFunction(
-				"throwException",
-				GetType(),
-				"ThrowException",
-				ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED,
-				ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED,
-				true);
-		}
+            var xmlDOMEventTypeDesc = new ConfigurationCommonEventTypeXMLDOM();
+            xmlDOMEventTypeDesc.RootElementName = "myevent";
+            configuration.Common.AddEventType("XMLType", xmlDOMEventTypeDesc);
 
-		public void Run(RegressionEnvironment env)
-		{
-			RunAssertionEventsProcessed(env);
-			RunAssertionExceptionHandler(env);
-		}
+            configuration.Compiler.AddPlugInSingleRowFunction(
+                "throwException",
+                GetType(),
+                "ThrowException",
+                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED,
+                ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED,
+                true);
+        }
 
-		private void RunAssertionExceptionHandler(RegressionEnvironment env)
-		{
-			var epl = "@Name('ABCName') select * from SupportBean(throwException())";
-			env.CompileDeploy(epl);
+        public void Run(RegressionEnvironment env)
+        {
+            RunAssertionEventsProcessed(env);
+            RunAssertionExceptionHandler(env);
+        }
 
-			var handler = SupportExceptionHandlerFactory.Handlers[SupportExceptionHandlerFactory.Handlers.Count - 1];
-			env.SendEventBean(new SupportBean());
+        private void RunAssertionExceptionHandler(RegressionEnvironment env)
+        {
+            var epl = "@Name('ABCName') select * from SupportBean(throwException())";
+            env.CompileDeploy(epl);
 
-			var count = 0;
-			while (true) {
-				if (handler.InboundPoolContexts.Count == 1) {
-					break;
-				}
+            var handler = SupportExceptionHandlerFactory.Handlers[SupportExceptionHandlerFactory.Handlers.Count - 1];
+            env.SendEventBean(new SupportBean());
 
-				if (count++ < 100) {
-					Thread.Sleep(100);
-				}
+            var count = 0;
+            while (true) {
+                if (handler.InboundPoolContexts.Count == 1) {
+                    break;
+                }
 
-				if (count >= 100) {
-					Assert.Fail();
-				}
-			}
+                if (count++ < 100) {
+                    Thread.Sleep(100);
+                }
 
-			env.UndeployAll();
-		}
+                if (count >= 100) {
+                    Assert.Fail();
+                }
+            }
 
-		private void RunAssertionEventsProcessed(RegressionEnvironment env)
-		{
+            env.UndeployAll();
+        }
 
-			var listenerMap = new SupportListenerTimerHRes();
-			var listenerBean = new SupportListenerTimerHRes();
-			var listenerXML = new SupportListenerTimerHRes();
-			var listenerOA = new SupportListenerTimerHRes();
-			var listenerJson = new SupportListenerTimerHRes();
-			env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.Sleep(100) from MyMap").Statement("s0").AddListener(listenerMap);
-			env.CompileDeploy("@Name('s1') select SupportStaticMethodLib.Sleep(100) from SupportBean").Statement("s1").AddListener(listenerBean);
-			env.CompileDeploy("@Name('s2') select SupportStaticMethodLib.Sleep(100) from XMLType").Statement("s2").AddListener(listenerXML);
-			env.CompileDeploy("@Name('s3') select SupportStaticMethodLib.Sleep(100) from MyOA").Statement("s3").AddListener(listenerOA);
-			env.CompileDeploy(
-					"@public @buseventtype create json schema JsonEvent();\n" +
-					"@Name('s4') select SupportStaticMethodLib.Sleep(100) from JsonEvent")
-				.Statement("s4")
-				.AddListener(listenerJson);
+        private void RunAssertionEventsProcessed(RegressionEnvironment env)
+        {
+            var listenerMap = new SupportListenerTimerHRes();
+            var listenerBean = new SupportListenerTimerHRes();
+            var listenerXML = new SupportListenerTimerHRes();
+            var listenerOA = new SupportListenerTimerHRes();
+            var listenerJson = new SupportListenerTimerHRes();
+            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.Sleep(100) from MyMap").Statement("s0").AddListener(listenerMap);
+            env.CompileDeploy("@Name('s1') select SupportStaticMethodLib.Sleep(100) from SupportBean").Statement("s1").AddListener(listenerBean);
+            env.CompileDeploy("@Name('s2') select SupportStaticMethodLib.Sleep(100) from XMLType").Statement("s2").AddListener(listenerXML);
+            env.CompileDeploy("@Name('s3') select SupportStaticMethodLib.Sleep(100) from MyOA").Statement("s3").AddListener(listenerOA);
+            env.CompileDeploy(
+                    "@public @buseventtype create json schema JsonEvent();\n" +
+                    "@Name('s4') select SupportStaticMethodLib.Sleep(100) from JsonEvent")
+                .Statement("s4")
+                .AddListener(listenerJson);
 
-			var senderMap = env.EventService.GetEventSender("MyMap");
-			var senderBean = env.EventService.GetEventSender("SupportBean");
-			var senderXML = env.EventService.GetEventSender("XMLType");
-			var senderOA = env.EventService.GetEventSender("MyOA");
-			var senderJson = env.EventService.GetEventSender("JsonEvent");
+            var senderMap = env.EventService.GetEventSender("MyMap");
+            var senderBean = env.EventService.GetEventSender("SupportBean");
+            var senderXML = env.EventService.GetEventSender("XMLType");
+            var senderOA = env.EventService.GetEventSender("MyOA");
+            var senderJson = env.EventService.GetEventSender("JsonEvent");
 
-			long start = PerformanceObserver.MicroTime;
-			for (var i = 0; i < 2; i++) {
-				env.SendEventMap(new Dictionary<string, object>(), "MyMap");
-				senderMap.SendEvent(new Dictionary<string, object>());
-				env.SendEventBean(new SupportBean());
-				senderBean.SendEvent(new SupportBean());
-				env.SendEventXMLDOM(SupportXML.GetDocument("<myevent/>"), "XMLType");
-				senderXML.SendEvent(SupportXML.GetDocument("<myevent/>"));
-				env.SendEventObjectArray(new object[0], "MyOA");
-				senderOA.SendEvent(new object[0]);
-				env.SendEventJson("{}", "JsonEvent");
-				senderJson.SendEvent("{}");
-			}
+            long start = PerformanceObserver.MicroTime;
+            for (var i = 0; i < 2; i++) {
+                env.SendEventMap(new Dictionary<string, object>(), "MyMap");
+                senderMap.SendEvent(new Dictionary<string, object>());
+                env.SendEventBean(new SupportBean());
+                senderBean.SendEvent(new SupportBean());
+                env.SendEventXMLDOM(SupportXML.GetDocument("<myevent/>"), "XMLType");
+                senderXML.SendEvent(SupportXML.GetDocument("<myevent/>"));
+                env.SendEventObjectArray(new object[0], "MyOA");
+                senderOA.SendEvent(new object[0]);
+                env.SendEventJson("{}", "JsonEvent");
+                senderJson.SendEvent("{}");
+            }
 
-			long end = PerformanceObserver.MicroTime;
-			var delta = (end - start) / 1000;
-			Assert.IsTrue(delta < 500);
+            long end = PerformanceObserver.MicroTime;
+            var delta = (end - start) / 1000;
+            Assert.IsTrue(delta < 500);
 
-			Thread.Sleep(1000);
+            Thread.Sleep(1000);
 
-			foreach (var listener in Arrays.AsList(listenerMap, listenerBean, listenerXML, listenerOA, listenerJson)) {
-				Assert.AreEqual(4, listener.NewEvents.Count);
-			}
+            foreach (var listener in Arrays.AsList(listenerMap, listenerBean, listenerXML, listenerOA, listenerJson)) {
+                Assert.AreEqual(4, listener.NewEvents.Count);
+            }
 
-			var spi = (EPRuntimeSPI) env.Runtime;
-			Assert.AreEqual(0, spi.ServicesContext.ThreadingService.InboundQueue.Count);
-			Assert.IsNotNull(spi.ServicesContext.ThreadingService.InboundThreadPool);
+            var spi = (EPRuntimeSPI) env.Runtime;
+            Assert.AreEqual(0, spi.ServicesContext.ThreadingService.InboundQueue.Count);
+            Assert.IsNotNull(spi.ServicesContext.ThreadingService.InboundThreadPool);
 
-			env.UndeployAll();
-		}
+            env.UndeployAll();
+        }
 
-		// Used by test
-		public static bool ThrowException()
-		{
-			throw new EPRuntimeException("Intended for testing");
-		}
-	}
+        // Used by test
+        public static bool ThrowException()
+        {
+            throw new EPRuntimeException("Intended for testing");
+        }
+    }
 } // end of namespace

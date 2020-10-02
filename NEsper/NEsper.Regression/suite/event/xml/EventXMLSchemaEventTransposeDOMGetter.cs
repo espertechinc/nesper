@@ -28,8 +28,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             List<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLSchemaEventTransposeDOMGetterPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeDOMGetterCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventTransposeDOMGetterPreconfig());
             return execs;
         }
 
@@ -63,7 +77,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             String eventTypeName,
             RegressionPath path)
         {
-
             env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
 
             CollectionAssert.AreEquivalent(

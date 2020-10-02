@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
@@ -23,7 +25,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CountDownLatch _latch = new CountDownLatch(1);
 		private readonly ICollection<EventType> _eventTypes;
 		private readonly ClassLoader _parentClassLoader;
-		private IDictionary<string, Type> _moduleTypes;
+		private ICollection<Assembly> _assemblies;
 
 		public CompilableItemPostCompileLatchJson(
 			ICollection<EventType> eventTypes,
@@ -35,29 +37,18 @@ namespace com.espertech.esper.compiler.@internal.util
 
 		public void AwaitAndRun()
 		{
-			try {
-				_latch.Await();
-			}
-			catch (ThreadInterruptedException) {
-				Thread.CurrentThread.Interrupt();
-				return;
-			}
+			_latch.Await();
 
 			// load underlying class of Json types
-			foreach (var eventType in _eventTypes) {
-				if (!(eventType is JsonEventType)) {
-					continue;
-				}
-
-				var jsonEventType = (JsonEventType) eventType;
-				var classLoader = new PriorityClassLoader(_parentClassLoader, _moduleTypes);
+			foreach (var jsonEventType in _eventTypes.OfType<JsonEventType>()) {
+				var classLoader = new PriorityClassLoader(_parentClassLoader, _assemblies);
 				jsonEventType.Initialize(classLoader);
 			}
 		}
 
-		public void Completed(IDictionary<string, Type> moduleTypes)
+		public void Completed(ICollection<Assembly> assemblies)
 		{
-			_moduleTypes = moduleTypes;
+			_assemblies = assemblies;
 			_latch.CountDown();
 		}
 	}

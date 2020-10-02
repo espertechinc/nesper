@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -233,6 +234,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, createWindowDesc.WindowName);
+
             forgeables.Add(
                 new StmtClassForgeableStmtProvider(
                     aiFactoryProviderClassName,

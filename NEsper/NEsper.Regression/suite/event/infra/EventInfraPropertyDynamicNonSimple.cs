@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					AllExist(1, 2, "3", "4"))
 			};
 			env.CompileDeploy(
-				"@JsonSchema(ClassName='" + nameof(MyLocalJsonProvided) + "') @public @buseventtype create json schema " + JSONPROVIDED_TYPENAME + "()",
+				"@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).FullName + "') @public @buseventtype create json schema " + JSONPROVIDED_TYPENAME + "()",
 				path);
 			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, null, jsonProvidedTests, typeof(object), path);
 		}
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var eventType = env.Statement("s0").EventType;
 			foreach (var propertyName in propertyNames) {
 				Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
-				Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("Exists" + propertyName));
+				Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
 			}
 
 			foreach (var pair in tests) {

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,13 +28,62 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraTableOnMergeSimple());
-            execs.Add(new InfraOnMergePlainPropsAnyKeyed());
-            execs.Add(new InfraMergeWhereWithMethodRead());
-            execs.Add(new InfraMergeSelectWithAggReadAndEnum());
-            execs.Add(new InfraMergeTwoTables());
-            execs.Add(new InfraTableEMACompute());
+            WithTableOnMergeSimple(execs);
+            WithOnMergePlainPropsAnyKeyed(execs);
+            WithMergeWhereWithMethodRead(execs);
+            WithMergeSelectWithAggReadAndEnum(execs);
+            WithMergeTwoTables(execs);
+            WithTableEMACompute(execs);
+            WithTableArrayAssignmentBoxed(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableArrayAssignmentBoxed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableArrayAssignmentBoxed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableEMACompute(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableEMACompute());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMergeTwoTables(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMergeTwoTables());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMergeSelectWithAggReadAndEnum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMergeSelectWithAggReadAndEnum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMergeWhereWithMethodRead(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMergeWhereWithMethodRead());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnMergePlainPropsAnyKeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnMergePlainPropsAnyKeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableOnMergeSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableOnMergeSimple());
             return execs;
         }
 
@@ -45,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplDeclare = "create table varaggIUD (p0 string, sumint sum(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             var eplRead =
                 "@Name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -110,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {"updated", 50});
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) received.Get("c2"),
-                new [] { "p0","sumint" },
+                new[] {"p0", "sumint"},
                 "updated",
                 50);
 
@@ -132,13 +182,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionEnvironment env,
             bool soda)
         {
-            var fieldsTable = new [] { "key","p0","p1","p2","sumint" };
+            var fieldsTable = new[] {"key", "p0", "p1", "p2", "sumint"};
             var path = new RegressionPath();
             var eplDeclare =
                 "create table varaggMIU (key int primary key, p0 string, p1 int, p2 int[], sumint sum(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = new [] { "c0", "c1", "c2", "c3" };
+            var fields = new[] {"c0", "c1", "c2", "c3"};
             var eplRead =
                 "@Name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -246,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplDeclare = "create table varaggMIUD (keyOne int primary key, keyTwo string primary key, prop string)";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = new [] { "c0", "c1", "c2" };
+            var fields = new[] {"c0", "c1", "c2"};
             var eplRead =
                 "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -320,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S1(2));
             EPAssertionUtil.AssertProps(
                 env.Listener("convert").AssertOneGetNewAndReset(),
-                new [] { "val0.keyOne" },
+                new[] {"val0.keyOne"},
                 new object[] {10});
 
             // delete for varagg[10, "A"]
@@ -353,7 +403,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 Assert.IsNull(burn);
             }
             else {
-                Assert.AreEqual(expected, burn); // Epsilon? 1e-10
+                Assert.NotNull(burn);
+                Assert.AreEqual(expected.Value, burn, 1e-10);
             }
         }
 
@@ -372,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[] objects,
             int total)
         {
-            var fields = new [] { "eventset","total" };
+            var fields = new[] {"eventset", "total"};
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
@@ -450,11 +501,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "  public class Helper {\n" +
                     "    public static double ComputeInitialValue(double alpha, double[] burnValues) {\n" +
                     "      double total = 0;\n" +
-                    "      for (double v : burnValues) {\n" +
+                    "      foreach (double v in burnValues) {\n" +
                     "        total = total + v;\n" +
                     "      }\n" +
-                    "      double value = total / burnValues.length;\n" +
-                    "      for (double v : burnValues) {\n" +
+                    "      double value = total / burnValues.Length;\n" +
+                    "      foreach (double v in burnValues) {\n" +
                     "        value = alpha * v + (1 - alpha) * value;\n" +
                     "      }\n" +
                     "      return value;" +
@@ -540,7 +591,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = new [] { "k1","v1" };
+                var fields = new[] {"k1", "v1"};
 
                 env.CompileDeploy("@Name('tbl') create table varaggKV (k1 string primary key, v1 int)", path);
                 env.CompileDeploy(

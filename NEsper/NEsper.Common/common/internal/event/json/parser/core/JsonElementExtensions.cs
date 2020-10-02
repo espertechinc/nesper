@@ -183,141 +183,293 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
 
         public static BigInteger? GetBoxedBigInteger(this JsonElement element)
         {
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => new BigInteger(element.GetInt64()),
+                JsonValueKind.String => BigInteger.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+
             return element.ValueKind == JsonValueKind.Null ? (BigInteger?) null : GetBigInteger(element);
         }
-        
+
+        public static bool GetSmartBoolean(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetBoolean(),
+                JsonValueKind.String => Boolean.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
         public static bool? GetBoxedBoolean(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (bool?) null : element.GetBoolean();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetBoolean(),
+                JsonValueKind.String => Boolean.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
+        public static byte GetSmartByte(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetByte(),
+                JsonValueKind.String => Byte.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static byte? GetBoxedByte(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (byte?) null : element.GetByte();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetByte(),
+                JsonValueKind.String => Byte.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
+        public static short GetSmartInt16(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetInt16(),
+                JsonValueKind.String => Int16.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static short? GetBoxedInt16(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (short?) null : element.GetInt16();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetInt16(),
+                JsonValueKind.String => Int16.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
+        public static int GetSmartInt32(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetInt32(),
+                JsonValueKind.String => Int32.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static int? GetBoxedInt32(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (int?) null : element.GetInt32();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetInt32(),
+                JsonValueKind.String => Int32.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
+        public static long GetSmartInt64(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetInt64(),
+                JsonValueKind.String => Int64.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static long? GetBoxedInt64(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (long?) null : element.GetInt64();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetInt64(),
+                JsonValueKind.String => Int64.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+        
+        public static float GetSmartSingle(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetSingle(),
+                JsonValueKind.String => Single.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static float? GetBoxedSingle(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (float?) null : element.GetSingle();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetSingle(),
+                JsonValueKind.String => Single.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
+        public static double GetSmartDouble(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetDouble(),
+                JsonValueKind.String => Double.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static double? GetBoxedDouble(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (double?) null : element.GetDouble();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetDouble(),
+                JsonValueKind.String => Double.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
+        }
+
+        public static decimal GetSmartDecimal(this JsonElement element)
+        {
+            return element.ValueKind switch {
+                JsonValueKind.Number => element.GetDecimal(),
+                JsonValueKind.String => Decimal.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static decimal? GetBoxedDecimal(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (decimal?) null : element.GetDecimal();
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => element.GetDecimal(),
+                JsonValueKind.String => Decimal.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
-        
+
         public static char GetCharacter(this JsonElement element)
         {
-            return element.GetString()[0]; // can generate index out of bounds array
+            return element.ValueKind switch {
+                JsonValueKind.String => element.GetString()[0], // can generate index out of bounds array
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
         
         public static char? GetBoxedCharacter(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (char?) null : element.GetString()[0];
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.String => element.GetString()[0],
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static DateTime GetDateTime(this JsonElement element)
         {
-            var stringValue = element.GetString();
-            try {
-                return DateTimeParsingFunctions.ParseDefault(stringValue).DateTime;
+            if (element.ValueKind == JsonValueKind.String) {
+                var stringValue = element.GetString();
+                try {
+                    return DateTimeParsingFunctions.ParseDefault(stringValue).DateTime;
+                }
+                catch (ArgumentException ex) {
+                    throw HandleParseException(typeof(DateTime), stringValue, ex);
+                }
             }
-            catch (ArgumentException ex) {
-                throw HandleParseException(typeof(DateTime), stringValue, ex);
-            }
+
+            throw new ArgumentException("Invalid JsonElement", nameof(element));
         }
         
         public static DateTime? GetBoxedDateTime(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (DateTime?) null : GetDateTime(element);
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.String => GetDateTime(element),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static DateTimeOffset GetDateTimeOffset(this JsonElement element)
         {
-            var stringValue = element.GetString();
-            try {
-                return DateTimeParsingFunctions.ParseDefault(stringValue);
+            if (element.ValueKind == JsonValueKind.String) {
+                var stringValue = element.GetString();
+                try {
+                    return DateTimeParsingFunctions.ParseDefault(stringValue);
+                }
+                catch (ArgumentException ex) {
+                    throw HandleParseException(typeof(DateTime), stringValue, ex);
+                }
             }
-            catch (ArgumentException ex) {
-                throw HandleParseException(typeof(DateTime), stringValue, ex);
-            }
+
+            throw new ArgumentException("Invalid JsonElement", nameof(element));
         }
 
         public static DateTimeOffset? GetBoxedDateTimeOffset(this JsonElement element)
         {
-            return element.ValueKind == JsonValueKind.Null ? (DateTimeOffset?) null : GetDateTimeOffset(element);
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.String => GetDateTimeOffset(element),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static DateTimeEx GetDateTimeEx(this JsonElement element)
         {
-            if (element.ValueKind == JsonValueKind.Null) {
-                return null;
-            }
-
-            var stringValue = element.GetString();
-            try {
-                return DateTimeParsingFunctions.ParseDefaultEx(stringValue);
-            }
-            catch (ArgumentException ex) {
-                throw HandleParseException(typeof(DateTime), stringValue, ex);
+            switch (element.ValueKind) {
+                case JsonValueKind.Null:
+                    return null;
+                case JsonValueKind.String: {
+                    var stringValue = element.GetString();
+                    try {
+                        return DateTimeParsingFunctions.ParseDefaultEx(stringValue);
+                    }
+                    catch (ArgumentException ex) {
+                        throw HandleParseException(typeof(DateTime), stringValue, ex);
+                    }
+                }
+                default:
+                    throw new ArgumentException("Invalid JsonElement", nameof(element));
             }
         }
-        
+
         public static Uri GetUri(this JsonElement element)
         {
-            if (element.ValueKind == JsonValueKind.Null) {
-                return null;
-            }
-
-            return new Uri(element.GetString());
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.String => new Uri(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static Guid GetUuid(this JsonElement element)
         {
-            return Guid.Parse(element.GetString());
+            return element.ValueKind switch {
+                JsonValueKind.String => Guid.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static Guid? GetBoxedUuid(this JsonElement element)
         {
-            if (element.ValueKind == JsonValueKind.Null) {
-                return null;
-            }
-
-            return GetUuid(element);
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.String => Guid.Parse(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static T GetEnum<T>(this JsonElement element) where T : struct
         {
-            return EnumHelper.Parse<T>(element.GetString());
+            return element.ValueKind switch {
+                JsonValueKind.String => EnumHelper.Parse<T>(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         public static Nullable<T> GetBoxedEnum<T>(this JsonElement element) where T : struct
         {
-            if (element.ValueKind == JsonValueKind.Null) {
-                return null;
-            }
-
-            return GetEnum<T>(element);
+            return element.ValueKind switch {
+                JsonValueKind.Null => null,
+                JsonValueKind.String => EnumHelper.Parse<T>(element.GetString()),
+                _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
+            };
         }
 
         // --------------------------------------------------------------------------------

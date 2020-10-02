@@ -20,14 +20,18 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
     public class EventTypeRepositoryAvroTypeUtil
     {
         public static void BuildAvroTypes(
-            EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
+            EventTypeRepositoryImpl repo,
             IDictionary<string, ConfigurationCommonEventTypeAvro> eventTypesAvro,
             EventTypeAvroHandler eventTypeAvroHandler,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             foreach (var entry in eventTypesAvro) {
+                if (repo.GetTypeByName(entry.Key) != null) {
+                    continue;
+                }
+                
                 BuildAvroType(
-                    eventTypeRepositoryPreconfigured,
+                    repo,
                     entry.Key,
                     entry.Value,
                     eventTypeAvroHandler,

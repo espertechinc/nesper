@@ -41,8 +41,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             List<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaSimpleXMLXPathPropertiesPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaSimpleXMLXPathPropertiesCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaSimpleXMLXPathPropertiesPreconfig());
             return execs;
         }
 
@@ -60,8 +74,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             {
                 string epl = "@public @buseventtype " +
                              "@XMLSchema(RootElementName='myevent'," +
-                             "  XPathFunctionResolver='" + typeof(SupportXPathFunctionResolver).MaskTypeName() + "'," +
-                             "  XPathVariableResolver='" + typeof(SupportXPathVariableResolver).MaskTypeName() + "')" +
+                             "  XPathFunctionResolver='" +
+                             typeof(SupportXPathFunctionResolver).MaskTypeName() +
+                             "'," +
+                             "  XPathVariableResolver='" +
+                             typeof(SupportXPathVariableResolver).MaskTypeName() +
+                             "')" +
                              "@XMLSchemaField(Name='xpathElement1', XPath='/myevent/element1', Type='STRING')" +
                              "@XMLSchemaField(Name='xpathCountE21', XPath='count(/myevent/element2/element21)', Type='NUMBER')" +
                              "@XMLSchemaField(Name='xpathAttrString', XPath='/myevent/element3/@attrString', Type='STRING')" +

@@ -54,20 +54,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			var epl =
 				"create json schema " + JSON_TYPENAME + "_4(Lvl4 int);\n" +
-				"create json schema " + JSON_TYPENAME + "_3(Lvl3 int, l4 " + JSON_TYPENAME + "_4);\n" +
-				"create json schema " + JSON_TYPENAME + "_2(Lvl2 int, l3 " + JSON_TYPENAME + "_3);\n" +
-				"create json schema " + JSON_TYPENAME + "_1(Lvl1 int, l2 " + JSON_TYPENAME + "_2);\n" +
-				"@Name('types') @public @buseventtype create json schema " +
-				JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1);\n";
+				"create json schema " + JSON_TYPENAME + "_3(Lvl3 int, L4 " + JSON_TYPENAME + "_4);\n" +
+				"create json schema " + JSON_TYPENAME + "_2(Lvl2 int, L3 " + JSON_TYPENAME + "_3);\n" +
+				"create json schema " + JSON_TYPENAME + "_1(Lvl1 int, L2 " + JSON_TYPENAME + "_2);\n" +
+				"@Name('types') @public @buseventtype " +
+				"create json schema " + JSON_TYPENAME + "(L1 " + JSON_TYPENAME + "_1);\n";
 			env.CompileDeploy(epl, path);
 			Type nestedClass = SupportJsonEventTypeUtil.GetUnderlyingType(env, "types", JSON_TYPENAME + "_1");
 			RunAssertion(env, JSON_TYPENAME, FJSON, nestedClass, JSON_TYPENAME + "_1", path);
 
-			epl = "@JsonSchema(ClassName='" +
-			      typeof(MyLocalJSONProvidedTop).MaskTypeName() +
-			      "') @name('types') @public @buseventtype create json schema " +
-			      JSONPROVIDED_TYPENAME +
-			      "();\n";
+			epl = $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedTop).MaskTypeName()}') @name('types') @public @buseventtype create json schema {JSONPROVIDED_TYPENAME}();\n";
 			env.CompileDeploy(epl, path);
 			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, typeof(MyLocalJSONProvidedLvl1), typeof(MyLocalJSONProvidedLvl1).FullName, path);
 

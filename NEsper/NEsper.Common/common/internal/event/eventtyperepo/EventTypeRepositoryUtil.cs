@@ -20,10 +20,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
     public class EventTypeRepositoryUtil
     {
-        public static IList<string> GetCreationOrder(
-            ISet<string> firstSet,
-            ISet<string> secondSet,
-            IDictionary<string, ConfigurationCommonEventTypeWithSupertype> configurations)
+        public static IList<string> GetCreationOrder<T>(
+            ICollection<string> firstSet,
+            ICollection<string> secondSet,
+            IDictionary<string, T> configurations)
+            where T : ConfigurationCommonEventTypeWithSupertype
         {
             IList<string> creationOrder = new List<string>();
             creationOrder.AddAll(firstSet);

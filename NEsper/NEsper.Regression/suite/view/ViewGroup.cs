@@ -33,27 +33,167 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewGroupObjectArrayEvent());
-            execs.Add(new ViewGroupStats());
-            execs.Add(new ViewGroupReclaimTimeWindow());
-            execs.Add(new ViewGroupReclaimAgedHint());
-            execs.Add(new ViewGroupCorrel());
-            execs.Add(new ViewGroupLinest());
-            execs.Add(new ViewGroupMultiProperty());
-            execs.Add(new ViewGroupInvalid());
-            execs.Add(new ViewGroupLengthWinWeightAvg());
-            execs.Add(new ViewGroupReclaimWithFlipTime(5000L));
-            execs.Add(new ViewGroupTimeBatch());
-            execs.Add(new ViewGroupTimeAccum());
-            execs.Add(new ViewGroupTimeOrder());
-            execs.Add(new ViewGroupTimeLengthBatch());
-            execs.Add(new ViewGroupLengthWin());
-            execs.Add(new ViewGroupLengthBatch());
-            execs.Add(new ViewGroupTimeWin());
-            execs.Add(new ViewGroupExpressionGrouped());
-            execs.Add(new ViewGroupExpressionBatch());
-            execs.Add(new ViewGroupEscapedPropertyText());
+            WithObjectArrayEvent(execs);
+            WithStats(execs);
+            WithReclaimTimeWindow(execs);
+            WithReclaimAgedHint(execs);
+            WithCorrel(execs);
+            WithLinest(execs);
+            WithMultiProperty(execs);
+            WithInvalid(execs);
+            WithLengthWinWeightAvg(execs);
+            WithReclaimWithFlipTime(execs);
+            WithTimeBatch(execs);
+            WithTimeAccum(execs);
+            WithTimeOrder(execs);
+            WithTimeLengthBatch(execs);
+            WithLengthWin(execs);
+            WithLengthBatch(execs);
+            WithTimeWin(execs);
+            WithExpressionGrouped(execs);
+            WithExpressionBatch(execs);
+            WithEscapedPropertyText(execs);
 
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEscapedPropertyText(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupEscapedPropertyText());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupExpressionBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupExpressionGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupTimeWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupLengthBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupLengthWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeLengthBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupTimeLengthBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeOrder(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupTimeOrder());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeAccum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupTimeAccum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupTimeBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithReclaimWithFlipTime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupReclaimWithFlipTime(5000L));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthWinWeightAvg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupLengthWinWeightAvg());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupMultiProperty());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLinest(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupLinest());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCorrel(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupCorrel());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithReclaimAgedHint(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupReclaimAgedHint());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithReclaimTimeWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupReclaimTimeWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStats(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupStats());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectArrayEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewGroupObjectArrayEvent());
             return execs;
         }
 

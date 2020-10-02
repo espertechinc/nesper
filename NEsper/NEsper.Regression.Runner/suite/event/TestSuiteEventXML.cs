@@ -17,6 +17,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.suite.@event.xml;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -377,108 +378,6 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaEventXML()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaEventXML.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaEventTransposeXPathConfigured()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaEventTransposeXPathConfigured.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaEventTransposeDOM()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaEventTransposeDOM.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventTypes()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventTypes.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaPropertyDynamicXPathGetter()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaPropertyDynamicXPathGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventObservationDOM()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventObservationDOM.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventObservationXPath()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventObservationXPath.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventSender()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventSender.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventTransposeDOMGetter()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventTransposeDOMGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventTransposeXPathConfigured()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventTransposeXPathConfigured.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventTransposeXPathGetter()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventTransposeXPathGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventTransposePrimitiveArray()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventTransposePrimitiveArray.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaEventTransposeNodeArray()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaEventTransposeNodeArray.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaWithRestriction()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaWithRestriction.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaWithAll()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaWithAll.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaDOMGetterBacked()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaDOMGetterBacked.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaXPathBacked()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaXPathBacked.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaInvalid()
         {
             RegressionRunner.Run(session, new EventXMLSchemaInvalid());
@@ -491,87 +390,612 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaSimpleXMLXPathProperties()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaSimpleXMLXPathProperties.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaSimpleXMLDOMGetter()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaSimpleXMLDOMGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaSimpleXMLXPathGetter()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaSimpleXMLXPathGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaNestedXMLDOMGetter()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaNestedXMLDOMGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaNestedXMLXPathGetter()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaNestedXMLXPathGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaDotEscape()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaDotEscape.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaElementNode()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaElementNode.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaNamespaceXPathRelative()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaNamespaceXPathRelative.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaNamespaceXPathAbsolute()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaNamespaceXPathAbsolute.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaXPathArray()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaXPathArray.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaPropertyDynamicDOMGetter()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaPropertyDynamicDOMGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLNoSchemaPropertyDynamicXPathGetter()
-        {
-            RegressionRunner.Run(session, EventXMLNoSchemaPropertyDynamicXPathGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventXMLSchemaPropertyDynamicDOMGetter()
-        {
-            RegressionRunner.Run(session, EventXMLSchemaPropertyDynamicDOMGetter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEventXMLCreateSchemaInvalid()
         {
             RegressionRunner.Run(session, new EventXMLCreateSchemaInvalid());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaEventXML
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaEventXML.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaEventXML : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaEventXML() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaEventXML.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaEventXML.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaEventTransposeXPathConfigured
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaEventTransposeXPathConfigured.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaEventTransposeXPathConfigured : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaEventTransposeXPathConfigured() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaEventTransposeXPathConfigured.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaEventTransposeXPathConfigured.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaEventTransposeDOM
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaEventTransposeDOM.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaEventTransposeDOM : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaEventTransposeDOM() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaEventTransposeDOM.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaEventTransposeDOM.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventTypes
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventTypes.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventTypes : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventTypes() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventTypes.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfigured() => RegressionRunner.Run(_session, EventXMLSchemaEventTypes.WithPreconfigured());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaPropertyDynamicXPathGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaPropertyDynamicXPathGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaPropertyDynamicXPathGetter : AbstractTestBase
+        {
+            public TestEventXMLSchemaPropertyDynamicXPathGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaPropertyDynamicXPathGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaPropertyDynamicXPathGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventObservationDOM
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventObservationDOM.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventObservationDOM : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventObservationDOM() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventObservationDOM.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventObservationDOM.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventObservationXPath
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventObservationXPath.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventObservationXPath : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventObservationXPath() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventObservationXPath.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventObservationXPath.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventSender
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventSender.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventSender : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventSender() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventSender.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventSender.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventTransposeDOMGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventTransposeDOMGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventTransposeDOMGetter : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventTransposeDOMGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeDOMGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeDOMGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventTransposeXPathConfigured
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathConfigured.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventTransposeXPathConfigured : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventTransposeXPathConfigured() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithXPathExpression() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathConfigured.WithXPathExpression());
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathConfigured.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathConfigured.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventTransposeXPathGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventTransposeXPathGetter : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventTransposeXPathGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeXPathGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventTransposePrimitiveArray
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventTransposePrimitiveArray.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventTransposePrimitiveArray : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventTransposePrimitiveArray() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposePrimitiveArray.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposePrimitiveArray.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaEventTransposeNodeArray
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaEventTransposeNodeArray.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaEventTransposeNodeArray : AbstractTestBase
+        {
+            public TestEventXMLSchemaEventTransposeNodeArray() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeNodeArray.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaEventTransposeNodeArray.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaWithRestriction
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaWithRestriction.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaWithRestriction : AbstractTestBase
+        {
+            public TestEventXMLSchemaWithRestriction() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaWithRestriction.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaWithRestriction.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaWithAll
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaWithAll.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaWithAll : AbstractTestBase
+        {
+            public TestEventXMLSchemaWithAll() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaWithAll.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaWithAll.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaDOMGetterBacked
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaDOMGetterBacked.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaDOMGetterBacked : AbstractTestBase
+        {
+            public TestEventXMLSchemaDOMGetterBacked() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaDOMGetterBacked.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaDOMGetterBacked.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaXPathBacked
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaXPathBacked.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaXPathBacked : AbstractTestBase
+        {
+            public TestEventXMLSchemaXPathBacked() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaXPathBacked.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaXPathBacked.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaSimpleXMLXPathProperties
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLXPathProperties.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaSimpleXMLXPathProperties : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaSimpleXMLXPathProperties() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLXPathProperties.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLXPathProperties.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaSimpleXMLDOMGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLDOMGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaSimpleXMLDOMGetter : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaSimpleXMLDOMGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLDOMGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLDOMGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaSimpleXMLXPathGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLXPathGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaSimpleXMLXPathGetter : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaSimpleXMLXPathGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLXPathGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaSimpleXMLXPathGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaNestedXMLDOMGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaNestedXMLDOMGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaNestedXMLDOMGetter : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaNestedXMLDOMGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaNestedXMLDOMGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaNestedXMLDOMGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaNestedXMLXPathGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaNestedXMLXPathGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaNestedXMLXPathGetter : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaNestedXMLXPathGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaNestedXMLXPathGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaNestedXMLXPathGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaDotEscape
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaDotEscape.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaDotEscape : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaDotEscape() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaDotEscape.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaDotEscape.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaElementNode
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaElementNode.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaElementNode : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaElementNode() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaElementNode.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaElementNode.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaNamespaceXPathRelative
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaNamespaceXPathRelative.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaNamespaceXPathRelative : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaNamespaceXPathRelative() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaNamespaceXPathRelative.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaNamespaceXPathRelative.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaNamespaceXPathAbsolute
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaNamespaceXPathAbsolute.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaNamespaceXPathAbsolute : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaNamespaceXPathAbsolute() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaNamespaceXPathAbsolute.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaNamespaceXPathAbsolute.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaXPathArray
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaXPathArray.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaXPathArray : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaXPathArray() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaXPathArray.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaXPathArray.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaPropertyDynamicDOMGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaPropertyDynamicDOMGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaPropertyDynamicDOMGetter : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaPropertyDynamicDOMGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaPropertyDynamicDOMGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaPropertyDynamicDOMGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLNoSchemaPropertyDynamicXPathGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLNoSchemaPropertyDynamicXPathGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLNoSchemaPropertyDynamicXPathGetter : AbstractTestBase
+        {
+            public TestEventXMLNoSchemaPropertyDynamicXPathGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLNoSchemaPropertyDynamicXPathGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLNoSchemaPropertyDynamicXPathGetter.WithPreconfig());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventXMLSchemaPropertyDynamicDOMGetter
+        /// <code>
+        /// RegressionRunner.Run(_session, EventXMLSchemaPropertyDynamicDOMGetter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventXMLSchemaPropertyDynamicDOMGetter : AbstractTestBase
+        {
+            public TestEventXMLSchemaPropertyDynamicDOMGetter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateSchema() => RegressionRunner.Run(_session, EventXMLSchemaPropertyDynamicDOMGetter.WithCreateSchema());
+
+            [Test, RunInApplicationDomain]
+            public void WithPreconfig() => RegressionRunner.Run(_session, EventXMLSchemaPropertyDynamicDOMGetter.WithPreconfig());
         }
     }
 } // end of namespace

@@ -34,23 +34,13 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             using (_lock.Acquire()) {
                 if (_filterHandle != null) {
-                    FilterValueSetParam[][] addendum = null;
-                    var agentInstanceContext = services.AgentInstanceContext;
-                    if (agentInstanceContext.AgentInstanceFilterProxy != null) {
-                        addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
-                            _filterSpecActivatable,
-                            agentInstanceContext);
+                    var filterValues = ComputeFilterValues(services.AgentInstanceContext);
+                    if (filterValues != null) {
+                        services.AgentInstanceContext.FilterService.Remove(
+                            _filterHandle,
+                            _filterSpecActivatable.FilterForEventType,
+                            filterValues);
                     }
-
-                    var filterValues = _filterSpecActivatable.GetValueSet(
-                        null,
-                        addendum,
-                        agentInstanceContext,
-                        agentInstanceContext.StatementContextFilterEvalEnv);
-                    services.AgentInstanceContext.FilterService.Remove(
-                        _filterHandle,
-                        _filterSpecActivatable.FilterForEventType,
-                        filterValues);
                 }
 
                 _filterHandle = null;

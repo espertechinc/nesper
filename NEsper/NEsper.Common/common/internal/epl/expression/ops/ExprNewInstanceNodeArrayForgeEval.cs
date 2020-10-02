@@ -67,14 +67,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var method = parent.MakeChild(requiredType, typeof(ExprNewInstanceNodeArrayForgeEval), classScope);
-            ExprNode[] dimensions = forge.Parent.ChildNodes;
+            var dimensions = forge.Parent.ChildNodes;
 
             var dimValue = new CodegenExpression[dimensions.Length];
             for (var i = 0; i < dimensions.Length; i++) {
                 var dimForge = forge.Parent.ChildNodes[i].Forge;
+                var dimForgeType = dimForge.EvaluationType;
                 var dimExpr = dimForge.EvaluateCodegen(typeof(int?), method, symbols, classScope);
                 if (dimForge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
-                    dimValue[i] = dimExpr;
+                    dimValue[i] = Unbox(dimExpr, dimForgeType);
                 }
                 else {
                     var name = "dim" + i;

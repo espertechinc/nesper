@@ -354,7 +354,7 @@ namespace com.espertech.esper.common.client.scopetest
 
             foreach (var anExpected in expected) {
                 if (anExpected is ICollection collection) {
-                    var containsExpected = transposeActual.Any(i => SmartEquals(i, anExpected));
+                    var containsExpected = transposeActual.Any(i => CompatExtensions.DeepEquals(i, anExpected));
                     ScopeTestHelper.AssertTrue("not found: " + collection.RenderAny(), containsExpected);
                 }
                 else {
@@ -377,10 +377,11 @@ namespace com.espertech.esper.common.client.scopetest
             if ((valueA is ICollection) && (valueB is ICollection)) {
                 var collectionA = ((ICollection) valueA).Cast<object>().ToList();
                 var collectionB = ((ICollection) valueB).Cast<object>().ToList();
-                return Collections.AreEqual(collectionA, collectionB);
+                return CompatExtensions.DeepEquals(collectionA, collectionB);
+                //return Collections.AreEqual(collectionA, collectionB);
             }
             else {
-                return Equals(valueA, valueB);
+                return CompatExtensions.DeepEquals(valueA, valueB);
             }
         }
 

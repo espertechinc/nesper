@@ -235,8 +235,10 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 method.Block.DeclareVar(targetType, @ref.Ref, rhs);
 
                 CodegenExpression assigned = @ref;
+                var assignedType = types[i];
                 if (updateItem.OptionalWidener != null) {
                     assigned = updateItem.OptionalWidener.WidenCodegen(@ref, method, classScope);
+                    assignedType = updateItem.OptionalWidener.WidenResultType;
                 }
 
                 if (updateItem.OptionalArray != null) {
@@ -247,9 +249,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     CodegenBlock arrayBlock;
 
                     var elementType = arraySet.ArrayType.GetElementType();
-                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (types[i] == null || types[i].CanBeNull());
+                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (assignedType == null || assignedType.CanBeNull());
                     if (arrayOfPrimitiveNullRHS) {
-                        assigned = Unbox(assigned, types[i]);
+                        assigned = Unbox(assigned, assignedType);
                         arrayBlock = method.Block
                             .IfNull(@ref)
                             .StaticMethod(typeof(EventBeanUpdateHelperForge), "LogWarnWhenNullAndNotNullable", Constant(updateItem.OptionalPropertyName))
@@ -294,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                             .IfElse()
                             .Expression(
                                 updateItem.OptionalWriter.WriteCodegen(
-                                    Unbox(assigned, types[i]),
+                                    Unbox(assigned, assignedType),
                                     Ref("und"),
                                     Ref("target"),
                                     method,

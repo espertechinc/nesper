@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				AtomicLong milestone = new AtomicLong();
-				foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+				foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
 					TryAssertionNewWRepresentation(env, rep, milestone);
 				}
 			}

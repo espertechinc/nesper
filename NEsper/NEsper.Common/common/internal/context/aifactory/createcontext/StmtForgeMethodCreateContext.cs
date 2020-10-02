@@ -198,6 +198,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, context.ContextName);
             forgeables.Add(
                 new StmtClassForgeableStmtProvider(
                     statementAIFactoryProviderClassName,

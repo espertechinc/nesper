@@ -523,8 +523,7 @@ namespace com.espertech.esper.common.@internal.util
             bool[] allowEventBeanType,
             bool[] allowEventBeanCollType)
         {
-            var extensionMethods = MethodExtensions.GetExtensionMethods(declaringClass)
-                .Where(m => m.Name == methodName);
+            var extensionMethods = declaringClass.GetExtensionMethods(methodName);
             foreach (var method in extensionMethods) {
                 var parameterTypes = method.GetParameters().Select(p => p.ParameterType).Skip(1).ToArray();
 

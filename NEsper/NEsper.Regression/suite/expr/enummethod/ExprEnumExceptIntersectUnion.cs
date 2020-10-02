@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+				foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
 					if (rep.IsMapEvent() || rep.IsObjectArrayEvent()) {
 						TryAssertionInheritance(env, rep);
 					}

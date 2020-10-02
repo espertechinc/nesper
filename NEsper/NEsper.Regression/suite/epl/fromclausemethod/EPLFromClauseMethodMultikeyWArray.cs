@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
 				             typeof(SupportJoinResultIsArray).MaskTypeName() +
-				             ".GetResultTwoField(e.id, e.IntOne) as s";
+				             ".GetResultTwoField(e.Id, e.IntOne) as s";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SupportBean sb1 = SendManyArrayGetSB(env, "MA1", new int[] {1, 2});
@@ -138,9 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
-				             "method:" +
-				             typeof(SupportJoinResultIsArray).MaskTypeName() +
-				             ".GetArray() as s " +
+				             "method:" + typeof(SupportJoinResultIsArray).MaskTypeName() + ".GetArray() as s " +
 				             "where s.DoubleArray = e.DoubleOne";
 
 				RunAssertion(env, epl);
@@ -205,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 		{
 			EPAssertionUtil.AssertProps(
 				env.Listener("s0").AssertOneGetNewAndReset(),
-				"e.id,s.id".SplitCsv(),
+				"e.Id,s.Id".SplitCsv(),
 				new object[] {idOne, idTwo});
 		}
 

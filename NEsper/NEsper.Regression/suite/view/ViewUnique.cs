@@ -23,11 +23,46 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewLastUniqueSceneOne(null));
-            execs.Add(new ViewLastUniqueSceneTwo(null));
-            execs.Add(new ViewLastUniqueWithAnnotationPrefix(null));
-            execs.Add(new ViewUniqueExpressionParameter());
+            WithLastUniqueSceneOne(execs);
+            WithLastUniqueSceneTwo(execs);
+            WithLastUniqueWithAnnotationPrefix(execs);
+            WithUniqueExpressionParameter(execs);
+            WithUniqueTwoWindows(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUniqueTwoWindows(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewUniqueTwoWindows());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUniqueExpressionParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUniqueExpressionParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLastUniqueWithAnnotationPrefix(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLastUniqueWithAnnotationPrefix(null));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLastUniqueSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLastUniqueSceneTwo(null));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLastUniqueSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLastUniqueSceneOne(null));
             return execs;
         }
 
@@ -249,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#unique(TheString)";
                 if (optionalAnnotations != null) {
@@ -348,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendSupportBean(env, "E4", 5);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new[] {new object[] {"E2"}, new object[] {"E4"}});
 
                 env.UndeployAll();

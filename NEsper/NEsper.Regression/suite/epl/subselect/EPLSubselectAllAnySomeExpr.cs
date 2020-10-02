@@ -22,13 +22,62 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectRelationalOpAll());
-            execs.Add(new EPLSubselectRelationalOpNullOrNoRows());
-            execs.Add(new EPLSubselectRelationalOpSome());
-            execs.Add(new EPLSubselectEqualsNotEqualsAll());
-            execs.Add(new EPLSubselectEqualsAnyOrSome());
-            execs.Add(new EPLSubselectEqualsInNullOrNoRows());
+            WithRelationalOpAll(execs);
+            WithRelationalOpNullOrNoRows(execs);
+            WithRelationalOpSome(execs);
+            WithEqualsNotEqualsAll(execs);
+            WithEqualsAnyOrSome(execs);
+            WithEqualsInNullOrNoRows(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsInNullOrNoRows(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectEqualsInNullOrNoRows());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsAnyOrSome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectEqualsAnyOrSome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsNotEqualsAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectEqualsNotEqualsAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRelationalOpSome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectRelationalOpSome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRelationalOpNullOrNoRows(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectRelationalOpNullOrNoRows());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRelationalOpAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectRelationalOpAll());
             return execs;
         }
 
@@ -48,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "g","ge","l","le" };
+                var fields = new[] {"g", "ge", "l", "le"};
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive > all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as g, " +
                                "IntPrimitive >= all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as ge, " +
@@ -125,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "vall","vany" };
+                var fields = new[] {"vall", "vany"};
                 var stmtText = "@Name('s0') select " +
                                "IntBoxed >= all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vall, " +
                                "IntBoxed >= any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vany " +
@@ -190,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "g","ge","l","le" };
+                var fields = new[] {"g", "ge", "l", "le"};
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive > any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as g, " +
                                "IntPrimitive >= any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as ge, " +
@@ -259,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "eq","neq","sqlneq","nneq" };
+                var fields = new[] {"eq", "neq", "sqlneq", "nneq"};
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive=all(select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as eq, " +
                                "IntPrimitive != all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as neq, " +
@@ -310,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "r1","r2","r3","r4" };
+                var fields = new[] {"r1", "r2", "r3", "r4"};
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive = SOME (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r1, " +
                                "IntPrimitive = ANY (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r2, " +
@@ -359,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "eall","eany","neall","neany","isin" };
+                var fields = new[] {"eall", "eany", "neall", "neany", "isin"};
                 var stmtText = "@Name('s0') select " +
                                "IntBoxed = all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eall, " +
                                "IntBoxed = any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eany, " +

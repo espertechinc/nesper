@@ -25,16 +25,86 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternOrOp());
-            execs.Add(new PatternFollowedByOp());
-            execs.Add(new PatternMatchUntilOp());
-            execs.Add(new PatternObserverOp());
-            execs.Add(new PatternAndOp());
-            execs.Add(new PatternNotOpNotImpacted());
-            execs.Add(new PatternGuardOp());
-            execs.Add(new PatternEveryOp());
-            execs.Add(new PatternCombination());
+            WithOrOp(execs);
+            WithFollowedByOp(execs);
+            WithMatchUntilOp(execs);
+            WithObserverOp(execs);
+            WithAndOp(execs);
+            WithNotOpNotImpacted(execs);
+            WithGuardOp(execs);
+            WithEveryOp(execs);
+            WithCombination(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCombination(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternCombination());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGuardOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternGuardOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotOpNotImpacted(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternNotOpNotImpacted());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAndOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAndOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObserverOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternObserverOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMatchUntilOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternMatchUntilOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFollowedByOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternFollowedByOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOrOp());
             return execs;
         }
 
@@ -44,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string everySuffix,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -90,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             string distinct)
         {
-            var fields = new [] { "a.Id","b.Id" };
+            var fields = new[] {"a.Id", "b.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       GetText(TargetEnum.DISCARD_ONLY) +
@@ -139,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string pattern,
             bool matchDiscard)
         {
-            var fields = new [] { "a1.Id","a2.Id" };
+            var fields = new[] {"a1.Id", "a2.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -203,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             bool testSoda,
             TargetEnum target)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
             var epl = "@Name('s0') select * from pattern " +
                       GetText(target) +
                       "[every a=SupportIdEventA -> b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa)]";
@@ -237,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b[0].Id","b[1].Id" };
+            var fields = new[] {"a.Id", "b[0].Id", "b[1].Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -281,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b[0].Id","c[0].Id" };
+            var fields = new[] {"a.Id", "b[0].Id", "c[0].Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -324,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "a1.Id","aarr[0].Id" };
+            var fields = new[] {"a1.Id", "aarr[0].Id"};
             SendTime(env, 0);
 
             var epl = "@Name('s0') select * from pattern " +
@@ -358,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             bool testSoda,
             TargetEnum target)
         {
-            var fields = new [] { "a1.Id","aarr[0].Id","b.Id" };
+            var fields = new[] {"a1.Id", "aarr[0].Id", "b.Id"};
             var epl = "@Name('s0') select * from pattern " +
                       GetText(target) +
                       "[every a1=SupportIdEventA -> [:10] aarr=SupportIdEventA until b=SupportIdEventB]";
@@ -392,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -436,7 +506,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -484,7 +554,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -528,7 +598,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
 
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -711,7 +781,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var events = env.Listener("s0").GetAndResetLastNewData();
                 EPAssertionUtil.AssertPropsPerRow(
                     events,
-                    new [] { "a.Id" },
+                    new[] {"a.Id"},
                     new[] {
                         new object[] {"A2"},
                         new object[] {"A1"}
@@ -750,7 +820,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a.Id","b.Id" };
+                var fields = new[] {"a.Id", "b.Id"};
                 SendTime(env, 0);
 
                 var epl = "@Name('s0') select * from pattern " +
@@ -801,7 +871,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a.Id" };
+                var fields = new[] {"a.Id"};
                 SendTime(env, 0);
 
                 var epl = "@Name('s0') select * from pattern " +
@@ -843,7 +913,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a.Id","b.Id","c.Id" };
+                var fields = new[] {"a.Id", "b.Id", "c.Id"};
                 SendTime(env, 0);
 
                 var epl = "@Name('s0') select * from pattern " +

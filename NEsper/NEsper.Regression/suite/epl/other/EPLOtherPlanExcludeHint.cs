@@ -29,9 +29,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherDocSample());
-            execs.Add(new EPLOtherJoin());
+            WithDocSample(execs);
+            WithJoin(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDocSample());
             return execs;
         }
 
@@ -60,8 +81,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var schema =
-                    "create schema AEvent as " + typeof(AEvent).MaskTypeName() + ";\n" +
-                    "create schema BEvent as " + typeof(BEvent).MaskTypeName() + ";\n";
+                    "create schema AEvent as " +
+                    typeof(AEvent).MaskTypeName() +
+                    ";\n" +
+                    "create schema BEvent as " +
+                    typeof(BEvent).MaskTypeName() +
+                    ";\n";
                 var path = new RegressionPath();
                 env.CompileDeploy(schema, path);
 

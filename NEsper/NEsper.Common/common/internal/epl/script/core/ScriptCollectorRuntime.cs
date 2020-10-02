@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             int numParameters,
             ExpressionScriptProvided meta)
         {
-            NameAndParamNum key = new NameAndParamNum(scriptName, numParameters);
+            var key = new NameAndParamNum(scriptName, numParameters);
             if (scripts.ContainsKey(key)) {
                 throw new IllegalStateException("Script already found '" + key + "'");
             }

@@ -23,15 +23,78 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinRootS0());
-            execs.Add(new EPLJoinRootS1());
-            execs.Add(new EPLJoinRootS1Order2());
-            execs.Add(new EPLJoinRootS2());
-            execs.Add(new EPLJoinRootS2Order2());
-            execs.Add(new EPLJoinRootS3());
-            execs.Add(new EPLJoinRootS3Order2());
-            execs.Add(new EPLJoinRootS4());
+            With0(execs);
+            With1(execs);
+            With1Order2(execs);
+            With2(execs);
+            With2Order2(execs);
+            With3(execs);
+            With3Order2(execs);
+            With4(execs);
+            With4Order2(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With4Order2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinRootS4Order2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With4(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS4());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3Order2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS3Order2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS3());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2Order2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS2Order2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With1Order2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS1Order2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS0());
             return execs;
         }
 

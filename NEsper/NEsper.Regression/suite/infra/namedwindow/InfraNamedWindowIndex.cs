@@ -30,6 +30,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             Assert.AreEqual(
                 StatementType.CREATE_INDEX,
                 env.Statement("idx").GetProperty(StatementProperty.STATEMENTTYPE));
+            Assert.AreEqual(
+                "I1",
+                env.Statement("idx").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
             env.SendEventBean(new SupportBean("E0", 1));
             env.SendEventBean(new SupportBean("E2", 2));

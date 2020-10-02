@@ -23,11 +23,46 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternComplexProperties());
-            execs.Add(new PatternIndexedFilterProp());
-            execs.Add(new PatternIndexedValueProp());
-            execs.Add(new PatternIndexedValuePropOM());
+            WithComplexProperties(execs);
+            WithIndexedFilterProp(execs);
+            WithIndexedValueProp(execs);
+            WithIndexedValuePropOM(execs);
+            WithIndexedValuePropCompile(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIndexedValuePropCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternIndexedValuePropCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIndexedValuePropOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIndexedValuePropOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIndexedValueProp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIndexedValueProp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIndexedFilterProp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIndexedFilterProp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithComplexProperties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternComplexProperties());
             return execs;
         }
 

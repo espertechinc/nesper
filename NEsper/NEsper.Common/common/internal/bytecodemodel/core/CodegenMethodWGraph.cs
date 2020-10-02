@@ -25,23 +25,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenMethodWGraph
     {
-        private bool _isStatic;
-
         public CodegenMethodWGraph(
             string name,
             CodegenMethodFootprint footprint,
             CodegenBlock block,
             bool isPublic,
-            bool isOverride,
-            bool isStatic,
+            MemberModifier modifiers,
             CodegenMethod originator)
         {
             Name = name;
             Footprint = footprint;
             Block = block;
             IsPublic = isPublic;
-            IsOverride = isOverride;
-            IsStatic = isStatic;
+            Modifiers = modifiers;
             Originator = originator;
         }
 
@@ -51,39 +47,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public CodegenBlock Block { get; }
 
-        public bool IsOverride { get; set; }
+        public MemberModifier Modifiers { get; private set; }
 
         public bool IsPublic { get; set; }
 
-        public bool IsStatic {
-            get => _isStatic;
-            set => _isStatic = value;
-        }
-
         public CodegenMethod Originator { get; set;  }
 
+        public CodegenMethodWGraph WithStatic()
+        {
+            Modifiers = Modifiers.Enable(MemberModifier.STATIC);
+            return this;
+        }
+        
         public void MergeClasses(ISet<Type> classes)
         {
             Footprint.MergeClasses(classes);
             Block.MergeClasses(classes);
-        }
-
-        public CodegenMethodWGraph WithOverride(bool isOverride)
-        {
-            IsPublic = isOverride;
-            return this;
-        }
-
-        public CodegenMethodWGraph WithPublic(bool isPublic)
-        {
-            IsPublic = isPublic;
-            return this;
-        }
-
-        public CodegenMethodWGraph WithStatic(bool isStatic)
-        {
-            IsStatic = isStatic;
-            return this;
         }
 
         public void Render(
@@ -115,14 +94,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 builder.Append("internal ");
             }
 
-            if (IsStatic)
+            if (Modifiers.IsStatic())
             {
                 builder.Append("static ");
             }
 
-            if (IsOverride)
+            if (Modifiers.IsOverride())
             {
                 builder.Append("override ");
+            }
+
+            if (Modifiers.IsVirtual())
+            {
+                builder.Append("virtual ");
             }
 
             if (Footprint.ReturnType != null)
@@ -177,13 +161,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             tokenList = tokenList.Add(token);
 
             // Static modifier
-            if (IsStatic) {
+            if (Modifiers.IsStatic()) {
                 tokenList = tokenList.Add(Token(SyntaxKind.StaticKeyword));
             }
 
             // Override modifier
-            if (IsOverride) {
+            if (Modifiers.IsOverride()) {
                 tokenList = tokenList.Add(Token(SyntaxKind.OverrideKeyword));
+            }
+
+            // Virtual modifier
+            if (Modifiers.IsVirtual()) {
+                tokenList = tokenList.Add(Token(SyntaxKind.VirtualKeyword));
             }
 
             return tokenList;

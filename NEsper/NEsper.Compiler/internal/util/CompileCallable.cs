@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -20,18 +21,18 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CompilableItem _compilableItem;
 		private readonly ModuleCompileTimeServices _compileTimeServices;
 		private readonly Semaphore _semaphore;
-		private readonly IDictionary<string, Type> _statementTypes;
+		private readonly ICollection<Assembly> _statementAssemblies;
 
 		CompileCallable(
 			CompilableItem compilableItem,
 			ModuleCompileTimeServices compileTimeServices,
 			Semaphore semaphore,
-			IDictionary<string, Type> statementTypes)
+			ICollection<Assembly> statementAssemblies)
 		{
 			_compilableItem = compilableItem;
 			_compileTimeServices = compileTimeServices;
 			_semaphore = semaphore;
-			_statementTypes = statementTypes;
+			_statementAssemblies = statementAssemblies;
 		}
 
 		public CompilableItemResult Call()
@@ -42,14 +43,14 @@ namespace com.espertech.esper.compiler.@internal.util
 					.WithCodeAuditDirectory(_compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
 					.WithCodegenClasses(_compilableItem.Classes);
 
-				var assembly = compiler.Compile();
+				_statementAssemblies.Add(compiler.Compile());
 			}
 			catch (Exception t) {
 				return new CompilableItemResult(t);
 			}
 			finally {
 				_semaphore.Release();
-				_compilableItem.PostCompileLatch.Completed(_statementTypes);
+				_compilableItem.PostCompileLatch.Completed(_statementAssemblies);
 			}
 
 			return new CompilableItemResult();

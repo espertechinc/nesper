@@ -31,9 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             protected bool Equals(EventTwoArrayOfPrimitive other)
             {
-                return id == other.id 
-                       && Arrays.AreEqual(one, other.one) 
-                       && Arrays.AreEqual(two, other.two);
+                return id == other.id && Arrays.AreEqual(one, other.one) && Arrays.AreEqual(two, other.two);
             }
 
             public override bool Equals(object obj)

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenClassScope classScope,
             bool returnMissingValueAsNull)
         {
-            var evaluationType = forge.EvaluationType; // GetBoxedType();
+            var evaluationType = forge.EvaluationType;
             if (returnMissingValueAsNull) {
                 evaluationType = evaluationType.GetBoxedType();
             }
@@ -60,13 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             exprMethod.Block.DebugStack();
-
+            
             var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
 
             if (evaluationType != typeof(void)) {
-                exprMethod.Block.MethodReturn(
-                    CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression));
+                exprMethod.Block.MethodReturn(expression);
+                //CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression);
             }
             else {
                 exprMethod.Block.Expression(expression);

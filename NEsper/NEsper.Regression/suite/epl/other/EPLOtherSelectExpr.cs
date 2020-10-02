@@ -32,12 +32,54 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherPrecedenceNoColumnName());
-            execs.Add(new EPLOtherGraphSelect());
-            execs.Add(new EPLOtherKeywordsAllowed());
-            execs.Add(new EPLOtherEscapeString());
-            execs.Add(new EPLOtherGetEventType());
+            WithPrecedenceNoColumnName(execs);
+            WithGraphSelect(execs);
+            WithKeywordsAllowed(execs);
+            WithEscapeString(execs);
+            WithGetEventType(execs);
+            WithWindowStats(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowStats(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherWindowStats());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGetEventType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherGetEventType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEscapeString(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherEscapeString());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeywordsAllowed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherKeywordsAllowed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGraphSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherGraphSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrecedenceNoColumnName(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPrecedenceNoColumnName());
             return execs;
         }
 

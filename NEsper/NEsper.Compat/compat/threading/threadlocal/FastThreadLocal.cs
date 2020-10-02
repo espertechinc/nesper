@@ -163,13 +163,21 @@ namespace com.espertech.esper.compat.threading.threadlocal
             return lThreadData;
         }
 
-        private static void Rebalance(StaticData lThreadData, int index)
+        private static void Rebalance(
+            StaticData lThreadData,
+            int index)
         {
             var lTable = lThreadData.Table;
-            var tempTable = new T[index + 100 - index%100];
-            Array.Copy(lTable, tempTable, lTable.Length);
-            lThreadData.Table = tempTable;
-            lThreadData.Count = tempTable.Length;
+            var tLength = lTable.Length + 100;
+            if (tLength <= index) {
+                tLength = index + 100 - index % 100;
+            }
+
+            var tTable = new T[tLength];
+            Array.Copy(lTable, tTable, lTable.Length);
+            lThreadData.Table = tTable;
+            lThreadData.Count = tTable.Length;
+
             //return lTable;
         }
 

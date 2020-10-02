@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
+            return JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.PropertyName, Index);
         }
 
         public override bool GetJsonExists(object @object)
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 return null;
             }
 
-            var value = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
+            var value = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.PropertyName, Index);
             if (value == null) {
                 return null;
             }

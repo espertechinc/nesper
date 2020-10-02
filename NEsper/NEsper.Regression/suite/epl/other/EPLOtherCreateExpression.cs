@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             Assert.IsFalse(env.Listener("s1").GetAndClearIsInvoked());
             env.SendEventBean(new SupportBean("E2", 1));
             Assert.IsTrue(env.Listener("s1").GetAndClearIsInvoked());
-            
+
             var listenerS1 = env.Listener("s1");
             path.Clear();
             env.UndeployAll();
@@ -126,6 +126,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression E1 {''}", path);
+                Assert.AreEqual(StatementType.CREATE_EXPRESSION, env.Statement("s0").GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual("E1", env.Statement("s0").GetProperty(StatementProperty.CREATEOBJECTNAME));
+
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,

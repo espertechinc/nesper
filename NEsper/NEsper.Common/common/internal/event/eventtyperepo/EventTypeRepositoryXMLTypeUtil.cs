@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
     public class EventTypeRepositoryXMLTypeUtil
     {
         public static void BuildXMLTypes(
-            EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
+            EventTypeRepositoryImpl repo,
             IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXMLDOM,
             BeanEventTypeFactory beanEventTypeFactory,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
@@ -33,6 +33,10 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
         {
             // Add from the configuration the XML DOM names and type def
             foreach (var entry in eventTypesXMLDOM) {
+                if (repo.GetTypeByName(entry.Key) != null) {
+                    continue;
+                }
+                
                 SchemaModel schemaModel = null;
                 if (entry.Value.SchemaResource != null || entry.Value.SchemaText != null) {
                     try {
@@ -48,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 
                 try {
                     AddXMLDOMType(
-                        eventTypeRepositoryPreconfigured,
+                        repo,
                         entry.Key,
                         entry.Value,
                         schemaModel,

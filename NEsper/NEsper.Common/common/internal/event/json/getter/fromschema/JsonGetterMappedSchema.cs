@@ -31,12 +31,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedProp(@object, _field.FieldName, Key);
+            return JsonFieldGetterHelperSchema.GetJsonMappedProp(@object, _field.PropertyName, Key);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedExists(@object, _field.FieldName, Key);
+            return JsonFieldGetterHelperSchema.GetJsonMappedExists(@object, _field.PropertyName, Key);
         }
     }
 } // end of namespace

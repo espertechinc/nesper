@@ -12,6 +12,7 @@ using System.Threading;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -180,9 +181,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     $"import {typeof(MyLocalVariable).MaskTypeName()};\n" +
                     "@Name('var') create variable MyLocalVariable VAR = new MyLocalVariable(1, 10);\n" +
                     "inlined_class \"\"\"\n" +
-                    $"  import {typeof(MyLocalVariable).FullName.Replace('$', '.')};\n" +
+                    $"  using {typeof(MyLocalVariable).Namespace};\n" +
                     "  public class Helper {\n" +
-                    "    public static void Swap(MyLocalVariable varX) {\n" +
+                    "    public static void Swap(EPLVariablesOnSet.MyLocalVariable varX) {\n" +
                     "      int temp = varX.A;\n" +
                     "      varX.A = varX.B;\n" +
                     "      varX.B = temp;\n" +
@@ -201,25 +202,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "@Name('var') create variable MyLocalVariable VARTWO = new MyLocalVariable(1, 10);\n" +
                     "" +
                     "inlined_class \"\"\"\n" +
-                    $"  import {typeof(MyLocalVariable).FullName.Replace("$", ".")};\n" +
-                    "  public class Helper {\n" +
-                    "    public static void Swap(MyLocalVariable varOne, MyLocalVariable varTwo) {\n" +
+                    $"  using {typeof(MyLocalVariable).Namespace};\n" +
+                    "  public class HelperABC {\n" +
+                    "    public static void Swap(EPLVariablesOnSet.MyLocalVariable varOne, EPLVariablesOnSet.MyLocalVariable varTwo) {\n" +
                     "    }\n" +
                     "  }\n" +
                     "\"\"\"\n" +
-                    "@Name('s0') on SupportBean set Helper.Swap(VARONE, VARTWO);\n";
+                    "@Name('s0') on SupportBean set HelperABC.Swap(VARONE, VARTWO);\n";
                 TryInvalidCompile(
                     env,
                     eplInvalid,
-                    "Failed to validate assignment expression 'Helper.Swap(VARONE,VARTWO)': Assignment expression must receive a single variable value");
+                    "Failed to validate assignment expression 'HelperABC.Swap(VARONE,VARTWO)': Assignment expression must receive a single variable value");
                 var eplConstant =
                     $"import {typeof(MyLocalVariable).MaskTypeName()};\n" +
                     "@Name('var') create constant variable MyLocalVariable VAR = new MyLocalVariable(1, 10);\n" +
-                    "@Name('s0') on SupportBean set VAR.reset();\n";
+                    "@Name('s0') on SupportBean set VAR.Reset();\n";
                 TryInvalidCompile(
                     env,
                     eplConstant,
-                    "Failed to validate assignment expression 'VAR.reset()': Variable by name 'VAR' is declared constant and may not be set");
+                    "Failed to validate assignment expression 'VAR.Reset()': Variable by name 'VAR' is declared constant and may not be set");
             }
 
             private void AssertVariable(
@@ -228,8 +229,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 int bExpected)
             {
                 var value = (MyLocalVariable) env.Runtime.VariableService.GetVariableValue(env.DeploymentId("var"), "VAR");
-                Assert.AreEqual(aExpected, value.a);
-                Assert.AreEqual(bExpected, value.b);
+                Assert.AreEqual(aExpected, value.A);
+                Assert.AreEqual(bExpected, value.B);
             }
         }
 
@@ -835,15 +836,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
         public class MyLocalVariable
         {
-            public int a;
-            public int b;
+            public int A;
+            public int B;
 
             public MyLocalVariable(
                 int a,
                 int b)
             {
-                this.a = a;
-                this.b = b;
+                this.A = a;
+                this.B = b;
             }
 
             public void Reset()

@@ -181,7 +181,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
                 getterFactoryJson,
                 beanEventTypeFactory,
                 detail,
-                null);
+                null,
+                false);
         }
 
         public static EventTypeFactoryImpl GetInstance(IContainer container)

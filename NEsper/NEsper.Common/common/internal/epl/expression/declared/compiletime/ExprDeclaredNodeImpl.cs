@@ -431,10 +431,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 var declaredForge = (ExprDeclaredForgeBase) forge;
                 var forgeX = declaredForge.InnerForge;
                 var serde = exprValidationContext.SerdeResolver.SerdeForFilter(
-                    forge.EvaluationType, exprValidationContext.StatementRawInfo);
+                    forgeX.EvaluationType, exprValidationContext.StatementRawInfo);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
-                    new DeclaredNodeEventPropertyGetterForge(forge),
+                    new DeclaredNodeEventPropertyGetterForge(forgeX),
                     null, 
                     forgeX.EvaluationType,
                     true,

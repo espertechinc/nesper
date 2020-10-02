@@ -32,9 +32,30 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternInvalidExpr());
-            execs.Add(new PatternStatementException());
+            WithInvalidExpr(execs);
+            WithStatementException(execs);
+            WithUseResult(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUseResult(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternUseResult());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatementException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternStatementException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternInvalidExpr());
             return execs;
         }
 

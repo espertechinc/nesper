@@ -146,7 +146,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// Same as: CompilerArguments args = new CompilerArguments(configuration);
 			object compilerArguments;
 			try {
-				compilerArguments = _compilerArgsCtor.Invoke(configuration, new object[0]);
+				compilerArguments = _compilerArgsCtor.Invoke(new object[] {configuration});
 			}
 			catch (Exception ex) {
 				throw new EPException("Failed to instantiate compiler arguments: " + ex.Message, ex);

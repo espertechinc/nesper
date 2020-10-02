@@ -22,11 +22,46 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectInvalid());
-            execs.Add(new EPLSubselectCorrelated());
-            execs.Add(new EPLSubselectAggregation());
-            execs.Add(new EPLSubselectSubqueryAgainstNamedWindowInUDFInPattern());
+            WithInvalid(execs);
+            WithCorrelated(execs);
+            WithAggregation(execs);
+            WithSubqueryAgainstNamedWindowInUDFInPattern(execs);
+            WithFilterPatternNamedWindowNoAlias(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterPatternNamedWindowNoAlias(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectFilterPatternNamedWindowNoAlias());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryAgainstNamedWindowInUDFInPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSubqueryAgainstNamedWindowInUDFInPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInvalid());
             return execs;
         }
 

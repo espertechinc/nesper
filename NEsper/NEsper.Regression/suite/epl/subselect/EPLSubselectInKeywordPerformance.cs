@@ -22,9 +22,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectPerformanceInKeywordAsPartOfSubquery());
-            execs.Add(new EPLSubselectPerformanceWhereClauseCoercion());
+            WithInKeywordAsPartOfSubquery(execs);
+            WithWhereClauseCoercion(execs);
+            WithWhereClause(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectPerformanceWhereClause());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereClauseCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectPerformanceWhereClauseCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInKeywordAsPartOfSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectPerformanceInKeywordAsPartOfSubquery());
             return execs;
         }
 

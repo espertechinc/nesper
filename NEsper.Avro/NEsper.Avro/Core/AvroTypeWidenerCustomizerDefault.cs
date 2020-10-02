@@ -28,8 +28,10 @@ namespace NEsper.Avro.Core
             string writeablePropertyName,
             string statementName)
         {
-            if (columnType != null && columnType.IsArray && writeablePropertyType.IsGenericCollection()) {
-                return TypeWidenerFactory.GetArrayToCollectionCoercer(columnType.GetElementType());
+            if (columnType != null && columnType.IsArray) {
+                if (!writeablePropertyType.IsArray && writeablePropertyType.IsGenericCollection()) {
+                    return TypeWidenerFactory.GetArrayToCollectionCoercer(columnType.GetElementType());
+                }
             }
 
             return null;

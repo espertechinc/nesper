@@ -343,7 +343,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             props.Put("name2", "val2");
             session.Configuration.Runtime.AddPluginLoader("MyLoader2", typeof(SupportPluginLoader), props);
 
-            RegressionRunner.Run(_session, new ClientExtendAdapterLoader());
+            RegressionRunner.Run(session, new ClientExtendAdapterLoader());
 
             session.Destroy();
         }

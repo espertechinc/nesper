@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
@@ -25,6 +26,8 @@ using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
+using DateTimeFormat = com.espertech.esper.compat.datetime.DateTimeFormat;
+
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherStaticFunctions
@@ -34,30 +37,198 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherNullPrimitive());
-            execs.Add(new EPLOtherChainedInstance());
-            execs.Add(new EPLOtherChainedStatic());
-            execs.Add(new EPLOtherEscape());
-            execs.Add(new EPLOtherReturnsMapIndexProperty());
-            execs.Add(new EPLOtherPattern());
-            execs.Add(new EPLOtherException());
-            execs.Add(new EPLOtherArrayParameter());
-            execs.Add(new EPLOtherNoParameters());
-            execs.Add(new EPLOtherPerfConstantParameters());
-            execs.Add(new EPLOtherPerfConstantParametersNested());
-            execs.Add(new EPLOtherSingleParameterOM());
-            execs.Add(new EPLOtherSingleParameterCompile());
-            execs.Add(new EPLOtherSingleParameter());
-            execs.Add(new EPLOtherTwoParameters());
-            execs.Add(new EPLOtherUserDefined());
-            execs.Add(new EPLOtherComplexParameters());
-            execs.Add(new EPLOtherMultipleMethodInvocations());
-            execs.Add(new EPLOtherOtherClauses());
-            execs.Add(new EPLOtherNestedFunction());
-            execs.Add(new EPLOtherPassthru());
-            execs.Add(new EPLOtherPrimitiveConversion());
-            execs.Add(new EPLOtherStaticFuncWCurrentTimeStamp());
+            WithNullPrimitive(execs);
+            WithChainedInstance(execs);
+            WithChainedStatic(execs);
+            WithEscape(execs);
+            WithReturnsMapIndexProperty(execs);
+            WithPattern(execs);
+            WithException(execs);
+            WithArrayParameter(execs);
+            WithNoParameters(execs);
+            WithPerfConstantParameters(execs);
+            WithPerfConstantParametersNested(execs);
+            WithSingleParameterOM(execs);
+            WithSingleParameterCompile(execs);
+            WithSingleParameter(execs);
+            WithTwoParameters(execs);
+            WithUserDefined(execs);
+            WithComplexParameters(execs);
+            WithMultipleMethodInvocations(execs);
+            WithOtherClauses(execs);
+            WithNestedFunction(execs);
+            WithPassthru(execs);
+            WithPrimitiveConversion(execs);
+            WithStaticFuncWCurrentTimeStamp(execs);
+            WithStaticFuncEnumConstant(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaticFuncEnumConstant(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherStaticFuncEnumConstant());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaticFuncWCurrentTimeStamp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherStaticFuncWCurrentTimeStamp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrimitiveConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPrimitiveConversion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPassthru(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPassthru());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNestedFunction(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherNestedFunction());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOtherClauses(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherOtherClauses());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultipleMethodInvocations(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherMultipleMethodInvocations());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithComplexParameters(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherComplexParameters());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUserDefined(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherUserDefined());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoParameters(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherTwoParameters());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSingleParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleParameterCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSingleParameterCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleParameterOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSingleParameterOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfConstantParametersNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPerfConstantParametersNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfConstantParameters(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPerfConstantParameters());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoParameters(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherNoParameters());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithArrayParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherArrayParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithReturnsMapIndexProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherReturnsMapIndexProperty());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEscape(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherEscape());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithChainedStatic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherChainedStatic());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithChainedInstance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherChainedInstance());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNullPrimitive(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherNullPrimitive());
             return execs;
         }
 
@@ -122,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1", "c2" },
+                    new[] {"c0", "c1", "c2"},
                     new object[] {10, 10, 10});
 
                 env.UndeployAll();
@@ -134,14 +305,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl =
+                var iso = typeof(DateTimeFormat).FullName + ".GetIsoDateFormat()";
+                var cet = $"{typeof(TimeZoneHelper).FullName}.GetTimeZoneInfo('CET')";
+                var dtx = typeof(DateTimeEx).FullName;
+                
+                var epl =
                     "create map schema MyEvent(someDate DateTime, dateFrom string, dateTo string, minutesOfDayFrom int, minutesOfDayTo int, daysOfWeek string);\n" +
                     "select " +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isAfter(cast(dateFrom||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c0,\n" +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isBefore(cast(dateTo||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c1,\n" +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).get(java.time.temporal.ChronoField.MINUTE_OF_DAY)>= minutesOfDayFrom as c2,\n" +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).get(java.time.temporal.ChronoField.MINUTE_OF_DAY)<= minutesOfDayTo as c3,\n" +
-                    "daysOfWeek.contains(System.String.valueOf(java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).getDayOfWeek().getValue())) as c4\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).isAfter(cast(dateFrom||'T00:00:00Z', datetime, dateformat:" + iso + ")) as c0,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).isBefore(cast(dateTo||'T00:00:00Z', datetime, dateformat:" + iso + ")) as c1,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).get(com.espertech.esper.compat.ChronoField.MINUTE_OF_DAY)>= minutesOfDayFrom as c2,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).get(com.espertech.esper.compat.ChronoField.MINUTE_OF_DAY)<= minutesOfDayTo as c3,\n" +
+                    "daysOfWeek.contains(System.Convert.ToString(" + dtx + ".GetInstance(" + cet + ", someDate).DayOfWeek)) as c4\n" +
                     "from MyEvent";
                 env.Compile(epl);
             }
@@ -151,13 +326,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                env.AdvanceTime(1000);
-                string epl =
-                    "@Name('s0') select java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochMilli(current_timestamp())) as c0 from SupportBean";
+                var baseDate = new DateTimeEx(1970, 1, 1, 0, 0, 0, 0, TimeZoneInfo.Utc);
+                
+                env.AdvanceTime(baseDate.UtcMillis + 1000);
+
+                var iso = typeof(DateTimeFormat).FullName + ".GetIsoDateFormat()";
+                var dtx = typeof(DateTimeEx).FullName;
+                var epl = "@Name('s0') select " + iso + ".Format(" + dtx + ".UtcInstance(current_timestamp())) as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                Assert.AreEqual("1970-01-01T00:00:01Z", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                Assert.AreEqual("1970-01-01T00:00:01", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
 
                 env.UndeployAll();
             }
@@ -191,14 +370,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "val0" },
+                    new[] {"val0"},
                     new object[] {"v1"});
 
                 LevelOne.Field = "v2";
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "val0" },
+                    new[] {"val0"},
                     new object[] {"v2"});
 
                 env.UndeployAll();
@@ -244,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNew(),
-                    new [] { "value" },
+                    new[] {"value"},
                     new object[] {"E1 99"});
 
                 env.UndeployAll();
@@ -267,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNew(),
-                    new [] { "v0","v1" },
+                    new[] {"v0", "v1"},
                     new object[] {"A1", 200});
 
                 env.UndeployAll();
@@ -335,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "v1","v2","v3","v4" },
+                    new[] {"v1", "v2", "v3", "v4"},
                     new object[] {10, 10d, 10d, 10d});
 
                 env.UndeployAll();
@@ -347,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var dateTimeHelper = typeof(DateTimeHelper).FullName;
-                
+
                 long? startTime = DateTimeHelper.GetCurrentTimeMillis();
                 var statementText = $"@Name('s0') select {dateTimeHelper}.GetCurrentTimeMillis() " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");

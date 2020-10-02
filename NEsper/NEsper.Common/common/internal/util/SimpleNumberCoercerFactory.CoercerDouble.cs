@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsDouble();
             }
 
-            public Type ReturnType => typeof(double?);
+            public Type ReturnType => typeof(double);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

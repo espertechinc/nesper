@@ -82,27 +82,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "c0_1","c0_2","c1_1","c1_2" },
+                new[] {"c0_1", "c0_2", "c1_1", "c1_2"},
                 new object[] {"x", "x", 41, 41});
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "c2_1","c2_2" },
+                new[] {"c2_1", "c2_2"},
                 new object[] {sentSB, sentSB});
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "c2_3","c2_4" },
+                new[] {"c2_3", "c2_4"},
                 new object[] {sentSB[0], sentSB[1]});
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "c2_5","c2_6" },
+                new[] {"c2_5", "c2_6"},
                 new object[] {sentSB[0], sentSB[0]});
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "c3_1","c3_2" },
+                new[] {"c3_1", "c3_2"},
                 new object[] {2, 2});
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "c4_1" },
+                new[] {"c4_1"},
                 new object[] {sentSB});
 
             // unnamed column

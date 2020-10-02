@@ -654,7 +654,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 foreach (var theEvent in events) {
                     var inner = ((NaturalEventBean) theEvent).OptionalSynthetic;
                     var key = getter.Get(inner);
-                    map[key] = inner;
+                    map[key] = theEvent;
                 }
             }
             else {

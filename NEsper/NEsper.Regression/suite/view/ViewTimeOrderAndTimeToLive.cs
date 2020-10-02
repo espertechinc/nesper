@@ -25,16 +25,86 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewTimeOrderSceneOne());
-            execs.Add(new ViewTimeOrderSceneTwo());
-            execs.Add(new ViewTimeOrderTTLTimeToLive());
-            execs.Add(new ViewTimeOrderTTLMonthScoped());
-            execs.Add(new ViewTimeOrderTTLTimeOrderRemoveStream());
-            execs.Add(new ViewTimeOrderTTLTimeOrder());
-            execs.Add(new ViewTimeOrderTTLGroupedWindow());
-            execs.Add(new ViewTimeOrderTTLInvalid());
-            execs.Add(new ViewTimeOrderTTLPreviousAndPriorSceneOne());
+            WithSceneOne(execs);
+            WithSceneTwo(execs);
+            WithTTLTimeToLive(execs);
+            WithTTLMonthScoped(execs);
+            WithTTLTimeOrderRemoveStream(execs);
+            WithTTLTimeOrder(execs);
+            WithTTLGroupedWindow(execs);
+            WithTTLInvalid(execs);
+            WithTTLPreviousAndPriorSceneOne(execs);
+            WithTTLPreviousAndPriorSceneTwo(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLPreviousAndPriorSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewTimeOrderTTLPreviousAndPriorSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLPreviousAndPriorSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLPreviousAndPriorSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLGroupedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLGroupedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLTimeOrder(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLTimeOrder());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLTimeOrderRemoveStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLTimeOrderRemoveStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTTLTimeToLive(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderTTLTimeToLive());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeOrderSceneOne());
             return execs;
         }
 
@@ -331,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString","LongPrimitive" };
+                var fields = new[] {"TheString", "LongPrimitive"};
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";
@@ -426,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var fields = new [] { "Id" };
+                var fields = new[] {"Id"};
                 var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#timetolive(Timestamp)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -562,7 +632,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "Id" },
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}});
 
                 env.UndeployAll();
@@ -974,7 +1044,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.AreEqual(2, env.Listener("s0").LastOldData.Length);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").LastOldData,
-                    new [] { "Id" },
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}, new object[] {"E3"}});
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);

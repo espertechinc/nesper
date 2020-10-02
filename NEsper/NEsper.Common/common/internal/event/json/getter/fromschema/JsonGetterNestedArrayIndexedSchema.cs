@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonProp(object @object)
         {
-            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
+            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.PropertyName, Index);
             if (item == null) {
                 return null;
             }
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override bool GetJsonExists(object @object)
         {
-            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
+            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.PropertyName, Index);
             if (item == null) {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonFragment(object @object)
         {
-            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
+            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.PropertyName, Index);
             if (item == null) {
                 return null;
             }

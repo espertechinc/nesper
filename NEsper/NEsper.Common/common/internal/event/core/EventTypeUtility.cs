@@ -884,16 +884,15 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var typeSpec = specifiedEntry.Value;
                 var nameSpec = specifiedEntry.Key;
 
-                if (typeSpec is Type) {
-                    compiled.Put(nameSpec, ((Type) typeSpec).GetBoxedType());
+                if (typeSpec is Type typeSpecType) {
+                    compiled.Put(nameSpec, typeSpecType.GetBoxedType());
                     continue;
                 }
 
-                if (!(typeSpec is string)) {
+                if (!(typeSpec is string typeNameSpec)) {
                     continue;
                 }
 
-                var typeNameSpec = (string) typeSpec;
                 var isArray = IsPropertyArray(typeNameSpec);
                 if (isArray) {
                     typeNameSpec = GetPropertyRemoveArray(typeNameSpec);
@@ -2194,17 +2193,23 @@ namespace com.espertech.esper.common.@internal.@event.core
             JsonEventType targetType)
         {
             var source = theEvent.Underlying;
-            var sourceType = (JsonEventType) theEvent.EventType;
-            var target = targetType.Deserializer.Allocator.Invoke();
+            if (source is IJsonComposite sourceComposite) {
+                var sourceType = (JsonEventType) theEvent.EventType;
+                var target = targetType.AllocateComposite();
 
-            foreach (var entry in targetType.Detail.FieldDescriptors) {
-                JsonUnderlyingField targetField = entry.Value;
-                JsonUnderlyingField sourceField = sourceType.Detail.FieldDescriptors.Get(entry.Key);
-                if (sourceField == null) {
-                    continue;
+                foreach (var entry in targetType.Detail.FieldDescriptors) {
+                    JsonUnderlyingField targetField = entry.Value;
+                    JsonUnderlyingField sourceField = sourceType.Detail.FieldDescriptors.Get(entry.Key);
+                    if (sourceField == null) {
+                        continue;
+                    }
+
+                    var propertyName = sourceField.PropertyName;
+                    var sourceValue = sourceComposite[propertyName];
+                    target[propertyName] = sourceValue;
                 }
-                
-                
+
+                return target;
             }
 
             throw new NotImplementedException("broken: 878b024a-bae5-4797-a8a7-ce86fd4b498d");

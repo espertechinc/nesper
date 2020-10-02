@@ -27,15 +27,78 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewTimeAccumSceneOne());
-            execs.Add(new ViewTimeAccumSceneTwo());
-            execs.Add(new ViewTimeAccumSceneThree());
-            execs.Add(new ViewTimeAccumRStream());
-            execs.Add(new ViewTimeAccumPreviousAndPriorSceneOne());
-            execs.Add(new ViewTimeAccumPreviousAndPriorSceneTwo());
-            execs.Add(new ViewTimeAccumMonthScoped());
-            execs.Add(new ViewTimeAccumSum());
+            WithSceneOne(execs);
+            WithSceneTwo(execs);
+            WithSceneThree(execs);
+            WithRStream(execs);
+            WithPreviousAndPriorSceneOne(execs);
+            WithPreviousAndPriorSceneTwo(execs);
+            WithMonthScoped(execs);
+            WithSum(execs);
+            WithGroupedWindow(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumGroupedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumSum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreviousAndPriorSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumPreviousAndPriorSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreviousAndPriorSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumPreviousAndPriorSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumRStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneThree(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumSceneThree());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewTimeAccumSceneOne());
             return execs;
         }
 
@@ -148,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.UndeployAll();
@@ -251,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 1000);
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
@@ -352,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
                 SendTimer(env, 1000);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

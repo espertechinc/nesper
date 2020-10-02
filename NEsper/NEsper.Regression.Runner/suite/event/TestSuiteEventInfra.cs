@@ -818,8 +818,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
                          "\t<xs:element name=\"myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"p0\" type=\"xs:string\" use=\"required\"/>\n" +
-                         "\t\t\t<xs:attribute name=\"p1\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"P0\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"P1\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -829,11 +829,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var avroSchema = SchemaBuilder.Record(
                 EventInfraManufacturer.AVRO_TYPENAME,
                 TypeBuilder.Field(
-                    "p1",
+                    "P1",
                     TypeBuilder.StringType(
                         TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
                 TypeBuilder.Field(
-                    "p2",
+                    "P2",
                     TypeBuilder.IntType()));
 
             configuration.Common.AddEventTypeAvro(EventInfraManufacturer.AVRO_TYPENAME, new ConfigurationCommonEventTypeAvro(avroSchema));

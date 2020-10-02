@@ -1312,7 +1312,7 @@ namespace com.espertech.esper.compat.collections
                 return result;
             }
 
-            throw new ArgumentException("invalid value");
+            throw new ArgumentException($"invalid value of type \"{value.GetType().CleanName()}\"");
         }
 
         public static IDictionary<object, object> UnwrapDictionary(
@@ -1646,7 +1646,9 @@ namespace com.espertech.esper.compat.collections
             stringBuilder.Append(", ");
             stringBuilder.AppendFormat(format, formatArgs);
 
-            Console.WriteLine(stringBuilder.ToString());
+            var stringResult = stringBuilder.ToString();
+
+            Console.WriteLine(stringResult);
         }
     }
 }

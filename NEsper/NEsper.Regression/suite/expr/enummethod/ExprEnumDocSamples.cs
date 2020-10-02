@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-#if false
+
 				AssertStmt(env, path, "select Items.firstof().AssetId as firstcenter from LocationReport");
 				AssertStmt(env, path, "select Items.where(p => p.Type=\"P\") from LocationReport");
 				AssertStmt(env, path, "select Items.where((p,ind) => p.Type=\"P\" and ind>2) from LocationReport");
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					path,
 					"select Items.selectFrom(i => new{AssetId,distanceCenter=distance(i.Location.X,i.Location.Y,0,0)}) as itemInfo from LocationReport");
 				AssertStmt(env, path, "select Items.leastFrequent(i => Type) as leastFreqType from LocationReport");
-#endif
+
 				string epl = "expression myquery {itm => " +
 				             "(select * from Zone#keepall).where(z => inrect(z.Rectangle,itm.Location))" +
 				             "} " +

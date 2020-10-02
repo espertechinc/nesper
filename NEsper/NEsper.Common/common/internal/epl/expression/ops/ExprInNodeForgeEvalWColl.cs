@@ -280,7 +280,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
 
                         if (!forge.IsMustCoerce) {
-                            ifRightNotNull.IfCondition(
+                            ifRightNotNull
+                                .IfCondition(
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                         Ref("leftCoerced"),
                                         leftTypeCoerced,
@@ -289,7 +290,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }
                         else {
-                            ifRightNotNull.IfCondition(
+                            ifRightNotNull
+                                .IfCondition(
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                         Ref("leftCoerced"),
                                         leftTypeCoerced,

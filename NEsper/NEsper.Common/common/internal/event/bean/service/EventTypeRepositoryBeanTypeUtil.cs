@@ -39,13 +39,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             AddPredefinedBeanEventTypes(beanTypes);
 
             foreach (var beanType in beanTypes) {
-                BuildPublicBeanType(
-                    beanEventTypeStemService,
-                    repo,
-                    beanType.Key,
-                    beanType.Value,
-                    privateFactory,
-                    configs);
+                if (repo.GetTypeByName(beanType.Key) == null) {
+                    BuildPublicBeanType(
+                        beanEventTypeStemService,
+                        repo,
+                        beanType.Key,
+                        beanType.Value,
+                        privateFactory,
+                        configs);
+                }
             }
         }
 

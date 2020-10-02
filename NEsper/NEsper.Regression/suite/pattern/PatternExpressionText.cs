@@ -79,10 +79,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "every (d=SupportBean_D until b=SupportBean_B)", null);
             TryAssertion(env, "every d=SupportBean_D until b=SupportBean_B", null);
             TryAssertion(env, "(every d=SupportBean_D) until b=SupportBean_B", "every d=SupportBean_D until b=SupportBean_B");
-            TryAssertion(env, "a=SupportBean_A until (every (timer:interval(6 sec) and not SupportBean_A))", "a=SupportBean_A until every (timer:interval(6 seconds) and not SupportBean_A)");
+            TryAssertion(
+                env,
+                "a=SupportBean_A until (every (timer:interval(6 sec) and not SupportBean_A))",
+                "a=SupportBean_A until every (timer:interval(6 seconds) and not SupportBean_A)");
             TryAssertion(env, "[2] (a=SupportBean_A or b=SupportBean_B)", null);
             TryAssertion(env, "every [2] a=SupportBean_A", "every ([2] a=SupportBean_A)");
-            TryAssertion(env, "every [2] a=SupportBean_A until d=SupportBean_D", "every ([2] a=SupportBean_A) until d=SupportBean_D"); // every has precedence; ESPER-339
+            TryAssertion(
+                env,
+                "every [2] a=SupportBean_A until d=SupportBean_D",
+                "every ([2] a=SupportBean_A) until d=SupportBean_D"); // every has precedence; ESPER-339
             TryAssertion(env, "[3] (a=SupportBean_A or b=SupportBean_B)", null);
             TryAssertion(env, "[4] (a=SupportBean_A or b=SupportBean_B)", null);
             TryAssertion(env, "(a=SupportBean_A until b=SupportBean_B) until c=SupportBean_C", "a=SupportBean_A until b=SupportBean_B until c=SupportBean_C");
@@ -97,7 +103,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "(b=SupportBean_B -> d=SupportBean_D) and SupportBean_G", null);
             TryAssertion(env, "(b=SupportBean_B -> d=SupportBean_D) and (a=SupportBean_A -> e=SupportBean_E)", null);
             TryAssertion(env, "b=SupportBean_B -> (d=SupportBean_D() or a=SupportBean_A)", "b=SupportBean_B -> d=SupportBean_D or a=SupportBean_A");
-            TryAssertion(env, "b=SupportBean_B -> ((d=SupportBean_D -> a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E))", "b=SupportBean_B -> (d=SupportBean_D -> a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E)");
+            TryAssertion(
+                env,
+                "b=SupportBean_B -> ((d=SupportBean_D -> a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E))",
+                "b=SupportBean_B -> (d=SupportBean_D -> a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E)");
             TryAssertion(env, "(b=SupportBean_B -> d=SupportBean_D) or a=SupportBean_A", null);
             TryAssertion(env, "(b=SupportBean_B and d=SupportBean_D) or a=SupportBean_A", "b=SupportBean_B and d=SupportBean_D or a=SupportBean_A");
             TryAssertion(env, "a=SupportBean_A or a=SupportBean_A", null);
@@ -161,8 +170,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "every b=SupportBean_B -> (every d=SupportBean_D) where timer:withinmax(1 days,3)", null);
             TryAssertion(env, "a=SupportBean_A -> (every b=SupportBean_B) while (b.Id!=\"B3\")", null);
             TryAssertion(env, "(every b=SupportBean_B) while (b.Id!=\"B1\")", null);
-            TryAssertion(env, "every-distinct(a.IntPrimitive,1) a=SupportBean(TheString like \"A%\")", "every-distinct(a.IntPrimitive,1) a=SupportBean(TheString like ?)");
-            TryAssertion(env, "every-distinct(a.IntPrimitive,1 seconds) a=SupportBean(TheString like \"A%\")", "every-distinct(a.IntPrimitive,1 seconds) a=SupportBean(TheString like ?)");
+            TryAssertion(
+                env,
+                "every-distinct(a.IntPrimitive,1) a=SupportBean(TheString like \"A%\")",
+                "every-distinct(a.IntPrimitive,1) a=SupportBean(TheString like ?)");
+            TryAssertion(
+                env,
+                "every-distinct(a.IntPrimitive,1 seconds) a=SupportBean(TheString like \"A%\")",
+                "every-distinct(a.IntPrimitive,1 seconds) a=SupportBean(TheString like ?)");
             TryAssertion(env, "every-distinct(IntPrimitive) a=SupportBean", null);
             TryAssertion(env, "[2] every-distinct(a.IntPrimitive) a=SupportBean", null);
             TryAssertion(env, "every-distinct(a[0].IntPrimitive) ([2] a=SupportBean)", null);
@@ -170,11 +185,18 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "(every-distinct(a.IntPrimitive) a=SupportBean) where timer:within(10 seconds)", null);
             TryAssertion(env, "every-distinct(a.IntPrimitive) a=SupportBean where timer:within(10)", null);
             TryAssertion(env, "every-distinct(a.IntPrimitive,1 hours) a=SupportBean where timer:within(10)", null);
-            TryAssertion(env, "every-distinct(a.IntPrimitive,b.IntPrimitive) (a=SupportBean(TheString like \"A%\") and b=SupportBean(TheString like \"B%\"))", "every-distinct(a.IntPrimitive,b.IntPrimitive) (a=SupportBean(TheString like ?) and b=SupportBean(TheString like ?))");            TryAssertion(env, "every-distinct(a.IntPrimitive) (a=SupportBean and not SupportBean)", null);
+            TryAssertion(
+                env,
+                "every-distinct(a.IntPrimitive,b.IntPrimitive) (a=SupportBean(TheString like \"A%\") and b=SupportBean(TheString like \"B%\"))",
+                "every-distinct(a.IntPrimitive,b.IntPrimitive) (a=SupportBean(TheString like ?) and b=SupportBean(TheString like ?))");
+            TryAssertion(env, "every-distinct(a.IntPrimitive) (a=SupportBean and not SupportBean)", null);
             TryAssertion(env, "every-distinct(a.IntPrimitive,1 hours) (a=SupportBean and not SupportBean)", null);
             TryAssertion(env, "every-distinct(a.IntPrimitive+b.IntPrimitive,1 hours) (a=SupportBean -> b=SupportBean)", null);
             TryAssertion(env, "every-distinct(a.IntPrimitive) a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive)", null);
-            TryAssertion(env, "every-distinct(a.IntPrimitive) a=SupportBean -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like \"B%\")", "every-distinct(a.IntPrimitive) a=SupportBean -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like ?)");
+            TryAssertion(
+                env,
+                "every-distinct(a.IntPrimitive) a=SupportBean -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like \"B%\")",
+                "every-distinct(a.IntPrimitive) a=SupportBean -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like ?)");
 
             SupportPatternCompileHook.Reset();
         }

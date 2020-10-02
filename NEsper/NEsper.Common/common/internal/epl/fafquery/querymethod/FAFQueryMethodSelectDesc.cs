@@ -32,6 +32,7 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.metrics.audit;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -218,6 +219,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             else {
                 Joins = null;
             }
+            
+            var multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
+                IsDistinct, ResultSetProcessor.ResultEventType, statementRawInfo, SerdeCompileTimeResolverNonHA.INSTANCE);
+            AdditionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
+            DistinctMultiKey = multiKeyPlan.ClassRef;
         }
 
         public JoinSetComposerPrototypeForge Joins { get; }

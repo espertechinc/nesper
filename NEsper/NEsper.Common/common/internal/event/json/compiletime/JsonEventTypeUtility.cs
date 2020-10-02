@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				getterFactoryJson,
 				services.BeanEventTypeFactoryPrivate,
 				existingType.Detail,
-				existingType.UnderlyingType);
+				existingType.UnderlyingType,
+				existingType.UnderlyingTypeIsTransient);
 		}
 
 		public static EventTypeForgeablesPair MakeJsonTypeCompileTimeNewType(
@@ -159,7 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					underlyingClassNameSimple,
 					underlyingClassNameFull,
 					namespaceScope,
-					forgeableDesc),
+					forgeableDesc)
 			};
 
 			var deserializerClassNameSimple = jsonClassNameSimple + "__Deserializer";
@@ -171,7 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					deserializerClassNameSimple,
 					namespaceScope,
 					underlyingClassNameFull,
-					forgeableDesc),
+					forgeableDesc)
 			};
 
 			var serializerClassNameSimple = jsonClassNameSimple + "__Serializer";
@@ -184,7 +185,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					optionalUnderlyingProvided != null,
 					namespaceScope,
 					underlyingClassNameFull,
-					forgeableDesc),
+					forgeableDesc)
 			};
 
 			var serializerClassNameFull = $"{services.Namespace}.{serializerClassNameSimple}";
@@ -205,7 +206,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				numFieldsSuperType);
 			var getterFactoryJson = new EventTypeNestableGetterFactoryJson(detail);
 
-			Type standIn = optionalUnderlyingProvided == null
+			var isStandIn = optionalUnderlyingProvided == null;
+			var standIn = isStandIn
 				? services.CompilerServices.CompileStandInClass(CodegenClassType.JSONEVENT, underlyingClassNameSimple, services.Services)
 				: optionalUnderlyingProvided;
 
@@ -219,7 +221,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				getterFactoryJson,
 				services.BeanEventTypeFactoryPrivate,
 				detail,
-				standIn);
+				standIn,
+				isStandIn);
 
 			var additionalForgeables = new List<StmtClassForgeableFactory>();
 
@@ -541,6 +544,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			foreach (var entry in compiledTyping) {
+				var propertyName = entry.Key;
 				var fieldName = fieldNames.Get(entry.Key);
 
 				var type = entry.Value;
@@ -566,7 +570,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				}
 
 				allFieldsInclSupertype.Put(entry.Key, new JsonUnderlyingField(
-					fieldName, assignedType, fields.Get(fieldName)));
+					fieldName, propertyName, assignedType, fields.Get(fieldName)));
 				index++;
 			}
 

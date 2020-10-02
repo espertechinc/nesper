@@ -374,7 +374,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					}
 					
 					var eval = enumerationMethod.Factory.Invoke(chainElement.GetParametersOrEmpty().Count);
-					if (currentInputType is ClassEPType classEpType && classEpType.Clazz.IsGenericCollection()) {
+					if (currentInputType is ClassEPType classEpType && classEpType.Clazz.IsGenericCollection() && !classEpType.Clazz.IsArray) {
 						currentInputType = EPTypeHelper.CollectionOfSingleValue(typeof(object), null);
 					}
 

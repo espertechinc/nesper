@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLSchemaEventTypesPreconfigured());
+            WithPreconfigured(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTypesCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfigured(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventTypesPreconfigured());
             return execs;
         }
 

@@ -80,7 +80,7 @@ namespace com.espertech.esper.compiler.client.util
 			}
 
 			return new EPCompiled(
-				assembly,
+				new [] { assembly },
 				new EPCompiledManifest(
 					compilerVersion,
 					moduleProvider,

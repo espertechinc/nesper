@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveBoolean : JsonDeserializerArrayBase<bool[]>
     {
         public JsonDeserializerArray2DPrimitiveBoolean()
-            : base(_ => _.ElementToArray(v => v.GetBoolean()))
+            : base(_ => _.ElementToArray(v => v.GetSmartBoolean()))
         {
         }
     }

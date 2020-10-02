@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             var that = (MultiKeyArrayBase<T>) o;
-            return Arrays.AreEqual(Keys, that.Keys);
+            return Arrays.DeepEquals(Keys, that.Keys);
         }
 
         public override int GetHashCode() => _hash;

@@ -166,6 +166,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(
                     StatementType.CREATE_WINDOW,
                     env.Statement("windowTwo").GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual(
+                    "MyWindowTwo", 
+                    env.Statement("windowTwo").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
                 // create window with keep-all and filter
                 var stmtTextCreateThree =
@@ -277,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionInsertWhereOMStaggered(env, rep);
                 }
             }

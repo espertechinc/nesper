@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             EventTypeFactory eventTypeFactory)
         {
             foreach (var entry in variantStreams) {
-                AddVariantStream(entry.Key, entry.Value, repo, eventTypeFactory);
+                if (repo.GetTypeByName(entry.Key) == null) {
+                    AddVariantStream(entry.Key, entry.Value, repo, eventTypeFactory);
+                }
             }
         }
 

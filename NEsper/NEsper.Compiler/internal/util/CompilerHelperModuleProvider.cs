@@ -62,8 +62,11 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions)
         {
+            ICollection<Assembly> assemblies = new HashSet<Assembly>();
+            
             try {
-                EPCompiledManifest manifest = CompileToBytes(
+                EPCompiledManifest manifest = CompileToModules(
+                    assemblies,
                     compilables,
                     optionalModuleName,
                     moduleProperties,
@@ -71,7 +74,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     compilerOptions,
                     out var assembly);
 
-                return new EPCompiled(assembly, manifest);
+                return new EPCompiled(assemblies, manifest);
             }
             catch (EPCompileException) {
                 throw;
@@ -84,7 +87,8 @@ namespace com.espertech.esper.compiler.@internal.util
             }
         }
 
-        private static EPCompiledManifest CompileToBytes(
+        private static EPCompiledManifest CompileToModules(
+            ICollection<Assembly> assemblies,
             IList<Compilable> compilables,
             string optionalModuleName,
             IDictionary<ModuleProperty, object> moduleProperties,
@@ -99,10 +103,12 @@ namespace com.espertech.esper.compiler.@internal.util
             var statementNumber = 0;
             IList<string> statementClassNames = new List<string>();
             ISet<string> statementNames = new HashSet<string>();
+            IList<EPCompileExceptionItem> exceptions = new List<EPCompileExceptionItem>();
+            IList<EPCompileExceptionItem> postLatchExceptions = new List<EPCompileExceptionItem>();
+
             foreach (var compilable in compilables) {
                 string className = null;
                 EPCompileExceptionItem exception = null;
-
 
                 try {
                     CompilableItem compilableItem = CompilerHelperStatementProvider.CompileItem(
@@ -114,23 +120,49 @@ namespace com.espertech.esper.compiler.@internal.util
                         compileTimeServices,
                         compilerOptions,
                         out assembly);
+
+                    assemblies.Add(assembly);
                     className = compilableItem.ProviderClassName;
+                    compilableItem.PostCompileLatch.Completed(assemblies);
+                    
+                    // there can be a post-compile step, which may block submitting further compilables
+                    try {
+                        compilableItem.PostCompileLatch.AwaitAndRun();
+                    } catch (Exception e) {
+                        postLatchExceptions.Add(
+                            new EPCompileExceptionItem(
+                                e.Message,
+                                e,
+                                compilable.ToEPL(),
+                                -1));
+                    }
                 }
                 catch (StatementSpecCompileException ex) {
-                    EPCompileExceptionItem first;
                     if (ex is StatementSpecCompileSyntaxException) {
-                        first = new EPCompileExceptionSyntaxItem(ex.Message, ex.Expression, -1);
+                        exception = new EPCompileExceptionSyntaxItem(ex.Message, ex.Expression, -1);
                     }
                     else {
-                        first = new EPCompileExceptionItem(ex.Message, ex.Expression, -1);
+                        exception = new EPCompileExceptionItem(
+                            ex.Message,
+                            ex,
+                            ex.Expression,
+                            -1);
                     }
 
-                    var items = Collections.SingletonList(first);
-                    throw new EPCompileException(ex.Message + " [" + ex.Expression + "]", ex, items);
+                    exceptions.Add(exception);
                 }
 
-                statementClassNames.Add(className);
-                statementNumber++;
+                if (exception == null) {
+                    statementClassNames.Add(className);
+                    statementNumber++;
+                }
+            }
+            
+            exceptions.AddAll(postLatchExceptions);
+            if (!exceptions.IsEmpty()) {
+                var ex = exceptions[0];
+                throw new EPCompileException(
+                    "Error during compilation: " + ex.Message + " [" + ex.Expression + "]", ex, exceptions);
             }
 
             // compile module resource
@@ -141,6 +173,16 @@ namespace com.espertech.esper.compiler.@internal.util
                 moduleIdentPostfix,
                 compileTimeServices,
                 out assembly);
+            
+#if TBD // revisit
+            // remove path create-class class-provided byte code
+            compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(moduleBytes);
+
+            // add class-provided create-class classes to module bytes
+            foreach (var entry in compileTimeServices.ClassProvidedCompileTimeRegistry.Classes) {
+                moduleBytes.Put(entry.Value.Assembly);
+            }
+#endif
 
             // create module XML
             return new EPCompiledManifest(COMPILER_VERSION, moduleProviderClassName, null, compileTimeServices.SerdeResolver.IsTargetHA);

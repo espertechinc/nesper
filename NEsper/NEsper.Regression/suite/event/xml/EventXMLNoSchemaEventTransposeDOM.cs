@@ -24,8 +24,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaEventXMLPreconfig());
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaEventXMLCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaEventXMLPreconfig());
             return execs;
         }
 
@@ -37,18 +51,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             }
         }
 
-        public class EventXMLNoSchemaEventXMLCreateSchema : RegressionExecution {
-            public void Run (RegressionEnvironment env) {
+        public class EventXMLNoSchemaEventXMLCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
                 var epl = "@public @buseventtype " +
                           "@XMLSchema(RootElementName='simpleEvent')" +
                           "create xml schema MyEventCreateSchema()";
-                var path = new RegressionPath ();
-                env.CompileDeploy (epl, path);
-                RunAssertion (env, "MyEventCreateSchema", path);
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
             }
         }
-        
-        private static void RunAssertion(RegressionEnvironment env, String eventTypeName, RegressionPath path)
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
         {
             env.CompileDeploy("@Name('insert') insert into MyNestedStream select nested1 from " + eventTypeName, path);
             CollectionAssert.AreEquivalent(

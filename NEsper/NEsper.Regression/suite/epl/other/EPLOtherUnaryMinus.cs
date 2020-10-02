@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             Assert.AreEqual(1d, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "v"));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "c0", "c1" },
+                new[] {"c0", "c1"},
                 new object[] {-10, -1d});
 
             env.UndeployAll();

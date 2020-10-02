@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveInt32 : JsonDeserializerArrayBase<int[]>
     {
         public JsonDeserializerArray2DPrimitiveInt32()
-            : base(_ => _.ElementToArray(v => v.GetInt32()))
+            : base(_ => _.ElementToArray(v => v.GetSmartInt32()))
         {
         }
     }

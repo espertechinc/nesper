@@ -27,10 +27,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherInvalidFuncParams());
-            execs.Add(new EPLOtherInvalidSyntax());
-            execs.Add(new EPLOtherLongTypeConstant());
+            WithInvalidFuncParams(execs);
+            WithInvalidSyntax(execs);
+            WithLongTypeConstant(execs);
+            WithDifferentJoins(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDifferentJoins(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherDifferentJoins());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLongTypeConstant(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherLongTypeConstant());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidSyntax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherInvalidSyntax());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidFuncParams(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherInvalidFuncParams());
             return execs;
         }
 

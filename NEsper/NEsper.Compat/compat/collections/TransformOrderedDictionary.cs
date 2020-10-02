@@ -129,7 +129,7 @@ namespace com.espertech.esper.compat.collections
         {
             var value = _subDictionaryOrdered.GreaterThanOrEqualTo(KeyIn(key));
             return value.HasValue
-                ? new KeyValuePair<TK1, TV1>(key, ValueOut(value.Value.Value))
+                ? new KeyValuePair<TK1, TV1>(KeyOut(value.Value.Key), ValueOut(value.Value.Value))
                 : default(KeyValuePair<TK1, TV1>?);
         }
 
@@ -145,7 +145,7 @@ namespace com.espertech.esper.compat.collections
             out KeyValuePair<TK1, TV1> valuePair)
         {
             if (_subDictionaryOrdered.TryGreaterThanOrEqualTo(KeyIn(key), out var kvp)) {
-                valuePair = new KeyValuePair<TK1, TV1>(key, ValueOut(kvp.Value));
+                valuePair = new KeyValuePair<TK1, TV1>(KeyOut(kvp.Key), ValueOut(kvp.Value));
                 return true;
             }
 
@@ -163,7 +163,9 @@ namespace com.espertech.esper.compat.collections
         {
             var value = _subDictionaryOrdered.LessThanOrEqualTo(KeyIn(key));
             return value.HasValue
-                ? new KeyValuePair<TK1, TV1>(key, ValueOut(value.Value.Value))
+                ? new KeyValuePair<TK1, TV1>(
+                    KeyOut(value.Value.Key),
+                    ValueOut(value.Value.Value))
                 : default(KeyValuePair<TK1, TV1>?);
         }
 
@@ -179,7 +181,9 @@ namespace com.espertech.esper.compat.collections
             out KeyValuePair<TK1, TV1> valuePair)
         {
             if (_subDictionaryOrdered.TryLessThanOrEqualTo(KeyIn(key), out var kvp)) {
-                valuePair = new KeyValuePair<TK1, TV1>(key, ValueOut(kvp.Value));
+                valuePair = new KeyValuePair<TK1, TV1>(
+                    KeyOut(kvp.Key),
+                    ValueOut(kvp.Value));
                 return true;
             }
 
@@ -197,7 +201,7 @@ namespace com.espertech.esper.compat.collections
         {
             var value = _subDictionaryOrdered.GreaterThan(KeyIn(key));
             return value.HasValue
-                ? new KeyValuePair<TK1, TV1>(key, ValueOut(value.Value.Value))
+                ? new KeyValuePair<TK1, TV1>(KeyOut(value.Value.Key), ValueOut(value.Value.Value))
                 : default(KeyValuePair<TK1, TV1>?);
         }
 
@@ -213,7 +217,7 @@ namespace com.espertech.esper.compat.collections
             out KeyValuePair<TK1, TV1> valuePair)
         {
             if (_subDictionaryOrdered.TryGreaterThan(KeyIn(key), out var kvp)) {
-                valuePair = new KeyValuePair<TK1, TV1>(key, ValueOut(kvp.Value));
+                valuePair = new KeyValuePair<TK1, TV1>(KeyOut(kvp.Key), ValueOut(kvp.Value));
                 return true;
             }
 
@@ -230,7 +234,7 @@ namespace com.espertech.esper.compat.collections
         {
             var value = _subDictionaryOrdered.LessThan(KeyIn(key));
             return value.HasValue
-                ? new KeyValuePair<TK1, TV1>(key, ValueOut(value.Value.Value))
+                ? new KeyValuePair<TK1, TV1>(KeyOut(value.Value.Key), ValueOut(value.Value.Value))
                 : default(KeyValuePair<TK1, TV1>?);
         }
 
@@ -246,7 +250,7 @@ namespace com.espertech.esper.compat.collections
             out KeyValuePair<TK1, TV1> valuePair)
         {
             if (_subDictionaryOrdered.TryLessThan(KeyIn(key), out var kvp)) {
-                valuePair = new KeyValuePair<TK1, TV1>(key, ValueOut(kvp.Value));
+                valuePair = new KeyValuePair<TK1, TV1>(KeyOut(kvp.Key), ValueOut(kvp.Value));
                 return true;
             }
 

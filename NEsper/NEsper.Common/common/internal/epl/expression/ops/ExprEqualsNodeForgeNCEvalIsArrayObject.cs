@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -26,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var left = (object[]) Lhs.Evaluate(eventsPerStream, isNewData, context);
-            var right = (object[]) Rhs.Evaluate(eventsPerStream, isNewData, context);
+            var left = (Array) Lhs.Evaluate(eventsPerStream, isNewData, context);
+            var right = (Array) Rhs.Evaluate(eventsPerStream, isNewData, context);
 
             bool result;
             if (left == null) {

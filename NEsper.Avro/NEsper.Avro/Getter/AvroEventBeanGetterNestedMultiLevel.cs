@@ -106,7 +106,7 @@ namespace NEsper.Avro.Getter
         {
             return StaticMethod(
                 typeof(AvroEventBeanGetterNestedMultiLevel),
-                "ExistsRecordValueTopWPath",
+                "GetRecordValueTopWPath",
                 underlyingExpression,
                 Constant(_top.Name),
                 Constant(_path.Select(p => p.Name).ToArray()));
@@ -117,7 +117,12 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return StaticMethod(
+                typeof(AvroEventBeanGetterNestedMultiLevel),
+                "ExistsRecordValueTopWPath",
+                underlyingExpression,
+                Constant(_top.Name),
+                Constant(_path.Select(p => p.Name).ToArray()));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

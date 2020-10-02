@@ -30,19 +30,110 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectMultirowGroupedNoDataWindowUncorrelated());
-            execs.Add(new EPLSubselectMultirowGroupedCorrelatedWithEnumMethod());
-            execs.Add(new EPLSubselectMultirowGroupedUncorrelatedWithEnumerationMethod());
-            execs.Add(new EPLSubselectMultirowGroupedCorrelatedWHaving());
-            execs.Add(new EPLSubselectMultirowGroupedNamedWindowSubqueryIndexShared());
-            execs.Add(new EPLSubselectMulticolumnGroupedUncorrelatedUnfiltered());
-            execs.Add(new EPLSubselectMultirowGroupedUncorrelatedIteratorAndExpressionDef());
-            execs.Add(new EPLSubselectMulticolumnGroupedContextPartitioned());
-            execs.Add(new EPLSubselectMulticolumnGroupedWHaving());
-            execs.Add(new EPLSubselectMulticolumnInvalid());
-            execs.Add(new EPLSubselectMulticolumnGroupBy());
-            execs.Add(new EPLSubselectMultirowGroupedMultikeyWArray());
+            WithrowGroupedNoDataWindowUncorrelated(execs);
+            WithrowGroupedCorrelatedWithEnumMethod(execs);
+            WithrowGroupedUncorrelatedWithEnumerationMethod(execs);
+            WithrowGroupedCorrelatedWHaving(execs);
+            WithrowGroupedNamedWindowSubqueryIndexShared(execs);
+            WithcolumnGroupedUncorrelatedUnfiltered(execs);
+            WithrowGroupedUncorrelatedIteratorAndExpressionDef(execs);
+            WithcolumnGroupedContextPartitioned(execs);
+            WithcolumnGroupedWHaving(execs);
+            WithcolumnInvalid(execs);
+            WithcolumnGroupBy(execs);
+            WithrowGroupedMultikeyWArray(execs);
+            WithrowGroupedIndexSharedMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedIndexSharedMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedIndexSharedMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithcolumnGroupBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMulticolumnGroupBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithcolumnInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMulticolumnInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithcolumnGroupedWHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMulticolumnGroupedWHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithcolumnGroupedContextPartitioned(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMulticolumnGroupedContextPartitioned());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedUncorrelatedIteratorAndExpressionDef(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedUncorrelatedIteratorAndExpressionDef());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithcolumnGroupedUncorrelatedUnfiltered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMulticolumnGroupedUncorrelatedUnfiltered());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedNamedWindowSubqueryIndexShared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedNamedWindowSubqueryIndexShared());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedCorrelatedWHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedCorrelatedWHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedUncorrelatedWithEnumerationMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedUncorrelatedWithEnumerationMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedCorrelatedWithEnumMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedCorrelatedWithEnumMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithrowGroupedNoDataWindowUncorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowGroupedNoDataWindowUncorrelated());
             return execs;
         }
 
@@ -137,11 +228,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         }
 
         internal static void AssertMapMultiRow(
-            String fieldName,
+            string fieldName,
             EventBean @event,
-            String sortKey,
-            String[] names,
-            Object[][] values)
+            string sortKey,
+            string[] names,
+            object[][] values)
         {
             var maps = GetSortMapMultiRow(fieldName, @event, sortKey);
             if (values == null && maps == null) {
@@ -152,17 +243,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         }
 
         internal static IDictionary<string, object>[] GetSortMapMultiRow(
-            String fieldName,
+            string fieldName,
             EventBean @event,
-            String sortKey)
+            string sortKey)
         {
-            var subq = @event.Get(fieldName) as ICollection<IDictionary<string, object>>;
+            var valq = @event.Get(fieldName);
+            var subq = valq.Unwrap<IDictionary<string, object>>();
             return subq?.OrderBy(v => v.Get(sortKey)).ToArray();
         }
 
         internal static void SendManyArray(
             RegressionEnvironment env,
-            String id,
+            string id,
             int[] ints,
             int value)
         {
@@ -185,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SendManyArray(env, "E4", new int[] {1, 2}, 11);
 
                 epl = "@Name('s0') select " +
-                      "(select IntOne as c0, sum(value) as c1 from MyWindow group by IntOne).take(10) as e1 from SupportBean_S0";
+                      "(select IntOne as c0, sum(Value) as c1 from MyWindow group by IntOne).take(10) as e1 from SupportBean_S0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.Milestone(0);
@@ -205,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@Name('s0') select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as subq from SupportBean";
+                string epl = "@Name('s0') select (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array) as subq from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));

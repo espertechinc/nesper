@@ -143,18 +143,6 @@ namespace com.espertech.esper.regressionrun.suite.context
         }
 
         [Test, RunInApplicationDomain]
-        public void TestContextInitTerm()
-        {
-            RegressionRunner.Run(session, ContextInitTerm.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestContextInitTermTemporalFixed()
-        {
-            RegressionRunner.Run(session, ContextInitTermTemporalFixed.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestContextInitTermWithDistinct()
         {
             RegressionRunner.Run(session, ContextInitTermWithDistinct.Executions());
@@ -257,6 +245,209 @@ namespace com.espertech.esper.regressionrun.suite.context
 
             [Test, RunInApplicationDomain]
             public void WithSegmentedBasic() => RegressionRunner.Run(_session, ContextHashSegmented.WithSegmentedBasic());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ContextInitTermTemporalFixed
+        /// <code>
+        /// RegressionRunner.Run(_session, ContextInitTermTemporalFixed.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestContextInitTermTemporalFixed : AbstractTestBase
+        {
+            public TestContextInitTermTemporalFixed() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithEndMultiCrontab() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndMultiCrontab());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndDBHistorical() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndDBHistorical());
+
+            [Test, RunInApplicationDomain]
+            public void With9End5AggGrouped() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.With9End5AggGrouped());
+
+            [Test, RunInApplicationDomain]
+            public void With9End5AggUngrouped() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.With9End5AggUngrouped());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndStartTurnedOn() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndStartTurnedOn());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndStartTurnedOff() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndStartTurnedOff());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndNWFireAndForget() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndNWFireAndForget());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndNWSameContextOnExpr() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndNWSameContextOnExpr());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndSubselectCorrelated() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndSubselectCorrelated());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndSubselect() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndSubselect());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndPatternWithTime() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndPatternWithTime());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndJoin() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndPrevPriorAndAggregation() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndPrevPriorAndAggregation());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndContextCreateDestroy() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndContextCreateDestroy());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndPatternStartedPatternEnded() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndPatternStartedPatternEnded());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndFilterStartedFilterEndedOutputSnapshot() => RegressionRunner.Run(
+                _session,
+                ContextInitTermTemporalFixed.WithEndFilterStartedFilterEndedOutputSnapshot());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndStartAfterEndAfter() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndStartAfterEndAfter());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndFilterStartedPatternEndedCorrelated() => RegressionRunner.Run(
+                _session,
+                ContextInitTermTemporalFixed.WithEndFilterStartedPatternEndedCorrelated());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndFilterStartedFilterEndedCorrelatedOutputSnapshot() => RegressionRunner.Run(
+                _session,
+                ContextInitTermTemporalFixed.WithEndFilterStartedFilterEndedCorrelatedOutputSnapshot());
+
+            [Test, RunInApplicationDomain]
+            public void WithEndContextPartitionSelection() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndContextPartitionSelection());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ContextInitTerm
+        /// <code>
+        /// RegressionRunner.Run(_session, ContextInitTerm.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestContextInitTerm : AbstractTestBase
+        {
+            public TestContextInitTerm() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermPatternCorrelated() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermPatternCorrelated());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndPatternCorrelated() => RegressionRunner.Run(_session, ContextInitTerm.WithStartEndPatternCorrelated());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermPrevPrior() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermPrevPrior());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermAggregationGrouped() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermAggregationGrouped());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndStartNowCalMonthScoped() => RegressionRunner.Run(_session, ContextInitTerm.WithStartEndStartNowCalMonthScoped());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermCrontab() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermCrontab());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermOutputOnlyWhenTerminatedThenSet() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermOutputOnlyWhenTerminatedThenSet());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermOutputOnlyWhenSetAndWhenTerminatedSet() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermOutputOnlyWhenSetAndWhenTerminatedSet());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermOutputOnlyWhenTerminatedCondition() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermOutputOnlyWhenTerminatedCondition());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermOutputWhenExprWhenTerminatedCondition() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermOutputWhenExprWhenTerminatedCondition());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermOutputAllEvery2AndTerminated() =>
+                RegressionRunner.Run(_session, ContextInitTerm.WithInitTermOutputAllEvery2AndTerminated());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermOutputSnapshotWhenTerminated() =>
+                RegressionRunner.Run(_session, ContextInitTerm.WithInitTermOutputSnapshotWhenTerminated());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermTerminateTwoContextSameTime() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermTerminateTwoContextSameTime());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterBooleanOperator() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermFilterBooleanOperator());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterAllOperators() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermFilterAllOperators());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterInitiatedStraightEquals() =>
+                RegressionRunner.Run(_session, ContextInitTerm.WithInitTermFilterInitiatedStraightEquals());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermPatternInitiatedStraightSelect() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermPatternInitiatedStraightSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermPatternInclusion() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermPatternInclusion());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermPatternIntervalZeroInitiatedNow() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermPatternIntervalZeroInitiatedNow());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermScheduleFilterResources() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermScheduleFilterResources());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermPatternAndAfter1Min() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermPatternAndAfter1Min());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterAndPattern() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermFilterAndPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterAndAfter1Min() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermFilterAndAfter1Min());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermFilterInitiatedFilterAllTerminated() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithInitTermFilterInitiatedFilterAllTerminated());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermContextPartitionSelection() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermContextPartitionSelection());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndEndSameEventAsAnalyzed() => RegressionRunner.Run(_session, ContextInitTerm.WithStartEndEndSameEventAsAnalyzed());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndAfterZeroInitiatedNow() => RegressionRunner.Run(_session, ContextInitTerm.WithStartEndAfterZeroInitiatedNow());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndNoTerminationCondition() => RegressionRunner.Run(_session, ContextInitTerm.WithStartEndNoTerminationCondition());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermNoTerminationCondition() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermNoTerminationCondition());
         }
     }
 } // end of namespace

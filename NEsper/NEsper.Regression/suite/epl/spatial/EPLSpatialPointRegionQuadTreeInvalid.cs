@@ -19,11 +19,46 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSpatialInvalidEventIndexCreate());
-            execs.Add(new EPLSpatialInvalidEventIndexRuntime());
-            execs.Add(new EPLSpatialInvalidMethod());
-            execs.Add(new EPLSpatialInvalidFilterIndex());
+            WithInvalidEventIndexCreate(execs);
+            WithInvalidEventIndexRuntime(execs);
+            WithInvalidMethod(execs);
+            WithInvalidFilterIndex(execs);
+            WithDocSample(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSpatialDocSample());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidFilterIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidFilterIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidEventIndexRuntime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidEventIndexRuntime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidEventIndexCreate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidEventIndexCreate());
             return execs;
         }
 

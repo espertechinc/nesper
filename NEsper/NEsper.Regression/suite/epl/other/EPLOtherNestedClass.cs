@@ -18,52 +18,59 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-	public class EPLOtherNestedClass
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLOtherNestedClassEnum());
-			return execs;
-		}
+    public class EPLOtherNestedClass
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithNestedClassEnum(execs);
+            return execs;
+        }
 
-		private class EPLOtherNestedClassEnum : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string epl =
-					$"@public @buseventtype create schema MyEventWithColorEnum as {typeof(MyEventWithColorEnum).MaskTypeName()};\n" +
-					$"@Name('s0') select {typeof(MyEventWithColorEnum).MaskTypeName()}$Color.RED as c0 " +
-					$"from MyEventWithColorEnum(EnumProp={typeof(MyEventWithColorEnum).MaskTypeName()}$Color.GREEN)#firstevent";
-				env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithNestedClassEnum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherNestedClassEnum());
+            return execs;
+        }
 
-				env.SendEventBean(new MyEventWithColorEnum(MyEventWithColorEnum.Color.BLUE));
-				Assert.IsFalse(env.Listener("s0").IsInvoked);
+        private class EPLOtherNestedClassEnum : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    $"@public @buseventtype create schema MyEventWithColorEnum as {typeof(MyEventWithColorEnum).MaskTypeName()};\n" +
+                    $"@Name('s0') select {typeof(MyEventWithColorEnum).MaskTypeName()}$Color.RED as c0 " +
+                    $"from MyEventWithColorEnum(EnumProp={typeof(MyEventWithColorEnum).MaskTypeName()}$Color.GREEN)#firstevent";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				env.SendEventBean(new MyEventWithColorEnum(MyEventWithColorEnum.Color.GREEN));
-				Assert.AreEqual(MyEventWithColorEnum.Color.RED, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.SendEventBean(new MyEventWithColorEnum(MyEventWithColorEnum.Color.BLUE));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventBean(new MyEventWithColorEnum(MyEventWithColorEnum.Color.GREEN));
+                Assert.AreEqual(MyEventWithColorEnum.Color.RED, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
 
-		public class MyEventWithColorEnum
-		{
-			public enum Color
-			{
-				GREEN,
-				BLUE,
-				RED
-			}
+                env.UndeployAll();
+            }
+        }
 
-			private readonly Color enumProp;
+        public class MyEventWithColorEnum
+        {
+            public enum Color
+            {
+                GREEN,
+                BLUE,
+                RED
+            }
 
-			public MyEventWithColorEnum(Color enumProp)
-			{
-				this.enumProp = enumProp;
-			}
+            private readonly Color enumProp;
 
-			public Color EnumProp => enumProp;
-		}
-	}
+            public MyEventWithColorEnum(Color enumProp)
+            {
+                this.enumProp = enumProp;
+            }
+
+            public Color EnumProp => enumProp;
+        }
+    }
 } // end of namespace

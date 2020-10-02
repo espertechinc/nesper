@@ -31,10 +31,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSpatialMXCIFFilterIndexPatternSimple());
-            execs.Add(new EPLSpatialMXCIFFilterIndexPerfPattern());
-            execs.Add(new EPLSpatialMXCIFFilterIndexTypeAssertion());
+            WithPatternSimple(execs);
+            WithPerfPattern(execs);
+            WithTypeAssertion(execs);
+            WithWContext(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFFilterIndexWContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypeAssertion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialMXCIFFilterIndexTypeAssertion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialMXCIFFilterIndexPerfPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialMXCIFFilterIndexPatternSimple());
             return execs;
         }
 

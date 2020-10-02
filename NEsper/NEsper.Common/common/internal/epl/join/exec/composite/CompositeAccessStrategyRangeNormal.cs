@@ -60,17 +60,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             IOrderedDictionary<object, CompositeIndexEntry> index =
                 (IOrderedDictionary<object, CompositeIndexEntry>) parent;
 
+            
             IDictionary<object, CompositeIndexEntry> submap;
-            try {
+            if (index.KeyComparer.Compare(comparableStart, comparableEnd) <= 0) {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
-            catch (ArgumentException) {
-                if (_allowReverseRange) {
-                    submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
-                }
-                else {
-                    return null;
-                }
+            else if (_allowReverseRange) {
+                submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
+            }
+            else {
+                return null;
             }
 
             return CompositeIndexQueryRange.Handle(theEvent, submap, null, result, next, postProcessor);
@@ -100,17 +99,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+         
             IDictionary<object, CompositeIndexEntry> submap;
-            try {
+
+            if (index.KeyComparer.Compare(comparableStart, comparableEnd) <= 0) {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
-            catch (ArgumentException) {
-                if (_allowReverseRange) {
-                    submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
-                }
-                else {
-                    return null;
-                }
+            else if (_allowReverseRange) {
+                submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
+            }
+            else {
+                return null;
             }
 
             return CompositeIndexQueryRange.Handle(eventPerStream, submap, null, result, next, postProcessor);

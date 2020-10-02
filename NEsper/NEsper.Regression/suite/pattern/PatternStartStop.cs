@@ -27,9 +27,30 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternStartStopOne());
-            execs.Add(new PatternAddRemoveListener());
+            WithStartStopOne(execs);
+            WithAddRemoveListener(execs);
+            WithStartStopTwo(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartStopTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternStartStopTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAddRemoveListener(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAddRemoveListener());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartStopOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternStartStopOne());
             return execs;
         }
 

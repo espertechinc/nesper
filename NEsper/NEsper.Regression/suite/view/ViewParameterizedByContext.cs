@@ -21,9 +21,30 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewParameterizedByContextLengthWindow());
-            execs.Add(new ViewParameterizedByContextDocSample());
+            WithLengthWindow(execs);
+            WithDocSample(execs);
+            WithMoreWindows(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMoreWindows(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewParameterizedByContextMoreWindows());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewParameterizedByContextDocSample());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewParameterizedByContextLengthWindow());
             return execs;
         }
 
@@ -74,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
                     "@Name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize)";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = new [] { "Id","cnt" };
+                var fields = new[] {"Id", "cnt"};
 
                 SendInitEvent(env, "P1", 2);
                 SendInitEvent(env, "P2", 4);
@@ -159,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
-                    new [] { "id","cnt" },
+                    new[] {"id", "cnt"},
                     new[] {new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
 
                 env.UndeployAll();

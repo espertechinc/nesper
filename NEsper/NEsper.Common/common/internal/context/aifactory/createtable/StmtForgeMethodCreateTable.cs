@@ -173,6 +173,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, createDesc.TableName);
+
             forgeables.Add(
                 new StmtClassForgeableStmtProvider(
                     aiFactoryProviderClassName,

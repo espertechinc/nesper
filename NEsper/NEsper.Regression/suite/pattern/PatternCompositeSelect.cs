@@ -22,8 +22,22 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternFollowedByFilter());
+            WithollowedByFilter(execs);
+            Withragment(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withragment(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternFragment());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithollowedByFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternFollowedByFilter());
             return execs;
         }
 

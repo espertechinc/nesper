@@ -224,13 +224,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			Type exceptionType,
 			params EPDeploymentRolloutCompiled[] items)
 		{
-			var ex = Assert.Throws<EPDeployException>(
+			var ex = (EPDeployException) Assert.Throws(
+				Is.InstanceOf<EPDeployException>(),
 				() => env.Runtime.DeploymentService.Rollout(items));
 			Assert.AreEqual(rolloutNumber, ex.RolloutItemNumber);
 			SupportMessageAssertUtil.AssertMessage(ex.Message, expectedMsg);
 			Assert.AreEqual(exceptionType, ex.GetType());
 
-			Assert.Throws<Exception>(() => env.DeploymentId("s0"));
+			Assert.Throws<ArgumentException>(() => env.DeploymentId("s0"));
 			Assert.IsNotNull(env.DeploymentId("s1"));
 		}
 

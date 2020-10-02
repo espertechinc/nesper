@@ -8,12 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.common.@internal.@event.json.serializers.forge;
@@ -93,6 +95,18 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				.WithOverride();
 			MakeTryGetNativeEntry(tryGetNativeEntryMethod, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(tryGetNativeEntryMethod, "TryGetNativeEntry", methods, properties);
+
+			// --------------------------------------------------------------------------------
+			// - TrySetNativeValue(string, object)
+			// --------------------------------------------------------------------------------
+
+			var trySetNativeValueMethod = CodegenMethod
+				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(string), "name")
+				.AddParam(typeof(object), "value")
+				.WithOverride();
+			MakeTrySetNativeValue(trySetNativeValueMethod, classScope);
+			CodegenStackGenerator.RecursiveBuildStack(trySetNativeValueMethod, "TrySetNativeValue", methods, properties);
 
 			// --------------------------------------------------------------------------------
 			// - NativeEnumerable => IEnumerable<KeyValuePair<string, object>>
@@ -191,7 +205,19 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				getter.ExprDotMethod(Ref("result"), "Add", entry);
 			}
 
-			getter.BlockReturn(Ref("result"));
+			// Enumerable.Concat(result, base.NativeEnumerable);
+
+			if (nativeEnumerable.IsOverride) {
+				getter.BlockReturn(
+					StaticMethod(
+						typeof(Enumerable),
+						"Concat",
+						Ref("result"),
+						ExprDotName(Ref("base"), "NativeEnumerable")));
+			}
+			else {
+				getter.BlockReturn(Ref("result"));
+			}
 		}
 
 		private void MakeNativeWrite(
@@ -200,7 +226,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		{
 			if (desc.OptionalSupertype != null && !desc.OptionalSupertype.Types.IsEmpty()) {
 				method.Block
-					.ExprDotMethod(Ref("super"), "NativeWrite", Ref("context"));
+					.ExprDotMethod(Ref("base"), "NativeWrite", Ref("context"));
 			}
 
 			method.Block
@@ -230,18 +256,18 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				.AddParam(typeof(object), "value");
 			toEntry.Block.MethodReturn(NewInstance(typeof(KeyValuePair<string, object>), Ref("name"), Ref("value")));
 
-			if (desc.NumFieldsSupertype > 0) {
-				method.Block
-					.IfCondition(Relational(Ref("num"), LT, Constant(desc.NumFieldsSupertype)))
-					.BlockReturn(ExprDotMethod(Ref("super"), "GetNativeEntry", Ref("num")));
-			}
-
 			var cases = GetCasesNumberNtoM(desc);
 			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
-			
-			switchStmt.DefaultBlock
-				.AssignRef("value", DefaultValue())
-				.BlockReturn(ConstantFalse());
+
+			if (method.IsOverride) {
+				switchStmt.DefaultBlock
+					.BlockReturn(ExprDotMethod(Ref("base"), "TryGetNativeEntry", Ref("name"), OutputVariable("value")));
+			}
+			else {
+				switchStmt.DefaultBlock
+					.AssignRef("value", DefaultValue())
+					.BlockReturn(ConstantFalse());
+			}
 
 			var index = 0;
 			foreach (var property in desc.PropertiesThisType) {
@@ -250,6 +276,36 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					.AssignRef("value", LocalMethod(toEntry, Constant(property.Key), Ref(field.FieldName)))
 					.BlockReturn(ConstantTrue());
 				index++;
+			}
+		}
+
+		private void MakeTrySetNativeValue(
+			CodegenMethod method,
+			CodegenClassScope classScope)
+		{
+			var cases = GetCasesNumberNtoM(desc);
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
+			
+			if (method.IsOverride) {
+				switchStmt
+					.DefaultBlock
+					.BlockReturn(ExprDotMethod(Ref("base"), "TrySetNativeValue", Ref("name"), Ref("value")));
+			}
+			else {
+				switchStmt
+					.DefaultBlock
+					.BlockReturn(ConstantFalse());
+			}
+
+			var index = 0;
+			foreach (var property in desc.PropertiesThisType) {
+				var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+				var valueExpression = CodegenLegoCast.CastSafeFromObjectType(field.PropertyType, Ref("value"));
+
+				switchStmt
+					.Blocks[index++]
+					.AssignMember(field.FieldName, valueExpression)
+					.BlockReturn(ConstantTrue());
 			}
 		}
 
@@ -276,7 +332,14 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				or = Or(or, ExprDotMethod(Ref("name"), "Equals", Constant(enumerator.Current)));
 			}
 
-			method.Block.MethodReturn(or);
+			if (method.IsOverride) {
+				method.Block.IfCondition(or)
+					.BlockReturn(ConstantTrue())
+					.MethodReturn(ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("name")));
+			}
+			else {
+				method.Block.MethodReturn(or);
+			}
 		}
 
 		private bool NeedDynamic()

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -25,7 +24,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -202,7 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
 			ExprConstantNode constantNode = (ExprConstantNode) this.ChildNodes[0];
 			object value = constantNode.ConstantValue;
-			if (!(value is IDictionary)) {
+			if (!(value is IDictionary<string, object>)) {
 				throw GetDeclaredWrongParameterExpr();
 			}
 

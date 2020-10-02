@@ -212,6 +212,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 resultSetProcessor.SelectSubscriberDescriptor,
                 namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, createDesc.VariableName);
+
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgeableStmtProvider(

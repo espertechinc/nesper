@@ -25,11 +25,46 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewExternallyTimedBatchSceneOne());
-            execs.Add(new ViewExternallyTimedBatchedNoReference());
-            execs.Add(new ViewExternallyTimedBatchedWithRefTime());
-            execs.Add(new ViewExternallyTimedBatchRefWithPrev());
+            WithSceneOne(execs);
+            WithedNoReference(execs);
+            WithedWithRefTime(execs);
+            WithRefWithPrev(execs);
+            WithMonthScoped(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedBatchMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRefWithPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedBatchRefWithPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedWithRefTime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedBatchedWithRefTime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedNoReference(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedBatchedNoReference());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedBatchSceneOne());
             return execs;
         }
 
@@ -38,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             string epl,
             AtomicLong milestone)
         {
-            var fields = new [] { "Id" };
+            var fields = new[] {"Id"};
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
             env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -128,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 var epl =
                     "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed_batch(LongPrimitive, 10 sec)";
@@ -210,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "Id" };
+                var fields = new[] {"Id"};
                 var epl =
                     "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -392,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.UndeployAll();

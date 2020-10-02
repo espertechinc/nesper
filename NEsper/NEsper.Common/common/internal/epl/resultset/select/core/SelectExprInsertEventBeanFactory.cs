@@ -284,9 +284,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType)) {
                             selectedWritable = desc;
                             widener = new ProxyTypeWidenerSPI {
+                                ProcWidenResultType = () => desc.PropertyType,
                                 ProcWiden = input => {
-                                    if (input is EventBean) {
-                                        return ((EventBean) input).Underlying;
+                                    if (input is EventBean eventBean) {
+                                        return eventBean.Underlying;
                                     }
 
                                     return input;

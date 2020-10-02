@@ -29,16 +29,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			#if false
+
 			execs.Add(new ClientExtendAggregationInlinedLocalClass());
 			execs.Add(new ClientExtendAggregationInlinedFAF());
 			execs.Add(new ClientExtendAggregationInlinedSameModule());
 
 			// Following test is broken due to the need for namespace isolation within an assembly
 			// execs.Add(new ClientExtendAggregationInlinedOtherModule());
-			
 			execs.Add(new ClientExtendAggregationInlinedInvalid());
-			#endif
 			execs.Add(new ClientExtendAggregationInlinedMultiModuleUses());
 			return execs;
 		}

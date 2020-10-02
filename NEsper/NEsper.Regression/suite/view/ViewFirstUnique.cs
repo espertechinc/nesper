@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewFirstUniqueSimple(null));
+            Withimple(execs);
+            WithceneOne(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewFirstUniqueSceneOne(null));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewFirstUniqueSimple(null));
             return execs;
         }
 
@@ -56,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.Milestone(0);
 
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstunique(TheString)";
                 if (optionalAnnotations != null) {

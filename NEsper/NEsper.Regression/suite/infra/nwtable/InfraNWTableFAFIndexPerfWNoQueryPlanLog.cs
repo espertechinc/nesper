@@ -23,18 +23,51 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            WithKeyBTreePerformance(execs);
+            WithKeyAndRangePerformance(execs);
+            WithRangePerformance(execs);
+            WithKeyPerformance(execs);
+            WithInKeywordSingleIndex(execs);
+            return execs;
+        }
 
-            execs.Add(new InfraFAFKeyBTreePerformance(true));
-            execs.Add(new InfraFAFKeyBTreePerformance(false));
-            execs.Add(new InfraFAFKeyAndRangePerformance(true));
-            execs.Add(new InfraFAFKeyAndRangePerformance(false));
-            execs.Add(new InfraFAFRangePerformance(true));
-            execs.Add(new InfraFAFRangePerformance(false));
-            execs.Add(new InfraFAFKeyPerformance(true));
-            execs.Add(new InfraFAFKeyPerformance(false));
+        public static IList<RegressionExecution> WithInKeywordSingleIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraFAFInKeywordSingleIndex(true));
             execs.Add(new InfraFAFInKeywordSingleIndex(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithKeyPerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFKeyPerformance(true));
+            execs.Add(new InfraFAFKeyPerformance(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRangePerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFRangePerformance(true));
+            execs.Add(new InfraFAFRangePerformance(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeyAndRangePerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFKeyAndRangePerformance(true));
+            execs.Add(new InfraFAFKeyAndRangePerformance(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeyBTreePerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFKeyBTreePerformance(true));
+            execs.Add(new InfraFAFKeyBTreePerformance(false));
             return execs;
         }
 

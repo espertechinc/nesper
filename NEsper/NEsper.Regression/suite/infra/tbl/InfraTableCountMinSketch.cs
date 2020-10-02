@@ -33,10 +33,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraFrequencyAndTopk());
-            execs.Add(new InfraDocSamples());
-            execs.Add(new InfraNonStringType());
+            WithFrequencyAndTopk(execs);
+            WithDocSamples(execs);
+            WithNonStringType(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonStringType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNonStringType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDocSamples());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFrequencyAndTopk(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFrequencyAndTopk());
             return execs;
         }
 
@@ -267,8 +295,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "create table MyTable(cms countMinSketch({EpsOfTotalCount:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({\"EpsOfTotalCount\"=\"a\"})': Property 'EpsOfTotalCount' expects an System.Nullable<System.Double> but receives a value of type System.String [");
+                    "create table MyTable(cms countMinSketch({epsOfTotalCount:'a'}))",
+                    "Failed to validate table-column expression 'countMinSketch({\"epsOfTotalCount\"=\"a\"})': Property 'epsOfTotalCount' expects an System.Nullable<System.Double> but receives a value of type System.String [");
                 TryInvalidCompile(
                     env,
                     path,

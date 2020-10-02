@@ -24,13 +24,62 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternTimerScheduleSimple());
-            execs.Add(new PatternObserverTimerScheduleMultiform());
-            execs.Add(new PatternTimerScheduleLimitedWDateAndPeriod());
-            execs.Add(new PatternTimerScheduleJustDate());
-            execs.Add(new PatternTimerScheduleJustPeriod());
-            execs.Add(new PatternTimerScheduleDateWithPeriod());
+            WithTimerScheduleSimple(execs);
+            WithObserverTimerScheduleMultiform(execs);
+            WithTimerScheduleLimitedWDateAndPeriod(execs);
+            WithTimerScheduleJustDate(execs);
+            WithTimerScheduleJustPeriod(execs);
+            WithTimerScheduleDateWithPeriod(execs);
+            WithTimerScheduleUnlimitedRecurringPeriod(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerScheduleUnlimitedRecurringPeriod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleUnlimitedRecurringPeriod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerScheduleDateWithPeriod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerScheduleDateWithPeriod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerScheduleJustPeriod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerScheduleJustPeriod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerScheduleJustDate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerScheduleJustDate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerScheduleLimitedWDateAndPeriod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerScheduleLimitedWDateAndPeriod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObserverTimerScheduleMultiform(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternObserverTimerScheduleMultiform());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerScheduleSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerScheduleSimple());
             return execs;
         }
 
@@ -78,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:30.000GMT-0:00");
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                new [] { "sb" },
+                new[] {"sb"},
                 new[] {
                     new object[] {b2},
                     new object[] {b3}

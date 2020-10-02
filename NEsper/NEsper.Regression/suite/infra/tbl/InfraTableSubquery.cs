@@ -25,10 +25,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraTableSubqueryAgainstKeyed());
-            execs.Add(new InfraTableSubqueryAgainstUnkeyed());
-            execs.Add(new InfraTableSubquerySecondaryIndex());
+            WithAgainstKeyed(execs);
+            WithAgainstUnkeyed(execs);
+            WithSecondaryIndex(execs);
+            WithInFilter(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableSubqueryInFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSecondaryIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSubquerySecondaryIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAgainstUnkeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSubqueryAgainstUnkeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAgainstKeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSubqueryAgainstKeyed());
             return execs;
         }
 
@@ -63,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string @string,
             int? expectedSum)
         {
-            var fields = new [] { "c0" };
+            var fields = new[] {"c0"};
             env.SendEventBean(new SupportBean(@string, -1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -76,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 string epl = "create table MyTable(tablecol string primary key);\n" +
-                             "insert into MyTable select p00 as tablecol from SupportBean_S0;\n" +
+                             "insert into MyTable select P00 as tablecol from SupportBean_S0;\n" +
                              "@Name('s0') select * from SupportBean(TheString=(select tablecol from MyTable).orderBy().firstOf())";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -169,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, "E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0" },
+                    new[] {"c0"},
                     new object[] {10});
 
                 env.UndeployAll();

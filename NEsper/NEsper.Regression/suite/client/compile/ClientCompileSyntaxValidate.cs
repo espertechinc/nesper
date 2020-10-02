@@ -25,8 +25,22 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileOptionsValidateOnly());
+            WithOptionsValidateOnly(execs);
+            WithSyntaxMgs(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSyntaxMgs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSyntaxMgs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOptionsValidateOnly(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileOptionsValidateOnly());
             return execs;
         }
 

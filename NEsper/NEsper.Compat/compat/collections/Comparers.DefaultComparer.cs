@@ -15,11 +15,13 @@ namespace com.espertech.esper.compat.collections
     {
         public static IComparer<T> Default<T>()
         {
-            return new DefaultComparer<T>();
+            return DefaultComparer<T>.Instance;
         }
 
         public class DefaultComparer<T> : IComparer<T>
         {
+            public static readonly DefaultComparer<T> Instance = new DefaultComparer<T>();
+            
             public static bool IsInteger(Type type)
             {
                 return type == typeof(Int64) ||

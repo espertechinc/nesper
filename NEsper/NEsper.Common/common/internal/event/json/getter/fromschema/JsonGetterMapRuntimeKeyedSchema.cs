@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "GetJsonMappedProp",
                 ExprDotName(beanExpression, "Underlying"),
-                Constant(_field.FieldName),
+                Constant(_field.PropertyName),
                 key);
         }
 
@@ -46,7 +46,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             EventBean eventBean,
             string mapKey)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedProp(eventBean.Underlying, _field.FieldName, mapKey);
+            return JsonFieldGetterHelperSchema.GetJsonMappedProp(
+                eventBean.Underlying,
+                _field.PropertyName,
+                mapKey);
         }
     }
 } // end of namespace

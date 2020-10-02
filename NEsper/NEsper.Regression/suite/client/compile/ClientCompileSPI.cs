@@ -26,6 +26,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSPIExpression(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSPIExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSPIExpression());
             return execs;
         }
@@ -72,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 CompileEvaluate("'a' || 'y'", "ay", expressionCompiler);
 
                 var arrays = typeof(Arrays).FullName;
-                
+
                 var list = (ICollection<object>) CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
                 EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] {"a"});
 

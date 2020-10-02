@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
     public class JsonDeserializerArray2DPrimitiveInt16 : JsonDeserializerArrayBase<short[]>
     {
         public JsonDeserializerArray2DPrimitiveInt16()
-            : base(_ => _.ElementToArray(v => v.GetInt16()))
+            : base(_ => _.ElementToArray(v => v.GetSmartInt16()))
         {
         }
     }

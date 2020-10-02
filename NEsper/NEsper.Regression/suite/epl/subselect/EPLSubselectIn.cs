@@ -27,22 +27,134 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectInSelect());
-            execs.Add(new EPLSubselectInSelectOM());
-            execs.Add(new EPLSubselectInSelectCompile());
-            execs.Add(new EPLSubselectInSelectWhere());
-            execs.Add(new EPLSubselectInSelectWhereExpressions());
-            execs.Add(new EPLSubselectInFilterCriteria());
-            execs.Add(new EPLSubselectInWildcard());
-            execs.Add(new EPLSubselectInNullable());
-            execs.Add(new EPLSubselectInNullableCoercion());
-            execs.Add(new EPLSubselectInNullRow());
-            execs.Add(new EPLSubselectInSingleIndex());
-            execs.Add(new EPLSubselectInMultiIndex());
-            execs.Add(new EPLSubselectNotInNullRow());
-            execs.Add(new EPLSubselectNotInSelect());
-            execs.Add(new EPLSubselectNotInNullableCoercion());
+            WithInSelect(execs);
+            WithInSelectOM(execs);
+            WithInSelectCompile(execs);
+            WithInSelectWhere(execs);
+            WithInSelectWhereExpressions(execs);
+            WithInFilterCriteria(execs);
+            WithInWildcard(execs);
+            WithInNullable(execs);
+            WithInNullableCoercion(execs);
+            WithInNullRow(execs);
+            WithInSingleIndex(execs);
+            WithInMultiIndex(execs);
+            WithNotInNullRow(execs);
+            WithNotInSelect(execs);
+            WithNotInNullableCoercion(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotInNullableCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotInNullableCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotInSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotInSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotInNullRow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotInNullRow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInMultiIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInMultiIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSingleIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSingleIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInNullRow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInNullRow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInNullableCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInNullableCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInNullable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInNullable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInFilterCriteria(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInFilterCriteria());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSelectWhereExpressions(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSelectWhereExpressions());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSelectWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSelectWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSelectCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSelectCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSelectOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSelectOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSelect());
             return execs;
         }
 

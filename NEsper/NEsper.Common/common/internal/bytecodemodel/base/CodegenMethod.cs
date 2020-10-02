@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -62,7 +61,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public IList<CodegenExpressionRef> Environment { get; private set; } =
             Collections.GetEmptyList<CodegenExpressionRef>();
 
-        public bool IsOverride { get; set; }
+        public MemberModifier Modifiers { get; set; }
+
+        public bool IsOverride => Modifiers.IsOverride();
+
+        public bool IsVirtual => Modifiers.IsVirtual();
+
+        public bool IsStatic => Modifiers.IsStatic();
 
         public Type ReturnType { get; }
 
@@ -84,25 +89,42 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         
         public String AssignedProviderClassName { get; set;  }
 
-        public bool IsStatic { get; set; }
-
         public CodegenMethod WithStatic(bool value)
         {
-            IsStatic = value;
+            Modifiers = Modifiers.EnableDisable(MemberModifier.STATIC, value);
             return this;
         }
 
-        public CodegenMethod WithOverride(bool isOverride = true)
+        public CodegenMethod WithVirtual()
         {
-            IsOverride = isOverride;
+            Modifiers = Modifiers
+                .Enable(MemberModifier.VIRTUAL)
+                .Disable(MemberModifier.OVERRIDE);
+            return this;
+        }
+        
+        public CodegenMethod WithOverride()
+        {
+            Modifiers = Modifiers
+                .Enable(MemberModifier.OVERRIDE)
+                .Disable(MemberModifier.VIRTUAL);
             return this;
         }
 
         public SyntaxTokenList GetModifiers()
         {
             var modifiers = TokenList();
+            
             if (IsStatic) {
                 modifiers.Add(Token(SyntaxKind.StaticKeyword));
+            }
+
+            if (IsOverride) {
+                modifiers.Add(Token(SyntaxKind.OverrideKeyword));
+            }
+
+            if (IsVirtual) {
+                modifiers.Add(Token(SyntaxKind.VirtualKeyword));
             }
 
             modifiers.Add(Token(SyntaxKind.PublicKeyword));

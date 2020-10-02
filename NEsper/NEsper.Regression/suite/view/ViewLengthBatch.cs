@@ -33,16 +33,72 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewLengthBatchSceneOne());
-            execs.Add(new ViewLengthBatchSize2());
-            execs.Add(new ViewLengthBatchSize1());
-            execs.Add(new ViewLengthBatchSize3());
-            execs.Add(new ViewLengthBatchInvalid());
-            execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.VIEW, null));
-            execs.Add(new ViewLengthBatchPrev());
+            WithSceneOne(execs);
+            WithSize2(execs);
+            WithSize1(execs);
+            WithSize3(execs);
+            WithInvalid(execs);
+            WithNormal(execs);
+            WithPrev(execs);
+            WithDelete(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNormal(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.VIEW, null));
             execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.NAMEDWINDOW, null));
             execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.GROUPWIN, null));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSize3(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchSize3());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSize1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchSize1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSize2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchSize2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLengthBatchSceneOne());
             return execs;
         }
 
@@ -133,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("E6"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {
                         new object[] {"E4"},
                         new object[] {"E5"},
@@ -141,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {
                         new object[] {"E1"},
                         new object[] {"E2"},
@@ -162,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("E9"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {
                         new object[] {"E7"},
                         new object[] {"E8"},
@@ -170,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {
                         new object[] {"E4"},
                         new object[] {"E5"},
@@ -374,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 var epl = "create window ABCWin#length_batch(3) as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
@@ -482,7 +538,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
 
                 string epl;
                 if (runType == ViewLengthBatchNormalRunType.VIEW) {
@@ -535,7 +591,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 if (runType == ViewLengthBatchNormalRunType.VIEW) {
                     EPAssertionUtil.AssertPropsPerRow(
                         env.Listener("s0").LastNewData,
-                        new [] { "prevString" },
+                        new[] {"prevString"},
                         new[] {
                             new object[] {null},
                             new object[] {"E1"},

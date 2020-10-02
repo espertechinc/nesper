@@ -735,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				"select cast(TheString, date, x:1) from SupportBean",
 				"Failed to validate select-clause expression 'cast(TheString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
 
-#if false // we do not validate date format patterns
+#if INVALID // we do not validate date format patterns
 			// invalid date format
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
@@ -759,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				"select cast(TheString, int, dateformat:'yyyyMMdd') from SupportBean",
 				"Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of long, DateTime, DateTimeOffset or DateEx");
 
-#if false // completely valid, DateTimeFormat implements DateFormat
+#if INVALID // completely valid, DateTimeFormat implements DateFormat
             // invalid parser
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,

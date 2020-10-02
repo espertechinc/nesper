@@ -6,10 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -87,20 +90,24 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), beanExpression);
         }
 
+        public static bool IsGenericPair(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Pair<,>).GetGenericTypeDefinition();
+        }
+
         public CodegenExpression UnderlyingGetCodegen(
             CodegenExpression underlyingExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-
-            CodegenMethod method = codegenMethodScope
+            var method = codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "und");
             var undType = wrapperEventType.UnderlyingEventType.UnderlyingType;
-            // TBD - fix this, this type is not right... below
-            if (wrapperEventType.UnderlyingType == typeof(Pair<object, object>)) {
+            
+            if (IsGenericPair(wrapperEventType.UnderlyingType)) {
                 method.Block
-                    .DeclareVarWCast(typeof(Pair<object, object>), "pair", "und")
+                    .DeclareVarWCast(wrapperEventType.UnderlyingType, "pair", "und")
                     .DeclareVar(undType, "wrapped", Cast(undType, ExprDotName(Ref("pair"), "First")))
                     .MethodReturn(underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
                 return LocalMethod(method, Ref("und"));

@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.dataflow;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -57,7 +58,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             configuration.Common.AddEventType(
                 "MyOAEventType",
-                new [] { "p0","p1" },
+                new[] {"p0", "p1"},
                 new object[] {typeof(string), typeof(int)});
 
             var legacy = new ConfigurationCommonEventTypeBean();
@@ -104,33 +105,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLDataflowAPICreateStartStopDestroy()
-        {
-            RegressionRunner.Run(session, EPLDataflowAPICreateStartStopDestroy.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLDataflowAPIExceptions()
         {
             RegressionRunner.Run(session, new EPLDataflowAPIExceptions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowAPIInstantiationOptions()
-        {
-            RegressionRunner.Run(session, EPLDataflowAPIInstantiationOptions.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowAPIOpLifecycle()
-        {
-            RegressionRunner.Run(session, EPLDataflowAPIOpLifecycle.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowAPIRunStartCancelJoin()
-        {
-            RegressionRunner.Run(session, EPLDataflowAPIRunStartCancelJoin.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -143,18 +120,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLDataflowAPIStatistics()
         {
             RegressionRunner.Run(session, new EPLDataflowAPIStatistics());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowCustomProperties()
-        {
-            RegressionRunner.Run(session, EPLDataflowCustomProperties.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowDocSamples()
-        {
-            RegressionRunner.Run(session, EPLDataflowDocSamples.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -176,63 +141,391 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLDataflowInputOutputVariations()
-        {
-            RegressionRunner.Run(session, EPLDataflowInputOutputVariations.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowInvalidGraph()
-        {
-            RegressionRunner.Run(session, EPLDataflowInvalidGraph.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowOpBeaconSource()
-        {
-            RegressionRunner.Run(session, EPLDataflowOpBeaconSource.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowOpEPStatementSource()
-        {
-            RegressionRunner.Run(session, EPLDataflowOpEPStatementSource.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowOpEventBusSink()
-        {
-            RegressionRunner.Run(session, EPLDataflowOpEventBusSink.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowOpEventBusSource()
-        {
-            RegressionRunner.Run(session, EPLDataflowOpEventBusSource.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowOpFilter()
-        {
-            RegressionRunner.Run(session, EPLDataflowOpFilter.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLDataflowOpLogSink()
         {
             RegressionRunner.Run(session, new EPLDataflowOpLogSink());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowOpSelect()
+        /// <summary>
+        /// Auto-test(s): EPLDataflowAPICreateStartStopDestroy
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowAPICreateStartStopDestroy.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowAPICreateStartStopDestroy : AbstractTestBase
         {
-            RegressionRunner.Run(session, EPLDataflowOpSelect.Executions());
+            public TestEPLDataflowAPICreateStartStopDestroy() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithDeploymentAdmin() => RegressionRunner.Run(_session, EPLDataflowAPICreateStartStopDestroy.WithDeploymentAdmin());
+
+            [Test, RunInApplicationDomain]
+            public void WithCreateStartStop() => RegressionRunner.Run(_session, EPLDataflowAPICreateStartStopDestroy.WithCreateStartStop());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLDataflowTypes()
+        /// <summary>
+        /// Auto-test(s): EPLDataflowAPIInstantiationOptions
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowAPIInstantiationOptions.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowAPIInstantiationOptions : AbstractTestBase
         {
-            RegressionRunner.Run(session, EPLDataflowTypes.Executions());
+            public TestEPLDataflowAPIInstantiationOptions() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithOperatorInjectionCallback() => RegressionRunner.Run(_session, EPLDataflowAPIInstantiationOptions.WithOperatorInjectionCallback());
+
+            [Test, RunInApplicationDomain]
+            public void WithParameterInjectionCallback() => RegressionRunner.Run(_session, EPLDataflowAPIInstantiationOptions.WithParameterInjectionCallback());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowAPIOpLifecycle
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowAPIOpLifecycle.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowAPIOpLifecycle : AbstractTestBase
+        {
+            public TestEPLDataflowAPIOpLifecycle() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithFlowGraphOperator() => RegressionRunner.Run(_session, EPLDataflowAPIOpLifecycle.WithFlowGraphOperator());
+
+            [Test, RunInApplicationDomain]
+            public void WithFlowGraphSource() => RegressionRunner.Run(_session, EPLDataflowAPIOpLifecycle.WithFlowGraphSource());
+
+            [Test, RunInApplicationDomain]
+            public void WithTypeEvent() => RegressionRunner.Run(_session, EPLDataflowAPIOpLifecycle.WithTypeEvent());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowAPIRunStartCancelJoin
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowAPIRunStartCancelJoin : AbstractTestBase
+        {
+            public TestEPLDataflowAPIRunStartCancelJoin() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithBlockingRunJoin() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithBlockingRunJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithFastCompleteNonBlocking() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithFastCompleteNonBlocking());
+
+            [Test, RunInApplicationDomain]
+            public void WithRunBlocking() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithRunBlocking());
+
+            [Test, RunInApplicationDomain]
+            public void WithFastCompleteBlocking() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithFastCompleteBlocking());
+
+            [Test, RunInApplicationDomain]
+            public void WithNonBlockingJoinSingleRunnable() => RegressionRunner.Run(
+                _session,
+                EPLDataflowAPIRunStartCancelJoin.WithNonBlockingJoinSingleRunnable());
+
+            [Test, RunInApplicationDomain]
+            public void WithBlockingMultipleRunnable() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithBlockingMultipleRunnable());
+
+            [Test, RunInApplicationDomain]
+            public void WithNonBlockingJoinMultipleRunnable() => RegressionRunner.Run(
+                _session,
+                EPLDataflowAPIRunStartCancelJoin.WithNonBlockingJoinMultipleRunnable());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidJoinRun() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithInvalidJoinRun());
+
+            [Test, RunInApplicationDomain]
+            public void WithNonBlockingCancel() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithNonBlockingCancel());
+
+            [Test, RunInApplicationDomain]
+            public void WithBlockingCancel() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithBlockingCancel());
+
+            [Test, RunInApplicationDomain]
+            public void WithBlockingException() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithBlockingException());
+
+            [Test, RunInApplicationDomain]
+            public void WithNonBlockingException() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithNonBlockingException());
+
+            [Test, RunInApplicationDomain]
+            public void WithNonBlockingJoinException() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithNonBlockingJoinException());
+
+            [Test, RunInApplicationDomain]
+            public void WithNonBlockingJoinCancel() => RegressionRunner.Run(_session, EPLDataflowAPIRunStartCancelJoin.WithNonBlockingJoinCancel());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowCustomProperties
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowCustomProperties.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowCustomProperties : AbstractTestBase
+        {
+            public TestEPLDataflowCustomProperties() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCustomProps() => RegressionRunner.Run(_session, EPLDataflowCustomProperties.WithCustomProps());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLDataflowCustomProperties.WithInvalid());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowDocSamples
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowDocSamples.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowDocSamples : AbstractTestBase
+        {
+            public TestEPLDataflowDocSamples() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithSODA() => RegressionRunner.Run(_session, EPLDataflowDocSamples.WithSODA());
+
+            [Test, RunInApplicationDomain]
+            public void WithDocSamplesRun() => RegressionRunner.Run(_session, EPLDataflowDocSamples.WithDocSamplesRun());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowInputOutputVariations
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowInputOutputVariations.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowInputOutputVariations : AbstractTestBase
+        {
+            public TestEPLDataflowInputOutputVariations() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithFactorial() => RegressionRunner.Run(_session, EPLDataflowInputOutputVariations.WithFactorial());
+
+            [Test, RunInApplicationDomain]
+            public void WithFanInOut() => RegressionRunner.Run(_session, EPLDataflowInputOutputVariations.WithFanInOut());
+
+            [Test, RunInApplicationDomain]
+            public void WithLargeNumOpsDataFlow() => RegressionRunner.Run(_session, EPLDataflowInputOutputVariations.WithLargeNumOpsDataFlow());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowInvalidGraph
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowInvalidGraph.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowInvalidGraph : AbstractTestBase
+        {
+            public TestEPLDataflowInvalidGraph() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInstantiate() => RegressionRunner.Run(_session, EPLDataflowInvalidGraph.WithInstantiate());
+
+            [Test, RunInApplicationDomain]
+            public void WithCompile() => RegressionRunner.Run(_session, EPLDataflowInvalidGraph.WithCompile());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowOpBeaconSource
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowOpBeaconSource.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowOpBeaconSource : AbstractTestBase
+        {
+            public TestEPLDataflowOpBeaconSource() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithNoType() => RegressionRunner.Run(_session, EPLDataflowOpBeaconSource.WithNoType());
+
+            [Test, RunInApplicationDomain]
+            public void WithFields() => RegressionRunner.Run(_session, EPLDataflowOpBeaconSource.WithFields());
+
+            [Test, RunInApplicationDomain]
+            public void WithVariable() => RegressionRunner.Run(_session, EPLDataflowOpBeaconSource.WithVariable());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithBeans() => RegressionRunner.Run(_session, EPLDataflowOpBeaconSource.WithWithBeans());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowOpEPStatementSource
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowOpEPStatementSource.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowOpEPStatementSource : AbstractTestBase
+        {
+            public TestEPLDataflowOpEPStatementSource() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLDataflowOpEPStatementSource.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithStatementFilter() => RegressionRunner.Run(_session, EPLDataflowOpEPStatementSource.WithStatementFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithStmtNameDynamic() => RegressionRunner.Run(_session, EPLDataflowOpEPStatementSource.WithStmtNameDynamic());
+
+            [Test, RunInApplicationDomain]
+            public void WithAllTypes() => RegressionRunner.Run(_session, EPLDataflowOpEPStatementSource.WithAllTypes());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowOpEventBusSink
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowOpEventBusSink.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowOpEventBusSink : AbstractTestBase
+        {
+            public TestEPLDataflowOpEventBusSink() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithSendEventDynamicType() => RegressionRunner.Run(_session, EPLDataflowOpEventBusSink.WithSendEventDynamicType());
+
+            [Test, RunInApplicationDomain]
+            public void WithBeacon() => RegressionRunner.Run(_session, EPLDataflowOpEventBusSink.WithBeacon());
+
+            [Test, RunInApplicationDomain]
+            public void WithAllTypes() => RegressionRunner.Run(_session, EPLDataflowOpEventBusSink.WithAllTypes());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowOpEventBusSource
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowOpEventBusSource.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowOpEventBusSource : AbstractTestBase
+        {
+            public TestEPLDataflowOpEventBusSource() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithSchemaObjectArray() => RegressionRunner.Run(_session, EPLDataflowOpEventBusSource.WithSchemaObjectArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithAllTypes() => RegressionRunner.Run(_session, EPLDataflowOpEventBusSource.WithAllTypes());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowOpFilter
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowOpFilter.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowOpFilter : AbstractTestBase
+        {
+            public TestEPLDataflowOpFilter() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithAllTypes() => RegressionRunner.Run(_session, EPLDataflowOpFilter.WithAllTypes());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLDataflowOpFilter.WithInvalid());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowOpSelect
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowOpSelect.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowOpSelect : AbstractTestBase
+        {
+            public TestEPLDataflowOpSelect() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinMultirow() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithOuterJoinMultirow());
+
+            [Test, RunInApplicationDomain]
+            public void WithSelectPerformance() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithSelectPerformance());
+
+            [Test, RunInApplicationDomain]
+            public void WithFromClauseJoinOrder() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithFromClauseJoinOrder());
+
+            [Test, RunInApplicationDomain]
+            public void WithTimeWindowTriggered() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithTimeWindowTriggered());
+
+            [Test, RunInApplicationDomain]
+            public void WithOutputRateLimit() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithOutputRateLimit());
+
+            [Test, RunInApplicationDomain]
+            public void WithIterateFinalMarker() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithIterateFinalMarker());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithDocSamples() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithDocSamples());
+
+            [Test, RunInApplicationDomain]
+            public void WithAllTypes() => RegressionRunner.Run(_session, EPLDataflowOpSelect.WithAllTypes());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDataflowTypes
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLDataflowTypes.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDataflowTypes : AbstractTestBase
+        {
+            public TestEPLDataflowTypes() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithMapType() => RegressionRunner.Run(_session, EPLDataflowTypes.WithMapType());
+
+            [Test, RunInApplicationDomain]
+            public void WithBeanType() => RegressionRunner.Run(_session, EPLDataflowTypes.WithBeanType());
         }
     }
 } // end of namespace

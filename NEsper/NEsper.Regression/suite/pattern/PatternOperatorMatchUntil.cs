@@ -32,15 +32,78 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternMatchUntilSimple());
-            execs.Add(new PatternOp());
-            execs.Add(new PatternSelectArray());
-            execs.Add(new PatternUseFilter());
-            execs.Add(new PatternRepeatUseTags());
-            execs.Add(new PatternArrayFunctionRepeat());
-            execs.Add(new PatternExpressionBounds());
-            execs.Add(new PatternBoundRepeatWithNot());
+            WithMatchUntilSimple(execs);
+            WithOp(execs);
+            WithSelectArray(execs);
+            WithUseFilter(execs);
+            WithRepeatUseTags(execs);
+            WithArrayFunctionRepeat(execs);
+            WithExpressionBounds(execs);
+            WithBoundRepeatWithNot(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBoundRepeatWithNot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternBoundRepeatWithNot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionBounds(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternExpressionBounds());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithArrayFunctionRepeat(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternArrayFunctionRepeat());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRepeatUseTags(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternRepeatUseTags());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUseFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternUseFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternSelectArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMatchUntilSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternMatchUntilSimple());
             return execs;
         }
 
@@ -90,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 var epl =
                     "@Name('s0') select a[0].TheString as c0, a[1].TheString as c1, b.TheString as c2 from pattern [a=SupportBean(IntPrimitive=0) until b=SupportBean(IntPrimitive=1)]";
@@ -688,7 +751,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test range-optimization
                 stmt = "@Name('s0') select * from pattern [" +
-                       " a=SupportBean(TheString like 'A%') until " + 
+                       " a=SupportBean(TheString like 'A%') until " +
                        " b=SupportBean(TheString like 'B%') -> " +
                        " c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)" +
                        "]";
@@ -840,7 +903,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("E2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "b[0].TheString","b[1].TheString" },
+                    new[] {"b[0].TheString", "b[1].TheString"},
                     new object[] {"E1", "E2"});
 
                 env.UndeployAll();
@@ -871,7 +934,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(16000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.Id" },
+                    new[] {"a.Id"},
                     new object[] {"A1"});
 
                 env.AdvanceTime(999999);
@@ -900,7 +963,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(1024999);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.Id","b[0].Id","b[1].Id" },
+                    new[] {"a.Id", "b[0].Id", "b[1].Id"},
                     new object[] {"A1", "B1", "B2"});
 
                 env.AdvanceTime(1999999);
@@ -914,7 +977,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "e[0].IntPrimitive","e[1].IntPrimitive" };
+                var fields = new[] {"e[0].IntPrimitive", "e[1].IntPrimitive"};
                 var epl =
                     "@Name('s0') select * from pattern [every [2] (e = SupportBean(TheString='A') and not SupportBean(TheString='B'))]";
                 env.CompileDeploy(epl).AddListener("s0");

@@ -226,6 +226,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(
                     StatementType.CREATE_VARIABLE,
                     env.Statement("create-one").GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual(
+                    "var1SAI", env.Statement("create-one").GetProperty(StatementProperty.CREATEOBJECTNAME));
+
                 env.AddListener("create-one");
 
                 string[] fieldsVar1 = {"var1SAI"};

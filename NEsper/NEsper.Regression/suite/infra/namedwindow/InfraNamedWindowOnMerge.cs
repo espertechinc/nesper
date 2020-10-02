@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var path = new RegressionPath();
             var baseModuleEPL = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOrderEvent>() +
-                                " create schema OrderEvent as (OrderId string, ProductId string, Price double, Quantity int, deletedFlag boolean)";
+                                " create schema OrderEvent as (OrderId string, ProductId string, Price double, Quantity int, DeletedFlag boolean)";
             env.CompileDeployWBusPublicType(baseModuleEPL, path);
 
             var appModuleOne = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProductTotalRec>() +
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 "  where pw.OrderId = oe.OrderId\n" +
                 "  when not matched \n" +
                 "    then insert select *\n" +
-                "  when matched and oe.deletedFlag=true\n" +
+                "  when matched and oe.DeletedFlag=true\n" +
                 "    then delete\n" +
                 "  when matched\n" +
                 "    then update set pw.Quantity = oe.Quantity, pw.Price = oe.Price";
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 theEvent.Put("ProductId", productId);
                 theEvent.Put("Price", price);
                 theEvent.Put("Quantity", quantity);
-                theEvent.Put("deletedFlag", deletedFlag);
+                theEvent.Put("DeletedFlag", deletedFlag);
                 env.SendEventMap(theEvent, "OrderEvent");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -327,16 +327,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 theEvent.Put("ProductId", productId);
                 theEvent.Put("Price", price);
                 theEvent.Put("Quantity", quantity);
-                theEvent.Put("deletedFlag", deletedFlag);
+                theEvent.Put("DeletedFlag", deletedFlag);
                 env.EventService.SendEventAvro(theEvent, "OrderEvent");
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
                 @object.Add("OrderId", orderId);
                 @object.Add("ProductId", productId);
-                @object.Add("price", price);
+                @object.Add("Price", price);
                 @object.Add("Quantity", quantity);
-                @object.Add("deletedFlag", deletedFlag);
+                @object.Add("DeletedFlag", deletedFlag);
                 env.EventService.SendEventJson(@object.ToString(), "OrderEvent");
             }
             else {
@@ -519,7 +519,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionDocExample(env, rep);
                 }
             }
@@ -562,7 +562,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                // TBD: remove this case
+                TryAssertionSubselect(env, EventRepresentationChoice.JSON);
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionSubselect(env, rep);
                 }
             }
