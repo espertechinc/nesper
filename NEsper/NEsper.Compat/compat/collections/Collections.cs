@@ -36,7 +36,7 @@ namespace com.espertech.esper.compat.collections
             {
                 var replList = new List<T>(list);
                 replList.Sort();
-                for (int ii = list.Count - 1; ii >= 0; ii--)
+                for (var ii = list.Count - 1; ii >= 0; ii--)
                     list[ii] = replList[ii];
             }
         }
@@ -55,7 +55,7 @@ namespace com.espertech.esper.compat.collections
             {
                 var replList = new List<T>(list);
                 replList.Sort(comparer);
-                for (int ii = list.Count - 1; ii >= 0; ii--)
+                for (var ii = list.Count - 1; ii >= 0; ii--)
                     list[ii] = replList[ii];
             }
         }
@@ -171,8 +171,8 @@ namespace com.espertech.esper.compat.collections
 
         public static bool AreEqual<T>(T[] baseObj, T[] compObj)
         {
-            bool baseIsNull = baseObj == null;
-            bool compIsNull = compObj == null;
+            var baseIsNull = baseObj == null;
+            var compIsNull = compObj == null;
 
             if (baseIsNull && compIsNull)
             {
@@ -190,7 +190,7 @@ namespace com.espertech.esper.compat.collections
             }
 
             var objCount = baseObj.Length;
-            for( int ii = 0 ; ii < objCount ; ii++ )
+            for( var ii = 0 ; ii < objCount ; ii++ )
             {
                 if (!Equals(baseObj[ii], compObj[ii]))
                 {
@@ -212,8 +212,8 @@ namespace com.espertech.esper.compat.collections
 
         public static bool AreEqual<T>(ICollection<T> baseObj, ICollection<T> compObj)
         {
-            bool baseIsNull = baseObj == null;
-            bool compIsNull = compObj == null;
+            var baseIsNull = baseObj == null;
+            var compIsNull = compObj == null;
 
             if ( baseIsNull && compIsNull )
             {
@@ -230,8 +230,8 @@ namespace com.espertech.esper.compat.collections
                 return false;
             }
 
-            IEnumerator<T> baseEnum = baseObj.GetEnumerator();
-            IEnumerator<T> compEnum = compObj.GetEnumerator();
+            var baseEnum = baseObj.GetEnumerator();
+            var compEnum = compObj.GetEnumerator();
 
             return AreEqual(baseEnum, compEnum);
         }
@@ -250,7 +250,7 @@ namespace com.espertech.esper.compat.collections
             for (; ;)
             {
 #if true
-                int bitMask =
+                var bitMask =
                     (baseEnum.MoveNext() ? 2 : 0) |
                     (compEnum.MoveNext() ? 1 : 0);
                 switch(bitMask)
@@ -308,7 +308,7 @@ namespace com.espertech.esper.compat.collections
 				return ((List<T>) source).ToArray() ;
 			}
 			
-			T[] array = new T[source.Count] ;
+			var array = new T[source.Count] ;
 			source.CopyTo( array, 0 ) ;
 			return array ;
 		}
@@ -357,13 +357,13 @@ namespace com.espertech.esper.compat.collections
         
         public static void Shuffle<T>( IList<T> list, int iterations, Random random )
         {
-        	int count = list.Count ;
+        	var count = list.Count ;
         	
-        	for( int ii = iterations ; ii >= 0 ; ii-- )
+        	for( var ii = iterations ; ii >= 0 ; ii-- )
         	{
-        		int index1 = random.Next( count ) ;
-        		int index2 = random.Next( count ) ;
-        		T temp = list[index1] ;
+        		var index1 = random.Next( count ) ;
+        		var index2 = random.Next( count ) ;
+        		var temp = list[index1] ;
         		list[index1] = list[index2] ;
         		list[index2] = temp ;
         	}        	
@@ -422,7 +422,7 @@ namespace com.espertech.esper.compat.collections
             object value)
         {
             if (value is T valueT) {
-                bool result = collection.Contains(valueT);
+                var result = collection.Contains(valueT);
                 return result;
             }
 
@@ -446,7 +446,7 @@ namespace com.espertech.esper.compat.collections
             object key)
         {
             if (key is TK keyT) {
-                bool result = dictionary.ContainsKey(keyT);
+                var result = dictionary.ContainsKey(keyT);
                 return result;
             }
 

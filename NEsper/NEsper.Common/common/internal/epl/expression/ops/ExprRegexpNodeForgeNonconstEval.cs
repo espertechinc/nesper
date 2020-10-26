@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.ops.ExprRegexpNodeForgeConstEval;
@@ -69,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public static Regex ExprRegexNodeCompilePattern(string text)
         {
             try {
-                return new Regex($"^{text}$");
+                return RegexExtensions.Compile(text, out string patternText);
             }
             catch (ArgumentException ex) {
                 throw new EPException("Failed to compile regex pattern '" + text + "': " + ex.Message, ex);

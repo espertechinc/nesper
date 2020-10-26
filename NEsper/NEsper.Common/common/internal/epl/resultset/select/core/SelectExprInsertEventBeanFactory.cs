@@ -328,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         // handle case where the select-clause contains an fragment array
                         var columnEventType = ((EventType[]) columnType)[0];
                         var componentReturnType = columnEventType.UnderlyingType;
-                        var arrayReturnType = Array.CreateInstance(componentReturnType, 0).GetType();
+                        var arrayReturnType = componentReturnType.MakeArrayType();
 
                         var allowObjectArrayToCollectionConversion = eventType is AvroSchemaEventType;
                         try {

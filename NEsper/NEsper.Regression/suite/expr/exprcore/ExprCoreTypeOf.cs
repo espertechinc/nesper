@@ -141,6 +141,7 @@ public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecu
 		{
 			public void Run(RegressionEnvironment env)
 			{
+				TryAssertionFragment(env, EventRepresentationChoice.JSON);
 				foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
 					TryAssertionFragment(env, rep);
 				}

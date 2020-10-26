@@ -288,7 +288,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 				AssertType(env, typeof(HashableMultiKey), "firstkey,lastkey,lowerkey");
 
-				PrepareTestData(env, new OrderedListDictionary<int, ICollection<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
+				PrepareTestData(env, new OrderedListDictionary<int, IList<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
 
 				env.SendEventBean(new SupportBean_S0(-1));
 				var @event = env.Listener("s0").AssertOneGetNewAndReset();
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(IOrderedDictionary<object, object>), "sm");
 				AssertType(env, typeof(SupportBean), "eblastof");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
 				for (var start = 0; start < 12; start++) {
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 								var sme = new MySubmapEvent(start, includeStart, end, includeEnd);
 								env.SendEventBean(sme);
 								var @event = env.Listener("s0").AssertOneGetNewAndReset();
-								IDictionary<object, SupportBean[]> submap = @event.Get("sm")
+								var submap = @event.Get("sm")
 									.AsObjectDictionary(MagicMarker.SingletonInstance)
 									.TransformLeft<object, object, SupportBean[]>();
 								
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 				AssertType(env, typeof(IOrderedDictionary<object, object>), "nmr");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
 				env.SendEventBean(new SupportBean_S0(-1));
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(bool?), "ck");
 				AssertType(env, typeof(string), "geid");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
 				for (var i = 0; i < 12; i++) {
@@ -410,7 +410,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 					var @event = env.Listener("s0").AssertOneGetNewAndReset();
 					var message = "failed at " + i;
 
-					var valueAtIndex = treemap.Skip(i).First();
+					var valueAtIndex = treemap.Get(i);
 					
 					Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("ge"), message);
 					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(valueAtIndex), (SupportBean[]) @event.Get("ges"));
@@ -445,17 +445,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(string), "feid,leid");
 				AssertType(env, typeof(SupportBean), "fefo,feslo,lefo,leslo");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+				var treeMapFirst = treemap.First();
+				var treeMapLast = treemap.Last();
 
 				env.SendEventBean(new SupportBean_S0(-1));
 				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.AreEqual(FirstEventString(treemap.First()), @event.Get("feid"));
-				Assert.AreEqual(FirstEvent(treemap.First()), @event.Get("fefo"));
-				Assert.AreEqual(LastEvent(treemap.First()), @event.Get("feslo"));
-				Assert.AreEqual(FirstEventString(treemap.Last()), @event.Get("leid"));
-				Assert.AreEqual(FirstEvent(treemap.Last()), @event.Get("lefo"));
-				Assert.AreEqual(LastEvent(treemap.Last()), @event.Get("leslo"));
+				Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapFirst), @event.Get("feid"));
+				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fefo"));
+				Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapFirst), @event.Get("feslo"));
+				Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapLast), @event.Get("leid"));
+				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("lefo"));
+				Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapLast), @event.Get("leslo"));
 
 				env.UndeployAll();
 			}
@@ -483,19 +485,22 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(SupportBean[]), "fes,les");
 				AssertType(env, typeof(int?), "fk,lk");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
+				var treeMapFirst = treemap.First();
+				var treeMapLast = treemap.Last();
+				
 				env.SendEventBean(new SupportBean_S0(-1));
 				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.AreEqual(FirstEvent(treemap.First()), @event.Get("fe"));
-				Assert.AreEqual(FirstEvent(treemap.First()), @event.Get("minb"));
-				EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.First()), (SupportBean[]) @event.Get("fes"));
-				Assert.AreEqual(treemap.Keys.First(), @event.Get("fk"));
-				Assert.AreEqual(FirstEvent(treemap.Last()), @event.Get("le"));
-				Assert.AreEqual(FirstEvent(treemap.Last()), @event.Get("maxb"));
-				EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.Last()), (SupportBean[]) @event.Get("les"));
-				Assert.AreEqual(treemap.Keys.Last(), @event.Get("lk"));
+				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fe"));
+				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("minb"));
+				EPAssertionUtil.AssertEqualsExactOrder(AllEvents<IList<SupportBean>>(treeMapFirst), (SupportBean[]) @event.Get("fes"));
+				Assert.AreEqual(treeMapFirst.Key, @event.Get("fk"));
+				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("le"));
+				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("maxb"));
+				EPAssertionUtil.AssertEqualsExactOrder(AllEvents<IList<SupportBean>>(treeMapLast), (SupportBean[]) @event.Get("les"));
+				Assert.AreEqual(treeMapLast.Key, @event.Get("lk"));
 
 				env.UndeployAll();
 			}
@@ -526,7 +531,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(string), "ceid,feid,heid,leid");
 				AssertType(env, typeof(SupportBean), "cefo,fefo,hefo,lefo,ceslo,feslo,heslo,leslo");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
 				for (var i = 0; i < 12; i++) {
@@ -581,7 +586,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(SupportBean[]), "ces,fes,hes,les");
 				AssertType(env, typeof(int?), "ck,fk,hk,lk");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
 				for (var i = 0; i < 12; i++) {
@@ -610,7 +615,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var fields = "c0".SplitCsv();
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 
 				var epl = "@Name('s0') select sorted(IntPrimitive).floorEvent(IntPrimitive-1) as c0 from SupportBean#length(3) as sb";
 				env.EplToModelCompileDeploy(epl).AddListener("s0");
@@ -642,7 +647,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				          "@Name('s0') select MyTable.sortcol.floorEvent(Id) as c0 from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				MakeSendBean(env, treemap, "E1", 10);
 				MakeSendBean(env, treemap, "E2", 20);
 				MakeSendBean(env, treemap, "E3", 30);
@@ -674,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				env.EplToModelCompileDeploy("@Name('s0') select sortcol.floorEvent(Id) as c0 from SupportBean_S0, MyTable", path)
 					.AddListener("s0");
 
-				var treemap = new OrderedListDictionary<int, ICollection<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				MakeSendBean(env, treemap, "E1", 10);
 				MakeSendBean(env, treemap, "E2", 20);
 				MakeSendBean(env, treemap, "E3", 30);
@@ -690,12 +695,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			}
 		}
 
-		private static SupportBean FirstEvent(KeyValuePair<int, ICollection<SupportBean>>? entry)
+		private static SupportBean FirstEvent<T>(KeyValuePair<int, T>? entry)
+			where T : ICollection<SupportBean>
 		{
 			return entry?.Value.First();
 		}
 
-		private static string FirstEventString(KeyValuePair<int, ICollection<SupportBean>>? entry)
+		private static string FirstEventString<T>(KeyValuePair<int, T>? entry)
+			where T : ICollection<SupportBean>
 		{
 			return entry?.Value.First().TheString;
 		}
@@ -705,7 +712,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			return list?[0].TheString;
 		}
 
-		private static SupportBean[] AllEvents(KeyValuePair<int, ICollection<SupportBean>>? entry)
+		private static SupportBean[] AllEvents<T>(KeyValuePair<int, T>? entry)
+			where T : ICollection<SupportBean>
 		{
 			return entry?.Value.ToArray();
 		}
@@ -715,7 +723,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			return list?.ToArray();
 		}
 
-		private static SupportBean LastEvent(KeyValuePair<int, ICollection<SupportBean>>? entry)
+		private static SupportBean LastEvent<T>(KeyValuePair<int, T>? entry)
+			where T : ICollection<SupportBean>
 		{
 			return entry?.Value.Last();
 		}
@@ -732,7 +741,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 		private static void MakeSendBean(
 			RegressionEnvironment env,
-			IOrderedDictionary<int, ICollection<SupportBean>> treemap,
+			IOrderedDictionary<int, IList<SupportBean>> treemap,
 			string theString,
 			int intPrimitive)
 		{
@@ -749,7 +758,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		}
 
 		private static SupportBean LessThanOrEqualToFirstEvent(
-			IOrderedDictionary<int, ICollection<SupportBean>> treemap,
+			IOrderedDictionary<int, IList<SupportBean>> treemap,
 			int key)
 		{
 			return treemap.LessThanOrEqualTo(key)?.Value.First();
@@ -757,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 		private static void PrepareTestData(
 			RegressionEnvironment env,
-			IOrderedDictionary<int, ICollection<SupportBean>> treemap)
+			IOrderedDictionary<int, IList<SupportBean>> treemap)
 		{
 			MakeSendBean(env, treemap, "E1a", 1);
 			MakeSendBean(env, treemap, "E1b", 1);
@@ -780,11 +789,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			}
 		}
 
-		private static void AssertEventsBetween(
-			IOrderedDictionary<int, ICollection<SupportBean>> treemap,
+		private static void AssertEventsBetween<T>(
+			IOrderedDictionary<int, T> treemap,
 			MySubmapEvent sme,
 			SupportBean[] events,
 			SupportBean lastOf)
+			where T : ICollection<SupportBean>
 		{
 			var submap = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
 			var all = new List<SupportBean>();
@@ -801,10 +811,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			}
 		}
 
-		private static void AssertSubmap(
-			IOrderedDictionary<int, ICollection<SupportBean>> treemap,
+		private static void AssertSubmap<T>(
+			IOrderedDictionary<int, T> treemap,
 			MySubmapEvent sme,
 			IDictionary<object, SupportBean[]> actual)
+			where T : ICollection<SupportBean>
 		{
 			var expected = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
 			Assert.AreEqual(expected.Count, actual.Count);
@@ -816,7 +827,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		}
 
 		private static void AssertOrderedDictionary(
-			IOrderedDictionary<int, ICollection<SupportBean>> treemap,
+			IOrderedDictionary<int, IList<SupportBean>> treemap,
 			IOrderedDictionary<object, ICollection<EventBean>> actual)
 		{
 			Assert.AreEqual(treemap.Count, actual.Count);
@@ -922,7 +933,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		}
 
 		private static void CompareEntry(
-			KeyValuePair<int, ICollection<SupportBean>>? expected,
+			KeyValuePair<int, IList<SupportBean>>? expected,
 			KeyValuePair<object, ICollection<EventBean>>? actual)
 		{
 			Assert.That(expected, Is.Not.Null);

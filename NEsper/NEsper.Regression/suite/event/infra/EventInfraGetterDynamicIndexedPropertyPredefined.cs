@@ -9,13 +9,11 @@
 using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;

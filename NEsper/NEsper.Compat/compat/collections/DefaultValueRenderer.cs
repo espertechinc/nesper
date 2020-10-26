@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -154,11 +155,24 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
-            if (value.GetType().GetCustomAttributes(typeof(RenderWithToStringAttribute), true).Length > 0) {
+            var valueType = value.GetType();
+            if (valueType.IsGenericKeyValuePair()) {
+                RenderAny(valueType.GetProperty("Key")?.GetValue(value), textWriter);
+                textWriter.Write('=');
+                RenderAny(valueType.GetProperty("Value")?.GetValue(value), textWriter);
+                return;
+            }
+            
+            if (valueType.GetCustomAttributes(typeof(RenderWithToStringAttribute), true).Length > 0) {
                 textWriter.Write(value.ToString());
                 return;
             }
 
+            if (valueType.IsGenericDictionary()) {
+                RenderDictionary((IEnumerable) value, textWriter);
+                return;
+            }
+            
             if (value is IEnumerable enumerable) {
                 Render(enumerable, textWriter);
                 return;
@@ -166,7 +180,7 @@ namespace com.espertech.esper.compat.collections
 
             textWriter.Write(value.ToString());
         }
-
+        
         /// <summary>
         /// Render any value.
         /// </summary>
@@ -306,6 +320,45 @@ namespace com.espertech.esper.compat.collections
 
             builder.Append(']');
             return builder.ToString();
+        }
+        
+        /// <summary>
+        ///     Renders an enumerable source
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="renderEngine">The render engine.</param>
+        /// <returns></returns>
+        private void RenderDictionary(
+            IEnumerable source,
+            TextWriter textWriter)
+        {
+            var fieldDelimiter = string.Empty;
+
+            if (source != null) {
+                textWriter.Write('{');
+
+                var mapType = source.GetType();
+                var keyType = mapType.GetDictionaryKeyType();
+                var valType = mapType.GetDictionaryValueType();
+                var kvpType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valType);
+                var keyProp = kvpType.GetProperty("Key");
+                var valProp = kvpType.GetProperty("Value");
+                
+                var sourceEnum = source.GetEnumerator();
+                while (sourceEnum.MoveNext()) {
+                    var current = sourceEnum.Current;
+                    textWriter.Write(fieldDelimiter);
+                    RenderAny(keyProp.GetValue(current), textWriter);
+                    textWriter.Write("=");
+                    RenderAny(valProp.GetValue(current), textWriter);
+                    fieldDelimiter = ", ";
+                }
+
+                textWriter.Write('}');
+            }
+            else {
+                textWriter.Write("null");
+            }
         }
     }
 }

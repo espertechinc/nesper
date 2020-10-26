@@ -6,15 +6,25 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
-    public enum JsonValueType
+    public class JsonDeserializerEventObjectArray2Dim : JsonDeserializerBase
     {
-        OBJECT,
-        ARRAY,
-        STRING,
-        NUMBER,
-        NULL,
-        BOOLEAN
+        private readonly Type _componentType;
+        private readonly List<object> _events = new List<object>();
+
+        public JsonDeserializerEventObjectArray2Dim(Type componentType)
+        {
+            _componentType = componentType;
+        }
+
+        public override object Deserialize(JsonElement element)
+        {
+            throw new NotImplementedException();
+        }
     }
 } // end of namespace

@@ -11,8 +11,6 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.@internal.kernel.service;
 

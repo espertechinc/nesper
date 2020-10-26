@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.expression;
@@ -33,8 +31,6 @@ using com.espertech.esper.common.@internal.view.timewin;
 using com.espertech.esper.common.@internal.view.time_accum;
 using com.espertech.esper.common.@internal.view.union;
 using com.espertech.esper.common.@internal.view.unique;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.core
 {

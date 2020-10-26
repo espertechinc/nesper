@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {

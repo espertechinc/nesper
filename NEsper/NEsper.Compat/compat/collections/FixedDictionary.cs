@@ -57,7 +57,7 @@ namespace com.espertech.esper.compat.collections
         /// <filterpriority>1</filterpriority>
         public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
         {
-            foreach( K key in _dictionarySchema.Keys ) {
+            foreach( var key in _dictionarySchema.Keys ) {
                 yield return new KeyValuePair<K, V>(key, this[key]);
             }
         }
@@ -88,7 +88,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
         public void Clear()
         {
-            for (int ii = 0; ii < _dataList.Length; ii++ ) {
+            for (var ii = 0; ii < _dataList.Length; ii++ ) {
                 _dataList[ii].Clear();
             }
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.compat.collections
         {
             int index;
             if ( _dictionarySchema.TryGetIndex( item.Key, out index ) ) {
-                Entry entry = _dataList[index];
+                var entry = _dataList[index];
                 return entry.HasValue && Equals(entry.Value, item.Value);
             }
 
@@ -120,12 +120,12 @@ namespace com.espertech.esper.compat.collections
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
         public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
         {
-            IEnumerator<KeyValuePair<K, int>> indexEnum = _dictionarySchema.GetEnumerator();
-            for( int ii = arrayIndex ; ii < array.Length ; ii++ ) {
+            var indexEnum = _dictionarySchema.GetEnumerator();
+            for( var ii = arrayIndex ; ii < array.Length ; ii++ ) {
                 if (!indexEnum.MoveNext()) break;
 
-                KeyValuePair<K, int> index = indexEnum.Current;
-                Entry entry = _dataList[index.Value];
+                var index = indexEnum.Current;
+                var entry = _dataList[index.Value];
                 if ( entry.HasValue ) {
                     array[ii] = new KeyValuePair<K, V>(index.Key, entry.Value);
                 }
@@ -143,7 +143,7 @@ namespace com.espertech.esper.compat.collections
         public bool Remove(KeyValuePair<K, V> item)
         {
             int index;
-            bool isRemoved = _dictionarySchema.TryGetIndex(item.Key, out index) && _dataList[index].Clear();
+            var isRemoved = _dictionarySchema.TryGetIndex(item.Key, out index) && _dataList[index].Clear();
             if (isRemoved) _dataCount--;
             return isRemoved;
         }
@@ -218,7 +218,7 @@ namespace com.espertech.esper.compat.collections
         public bool Remove(K key)
         {
             int index;
-            bool isRemoved = _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].Clear();
+            var isRemoved = _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].Clear();
             if (isRemoved) _dataCount--;
             return isRemoved;
         }
@@ -258,7 +258,7 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                Entry entry = _dataList[_dictionarySchema[key]];
+                var entry = _dataList[_dictionarySchema[key]];
                 if (entry.HasValue) {
                     return entry.Value;
                 }
@@ -295,8 +295,8 @@ namespace com.espertech.esper.compat.collections
             get
             {
                 ICollection<K> keyList = new List<K>();
-                foreach( KeyValuePair<K,int> indexEntry in _dictionarySchema ) {
-                    Entry entry = _dataList[indexEntry.Value];
+                foreach( var indexEntry in _dictionarySchema ) {
+                    var entry = _dataList[indexEntry.Value];
                     if (entry.HasValue) {
                         keyList.Add(indexEntry.Key);
                     }
@@ -317,7 +317,7 @@ namespace com.espertech.esper.compat.collections
             get
             {
                 ICollection<V> valueList = new List<V>();
-                foreach (Entry entry in _dataList) {
+                foreach (var entry in _dataList) {
                     if (entry.HasValue) {
                         valueList.Add(entry.Value);
                     }
@@ -389,7 +389,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source"></param>
         public void PutAll(IDictionary<K, V> source)
         {
-            foreach( KeyValuePair<K,V> sourceEntry in source ) {
+            foreach( var sourceEntry in source ) {
                 this[sourceEntry.Key] = sourceEntry.Value;
             }
         }
@@ -402,7 +402,7 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                for( int ii = 0 ; ii < _dataList.Length ; ii++ ) {
+                for( var ii = 0 ; ii < _dataList.Length ; ii++ ) {
                     if ( _dataList[ii].HasValue ) {
                         return _dataList[ii].Value;
                     }
@@ -423,7 +423,7 @@ namespace com.espertech.esper.compat.collections
         {
             int index;
             value = default(V);
-            bool isRemoved = _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].Clear(out value);
+            var isRemoved = _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].Clear(out value);
             if (isRemoved) _dataCount--;
             return isRemoved;
         }
@@ -438,7 +438,7 @@ namespace com.espertech.esper.compat.collections
         public V RemoveAndReturn(K key)
         {
             int index;
-            V value = default(V);
+            var value = default(V);
             if (_dictionarySchema.TryGetIndex(key, out index)) {
                 if (_dataList[index].Clear(out value)) {
                     _dataCount--;
@@ -457,7 +457,7 @@ namespace com.espertech.esper.compat.collections
 
             internal bool Set(V value)
             {
-                bool hadValue = HasValue;
+                var hadValue = HasValue;
                 HasValue = true;
                 Value = value;
                 return hadValue;
@@ -465,7 +465,7 @@ namespace com.espertech.esper.compat.collections
 
             internal bool Clear()
             {
-                bool hadValue = HasValue;
+                var hadValue = HasValue;
                 HasValue = false;
                 Value = default(V);
                 return hadValue;
@@ -474,7 +474,7 @@ namespace com.espertech.esper.compat.collections
             internal bool Clear(out V prevValue)
             {
                 prevValue = Value;
-                bool hadValue = HasValue;
+                var hadValue = HasValue;
                 HasValue = false;
                 Value = default(V);
                 return hadValue;

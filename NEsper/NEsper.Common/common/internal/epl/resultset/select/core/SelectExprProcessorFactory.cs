@@ -10,15 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Antlr4.Runtime.Misc;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.eval;

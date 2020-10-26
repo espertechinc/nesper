@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,8 +15,6 @@ using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.client.variable;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading.locks;
 

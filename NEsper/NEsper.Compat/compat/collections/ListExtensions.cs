@@ -8,9 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using com.espertech.esper.compat.magic;
 
@@ -53,6 +50,26 @@ namespace com.espertech.esper.compat.collections
             }
 
             return true;
+        }
+        
+        public static IList<T> CopyList<T>(IList<T> sourceList)
+        {
+            return new List<T>(sourceList);
+        }
+
+        public static object TryCopy(object sourceList)
+        {
+            if (sourceList == null) {
+                return null;
+            }
+            var sourceListType = sourceList.GetType();
+            if (sourceListType.IsGenericList()) {
+                var valType = sourceListType.GetListType();
+                var method = typeof(ListExtensions).GetMethod("CopyList")?.MakeGenericMethod(valType);
+                return method.Invoke(null, new[] { sourceList });
+            }
+
+            throw new ArgumentException("argument is not a dictionary", nameof(sourceList));
         }
     }
 }

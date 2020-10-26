@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -713,7 +712,7 @@ namespace com.espertech.esper.compat.magic
                 }
 
                 var subType = typeof(T).GetElementType();
-                var subCast = typeof(MagicPropertyInfo)
+                var subCast = typeof(MagicType)
                     .GetMethod("CastTo")
                     .MakeGenericMethod(subType);
 
@@ -893,7 +892,7 @@ namespace com.espertech.esper.compat.magic
         public override Action<object, object> SetFunction {
             get {
                 if ((SetMethod != null) && (_setFunction == null)) {
-                    var castTo = typeof(MagicPropertyInfo)
+                    var castTo = typeof(MagicType)
                         .GetMethod("CastTo")
                         .MakeGenericMethod(GetMethod.ReturnType);
 

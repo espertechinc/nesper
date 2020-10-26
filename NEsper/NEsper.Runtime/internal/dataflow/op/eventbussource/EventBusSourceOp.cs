@@ -12,7 +12,6 @@ using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
 

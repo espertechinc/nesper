@@ -11,7 +11,6 @@ using System.Data;
 using System.Data.Common;
 
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.db;

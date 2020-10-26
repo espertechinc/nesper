@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					env,
 					epl,
 					"Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
-					typeof(SupportBean_ST0).Name +
+					typeof(SupportBean_ST0).FullName +
 					"'");
 			}
 		}

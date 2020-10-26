@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					var @event = new JObject();
 					var jsonarray = new JArray();
 					@event.Add("Array", jsonarray);
-					foreach (string @string in array) {
+					foreach (var @string in array) {
 						jsonarray.Add(@string);
 					}
 

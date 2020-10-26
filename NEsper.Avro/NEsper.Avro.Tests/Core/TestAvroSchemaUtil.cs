@@ -31,7 +31,7 @@ namespace NEsper.Avro.Core
 			ProcGetTypeByName = (typeName) => null,
 		};
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestAssemble()
 		{
 			var defaults = new ConfigurationCommonEventTypeMeta().AvroSettings;
@@ -88,7 +88,7 @@ namespace NEsper.Avro.Core
 			AssertTypeArray(typeof(double?), Schema.Type.Double, false, true, defaults);
 			AssertTypeArray(typeof(string), Schema.Type.String, false, false, defaults);
 			AssertTypeArray(typeof(string), Schema.Type.String, false, false, disableNativeString);
-
+			
 			AssertTypeArray(typeof(bool), Schema.Type.Boolean, true, false, disableRequired);
 			AssertTypeArray(typeof(bool?), Schema.Type.Boolean, true, true, disableRequired);
 			AssertTypeArray(typeof(int), Schema.Type.Int, true, false, disableRequired);
@@ -108,20 +108,24 @@ namespace NEsper.Avro.Core
 			Assert.AreEqual(2, bytesUnion.Count);
 			Assert.AreEqual(Schema.Type.Null, bytesUnion.Schemas[0].Tag);
 			Assert.AreEqual(Schema.Type.Bytes, bytesUnion.Schemas[1].Tag);
-
+			
 			foreach (var mapClass in new Type[] {
 				typeof(LinkedHashMap<string, object>),
 				typeof(IDictionary<string, object>)
 			}) {
-				Schema schemaReq = Assemble(mapClass, null, defaults, EVENT_ADAPTER_SERVICE);
+				var schemaReq = Assemble(mapClass, null, defaults, EVENT_ADAPTER_SERVICE);
 				Assert.AreEqual(Schema.Type.Map, schemaReq.Tag);
+				Assert.AreEqual(Schema.Type.String, schemaReq.AsMapSchema().ValueSchema.Tag);
 				
 				Console.Out.WriteLine(schemaReq);
 
-				var schemaOpt = Assemble(mapClass, null, disableRequired, EVENT_ADAPTER_SERVICE).AsRecordSchema();
-				Assert.AreEqual(2, schemaOpt.Fields.Count);
-				Assert.AreEqual(Schema.Type.Null, schemaOpt.Fields[0].Schema.Tag);
-				Assert.AreEqual(Schema.Type.Map, schemaOpt.Fields[1].Schema.Tag);
+				var schemaOpt = Assemble(mapClass, null, disableRequired, EVENT_ADAPTER_SERVICE);
+				Assert.AreEqual(Schema.Type.Union, schemaOpt.Tag);
+				var unionOpt = schemaOpt.AsUnionSchema();
+				Assert.AreEqual(2, unionOpt.Schemas.Count);
+				Assert.AreEqual(Schema.Type.Null, unionOpt.Schemas[0].Tag);
+				Assert.AreEqual(Schema.Type.Map, unionOpt.Schemas[1].Tag);
+
 				Console.Out.WriteLine(schemaOpt);
 			}
 		}
@@ -150,7 +154,7 @@ namespace NEsper.Avro.Core
 				Assert.AreEqual(2, unionSchema.Count);
 				Assert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
 				Assert.AreEqual(Schema.Type.Array, unionSchema.Schemas[1].Tag);
-				elementSchema = unionSchema.Schemas[1];
+				elementSchema = unionSchema.Schemas[1].AsArraySchema().ItemSchema;
 			}
 
 			// assert element type

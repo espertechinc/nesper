@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -19,7 +18,7 @@ using com.espertech.esper.regressionlib.suite.epl.contained;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.wordexample;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Util.Support;

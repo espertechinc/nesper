@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					env,
 					epl,
 					"Failed to validate select-clause expression 'Contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
-					typeof(SupportBean_ST0).Name +
+					typeof(SupportBean_ST0).FullName +
 					"' but receives event type 'SupportBean'");
 
 				epl = "select (select * from SupportBean#keepall).union(Strvals) from SupportCollection";

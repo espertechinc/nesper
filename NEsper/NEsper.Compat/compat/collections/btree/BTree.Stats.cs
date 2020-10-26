@@ -31,7 +31,7 @@
             }
 
             var res = new NodeStatistics(0, 1);
-            for (int i = 0; i <= node.Count; ++i) {
+            for (var i = 0; i <= node.Count; ++i) {
                 res.Add(InternalStatistics(node.GetChild(i)));
             }
 

@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 log.Info("======= Testing #" + count++);
                 var consumeEpl = INDEX_CALLBACK_HOOK +
                                  "@Name('s0') " +
-                                 (assertion.Hint == null ? "" : assertion.Hint) +
+                                 (assertion.Hint ?? "") +
                                  "select *, " +
                                  "(select * from MyInfra where " +
                                  assertion.WhereClause +

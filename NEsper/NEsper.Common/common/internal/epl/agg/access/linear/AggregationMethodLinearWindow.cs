@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 return null;
             }
 
-            Array array = Array.CreateInstance(componentType, linear.Count);
+            Array array = Arrays.CreateInstanceChecked(componentType, linear.Count);
             IEnumerator<EventBean> it = linear.GetEnumerator();
             var count = 0;
             if (optionalEvaluator == null) {

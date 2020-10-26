@@ -7,11 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.property;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.propertyparser
 {

@@ -34,7 +34,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;

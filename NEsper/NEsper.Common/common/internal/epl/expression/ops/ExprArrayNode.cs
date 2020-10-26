@@ -14,6 +14,7 @@ using System.Linq;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     _forge = new ExprArrayNodeForge(this, typeof(object), CollectionUtil.OBJECTARRAY_EMPTY);
                 }
                 else {
-                    _forge = new ExprArrayNodeForge(this, _optionalRequiredType, Array.CreateInstance(_optionalRequiredType, 0));
+                    _forge = new ExprArrayNodeForge(this, _optionalRequiredType, Arrays.CreateInstanceChecked(_optionalRequiredType, 0));
                 }
 
                 return null;
@@ -140,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Copy constants into array and coerce, if required
             Array constantResult = null;
             if (results != null) {
-                constantResult = Array.CreateInstance(arrayReturnType, length);
+                constantResult = Arrays.CreateInstanceChecked(arrayReturnType, length);
                 for (var i = 0; i < length; i++) {
                     if (mustCoerce) {
                         var boxed = results[i];

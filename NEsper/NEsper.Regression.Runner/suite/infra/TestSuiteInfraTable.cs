@@ -14,7 +14,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
@@ -134,37 +134,40 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedFAFReadFAFWriteChain()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedFAFReadFAFWriteChain());
+            RegressionRunner.RunPerformanceSensitive(
+                session, new InfraTableMTGroupedFAFReadFAFWriteChain());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd());
+            RegressionRunner.RunPerformanceSensitive(
+                session, new InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr());
+            RegressionRunner.RunPerformanceSensitive(
+                session, new InfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd());
+            RegressionRunner.RunPerformanceSensitive(session, new InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedWContextIntoTableWriteAsContextTable()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedWContextIntoTableWriteAsContextTable());
+            RegressionRunner.RunPerformanceSensitive(session, new InfraTableMTGroupedWContextIntoTableWriteAsContextTable());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedWContextIntoTableWriteAsSharedTable()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedWContextIntoTableWriteAsSharedTable());
+            RegressionRunner.RunPerformanceSensitive(session, new InfraTableMTGroupedWContextIntoTableWriteAsSharedTable());
         }
 
         [Test, RunInApplicationDomain]

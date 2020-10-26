@@ -202,9 +202,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     IsCache = !found;
                 }
             }
-            catch (ExprValidationException ex) {
+            catch (ExprValidationException) {
                 enumCallStackHelper.PopLambda();
-                throw ex;
+                throw;
             }
         }
 

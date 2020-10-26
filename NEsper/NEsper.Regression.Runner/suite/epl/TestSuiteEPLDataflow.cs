@@ -10,12 +10,11 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.epl.dataflow;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.dataflow;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;

@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     new byte[] {1, 2, 3},
                     (byte[]) @event.Get("MyByteArray"));
 
-                Assert.AreEqual("[[k1, v1]]", @event.Get("MyMap").RenderAny());
+                Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("MyMap").RenderAny());
 
                 env.UndeployAll();
             }
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     new[] {1L, 2L},
                     @event.Get("myLongArray").UnwrapIntoArray<long>());
                 CollectionAssert.AreEqual(new byte[] {1, 2, 3}, (byte[]) @event.Get("myByteArray"));
-                Assert.AreEqual("[[k1, v1]]", @event.Get("myMap").RenderAny());
+                Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("myMap").RenderAny());
 
                 var designSchema = SchemaBuilder.Record(
                     "name",

@@ -116,7 +116,7 @@ namespace com.espertech.esper.compat.collections.btree
             IComparer<TK> comparer)
         {
             if (end == null)
-                return _ => true;
+                return _ => false;
             if (end.IsInclusive)
                 return value => comparer.Compare(value, end.Value) >= 0;
 

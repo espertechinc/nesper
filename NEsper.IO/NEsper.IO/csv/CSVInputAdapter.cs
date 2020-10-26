@@ -227,7 +227,7 @@ namespace com.espertech.esperio.csv
             _reader.IsUsingTitleRow = IsUsingTitleRow(firstRow, _propertyOrder);
             if (!IsUsingTitleRow(firstRow, _propertyOrder))
             {
-                this._firstRow = firstRow;
+                _firstRow = firstRow;
             }
 
             _propertyTypes = ResolvePropertyTypes(givenPropertyTypes);
@@ -388,11 +388,11 @@ namespace com.espertech.esperio.csv
                 }
 
                 if (propertyTypesGiven != null && propertyTypesGiven.Get(property) == null) {
-                    throw new EPException("Event type " + eventTypeName +
+                    throw new EPException("Event type " + eventTypeName + " " +
                                           "has already been declared with different parameters");
                 }
                 if (propertyTypesGiven != null && !Equals(propertyTypesGiven.Get(property), type)) {
-                    throw new EPException("Event type " + eventTypeName +
+                    throw new EPException("Event type " + eventTypeName + " " +
                                           "has already been declared with a different type for property " + property);
                 }
                 // we can't set read-only properties for bean

@@ -11,19 +11,15 @@ using System.Text.Json;
 
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
-    public class JsonDeserializerCollection : JsonDeserializerBase
+    public class JsonDeserializerGenericArray : JsonDeserializerGenericBase
     {
-        private readonly JsonDeserializerBase _itemDeserializer;
         private IList<object> _result = null;
 
-        public JsonDeserializerCollection(JsonDeserializerBase itemDeserializer)
+        public JsonDeserializerGenericArray() : base()
         {
-            _itemDeserializer = itemDeserializer;
         }
-
-        public override object GetResult() => _result;
 
         public override object Deserialize(JsonElement element)
         {
@@ -31,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
                 throw new IllegalStateException($"expected {nameof(JsonValueKind.Array)}, but received {element.ValueKind}");
             }
 
-            _result = JsonElementExtensions.ElementToArray(element, _itemDeserializer.Deserialize);
+            _result = JsonElementExtensions.ElementToArray(element);
             return _result;
         }
     }

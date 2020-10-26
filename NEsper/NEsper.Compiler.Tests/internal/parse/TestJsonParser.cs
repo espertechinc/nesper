@@ -23,7 +23,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	[TestFixture]
 	public class TestJsonParser
 	{
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestParse()
 		{
 			object result;

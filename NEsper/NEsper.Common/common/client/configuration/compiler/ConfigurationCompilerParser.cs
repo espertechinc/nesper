@@ -17,7 +17,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
-using static com.espertech.esper.common.@internal.util.DOMExtensions;
 using static com.espertech.esper.common.@internal.util.DOMUtil;
 
 namespace com.espertech.esper.common.client.configuration.compiler
@@ -286,9 +285,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ParseOptionalBoolean(element, "include-comments", v => codegen.IncludeComments = v);
             ParseOptionalBoolean(element, "attach-epl", v => codegen.AttachEPL = v);
             ParseOptionalBoolean(element, "attach-module-epl", v => codegen.AttachModuleEPL = v);
+            ParseOptionalBoolean(element, "attach-pattern-epl", v => codegen.AttachPatternEPL = v);
             ParseOptionalBoolean(element, "instrumented", v => codegen.Instrumented = v);
             ParseOptionalBoolean(element, "allow-subscriber", v => codegen.AllowSubscriber = v);
-
             ParseOptionalInteger(element, "threadpool-compiler-num-threads", v => codegen.ThreadPoolCompilerNumThreads = v);
             ParseOptionalInteger(element, "threadpool-compiler-capacity", v => codegen.ThreadPoolCompilerCapacity = v);
             ParseOptionalInteger(element, "max-methods-per-class", v => codegen.MaxMethodsPerClass = v);

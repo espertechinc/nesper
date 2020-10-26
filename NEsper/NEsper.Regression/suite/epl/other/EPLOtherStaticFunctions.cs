@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
@@ -286,7 +285,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         "@Name('s0') select " +
                         $"{primitiveConversionLib}.PassIntAsObject(IntPrimitive) as c0," +
                         $"{primitiveConversionLib}.PassIntAsNumber(IntPrimitive) as c1," +
-                        $"{primitiveConversionLib}.PassIntAsComparable(IntPrimitive) as c2" +
+                        $"{primitiveConversionLib}.PassIntAsNullable(IntPrimitive) as c2" +
                         " from SupportBean")
                     .AddListener("s0");
 
@@ -308,15 +307,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var iso = typeof(DateTimeFormat).FullName + ".GetIsoDateFormat()";
                 var cet = $"{typeof(TimeZoneHelper).FullName}.GetTimeZoneInfo('CET')";
                 var dtx = typeof(DateTimeEx).FullName;
+                var chrono = typeof(ChronoField).FullName;
                 
                 var epl =
-                    "create map schema MyEvent(someDate DateTime, dateFrom string, dateTo string, minutesOfDayFrom int, minutesOfDayTo int, daysOfWeek string);\n" +
+                    "create map schema MyEvent(someDate DateTime, dateFrom string, dateTo string, minutesFrom int, minutesTo int, daysOfWeek string);\n" +
                     "select " +
-                    dtx + ".GetInstance(" + cet + ", someDate).isAfter(cast(dateFrom||'T00:00:00Z', datetime, dateformat:" + iso + ")) as c0,\n" +
-                    dtx + ".GetInstance(" + cet + ", someDate).isBefore(cast(dateTo||'T00:00:00Z', datetime, dateformat:" + iso + ")) as c1,\n" +
-                    dtx + ".GetInstance(" + cet + ", someDate).get(com.espertech.esper.compat.ChronoField.MINUTE_OF_DAY)>= minutesOfDayFrom as c2,\n" +
-                    dtx + ".GetInstance(" + cet + ", someDate).get(com.espertech.esper.compat.ChronoField.MINUTE_OF_DAY)<= minutesOfDayTo as c3,\n" +
-                    "daysOfWeek.contains(System.Convert.ToString(" + dtx + ".GetInstance(" + cet + ", someDate).DayOfWeek)) as c4\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).IsAfter(cast(dateFrom||'T00:00:00Z', dtx, dateformat:" + iso + ")) as c0,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).IsBefore(cast(dateTo||'T00:00:00Z', dtx, dateformat:" + iso + ")) as c1,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).GetField("+ chrono + ".MINUTE_OF_HOUR)>= minutesFrom as c2,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).GetField("+ chrono + ".MINUTE_OF_HOUR)<= minutesTo as c3,\n" +
+                    "daysOfWeek.Contains(System.Convert.ToString(" + dtx + ".GetInstance(" + cet + ", someDate).GetField("+ chrono + ".DAY_OF_WEEK))) as c4\n" +
                     "from MyEvent";
                 env.Compile(epl);
             }
@@ -904,9 +904,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 return n.AsInt32();
             }
 
-            public static int PassIntAsComparable(IComparable c)
+            public static int PassIntAsNullable(int? c)
             {
-                return c.AsInt32();
+                return c.GetValueOrDefault();
             }
         }
     }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
-using com.espertech.esper.common.@internal.@event.json.core;
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
     /// <summary>
     /// Deserializes an entity that is composed of constituent parts.

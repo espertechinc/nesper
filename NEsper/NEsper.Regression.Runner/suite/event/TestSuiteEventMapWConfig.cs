@@ -12,13 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.@event.map;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 

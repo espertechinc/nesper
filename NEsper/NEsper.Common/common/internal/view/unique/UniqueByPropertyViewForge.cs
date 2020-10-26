@@ -19,9 +19,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
-
 namespace com.espertech.esper.common.@internal.view.unique
 {
     /// <summary>

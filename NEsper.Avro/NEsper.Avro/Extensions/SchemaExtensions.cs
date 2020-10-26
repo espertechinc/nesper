@@ -214,12 +214,21 @@ namespace NEsper.Avro.Extensions
             }
 
             var propertyMap = (PropertyMap) getMethod.Invoke(schema, NO_ARGS);
-            if (propertyMap == null) {
+            var propertyValue = propertyMap?.Get(name);
+            if (propertyValue == null) {
                 return null;
             }
 
-            return propertyMap.Get(name);
+            return JsonConvert.DeserializeObject<string>(propertyValue);
         }
+        
+        public static bool IsNullSchema(
+            this Schema schema)
+        {
+            return (schema is PrimitiveSchema primitiveSchema) &&
+                   (primitiveSchema.Tag == Schema.Type.Null);
+        }
+
 
         private static readonly object[] NO_ARGS = new object[0];
     }

@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;

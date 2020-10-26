@@ -13,7 +13,7 @@ using com.espertech.esper.regressionlib.suite.resultset.querytype;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             var stem = stemFactory.GetCreateStem(clazz, config);
             // metadata
             var metadata = new EventTypeMetadata(
-                clazz.Name,
+                clazz.FullName,
                 null,
                 EventTypeTypeClass.BEAN_INCIDENTAL,
                 EventTypeApplicationType.CLASS,

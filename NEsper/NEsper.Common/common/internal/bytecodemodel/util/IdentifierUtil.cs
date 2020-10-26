@@ -111,5 +111,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             return CodeInclusionTypeName(typeof(T));
         }
 
+        public static bool IsGenericOrNestedTypeName(string typeName)
+        {
+            return (typeName.IndexOf('<') != -1) ||
+                   (typeName.IndexOf('+') != -1);
+        }
     }
 } // end of namespace

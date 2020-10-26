@@ -7,10 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.epl.pattern.observer;

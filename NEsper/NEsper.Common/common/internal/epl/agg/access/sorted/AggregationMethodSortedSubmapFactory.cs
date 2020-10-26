@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
@@ -71,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			Type underlyingClass)
 		{
 			if (submap.IsEmpty()) {
-				return Array.CreateInstance(underlyingClass, 0);
+				return Arrays.CreateInstanceChecked(underlyingClass, 0);
 			}
 
 			ArrayDeque<EventBean> events = new ArrayDeque<EventBean>(4);
@@ -79,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				AggregatorAccessSortedImpl.CheckedPayloadAddAll(events, entry.Value);
 			}
 
-			var array = Array.CreateInstance(underlyingClass, events.Count);
+			var array = Arrays.CreateInstanceChecked(underlyingClass, events.Count);
 			int index = 0;
 			foreach (EventBean @event in events) {
 				array.SetValue(@event.Underlying, index++);

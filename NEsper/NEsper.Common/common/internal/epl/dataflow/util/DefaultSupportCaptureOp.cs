@@ -45,6 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         EPDataFlowSignalHandler,
         IFuture<object[]>
     {
+        private long _id = DebugId<DefaultSupportCaptureOp<T>>.NewId();
         private IList<IList<T>> _received = new List<IList<T>>();
         private IList<T> _current = new List<T>();
 

@@ -6,16 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createschema

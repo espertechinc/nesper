@@ -12,8 +12,6 @@ using System.Linq;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-using com.espertech.esper.common.@internal.@event.json.serde;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -24,8 +22,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
         private readonly int _index;
 
         public JsonEventBeanPropertyWriterIndexedProp(
+            IJsonDelegate @delegate,
             JsonUnderlyingField propertyName,
-            int index) : base(propertyName)
+            int index) : base(@delegate, propertyName)
         {
             _index = index;
         }
@@ -34,9 +33,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             object value,
             object und)
         {
-            var lookup = (ILookup<string, object>) und;
-            //SerializationContext.GetValue(_field.FieldName, und),
-            JsonWriteArrayProp(value, lookup[Field.FieldName], _index);
+            if (Delegate.TryGetProperty(Field.PropertyName, und, out var propertyValue)) {
+                JsonWriteArrayProp(value, propertyValue, _index);
+            }
         }
 
         public override CodegenExpression WriteCodegen(

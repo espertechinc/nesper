@@ -15,8 +15,6 @@ using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.threading.locks;
-using com.espertech.esper.runtime.@internal.filtersvcimpl;
-using com.espertech.esper.runtime.@internal.schedulesvcimpl;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {

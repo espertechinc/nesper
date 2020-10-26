@@ -93,9 +93,9 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public static IEnumerable<T> AdvanceEnumerable<T>( IEnumerator<T> subEnumerator, int numToAdvance )
         {
-            bool hasMore = true;
+            var hasMore = true;
 
-            for( int ii = 0 ; ii < numToAdvance ; ii++ ) {
+            for( var ii = 0 ; ii < numToAdvance ; ii++ ) {
                 if (!subEnumerator.MoveNext()) {
                     hasMore = false;
                     break;

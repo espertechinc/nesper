@@ -24,7 +24,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	public class TestEPLParser : AbstractCompilerTest
 	{
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestDisplayAST()
 		{
 			var expression = "select * from A where exp > ANY (select a from B)";
@@ -40,7 +40,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			walker.Walk(listener, (IParseTree) ast.First); // initiate walk of tree with listener
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalidCases()
 		{
 			var className = typeof(SupportBean).Name;
@@ -211,7 +211,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsInvalid("on pattern[every B] update ABC as abc set a=");
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestValidCases()
 		{
 			var className = typeof(SupportBean).Name;
@@ -748,7 +748,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				")");
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestBitWiseCases()
 		{
 			var className = typeof(SupportBean).Name;
@@ -760,7 +760,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(eplSmt + "().win:some_view({})");
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestIfThenElseCase()
 		{
 			var className = typeof(SupportBean).Name;

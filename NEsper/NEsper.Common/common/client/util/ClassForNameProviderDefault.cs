@@ -25,10 +25,12 @@ namespace com.espertech.esper.common.client.util
 
         public Type ClassForName(string className)
         {
+#if false
             var simpleType = TypeHelper.GetTypeForSimpleName(className, false, false);
             if (simpleType != null) {
                 return simpleType;
             }
+#endif
 
             return TypeHelper.ResolveType(className, true);
         }

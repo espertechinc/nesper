@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;

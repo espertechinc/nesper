@@ -15,7 +15,7 @@ namespace com.espertech.esperio.regression.adapter
 	{
 		private AdapterStateManager _stateManager;
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestValidTransitionsFromOpened()
 		{
 			Open();
@@ -25,7 +25,7 @@ namespace com.espertech.esperio.regression.adapter
 			Destroy();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestValidTransitionsFromStarted()
 		{
 			Open();
@@ -41,7 +41,7 @@ namespace com.espertech.esperio.regression.adapter
 			Destroy();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestValidTransitionsFromPaused()
 		{
 			Open();
@@ -60,7 +60,7 @@ namespace com.espertech.esperio.regression.adapter
 			Resume();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalidTransitionsFromOpened()
 		{
 			Open();
@@ -70,7 +70,7 @@ namespace com.espertech.esperio.regression.adapter
 			FailOnResume();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalidTransitionsFromStarted()
 		{
 			Open();
@@ -80,7 +80,7 @@ namespace com.espertech.esperio.regression.adapter
 			FailOnResume();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalidTransitionsFromPaused()
 		{
 			Open();
@@ -91,7 +91,7 @@ namespace com.espertech.esperio.regression.adapter
 			FailOnPause();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalidTransitionsFromDestroyed()
 		{
 			Open();

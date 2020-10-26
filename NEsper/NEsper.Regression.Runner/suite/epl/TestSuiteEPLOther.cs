@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.lrreport;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
@@ -265,8 +265,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
             [Test, RunInApplicationDomain]
             public void WithArrayElement() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithArrayElement());
 
-            [Test]
-            public void WithMapIndexProps() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithMapIndexProps());
+            [Test, RunInApplicationDomain]
+            public void WithMapIndexProps() => RegressionRunner.RunPerformanceSensitive(_session, EPLOtherUpdateIStream.WithMapIndexProps());
 
             [Test, RunInApplicationDomain]
             public void WithSubqueryMultikeyWArray() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithSubqueryMultikeyWArray());

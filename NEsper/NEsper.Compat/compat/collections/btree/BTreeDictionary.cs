@@ -201,17 +201,9 @@ namespace com.espertech.esper.compat.collections.btree
         public KeyValuePair<TK, TV>? GreaterThanOrEqualTo(TK key)
         {
             var cursor = Underlying.GreaterThanOrEqual(key, Underlying.RootCursor);
-            if (cursor.IsEnd) {
-                return default;
-            }
-
-            try {
-                return cursor.Value;
-            }
-            catch (IndexOutOfRangeException e) {
-                Console.WriteLine("test");
-                throw;
-            }
+            return cursor.IsEnd
+                ? default(KeyValuePair<TK, TV>?)
+                : cursor.Value;
         }
 
         /// <summary>

@@ -8,8 +8,6 @@
 
 using System.Collections.Generic;
 
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.multikey;

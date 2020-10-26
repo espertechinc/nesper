@@ -26,8 +26,6 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.framework
 {
     public interface RegressionEnvironment

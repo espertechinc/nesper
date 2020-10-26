@@ -6,13 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -88,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(eplEnumEvent).AddListener("s0");
 
 				var expectedEnumEvent = new[] {
-					new object[] {"c0", typeof(SupportBean[]), typeof(SupportBean).Name, true},
+					new object[] {"c0", typeof(SupportBean[]), typeof(SupportBean).FullName, true},
 					new object[] {"c1", typeof(bool?), null, null}, 
 					new object[] {"c2", typeof(bool?), null, null}
 				};
@@ -131,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(eplSingleEvent).AddListener("s0");
 
 				var expectedSingleEvent = new[] {
-					new object[] {"c0", typeof(SupportBean), typeof(SupportBean).Name, false},
+					new object[] {"c0", typeof(SupportBean), typeof(SupportBean).FullName, false},
 					new object[] {"c1", typeof(bool?), null, null},
 					new object[] {"c2", typeof(bool?), null, null},
 					new object[] {"c3", typeof(string), null, null},
@@ -331,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			foreach (var prop in fields) {
 				Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyDescriptor(prop).PropertyType);
 				Assert.AreEqual(true, eventType.GetPropertyDescriptor(prop).IsFragment);
-				Assert.AreEqual(typeof(SupportBean).Name, eventType.GetFragmentType(prop).FragmentType.Name);
+				Assert.AreEqual(typeof(SupportBean).FullName, eventType.GetFragmentType(prop).FragmentType.Name);
 			}
 
 			// there should be just 1 forge instance for all of the registered functions for this statement

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using Avro.Generic;
 
@@ -51,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			BiConsumer<EventType, NullableObject<string>> map = (
 				type,
 				nullable) => {
-				IDictionary<string, object> property = nullable == null ? null : Collections.SingletonDataMap("Id", nullable.Value);
+				var property = nullable == null ? null : Collections.SingletonDataMap("Id", nullable.Value);
 				env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
 			};
 			RunAssertion(env, GetEpl("map"), map);

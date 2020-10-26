@@ -22,7 +22,6 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

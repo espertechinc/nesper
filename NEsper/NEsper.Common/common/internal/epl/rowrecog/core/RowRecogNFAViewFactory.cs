@@ -6,18 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.runtime;
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core

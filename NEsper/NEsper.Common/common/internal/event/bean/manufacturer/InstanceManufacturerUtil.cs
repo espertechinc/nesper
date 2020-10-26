@@ -10,7 +10,6 @@ using System;
 using System.IO;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -168,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                             }
 
                             var events = (EventBean[]) result;
-                            var values = Array.CreateInstance(componentReturnType, events.Length);
+                            var values = Arrays.CreateInstanceChecked(componentReturnType, events.Length);
                             for (var i = 0; i < events.Length; i++) {
                                 values.SetValue(events[i].Underlying, i);
                             }

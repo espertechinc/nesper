@@ -96,7 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public static object[] GetXMLEvents()
         {
-            return new object[] {MakeXMLEvent(1.1d, 1, "one"), MakeXMLEvent(2.2d, 2, "two")};
+            return new object[] {
+                MakeXMLEvent(1.1d, 1, "one"),
+                MakeXMLEvent(2.2d, 2, "two")
+            };
         }
 
         public static object[] GetOAEvents()

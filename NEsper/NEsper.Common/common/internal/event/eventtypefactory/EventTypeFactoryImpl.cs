@@ -22,7 +22,6 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.@event.eventtypefactory

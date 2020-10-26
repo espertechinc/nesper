@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
-using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -27,6 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         public JsonEventTypeDetail(
             string underlyingClassName,
             Type optionalUnderlyingProvided,
+            string delegateClassName,
             string deserializerClassName,
             string serializerClassName,
             string serdeClassName,
@@ -36,6 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         {
             UnderlyingClassName = underlyingClassName;
             OptionalUnderlyingProvided = optionalUnderlyingProvided;
+            DelegateClassName = delegateClassName;
             DeserializerClassName = deserializerClassName;
             SerializerClassName = serializerClassName;
             SerdeClassName = serdeClassName;
@@ -47,6 +48,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         public bool IsDynamic { get; set; }
 
         public string UnderlyingClassName { get; set; }
+
+        public string DelegateClassName { get; set; }
 
         public string DeserializerClassName { get; set; }
 
@@ -69,6 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
                 .DeclareVar<JsonEventTypeDetail>("detail", NewInstance(typeof(JsonEventTypeDetail)))
                 .SetProperty(Ref("detail"), "UnderlyingClassName", Constant(UnderlyingClassName))
                 .SetProperty(Ref("detail"), "OptionalUnderlyingProvided", Constant(OptionalUnderlyingProvided))
+                .SetProperty(Ref("detail"), "DelegateClassName", Constant(DelegateClassName))
                 .SetProperty(Ref("detail"), "DeserializerClassName", Constant(DeserializerClassName))
                 .SetProperty(Ref("detail"), "SerializerClassName", Constant(SerializerClassName))
                 .SetProperty(Ref("detail"), "SerdeClassName", Constant(SerdeClassName))

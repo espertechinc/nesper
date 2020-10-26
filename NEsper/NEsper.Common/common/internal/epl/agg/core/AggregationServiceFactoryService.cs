@@ -12,9 +12,6 @@ using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.agg.groupby;
 using com.espertech.esper.common.@internal.epl.agg.groupbylocal;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.serde;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {

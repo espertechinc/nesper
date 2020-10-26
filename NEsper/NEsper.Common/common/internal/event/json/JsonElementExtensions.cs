@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json;
@@ -9,7 +8,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json
 {
     public static class JsonElementExtensions
     {
@@ -196,7 +195,8 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
         public static bool GetSmartBoolean(this JsonElement element)
         {
             return element.ValueKind switch {
-                JsonValueKind.Number => element.GetBoolean(),
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
                 JsonValueKind.String => Boolean.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
@@ -206,7 +206,8 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
         {
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
-                JsonValueKind.Number => element.GetBoolean(),
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
                 JsonValueKind.String => Boolean.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };

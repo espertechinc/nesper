@@ -6,24 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.meta;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.compile.stage1.spec;
-using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createexpression
 {

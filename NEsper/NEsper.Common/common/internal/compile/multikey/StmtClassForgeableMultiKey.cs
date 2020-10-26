@@ -15,13 +15,11 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.compile.multikey.MultiKeyPlanner;
 
 namespace com.espertech.esper.common.@internal.compile.multikey
 {

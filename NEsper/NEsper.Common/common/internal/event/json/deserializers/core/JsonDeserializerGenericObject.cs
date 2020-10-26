@@ -11,16 +11,11 @@ using System.Text.Json;
 
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
     public class JsonDeserializerGenericObject : JsonDeserializerGenericBase
     {
         private IDictionary<string, object> _result;
-
-        public override object GetResult()
-        {
-            return _result;
-        }
 
         public override object Deserialize(JsonElement element)
         {

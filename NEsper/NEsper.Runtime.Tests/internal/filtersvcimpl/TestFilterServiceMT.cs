@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.filterspec;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.container;
-using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
 

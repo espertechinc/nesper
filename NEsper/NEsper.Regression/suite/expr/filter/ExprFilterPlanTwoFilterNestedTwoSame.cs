@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("E1", 1, 1), true, true),
                 MakeItem(MakeBean("E2", 1, 0), false, false),
                 MakeItem(MakeBean("E3", 0, 1), false, false));
-            
+
             // same range-index
             AddCase(
                 cases,
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("E2", 2, 3), false, false),
                 MakeItem(MakeBean("E3", -1, -1), true, true),
                 MakeItem(MakeBean("E4", -1, 2), false, false));
-            
+
             // we permute only [0, 1] as all filters are the same
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanTwoFilterNestedTwoSame),

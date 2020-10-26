@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 codegenClassScope).Build();
         }
 
-        public Type EvaluationType => Array.CreateInstance(ArrayReturnType, 0).GetType();
+        public Type EvaluationType => ArrayReturnType.MakeArrayType();
 
         public ExprEnumerationEval ExprEvaluatorEnumeration {
             get {

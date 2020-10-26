@@ -81,7 +81,7 @@ namespace com.espertech.esper.compat.collections
                 yield return _nullEntry.Value;
             }
 
-            IEnumerator<KeyValuePair<K, V>> tempEnum = _baseDictionary.GetEnumerator();
+            var tempEnum = _baseDictionary.GetEnumerator();
             while (tempEnum.MoveNext())
             {
                 yield return tempEnum.Current;

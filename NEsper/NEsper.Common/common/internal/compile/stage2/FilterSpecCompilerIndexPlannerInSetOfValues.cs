@@ -8,14 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
-using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;

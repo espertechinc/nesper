@@ -14,7 +14,6 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.path
 {

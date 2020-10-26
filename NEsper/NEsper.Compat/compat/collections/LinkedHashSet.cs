@@ -93,7 +93,7 @@ namespace com.espertech.esper.compat.collections
             _entryListTail = _entryListHead;
             _indexTable = new Dictionary<T, Entry>((array.Length * 3) / 2).WithSafeSupport();
 
-            foreach (T item in array)
+            foreach (var item in array)
             {
                 Add(item);
             }
@@ -121,7 +121,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (source.Count != 0)
             {
-                IEnumerator<T> enumObj = source.GetEnumerator();
+                var enumObj = source.GetEnumerator();
                 while (enumObj.MoveNext())
                 {
                     Add(enumObj.Current);

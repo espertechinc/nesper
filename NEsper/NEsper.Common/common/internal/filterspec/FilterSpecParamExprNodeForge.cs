@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;

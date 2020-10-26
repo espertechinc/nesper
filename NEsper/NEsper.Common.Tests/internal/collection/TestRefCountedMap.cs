@@ -9,7 +9,6 @@
 using System;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 

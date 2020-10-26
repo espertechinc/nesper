@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml;
 
-using Castle.Core.Internal;
-
 namespace com.espertech.esper.compat.collections
 {
     public static class GenericExtensions
@@ -196,6 +194,16 @@ namespace com.espertech.esper.compat.collections
             return FindGenericInterface(t, typeof(IList<>)) != null;
         }
 
+        public static Type GetListType(this Type t)
+        {
+            if (t == null)
+                return null;
+            if (t.IsGenericList())
+                return FindGenericListInterface(t).GetGenericArguments()[0];
+            return null;
+        }
+
+        
         public static bool IsGenericEnumerable(this Type t)
         {
             return FindGenericInterface(t, typeof(IEnumerable<>)) != null;
@@ -206,7 +214,7 @@ namespace com.espertech.esper.compat.collections
             return FindGenericInterface(t, typeof(IEnumerator<>)) != null;
         }
 
-        public static Type FindGenericList(this Type t)
+        public static Type FindGenericListInterface(this Type t)
         {
             return FindGenericInterface(t, typeof (IList<>));
         }
@@ -379,6 +387,12 @@ namespace com.espertech.esper.compat.collections
                 return typeof(object);
 
             return null;
+        }
+
+        public static bool IsGenericKeyValuePair(this Type t)
+        {
+            return (t.IsGenericType) &&
+                   (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>).GetGenericTypeDefinition());
         }
     }
 }

@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 

@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.context.controller.initterm;
 using com.espertech.esper.common.@internal.context.controller.keyed;
 using com.espertech.esper.common.@internal.context.cpidsvc;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {

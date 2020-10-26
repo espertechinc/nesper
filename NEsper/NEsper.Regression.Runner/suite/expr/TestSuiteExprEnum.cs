@@ -13,7 +13,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.lrreport;
 using com.espertech.esper.regressionlib.support.sales;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;

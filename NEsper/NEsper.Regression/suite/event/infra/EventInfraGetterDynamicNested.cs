@@ -7,9 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -58,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					env.SendEventMap(EmptyDictionary<string, object>.Instance, "LocalEvent");
 				}
 				else {
-					IDictionary<string, object> inner = Collections.SingletonDataMap("Id", nullable.Value);
+					var inner = Collections.SingletonDataMap("Id", nullable.Value);
 					env.SendEventMap(Collections.SingletonDataMap("Property", inner), "LocalEvent");
 				}
 			};

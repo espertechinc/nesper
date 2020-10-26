@@ -14,7 +14,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.infra;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NEsper.Avro.Extensions;
 
@@ -285,36 +285,40 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(typeof(EventInfraPropertyNestedIndexed.InfraNestedIndexPropTop));
 
             var mapTypeName = EventInfraPropertyNestedIndexed.MAP_TYPENAME;
-            configuration.Common.AddEventType(mapTypeName + "_4", Collections.SingletonDataMap("Lvl4", typeof(int)));
+            configuration.Common.AddEventType(
+                mapTypeName + "_4",
+                Collections.SingletonDataMap("lvl4", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_3",
-                TwoEntryMap<string, object>("L4", mapTypeName + "_4[]", "Lvl3", typeof(int)));
+                TwoEntryMap<string, object>("l4", mapTypeName + "_4[]", "lvl3", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_2",
-                TwoEntryMap<string, object>("L3", mapTypeName + "_3[]", "Lvl2", typeof(int)));
+                TwoEntryMap<string, object>("l3", mapTypeName + "_3[]", "lvl2", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_1",
-                TwoEntryMap<string, object>("L2", mapTypeName + "_2[]", "Lvl1", typeof(int)));
-            configuration.Common.AddEventType(mapTypeName, Collections.SingletonDataMap("L1", mapTypeName + "_1[]"));
+                TwoEntryMap<string, object>("l2", mapTypeName + "_2[]", "lvl1", typeof(int)));
+            configuration.Common.AddEventType(
+                mapTypeName,
+                Collections.SingletonDataMap("l1", mapTypeName + "_1[]"));
 
             var oaTypeName = EventInfraPropertyNestedIndexed.OA_TYPENAME;
             var type_4 = oaTypeName + "_4";
-            string[] names_4 = {"Lvl4"};
+            string[] names_4 = {"lvl4"};
             object[] types_4 = {typeof(int)};
             configuration.Common.AddEventType(type_4, names_4, types_4);
             var type_3 = oaTypeName + "_3";
-            string[] names_3 = {"L4", "Lvl3"};
+            string[] names_3 = {"l4", "lvl3"};
             object[] types_3 = {type_4 + "[]", typeof(int)};
             configuration.Common.AddEventType(type_3, names_3, types_3);
             var type_2 = oaTypeName + "_2";
-            string[] names_2 = {"L3", "Lvl2"};
+            string[] names_2 = {"l3", "lvl2"};
             object[] types_2 = {type_3 + "[]", typeof(int)};
             configuration.Common.AddEventType(type_2, names_2, types_2);
             var type_1 = oaTypeName + "_1";
-            string[] names_1 = {"L2", "Lvl1"};
+            string[] names_1 = {"l2", "lvl1"};
             object[] types_1 = {type_2 + "[]", typeof(int)};
             configuration.Common.AddEventType(type_1, names_1, types_1);
-            string[] names = {"L1"};
+            string[] names = {"l1"};
             object[] types = {type_1 + "[]"};
             configuration.Common.AddEventType(oaTypeName, names, types);
 
@@ -325,37 +329,37 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
-                         "\t\t\t\t<xs:element ref=\"esper:L1\" maxOccurs=\"unbounded\"/>\n" +
+                         "\t\t\t\t<xs:element ref=\"esper:l1\" maxOccurs=\"unbounded\"/>\n" +
                          "\t\t\t</xs:sequence>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
-                         "\t<xs:element name=\"L1\">\n" +
+                         "\t<xs:element name=\"l1\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
-                         "\t\t\t\t<xs:element ref=\"esper:L2\" maxOccurs=\"unbounded\"/>\n" +
+                         "\t\t\t\t<xs:element ref=\"esper:l2\" maxOccurs=\"unbounded\"/>\n" +
                          "\t\t\t</xs:sequence>\n" +
-                         "\t\t\t<xs:attribute name=\"Lvl1\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"lvl1\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
-                         "\t<xs:element name=\"L2\">\n" +
+                         "\t<xs:element name=\"l2\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
-                         "\t\t\t\t<xs:element ref=\"esper:L3\" maxOccurs=\"unbounded\"/>\n" +
+                         "\t\t\t\t<xs:element ref=\"esper:l3\" maxOccurs=\"unbounded\"/>\n" +
                          "\t\t\t</xs:sequence>\n" +
-                         "\t\t\t<xs:attribute name=\"Lvl2\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"lvl2\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
-                         "\t<xs:element name=\"L3\">\n" +
+                         "\t<xs:element name=\"l3\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
-                         "\t\t\t\t<xs:element ref=\"esper:L4\" maxOccurs=\"unbounded\"/>\n" +
+                         "\t\t\t\t<xs:element ref=\"esper:l4\" maxOccurs=\"unbounded\"/>\n" +
                          "\t\t\t</xs:sequence>\n" +
-                         "\t\t\t<xs:attribute name=\"Lvl3\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"lvl3\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
-                         "\t<xs:element name=\"L4\">\n" +
+                         "\t<xs:element name=\"l4\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"Lvl4\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"lvl4\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -364,22 +368,22 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             var s4 = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME + "_4",
-                TypeBuilder.RequiredInt("Lvl4"));
+                TypeBuilder.RequiredInt("lvl4"));
             var s3 = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME + "_3",
-                TypeBuilder.Field("L4", TypeBuilder.Array(s4)),
-                TypeBuilder.RequiredInt("Lvl3"));
+                TypeBuilder.Field("l4", TypeBuilder.Array(s4)),
+                TypeBuilder.RequiredInt("lvl3"));
             var s2 = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME + "_2",
-                TypeBuilder.Field("L3", TypeBuilder.Array(s3)),
-                TypeBuilder.RequiredInt("Lvl2"));
+                TypeBuilder.Field("l3", TypeBuilder.Array(s3)),
+                TypeBuilder.RequiredInt("lvl2"));
             var s1 = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME + "_1",
-                TypeBuilder.Field("L2", TypeBuilder.Array(s2)),
-                TypeBuilder.RequiredInt("Lvl1"));
+                TypeBuilder.Field("l2", TypeBuilder.Array(s2)),
+                TypeBuilder.RequiredInt("lvl1"));
             var avroSchema = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME,
-                TypeBuilder.Field("L1", TypeBuilder.Array(s1)));
+                TypeBuilder.Field("l1", TypeBuilder.Array(s1)));
 
             configuration.Common.AddEventTypeAvro(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME,

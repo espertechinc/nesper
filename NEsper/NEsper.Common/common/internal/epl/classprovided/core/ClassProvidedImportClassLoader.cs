@@ -7,15 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.epl.classprovided.core
 {
 	public class ClassProvidedImportClassLoader : ClassLoader

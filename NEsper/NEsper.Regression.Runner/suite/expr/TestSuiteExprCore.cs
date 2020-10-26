@@ -15,7 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.expr.exprcore;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
@@ -549,7 +549,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public void WithLikeRegexEscapedChar() => RegressionRunner.Run(_session, ExprCoreLikeRegexp.WithLikeRegexEscapedChar());
 
             [Test, RunInApplicationDomain]
-            public void WithLikeRegExInvalid() => RegressionRunner.Run(_session, ExprCoreLikeRegexp.WithLikeRegExInvalid());
+            public void WithLikeRegexInvalid() => RegressionRunner.Run(_session, ExprCoreLikeRegexp.WithLikeRegexInvalid());
 
             [Test, RunInApplicationDomain]
             public void WithLikeRegexStringAndNull() => RegressionRunner.Run(_session, ExprCoreLikeRegexp.WithLikeRegexStringAndNull());

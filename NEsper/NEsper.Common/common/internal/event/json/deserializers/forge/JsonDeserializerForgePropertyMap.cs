@@ -12,8 +12,6 @@ using System.Text.Json;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -54,7 +52,6 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 							.WithParam<JsonElement>("_")
 							.WithBody(
 								_ => _
-									.Debug("DeserializePropertyMap[element]: {0}", Ref("_"))
 									.BlockReturn(
 										Cast(
 											_valueType,

@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression mPattern = codegenClassScope.AddDefaultFieldUnshared<Regex>(true, forge.PatternInit);
+            var mPattern = codegenClassScope.AddDefaultFieldUnshared<Regex>(true, forge.PatternInit);
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
                 typeof(ExprRegexpNodeForgeConstEval),

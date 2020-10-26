@@ -11,11 +11,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -45,25 +43,25 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Common.AddImportType(typeof(DefaultSupportCaptureOpForge));
 
 			var propertyTypes = new Dictionary<string, object>();
-			propertyTypes.Put("myInt", typeof(int?));
-			propertyTypes.Put("myDouble", typeof(double?));
-			propertyTypes.Put("myString", typeof(string));
+			propertyTypes.Put("MyInt", typeof(int?));
+			propertyTypes.Put("MyDouble", typeof(double?));
+			propertyTypes.Put("MyString", typeof(string));
 			configuration.Common.AddEventType("MyMapEvent", propertyTypes);
 
 			configuration.Common.AddEventType(
 				"MyOAType",
-				"p0,p1".SplitCsv(),
+				"P0,P1".SplitCsv(),
 				new object[] {typeof(DateTime), typeof(DateTimeEx)});
 
 			runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
 			runtime.Initialize();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestCSVZipFile()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: 'regression/noTimestampOne.zip', classpathFile: true, propertyNames: ['myInt','myDouble','myString'], numLoops: 2}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/noTimestampOne.zip', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 2}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(2, received.Count);
@@ -71,7 +69,7 @@ namespace com.espertech.esperio.regression.adapter
 				EPAssertionUtil.AssertPropsPerRow(
 					container,
 					aReceived.ToArray(),
-					"myInt,myDouble,myString".SplitCsv(),
+					"MyInt,MyDouble,MyString".SplitCsv(),
 					new object[][] {
 						new object[] {1, 1.1, "noTimestampOne.one"},
 						new object[] {2, 2.2, "noTimestampOne.two"},
@@ -80,19 +78,19 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestCSVGraph()
 		{
 			RunAssertionCSVGraphSchema(EventRepresentationChoice.OBJECTARRAY);
 			RunAssertionCSVGraphSchema(EventRepresentationChoice.MAP);
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestPropertyOrderWLoop()
 		{
 			var graph =
 				"create dataflow ReadCSV " +
-				"FileSource -> mystream<MyMapEvent> { file: 'regression/noTimestampOne.csv', classpathFile: true, propertyNames: ['myInt','myDouble','myString'], numLoops: 3}" +
+				"FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/noTimestampOne.csv', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 3}" +
 				"DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(3, received.Count);
@@ -100,7 +98,7 @@ namespace com.espertech.esperio.regression.adapter
 				EPAssertionUtil.AssertPropsPerRow(
 					container,
 					aReceived.ToArray(),
-					"myInt,myDouble,myString".SplitCsv(),
+					"MyInt,MyDouble,MyString".SplitCsv(),
 					new object[][] {
 						new object[] {1, 1.1, "noTimestampOne.one"},
 						new object[] {2, 2.2, "noTimestampOne.two"},
@@ -109,18 +107,18 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestAdditionalProperties()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: 'regression/moreProperties.csv', classpathFile: true, hasTitleLine: true}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/moreProperties.csv', hasTitleLine: true}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
-				"myInt,myDouble,myString".SplitCsv(),
+				"MyInt,MyDouble,MyString".SplitCsv(),
 				new object[][] {
 					new object[] {1, 1.1, "moreProperties.one"},
 					new object[] {2, 2.2, "moreProperties.two"},
@@ -128,12 +126,12 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestConflictingPropertyOrderIgnoreTitle()
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (intOne int, intTwo int)");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyIntRowEvent> { file: 'regression/intsTitleRow.csv', hasHeaderLine:true, classpathFile: true, propertyNames: ['intTwo','intOne'], numLoops: 1}" +
+			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../../etc/regression/intsTitleRow.csv', hasHeaderLine:true, propertyNames: ['intTwo','intOne'], numLoops: 1}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -148,12 +146,12 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestReorder()
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (p3 string, p1 int, p0 long, p2 double)");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyIntRowEvent> { file: 'regression/timestampOne.csv', classpathFile: true, propertyNames: ['p0','p1','p2','p3']}" +
+			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../../etc/regression/timestampOne.csv', propertyNames: ['p0','p1','p2','p3']}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -168,20 +166,20 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestStringPropertyTypes()
 		{
-			CompileDeploy(runtime, "@public @buseventtype create schema MyStrRowEvent (myInt string, myDouble string, myString string)");
+			CompileDeploy(runtime, "@public @buseventtype create schema MyStrRowEvent (MyInt string, MyDouble string, MyString string)");
 
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyStrRowEvent> { file: 'regression/noTimestampOne.csv', classpathFile: true, propertyNames: [\"myInt\", \"myDouble\", \"myString\"],}" +
+			            "FileSource -> mystream<MyStrRowEvent> { file: '../../../../etc/regression/noTimestampOne.csv', propertyNames: [\"MyInt\", \"MyDouble\", \"MyString\"],}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
-				"myInt,myDouble,myString".SplitCsv(),
+				"MyInt,MyDouble,MyString".SplitCsv(),
 				new object[][] {
 					new object[] {"1", "1.1", "noTimestampOne.one"},
 					new object[] {"2", "2.2", "noTimestampOne.two"},
@@ -189,35 +187,35 @@ namespace com.espertech.esperio.regression.adapter
 				});
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestEmptyFile()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: 'regression/emptyFile.csv', classpathFile: true}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/emptyFile.csv'}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
 			Assert.IsTrue(received[0].IsEmpty());
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestTitleRowOnlyFile()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: 'regression/titleRowOnly.csv', classpathFile: true, hasTitleLine: true}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/titleRowOnly.csv', hasTitleLine: true}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
 			Assert.IsTrue(received[0].IsEmpty());
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestDateFormat()
 		{
 			// no date format specified
 			var testtime = DateTimeParsingFunctions.ParseDefaultMSec("2012-01-30T08:43:32.116");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyOAType> { file: 'regression/dateprocessing_one.csv', classpathFile: true, hasTitleLine: false}" +
+			            "FileSource -> mystream<MyOAType> { file: '../../../../etc/regression/dateprocessing_one.csv', hasTitleLine: false}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -231,12 +229,12 @@ namespace com.espertech.esperio.regression.adapter
 				"20120320084332000",
 				new string[] { "yyyyMMddHHmmssfff" },
 				CultureInfo.InvariantCulture,
-				DateTimeStyles.AllowWhiteSpaces);
+				DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeUniversal);
 
 			testtime = testTimeOffset.UtcMillis();
 
 			graph = "create dataflow ReadCSV " +
-			        "FileSource -> mystream<MyOAType> { file: 'regression/dateprocessing_two.csv', classpathFile: true, hasTitleLine: false, dateFormat: 'yyyyMMDDHHmmssSSS'}" +
+			        "FileSource -> mystream<MyOAType> { file: '../../../../etc/regression/dateprocessing_two.csv', hasTitleLine: false, dateFormat: 'yyyyMMddHHmmssfff'}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -245,41 +243,43 @@ namespace com.espertech.esperio.regression.adapter
 			Assert.AreEqual(testtime, ((DateTimeEx) data[1]).UtcMillis);
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalid()
 		{
 			string graph;
 
 			// file not found
 			graph = "create dataflow FlowOne " +
-			        "FileSource -> mystream<MyMapEvent> { file: 'nonExistentFile', classpathFile: true}" +
+			        "FileSource -> mystream<MyMapEvent> { file: 'nonExistentFile'}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			TryInvalidRun(
 				"FlowOne",
 				graph,
-				"Exception encountered opening data flow 'FlowOne' in operator FileSourceCSV: Resource 'nonExistentFile' not found in classpath");
+				"Exception encountered opening data flow 'FlowOne' in operator FileSourceCSV: Could not find file ");
 
 			// has-title-line and actual column names don't match the expected event type (no properties match)
 			graph = "create dataflow FlowOne " +
-			        "FileSource -> mystream<MyMapEvent> { file: 'regression/differentMap.csv', hasTitleLine:true, classpathFile: true}" +
+			        "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/differentMap.csv', hasTitleLine:true}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			TryInvalidRun(
 				"FlowOne",
 				graph,
-				"Exception encountered running data flow 'FlowOne': Failed to match any of the properties [value one, line one] to the event type properties of event type 'MyMapEvent'");
+				"Exception encountered running data flow 'FlowOne': Failed to match any of the properties [\"value one\", \"line one\"] to the event type properties of event type 'MyMapEvent'");
 
 			// no event type provided
 			graph = "create dataflow FlowOne " +
-			        "FileSource -> mystream { file: 'nonExistentFile', classpathFile: true}" +
+			        "FileSource -> mystream { file: 'nonExistentFile' }" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			TryInvalidCompileGraph(
 				runtime,
 				graph,
-				"Failed to obtain operator 'FileSource': No event type provided for output, please provide an event type name");
+				"Error during compilation: " + 
+				"Failed to obtain operator 'FileSource': " +
+				"No event type provided for output, please provide an event type name");
 
 			// wrong file format
 			graph = "create dataflow FlowOne " +
-			        "FileSource -> mystream<MyMapEvent> { file: 'nonExistentFile', classpathFile: true, format: 'dummy',}" +
+			        "FileSource -> mystream<MyMapEvent> { file: 'nonExistentFile', format: 'dummy',}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			TryInvalid(
 				"FlowOne",
@@ -312,7 +312,7 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
 			try {
-				var outputOp = new DefaultSupportCaptureOp<object>(container.LockManager());
+				var outputOp = new DefaultSupportCaptureOp(container.LockManager());
 				runtime.DataFlowService.Instantiate(
 					stmtGraph.DeploymentId,
 					dataflowName,
@@ -333,7 +333,7 @@ namespace com.espertech.esperio.regression.adapter
 			string message)
 		{
 			var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
-			var outputOp = new DefaultSupportCaptureOp<object>(container.LockManager());
+			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
 			var df = runtime.DataFlowService.Instantiate(
 				stmtGraph.DeploymentId,
 				dataflowName,
@@ -343,7 +343,7 @@ namespace com.espertech.esperio.regression.adapter
 				Assert.Fail();
 			}
 			catch (EPDataFlowExecutionException ex) {
-				Assert.AreEqual(message, ex.Message);
+				StringAssert.StartsWith(message, ex.Message);
 			}
 
 			UndeployAll(runtime);
@@ -353,7 +353,7 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			var stmt = CompileDeploy(runtime, epl).Statements[0];
 
-			var outputOp = new DefaultSupportCaptureOp<object>(container.LockManager());
+			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
 			var instance = runtime.DataFlowService.Instantiate(
 				stmt.DeploymentId,
 				"ReadCSV",
@@ -363,11 +363,11 @@ namespace com.espertech.esperio.regression.adapter
 			return outputOp.GetAndReset();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestLoopTitleRow()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: 'regression/titleRow.csv', classpathFile: true, hasTitleLine:true, numLoops: 3}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/titleRow.csv', hasTitleLine:true, numLoops: 3}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(3, received.Count);
@@ -375,7 +375,7 @@ namespace com.espertech.esperio.regression.adapter
 				EPAssertionUtil.AssertPropsPerRow(
 					container,
 					aReceived.ToArray(),
-					"myInt,myDouble,myString".SplitCsv(),
+					"MyInt,MyDouble,MyString".SplitCsv(),
 					new object[][] {
 						new object[] {1, 1.1, "one"},
 						new object[] {3, 3.3, "three"},
@@ -384,18 +384,21 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestCommentAndOtherProp()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: 'regression/comments.csv', classpathFile: true, propertyNames: ['other', 'myInt','myDouble','myString']}" +
+			            "FileSource -> mystream<MyMapEvent> {" +
+			            " file: '../../../../etc/regression/comments.csv', " +
+			            " propertyNames: ['other', 'MyInt','MyDouble','MyString']" +
+			            "}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
-				"myInt,myDouble,myString".SplitCsv(),
+				"MyInt,MyDouble,MyString".SplitCsv(),
 				new object[][] {
 					new object[] {1, 1.1, "one"},
 					new object[] {3, 3.3, "three"},
@@ -406,13 +409,16 @@ namespace com.espertech.esperio.regression.adapter
 		private void RunAssertionCSVGraphSchema(EventRepresentationChoice representationEnum)
 		{
 
-			var fields = "myString,myInt,timestamp, myDouble".SplitCsv();
+			var fields = "MyString,MyInt,timestamp, MyDouble".SplitCsv();
 			CompileDeploy(
 				runtime,
 				representationEnum.GetAnnotationText() +
-				" @public @buseventtype create schema MyEvent(myString string, myInt int, timestamp long, myDouble double)");
+				" @public @buseventtype create schema MyEvent(MyString string, MyInt int, timestamp long, MyDouble double)");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyEvent> { file: 'regression/titleRow.csv', hasHeaderLine: true, classpathFile: true }" +
+			            "FileSource -> mystream<MyEvent> {" +
+			            " file: '../../../../etc/regression/titleRow.csv'," +
+			            " hasHeaderLine: true " +
+			            "}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var deployment = CompileDeploy(runtime, graph);
 

@@ -25,13 +25,11 @@ namespace com.espertech.esperio.file
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		[DataFlowOpParameter] private ExprNode _file;
+		[DataFlowOpParameter] private ExprNode file;
 
-		[DataFlowOpParameter] private ExprNode _classpathFile;
+		[DataFlowOpParameter] private ExprNode append;
 
-		[DataFlowOpParameter] private ExprNode _append;
-
-		private EventType _eventType;
+		private EventType eventType;
 
 		public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
 		{
@@ -39,14 +37,13 @@ namespace com.espertech.esperio.file
 				throw new EPException(GetType().Name + " expected a single input port");
 			}
 
-			_eventType = context.InputPorts.Get(0).TypeDesc.EventType;
-			if (_eventType == null) {
+			eventType = context.InputPorts.Get(0).TypeDesc.EventType;
+			if (eventType == null) {
 				throw new EPException("No event type defined for input port");
 			}
 
-			_file = DataFlowParameterValidation.Validate("file", _file, typeof(string), context);
-			_classpathFile = DataFlowParameterValidation.Validate("classpathFile", _classpathFile, typeof(bool), context);
-			_append = DataFlowParameterValidation.Validate("append", _append, typeof(bool), context);
+			file = DataFlowParameterValidation.Validate("file", file, typeof(string), context);
+			append = DataFlowParameterValidation.Validate("append", append, typeof(bool), context);
 			return null;
 		}
 
@@ -55,10 +52,9 @@ namespace com.espertech.esperio.file
 			CodegenClassScope classScope)
 		{
 			return new SAIFFInitializeBuilder(typeof(FileSinkFactory), GetType(), "factory", parent, symbols, classScope)
-				.Exprnode("file", _file)
-				.Exprnode("classpathFile", _classpathFile)
-				.Exprnode("append", _append)
-				.Eventtype("eventType", _eventType)
+				.Exprnode("file", file)
+				.Exprnode("append", append)
+				.Eventtype("eventType", eventType)
 				.Build();
 		}
 	}

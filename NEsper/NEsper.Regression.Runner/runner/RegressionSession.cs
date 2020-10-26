@@ -10,7 +10,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 
-namespace com.espertech.esper.regressionrun.Runner
+namespace com.espertech.esper.regressionrun.runner
 {
     public class RegressionSession
     {

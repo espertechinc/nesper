@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {

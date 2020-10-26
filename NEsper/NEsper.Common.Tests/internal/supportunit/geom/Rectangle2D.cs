@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace com.espertech.esper.common.@internal.supportunit.geom
+﻿namespace com.espertech.esper.common.@internal.supportunit.geom
 {
     public class Rectangle2D<T>
     {

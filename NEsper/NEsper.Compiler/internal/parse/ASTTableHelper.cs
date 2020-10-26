@@ -14,7 +14,6 @@ using Antlr4.Runtime.Tree;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.grammar.@internal.generated;
 

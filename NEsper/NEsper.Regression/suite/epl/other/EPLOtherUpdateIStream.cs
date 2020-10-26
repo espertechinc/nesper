@@ -1032,7 +1032,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
+                RunAssertionUpdateIStreamSetMapProps(env, EventRepresentationChoice.JSON);
+
+
                 RunAssertionSetMapPropsBean(env);
+                
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     RunAssertionUpdateIStreamSetMapProps(env, rep);
                 }
@@ -1434,9 +1438,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         [Serializable]
         public class MyLocalJsonProvidedMapProp
         {
-            public string Simple;
-            public int?[] Myarray;
-            public IDictionary<string, object> Mymap;
+            public string simple;
+            public int?[] myarray;
+            public IDictionary<string, object> mymap;
         }
 
         [Serializable]

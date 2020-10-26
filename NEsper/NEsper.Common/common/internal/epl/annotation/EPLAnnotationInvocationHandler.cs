@@ -17,10 +17,6 @@ using com.espertech.esper.compat.collections;
 
 using Castle.DynamicProxy;
 
-using com.espertech.esper.common.@internal.epl.expression.core;
-
-using XLR8.CGLib;
-
 namespace com.espertech.esper.common.@internal.epl.annotation
 {
     /// <summary>

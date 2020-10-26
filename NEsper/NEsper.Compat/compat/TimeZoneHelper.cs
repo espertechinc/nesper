@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat

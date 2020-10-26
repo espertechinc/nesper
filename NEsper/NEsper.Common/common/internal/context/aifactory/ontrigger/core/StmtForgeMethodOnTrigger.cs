@@ -21,8 +21,6 @@ using com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
-using com.espertech.esper.common.@internal.epl.join.querygraph;
-using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;

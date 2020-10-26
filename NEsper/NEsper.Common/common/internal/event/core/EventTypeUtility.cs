@@ -1119,7 +1119,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 if (entry.Value is EventType[] eventTypeArray) {
                     // Add EventType array itself as a property, type is expected to be first array element
                     var eventType = eventTypeArray[0];
-                    object prototypeArray = Array.CreateInstance(eventType.UnderlyingType, 0);
+                    var prototypeArray = Arrays.CreateInstanceChecked(eventType.UnderlyingType, 0);
                     var getter = factory.GetGetterEventBeanArray(name, eventType);
                     var descriptor = new EventPropertyDescriptor(
                         name,
@@ -1187,7 +1187,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     var underlyingType = eventType.UnderlyingType;
                     var propertyComponentType = underlyingType;
                     if (underlyingType != typeof(object[])) {
-                        underlyingType = Array.CreateInstance(underlyingType, 0).GetType();
+                        underlyingType = underlyingType.MakeArrayType();
                     }
 
                     var getter = factory.GetGetterBeanNestedArray(name, eventType, eventBeanTypedEventFactory);
@@ -2193,32 +2193,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             JsonEventType targetType)
         {
             var source = theEvent.Underlying;
-            if (source is IJsonComposite sourceComposite) {
-                var sourceType = (JsonEventType) theEvent.EventType;
-                var target = targetType.AllocateComposite();
-
-                foreach (var entry in targetType.Detail.FieldDescriptors) {
-                    JsonUnderlyingField targetField = entry.Value;
-                    JsonUnderlyingField sourceField = sourceType.Detail.FieldDescriptors.Get(entry.Key);
-                    if (sourceField == null) {
-                        continue;
-                    }
-
-                    var propertyName = sourceField.PropertyName;
-                    var sourceValue = sourceComposite[propertyName];
-                    target[propertyName] = sourceValue;
-                }
-
-                return target;
-            }
-
-            throw new NotImplementedException("broken: 878b024a-bae5-4797-a8a7-ce86fd4b498d");
-
-#if BROKEN
-            var source = theEvent.Underlying;
+            var target = targetType.Delegate.Allocate();
             var sourceType = (JsonEventType) theEvent.EventType;
-            var target = targetType.SerializationContext.NewUnderlying();
-            
             foreach (var entry in targetType.Detail.FieldDescriptors) {
                 var sourceField = entry.Value;
                 var targetField = sourceType.Detail.FieldDescriptors.Get(entry.Key);
@@ -2226,12 +2202,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                     continue;
                 }
 
-                var value = sourceType.SerializationContext.GetValue(sourceField.FieldName, source);
-                targetType.SerializationContext.SetValue(targetField.FieldName, value, target);
+                if (sourceType.Delegate.TryGetProperty(sourceField.PropertyName, source, out var value)) {
+                    targetType.Delegate.TrySetProperty(targetField.PropertyName, target, value);
+                }
             }
-
             return target;
-#endif
         }
 
         public static EventTypeForgeablesPair CreateNonVariantType(
@@ -2391,7 +2366,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 if (!spec.Inherits.IsEmpty()) {
                     throw new ExprValidationException("Create-XML-Schema does not allow inherits");
                 }
-                ConfigurationCommonEventTypeXMLDOM config = CreateSchemaXMLHelper.Configure(@base, services);
+                var config = CreateSchemaXMLHelper.Configure(@base, services);
                 SchemaModel schemaModel = null;
                 if ((config.SchemaResource != null) || (config.SchemaText != null)) {
                     try {

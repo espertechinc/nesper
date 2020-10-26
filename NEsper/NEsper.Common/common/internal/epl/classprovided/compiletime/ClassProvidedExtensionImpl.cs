@@ -17,7 +17,6 @@ using com.espertech.esper.common.client.hook.singlerowfunc;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime

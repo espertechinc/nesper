@@ -195,32 +195,22 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>type enumeration value for type</returns>
         public static DatabaseTypeEnum GetEnum(string type)
         {
-            var boxedType = type.GetBoxedType().FullName.ToLowerInvariant();
-            var sourceName1 = boxedType.ToLower();
+            var sourceName1 = type.ToLowerInvariant();
 
             foreach (var val in VALUES)
             {
-                var targetName1 = val.GetBoxedType().FullName.ToLowerInvariant();
+                var targetName1 = val.GetName().ToLowerInvariant();
                 if (targetName1 == sourceName1)
                 {
                     return val;
                 }
 
-                var targetName2 = val.GetDataType().FullName.ToLowerInvariant();
-                if (targetName2 == sourceName1)
-                {
-                    return val;
-                }
-
-                if (targetName2 == boxedType)
-                {
-                    return val;
-                }
-
-                var targetName3 = val.GetDataType().Name;
-                if (targetName3 == boxedType)
-                {
-                    return val;
+                var dataType = val.GetDataType();
+                if (dataType != null) {
+                    if ((sourceName1 == dataType.FullName?.ToLowerInvariant()) ||
+                        (sourceName1 == dataType.GetBoxedType().FullName?.ToLowerInvariant())) {
+                        return val;
+                    }
                 }
             }
 

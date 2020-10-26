@@ -61,6 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var runnableTwo = new SendEventRunnable(env.Runtime, sendsT2, "ScoreCycle");
             threadPool.Submit(runnableOne.Run);
             threadPool.Submit(runnableTwo.Run);
+
             threadPool.Shutdown();
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 1, TimeUnit.SECONDS);
 

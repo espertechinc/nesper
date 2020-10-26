@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.expr.define;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.lrreport;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;

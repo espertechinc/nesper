@@ -85,18 +85,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             REF_EVENTS_SHIFTED,
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method)));
-                    @foreach.IfCondition(NotEqualsNull(Ref("filtered")))
+                    @foreach
+                        .IfCondition(NotEqualsNull(Ref("filtered")))
                         .BlockReturn(ConstantNull())
                         .AssignRef("filtered", Ref("@event"));
                 }
 
                 if (subselect.SelectClause == null) {
-                    method.Block.IfRefNullReturnNull("filtered")
+                    method.Block
+                        .IfRefNullReturnNull("filtered")
                         .MethodReturn(Cast(subselect.EvaluationType, ExprDotUnderlying(Ref("filtered"))));
+
                     return LocalMethod(method);
                 }
 
-                method.Block.IfRefNullReturnNull("filtered")
+                method.Block
+                    .IfRefNullReturnNull("filtered")
                     .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("filtered"));
             }
 

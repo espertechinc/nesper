@@ -8,7 +8,6 @@
 
 using System;
 using com.espertech.esper.common.@internal.supportunit.geom;
-using com.espertech.esper.compat;
 
 using NUnit.Framework;
 
@@ -229,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             RunAssertionQuadrant(25, 39.9999, bb, bbNW, bbNE, bbSW, bbSE, QuadrantEnum.NE);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestQuadrantIfFits()
         {
             var bb = new BoundingBox(10, 20, 40, 60);

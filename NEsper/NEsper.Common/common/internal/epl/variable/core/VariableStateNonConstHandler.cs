@@ -9,8 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.@internal.epl.variable.compiletime;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core

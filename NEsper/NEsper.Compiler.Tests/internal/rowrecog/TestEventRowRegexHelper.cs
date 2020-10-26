@@ -20,7 +20,7 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 	[TestFixture]
 	public class TestEventRowRegexHelper : AbstractCompilerTest
 	{
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestVariableAnalysis()
 		{
 			var patternTests = new[] {
@@ -65,24 +65,24 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 			}
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestVisibilityAnalysis()
 		{
 			var patternTests = new[] {
 				new[] {"A", "{}"},
-				new[] {"A B", "{B=[A]}"},
-				new[] {"A B*", "{B=[A]}"},
-				new[] {"A B B", "{B=[A]}"},
-				new[] {"A B A", "{A=[B], B=[A]}"},
-				new[] {"A B+ C", "{B=[A], C=[A, B]}"},
-				new[] {"(A B)+ C", "{B=[A], C=[A, B]}"},
-				new[] {"D (A B)+ (G H)? C", "{A=[D], B=[A, D], C=[A, B, D, G, H], G=[A, B, D], H=[A, B, D, G]}"},
-				new[] {"A B | A C", "{B=[A], C=[A]}"},
-				new[] {"(A B*) | (A+ C)", "{B=[A], C=[A]}"},
-				new[] {"A (B | C) D", "{B=[A], C=[A], D=[A, B, C]}"},
-				new[] {"(((A))) (((B))) (( C | (D E)))", "{B=[A], C=[A, B], D=[A, B], E=[A, B, D]}"},
-				new[] {"(A | B) C", "{C=[A, B]}"},
-				new[] {"(A | B) (C | A)", "{A=[B], C=[A, B]}"},
+				new[] {"A B", "{\"B\"=[\"A\"]}"},
+				new[] {"A B*", "{\"B\"=[\"A\"]}"},
+				new[] {"A B B", "{\"B\"=[\"A\"]}"},
+				new[] {"A B A", "{\"A\"=[\"B\"], \"B\"=[\"A\"]}"},
+				new[] {"A B+ C", "{\"B\"=[\"A\"], \"C\"=[\"A\", \"B\"]}"},
+				new[] {"(A B)+ C", "{\"B\"=[\"A\"], \"C\"=[\"A\", \"B\"]}"},
+				new[] {"D (A B)+ (G H)? C", "{\"A\"=[\"D\"], \"B\"=[\"A\", \"D\"], \"C\"=[\"A\", \"B\", \"D\", \"G\", \"H\"], \"G\"=[\"A\", \"B\", \"D\"], \"H\"=[\"A\", \"B\", \"D\", \"G\"]}"},
+				new[] {"A B | A C", "{\"B\"=[\"A\"], \"C\"=[\"A\"]}"},
+				new[] {"(A B*) | (A+ C)", "{\"B\"=[\"A\"], \"C\"=[\"A\"]}"},
+				new[] {"A (B | C) D", "{\"B\"=[\"A\"], \"C\"=[\"A\"], \"D\"=[\"A\", \"B\", \"C\"]}"},
+				new[] {"(((A))) (((B))) (( C | (D E)))", "{\"B\"=[\"A\"], \"C\"=[\"A\", \"B\"], \"D\"=[\"A\", \"B\"], \"E\"=[\"A\", \"B\", \"D\"]}"},
+				new[] {"(A | B) C", "{\"C\"=[\"A\", \"B\"]}"},
+				new[] {"(A | B) (C | A)", "{\"A\"=[\"B\"], \"C\"=[\"A\", \"B\"]}"},
 			};
 
 			for (var i = 0; i < patternTests.Length; i++) {
@@ -100,15 +100,14 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 				var visibility = RowRecogHelper.DetermineVisibility(parent);
 
 				// sort, for comparing
-				var visibilitySorted = new LinkedHashMap<string, IList<string>>();
-				var tagsSorted = new List<string>(visibility.Keys.OrderBy(k => k));
-
-				foreach (var tag in tagsSorted) {
+				var visibilitySorted = new SortedDictionary<string, IList<string>>();
+				foreach (var tag in visibility.Keys.OrderBy(k => k)) {
 					var sorted = new List<string>(visibility.Get(tag).OrderBy(v => v));
 					visibilitySorted.Put(tag, sorted);
 				}
 
-				Assert.AreEqual("Failed in :" + pattern, expected, visibilitySorted.ToString());
+				var visibilityAsString = visibilitySorted.RenderAny();
+				Assert.AreEqual(expected, visibilityAsString, "Failed in :" + pattern);
 			}
 		}
 	}

@@ -12,7 +12,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
-using com.espertech.esper.common.@internal.epl.subselect;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {

@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 
-using XLR8.CGLib;
-
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceForgeDesc

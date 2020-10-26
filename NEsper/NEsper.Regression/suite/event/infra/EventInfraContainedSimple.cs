@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			};
 			var beanepl =
 				$"@public @buseventtype create schema LocalInnerEvent as {typeof(LocalInnerEvent).MaskTypeName()};\n" +
-				$"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()}";
+				$"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
 			RunAssertion(env, beanepl, bean);
 
 			// Map

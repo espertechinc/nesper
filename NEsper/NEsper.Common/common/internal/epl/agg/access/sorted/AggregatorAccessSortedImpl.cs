@@ -8,8 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
@@ -27,17 +25,14 @@ using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.common.@internal.serde.serdeset.additional;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.collections.btree;
 using com.espertech.esper.compat.function;
-using com.espertech.esper.grammar.@internal.generated;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.CodegenSharableSerdeName;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
-using static com.espertech.esper.common.@internal.@event.path.EventTypeResolver; //GETEVENTSERDEFACTORY;
+//GETEVENTSERDEFACTORY;
 using static com.espertech.esper.common.@internal.serde.compiletime.sharable.CodegenSharableSerdeEventTyped.CodegenSharableSerdeName; //REFCOUNTEDSETATOMICINTEGER;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
@@ -396,13 +391,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			Type underlyingClass)
 		{
 			if (value is EventBean eventBean) {
-				var arrayX = Array.CreateInstance(underlyingClass, 1);
+				var arrayX = Arrays.CreateInstanceChecked(underlyingClass, 1);
 				arrayX.SetValue(eventBean.Underlying, 0);
 				return arrayX;
 			}
 
 			var q = (ArrayDeque<EventBean>) value;
-			var array = Array.CreateInstance(underlyingClass, q.Count);
+			var array = Arrays.CreateInstanceChecked(underlyingClass, q.Count);
 			var index = 0;
 			foreach (var @event in q) {
 				array.SetValue(@event.Underlying, index++);

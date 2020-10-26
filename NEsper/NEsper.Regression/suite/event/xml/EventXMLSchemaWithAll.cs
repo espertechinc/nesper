@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;

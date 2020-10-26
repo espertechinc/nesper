@@ -8,7 +8,6 @@
 
 using System.Reflection;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -23,7 +22,7 @@ namespace NEsper.Avro.Core
 {
     [TestFixture]
 	public class TestAvroEventBean  {
-        [Test, RunInApplicationDomain]
+        [Test]
 	    public void TestGet()
 	    {
 		    var schema = SchemaBuilder

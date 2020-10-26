@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.util;
 

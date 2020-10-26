@@ -15,18 +15,14 @@ using System.Text;
 using System.Text.Json;
 
 using com.espertech.esper.common.client.json.util;
-using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.@event.json.serde;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
-using Microsoft.CodeAnalysis.Emit;
 
 using static com.espertech.esper.common.@internal.@event.json.serializers.JsonSerializerUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
-	public abstract class JsonEventObjectBase : JsonEventObject, IJsonComposite
+	public abstract class JsonEventObjectBase : JsonEventObject
 	{
 		/// <summary>
 		/// Add a dynamic property value that the json parser encounters.

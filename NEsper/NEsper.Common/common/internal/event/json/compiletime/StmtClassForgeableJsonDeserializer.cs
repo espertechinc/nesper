@@ -16,8 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.deserializers.core;
 using com.espertech.esper.common.@internal.@event.json.deserializers.forge;
 using com.espertech.esper.compat.collections;
 
@@ -73,112 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				//.MakeParentNode(_underlyingClassName, GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.MakeParentNode(typeof(object), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(JsonElement), JsonDeserializeRefs.INSTANCE.ElementName);
-			deserializeMethod = makeVirtual 
-				? deserializeMethod.WithVirtual()
-				: deserializeMethod.WithOverride();
-			
-			var elementRef = JsonDeserializeRefs.INSTANCE.Element;
-			
-			deserializeMethod
-				.Block
-				.IfCondition(Op(ExprDotName(elementRef, "ValueKind"), "==", Constant(JsonValueKind.Null)))
-				.BlockReturn(ConstantNull());
-				
-			deserializeMethod
-				.Block
-				.DeclareVar(_underlyingClassName, "value", NewInstanceInner(_underlyingClassName))
-				.DeclareVar<JsonElement.ObjectEnumerator>("propertyEnumerator", ExprDotMethod(elementRef, "EnumerateObject"));
-
-			var propertyNameRef = Ref("propertyName");
-			var propertyValue = ExprDotName(Ref("property"), "Value");
-			
-			var propertiesThisType = _desc.PropertiesThisType
-				.Where(_ => _.Value != null)
-				.ToList();
-			
-			// This builds the "case XXX" which are supplied to the switch statement.  This does not include
-			// the code to process the value, which we will do next.
-			var caseOptions = propertiesThisType
-				.Select(propertyPair => Constant(propertyPair.Key))
-				.ToArray();
-
-			var whileLoop = deserializeMethod
-				.Block
-				.WhileLoop(ExprDotMethod(Ref("propertyEnumerator"), "MoveNext"))
-				.DeclareVar<JsonProperty>("property", ExprDotName(Ref("propertyEnumerator"), "Current"))
-				.DeclareVar<string>("propertyName", ExprDotName(Ref("property"), "Name"));
-				
-			var switchBlock = whileLoop.SwitchBlockExpressions(
-				propertyNameRef,
-				caseOptions,
-				false,
-				false);
-
-			var indx = 0;
-			// Here we setup the "codeBlock" for each of the valid cases.
-			foreach (var propertyPair in propertiesThisType) {
-				var field = _desc.FieldDescriptorsInclSupertype.Get(propertyPair.Key);
-				var fieldName = field.FieldName;
-				var fieldType = field.PropertyType;
-				var forge = _desc.Forges.Get(propertyPair.Key);
-				
-				// Get the switch block.  This only works because the order of the
-				// properties is identical, so the index of the case block lines up
-				// with this item.
-				var caseExprBlock = switchBlock.Blocks[indx++];
-
-				// Gets the property from the enclosing element
-				// --------------------------------------------------------------------------------
-				// Assign the field.  If the underlying type is a "value" with properties then this will
-				// just use a standard assignment.  If the underlying is dynamic (as defined by IsDynamic)
-				// then we believe we need to add this to a general dictionary that masks the data.  We
-				// need more information to determine if this is the right thing to do.  Maybe we should
-				// just use an IExpando for these kinds of objects?
-				// --------------------------------------------------------------------------------
-
-				caseExprBlock
-					.AssignMember(
-						"value." + fieldName.CodeInclusionName(),
-						FlexCast(fieldType, forge.DeserializerForge.CodegenDeserialize(
-							deserializeMethod,
-							classScope,
-							propertyValue)))
-					.BlockEnd();
-			}
-
-			if (_desc.IsDynamic) {
-				// All other cases overflow into the "default" case if applicable.
-				var caseExprBlock = switchBlock.DefaultBlock;
-
-				caseExprBlock
-					.ExprDotMethod(
-						Ref("value." + DYNAMIC_PROP_FIELD),
-						"Put",
-						propertyNameRef,
-						StaticMethod(
-							typeof(JsonElementExtensions),
-							"ElementToValue",
-							ExprDotName(Ref("property"), "Value")))
-					.BlockEnd();
-			}
-
-			whileLoop.BlockEnd();
-
-			deserializeMethod.Block.MethodReturn(Ref("value"));
-
-			// --------------------------------------------------------------------------------
-			// Allocator (property)
-			// --------------------------------------------------------------------------------
-
-			var allocatorProp = CodegenProperty
-				.MakePropertyNode(typeof(Func<object>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-			allocatorProp = makeVirtual 
-				? allocatorProp.WithVirtual()
-				: allocatorProp.WithOverride();
-			// we know this underlying class has a default constructor otherwise it is not json and deep-class eligible
-			allocatorProp.GetterBlock.BlockReturn(
-				new CodegenExpressionLambda(allocatorProp.GetterBlock).WithBody(
-					block => block.BlockReturn(NewInstanceInner(_underlyingClassName))));
+			deserializeMethod = MakeDeserialize(deserializeMethod, classScope, makeVirtual);
 
 			// --------------------------------------------------------------------------------
 			// Properties (property)
@@ -200,7 +94,6 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			var methods = new CodegenClassMethods();
 			//CodegenStackGenerator.RecursiveBuildStack(getResultMethod, "GetResult", methods, properties);
 			CodegenStackGenerator.RecursiveBuildStack(deserializeMethod, "Deserialize", methods, properties);
-			CodegenStackGenerator.RecursiveBuildStack(allocatorProp, "Allocator", methods, properties);
 			CodegenStackGenerator.RecursiveBuildStack(propertiesProp, "Properties", methods, properties);
 
 			var clazz = new CodegenClass(
@@ -221,6 +114,114 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			return clazz;
+		}
+
+		private CodegenMethod MakeDeserialize(
+			CodegenMethod deserializeMethod,
+			CodegenClassScope classScope,
+			bool makeVirtual)
+		{
+			deserializeMethod = makeVirtual
+				? deserializeMethod.WithVirtual()
+				: deserializeMethod.WithOverride();
+
+			var elementRef = JsonDeserializeRefs.INSTANCE.Element;
+
+			deserializeMethod
+				.Block
+				.IfCondition(Op(ExprDotName(elementRef, "ValueKind"), "==", Constant(JsonValueKind.Null)))
+				.BlockReturn(ConstantNull());
+
+			deserializeMethod
+				.Block
+				.DeclareVar(_underlyingClassName, "value", NewInstanceInner(_underlyingClassName))
+				.DeclareVar<JsonElement.ObjectEnumerator>("propertyEnumerator", ExprDotMethod(elementRef, "EnumerateObject"));
+
+			var propertyNameRef = Ref("propertyName");
+			var propertyValue = Ref("propertyValue");
+
+			var propertiesThisType = _desc.PropertiesThisType
+				.Where(_ => _.Value != null)
+				.ToList();
+
+			// This builds the "case XXX" which are supplied to the switch statement.  This does not include
+			// the code to process the value, which we will do next.
+			var caseOptions = propertiesThisType
+				.Select(propertyPair => Constant(propertyPair.Key))
+				.ToArray();
+
+			var whileLoop = deserializeMethod
+				.Block
+				.WhileLoop(ExprDotMethod(Ref("propertyEnumerator"), "MoveNext"))
+				.DeclareVar<JsonProperty>("property", ExprDotName(Ref("propertyEnumerator"), "Current"))
+				.DeclareVar<string>("propertyName", ExprDotName(Ref("property"), "Name"))
+				.DeclareVar(typeof(JsonElement), "propertyValue", ExprDotName(Ref("property"), "Value"));
+
+			var switchBlock = whileLoop.SwitchBlockExpressions(
+				propertyNameRef,
+				caseOptions,
+				false,
+				false);
+
+			var indx = 0;
+			// Here we setup the "codeBlock" for each of the valid cases.
+			foreach (var propertyPair in propertiesThisType) {
+				var field = _desc.FieldDescriptorsInclSupertype.Get(propertyPair.Key);
+				var fieldName = field.FieldName;
+				var fieldType = field.PropertyType;
+				var forge = _desc.Forges.Get(propertyPair.Key);
+
+				// Get the switch block.  This only works because the order of the
+				// properties is identical, so the index of the case block lines up
+				// with this item.
+				var caseExprBlock = switchBlock.Blocks[indx++];
+
+				// Gets the property from the enclosing element
+				// --------------------------------------------------------------------------------
+				// Assign the field.  If the underlying type is a "value" with properties then this will
+				// just use a standard assignment.  If the underlying is dynamic (as defined by IsDynamic)
+				// then we believe we need to add this to a general dictionary that masks the data.  We
+				// need more information to determine if this is the right thing to do.  Maybe we should
+				// just use an IExpando for these kinds of objects?
+				// --------------------------------------------------------------------------------
+
+				caseExprBlock
+					.AssignMember(
+						"value." + fieldName.CodeInclusionName(),
+						FlexCast(
+							fieldType,
+							forge.DeserializerForge.CodegenDeserialize(
+								deserializeMethod,
+								classScope,
+								propertyValue)))
+					.BlockEnd();
+			}
+
+			if (_desc.IsDynamic) {
+				// All other cases overflow into the "default" case if applicable.
+				var caseExprBlock = switchBlock.DefaultBlock;
+
+				caseExprBlock
+					.ExprDotMethod(
+						Ref("value." + DYNAMIC_PROP_FIELD),
+						"Put",
+						propertyNameRef,
+						StaticMethod(
+							typeof(JsonElementExtensions),
+							"ElementToValue",
+							ExprDotName(Ref("property"), "Value")))
+					.BlockEnd();
+			}
+			else {
+				switchBlock
+					.DefaultBlock
+					.BlockEnd();
+			}
+
+			whileLoop.BlockEnd();
+
+			deserializeMethod.Block.MethodReturn(Ref("value"));
+			return deserializeMethod;
 		}
 
 		public string ClassName => _className;

@@ -8,17 +8,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.core

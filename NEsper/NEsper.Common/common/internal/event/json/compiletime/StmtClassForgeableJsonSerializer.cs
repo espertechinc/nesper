@@ -6,34 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.common.@internal.@event.json.forge;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-using com.espertech.esper.common.@internal.@event.json.parser.forge;
 using com.espertech.esper.common.@internal.@event.json.serde;
-using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.@event.json.serializers.forge;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
-using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
@@ -71,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
 			
 			// --------------------------------------------------------------------------------
-			// Serialize(Utf8JsonWriter writer, object und);
+			// void Serialize(JsonSerializationContext context, object underlying)
 			// --------------------------------------------------------------------------------
 
 			var serializeMethod = CodegenMethod
@@ -105,39 +88,6 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			else {
 				method.Block.MethodThrowUnsupported(); // write method found on underlying class itself
 			}
-		}
-		
-		private CodegenMethod ForgeWriteStatic(CodegenClassScope classScope)
-		{
-			var writeStaticMethod = CodegenMethod
-				.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(JsonSerializationContext), "context")
-				.AddParam(typeof(object), "underlying")
-				.AddThrown(typeof(IOException))
-				.WithStatic(true);
-			if (_makeWriteMethod) {
-				MakeNativeWrite(writeStaticMethod, classScope);
-			}
-			else {
-				writeStaticMethod.Block.MethodThrowUnsupported(); // write method found on underlying class itself
-			}
-
-			return writeStaticMethod;
-		}
-
-		private CodegenMethod ForgeWrite(
-			CodegenClassScope classScope,
-			CodegenClassMethods methods,
-			CodegenClassProperties properties)
-		{
-			var writeMethod = CodegenMethod
-				.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(JsonSerializationContext), "context")
-				.AddParam(typeof(object), "underlying")
-				.AddThrown(typeof(IOException));
-			writeMethod.Block.StaticMethod(_className, "WriteStatic", Ref("writer"), Ref("underlying"));
-			CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
-			return writeMethod;
 		}
 
 		public string ClassName => _className;

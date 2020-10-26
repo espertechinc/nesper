@@ -121,14 +121,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var exceptionText = GetSyntaxExceptionEPL(env, "select * from *");
-                Assert.AreEqual(
+                StringAssert.StartsWith(
+                    "Error during compilation: " + 
                     "Incorrect syntax near '*' at line 1 column 14, please check the from clause [select * from *]",
                     exceptionText);
 
                 exceptionText = GetSyntaxExceptionEPL(
                     env,
                     "select * from SupportBean a where a.IntPrimitive between r.start and r.end");
-                Assert.AreEqual(
+                StringAssert.StartsWith(
+                    "Error during compilation: " + 
                     "Incorrect syntax near 'start' (a reserved keyword) at line 1 column 59, please check the where clause [select * from SupportBean a where a.IntPrimitive between r.start and r.end]",
                     exceptionText);
 

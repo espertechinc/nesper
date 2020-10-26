@@ -106,11 +106,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 			var methodNode = codegenMethodScope
 				.MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
-				.AddParam(instanceType, "target");
+				.AddParam(innerType, "target");
 
 			var block = methodNode.Block;
 
-            if (instanceType.CanBeNull() && returnType != typeof(void)) {
+            if (innerType.CanBeNull() && returnType != typeof(void)) {
 				block.IfRefNullReturnNull("target");
 			}
 
@@ -119,9 +119,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				var name = "p" + i;
 				var evaluationType = forge.Parameters[i].EvaluationType;
 				block.DeclareVar(
-					evaluationType, 
-					name, 
-					forge.Parameters[i].EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
+					evaluationType,
+					name,
+					forge.Parameters[i]
+						.EvaluateCodegen(
+							evaluationType,
+							methodNode,
+							exprSymbol,
+							codegenClassScope));
 				
 				CodegenExpression reference = Ref(name);
 				if (evaluationType.IsNullable() && !methodParameters[i].IsNullable()) {
@@ -132,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 			
 			CodegenExpression target = Ref("target");
-			if (instanceType != instanceType.GetBoxedType()) {
+			if ((instanceType != innerType) && (innerType == instanceType.GetBoxedType())) {
 				target = CodegenExpressionBuilder.Unbox(target);
 			}
 

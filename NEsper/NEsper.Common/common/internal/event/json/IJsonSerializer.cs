@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.@event.json.serde;
 
-namespace com.espertech.esper.common.@internal.@event.json.serializers
+namespace com.espertech.esper.common.@internal.@event.json
 {
     public interface IJsonSerializer
     {
@@ -18,16 +16,16 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
         /// Serialize the provided value.  The serialization context is provided.
         /// </summary>
         /// <param name="context">serialization context</param>
-        /// <param name="value">value to be serialized</param>
+        /// <param name="underlying">value to be serialized</param>
         public void Serialize(
             JsonSerializationContext context,
-            object value);
+            object underlying);
     }
 
+#if NOT_USED
     public class ProxyJsonSerializer : IJsonSerializer
     {
         public Action<JsonSerializationContext, object> ProcSerialize { get; set; }
-
         public ProxyJsonSerializer()
         {
         }
@@ -43,5 +41,13 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
         {
             ProcSerialize.Invoke(context, value);
         }
+
+        public bool TryGetProperty(
+            string name,
+            out object value)
+        {
+            
+        }
     }
+#endif
 }

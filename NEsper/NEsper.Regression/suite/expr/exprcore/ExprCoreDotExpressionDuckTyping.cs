@@ -17,15 +17,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
 	public class ExprCoreDotExpressionDuckTyping : RegressionExecution
 	{
-
 		public void Run(RegressionEnvironment env)
 		{
 			var epl = "@Name('s0') select " +
-			          "(dt).makeString() as strval, " +
-			          "(dt).makeInteger() as intval, " +
-			          "(dt).makeCommon().makeString() as commonstrval, " +
-			          "(dt).makeCommon().makeInteger() as commonintval, " +
-			          "(dt).returnDouble() as commondoubleval " +
+			          "(dt).MakeString() as strval, " +
+			          "(dt).MakeInteger() as intval, " +
+			          "(dt).MakeCommon().MakeString() as commonstrval, " +
+			          "(dt).MakeCommon().MakeInteger() as commonintval, " +
+			          "(dt).ReturnDouble() as commondoubleval " +
 			          "from SupportBeanDuckType dt ";
 			env.CompileDeploy(epl).AddListener("s0");
 

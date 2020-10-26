@@ -17,7 +17,6 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-using com.espertech.esper.compat.io;
 
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
@@ -31,7 +30,7 @@ namespace NEsper.Avro.Core
 {
     public class TestAvroEventType
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyType()
         {
             var lvl2Schema = SchemaBuilder.Record(
@@ -57,17 +56,17 @@ namespace NEsper.Avro.Core
 
             EventType eventType = SupportAvroUtil.MakeAvroSupportEventType(schema);
 
-            AssertPropertyType(typeof(int?), null, eventType, "myInt");
+            AssertPropertyType(typeof(int), null, eventType, "myInt");
             AssertPropertyType(typeof(int?), null, eventType, "myIntBoxed");
-            AssertPropertyType(typeof(string), null, eventType, "myString");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(null, null, eventType, "myNullValue");
             AssertPropertyType(typeof(GenericRecord), null, eventType, "lvl1");
-            AssertPropertyType(typeof(int?), null, eventType, "lvl1.intPrimitive");
-            AssertPropertyType(typeof(string), null, eventType, "lvl1.lvl2.nestedValue");
-            AssertPropertyType(typeof(int?), null, eventType, "lvl1.indexed[1]");
-            AssertPropertyType(typeof(string), null, eventType, "lvl1.mapped('a')");
-            AssertPropertyType(typeof(string), null, eventType, "lvl1.lvl2.nestedMapped('a')");
-            AssertPropertyType(typeof(int?), null, eventType, "lvl1.lvl2.nestedIndexed[1]");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.intPrimitive");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.nestedValue");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.indexed[1]");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.mapped('a')");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.nestedMapped('a')");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.lvl2.nestedIndexed[1]");
 
             AssertNotAProperty(eventType, "dummy");
             AssertNotAProperty(eventType, "lvl1.dfgdg");
@@ -110,14 +109,14 @@ namespace NEsper.Avro.Core
             Assert.AreEqual(21, eventBean.Get("lvl1.lvl2.nestedIndexed[1]"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRequiredType()
         {
             var schema = SchemaBuilder.Record(
                 "typename",
                 RequiredInt("myInt"),
                 RequiredString("myCharSeq"),
-                Field("myString", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))),
+                Field("myString", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
                 RequiredBoolean("myBoolean"),
                 RequiredBytes("myBytes"),
                 RequiredDouble("myDouble"),
@@ -130,13 +129,13 @@ namespace NEsper.Avro.Core
             Assert.AreEqual(typeof(GenericRecord), eventType.UnderlyingType);
             Assert.IsNull(eventType.SuperTypes);
 
-            AssertPropertyType(typeof(int?), null, eventType, "myInt");
-            AssertPropertyType(typeof(string), null, eventType, "myString");
-            AssertPropertyType(typeof(bool?), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(ByteBuffer), null, eventType, "myBytes");
-            AssertPropertyType(typeof(double?), null, eventType, "myDouble");
-            AssertPropertyType(typeof(float?), null, eventType, "myFloat");
-            AssertPropertyType(typeof(long?), null, eventType, "myLong");
+            AssertPropertyType(typeof(int), null, eventType, "myInt");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
+            AssertPropertyType(typeof(bool), null, eventType, "myBoolean");
+            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(double), null, eventType, "myDouble");
+            AssertPropertyType(typeof(float), null, eventType, "myFloat");
+            AssertPropertyType(typeof(long), null, eventType, "myLong");
 
             foreach (var propName in propNames) {
                 Assert.IsTrue(eventType.IsProperty(propName));
@@ -150,14 +149,14 @@ namespace NEsper.Avro.Core
             AssertValuesRequired(new AvroGenericDataEventBean(SupportAvroUtil.ParseQuoted(schema, jsonWValues), eventType));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestOptionalType()
         {
             var schema = SchemaBuilder.Record(
                 "typename",
                 OptionalInt("myInt"),
                 OptionalString("myCharSeq"),
-                Field("myString", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))),
+                Field("myString", Union(NullType(), StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))),
                 OptionalBoolean("myBoolean"),
                 OptionalBytes("myBytes"),
                 OptionalDouble("myDouble"),
@@ -167,14 +166,14 @@ namespace NEsper.Avro.Core
             RunAssertionNullableOrOptTypes(schema);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNullableType()
         {
             var schema = SchemaBuilder.Record(
                 "typename",
                 OptionalInt("myInt"),
                 OptionalString("myCharSeq"),
-                Field("myString", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))),
+                Field("myString", Union(NullType(), StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))),
                 OptionalBoolean("myBoolean"),
                 OptionalBytes("myBytes"),
                 OptionalDouble("myDouble"),
@@ -184,7 +183,7 @@ namespace NEsper.Avro.Core
             RunAssertionNullableOrOptTypes(schema);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNestedSimple()
         {
             var schemaText = "{" +
@@ -219,12 +218,12 @@ namespace NEsper.Avro.Core
 
             AssertValuesNested(datum, new AvroGenericDataEventBean(datum, eventType));
 
-            var jsonWValues = "{'innerEvent': {'innerValue' : 'i1'}}}";
+            var jsonWValues = "{'innerEvent': {'innerValue' : 'i1'}}";
             datum = SupportAvroUtil.ParseQuoted(schema, jsonWValues);
             AssertValuesNested(datum, new AvroGenericDataEventBean(datum, eventType));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestArrayOfPrimitive()
         {
             var schema = SchemaBuilder.Record(
@@ -232,7 +231,7 @@ namespace NEsper.Avro.Core
                 Field("intArray", Array(IntType())));
             var eventType = SupportAvroUtil.MakeAvroSupportEventType(schema);
 
-            AssertPropertyType(typeof(ICollection<int>), typeof(int?), eventType, "intArray");
+            AssertPropertyType(typeof(int[]), typeof(int), eventType, "intArray");
 
             Consumer<EventBean> asserter = eventBean => {
                     Assert.AreEqual(1, eventBean.Get("intArray[0]"));
@@ -245,12 +244,12 @@ namespace NEsper.Avro.Core
             datum.Put("intArray", Collections.List(1, 2));
             asserter.Invoke(new AvroGenericDataEventBean(datum, eventType));
 
-            var jsonWValues = "{'intArray':[1,2]}}";
+            var jsonWValues = "{'intArray':[1,2]}";
             datum = SupportAvroUtil.ParseQuoted(schema, jsonWValues);
             asserter.Invoke(new AvroGenericDataEventBean(datum, eventType));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMapOfString()
         {
             var schema = SchemaBuilder.Record(
@@ -264,7 +263,7 @@ namespace NEsper.Avro.Core
                     
             var eventType = SupportAvroUtil.MakeAvroSupportEventType(schema);
 
-            AssertPropertyType(typeof(IDictionary<string, object>), typeof(string), eventType, "anMap");
+            AssertPropertyType(typeof(IDictionary<string, string>), typeof(string), eventType, "anMap");
 
             Consumer<EventBean> asserter = eventBean => {
                 Assert.AreEqual("myValue", eventBean.Get("anMap('myKey')"));
@@ -281,7 +280,7 @@ namespace NEsper.Avro.Core
         }
 
 #if FALSE        
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFixed()
         {
             var schema = SchemaBuilder.Record(
@@ -311,7 +310,7 @@ namespace NEsper.Avro.Core
             asserter.Invoke(new AvroGenericDataEventBean(datum, eventType));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEnumSymbol()
         {
             var schema = SchemaBuilder.Record(
@@ -344,15 +343,17 @@ namespace NEsper.Avro.Core
         }
 #endif
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestUnionResultingInObject()
         {
             var schema = SchemaBuilder.Record(
                 "typename",
-                Union(
-                    IntType(),
-                    StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)),
-                    NullType()));
+                Field(
+                    "anUnion",
+                    Union(
+                        IntType(),
+                        StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)),
+                        NullType())));
 
             EventType eventType = SupportAvroUtil.MakeAvroSupportEventType(schema);
 
@@ -380,7 +381,7 @@ namespace NEsper.Avro.Core
             asserterFromJson.Invoke("{'anUnion':null}", null);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestUnionResultingInNumber()
         {
             var schema = SchemaBuilder.Record(
@@ -431,10 +432,19 @@ namespace NEsper.Avro.Core
             var datum = GetRecordWithValues(schema);
             AssertValuesRequired(new AvroGenericDataEventBean(datum, eventType));
 
-            var jsonWValues = "{'myInt': {'int': 10}, 'myCharSeq': {'string': 'x'}, 'myString':{'string': 'y'}," +
-                              "'myBoolean': {'boolean': true}, 'myBytes': {'bytes': '\\u00AA\'}, " +
-                              "'myDouble': {'double': 50}, 'myFloat': {'float': 100}, 'myLong': {'long': 20}}";
-            AssertValuesRequired(new AvroGenericDataEventBean(SupportAvroUtil.ParseQuoted(schema, jsonWValues), eventType));
+            var jsonWValues =
+                "{" +
+                "'myInt': {'int': 10}, " +
+                "'myCharSeq': {'string': 'x'}, " +
+                "'myString': {'string': 'y'}," +
+                "'myBoolean': {'boolean': true}, " +
+                "'myBytes': {'bytes': '\\u00AA\'}, " +
+                "'myDouble': {'double': 50}, " +
+                "'myFloat': {'float': 100}, " +
+                "'myLong': {'long': 20}" +
+                "}";
+            datum = SupportAvroUtil.ParseQuoted(schema, jsonWValues);
+            AssertValuesRequired(new AvroGenericDataEventBean(datum, eventType));
 
             var jsonWNull = "{'myInt': null, 'myCharSeq': null, 'myString':null," +
                             "'myBoolean': null, 'myBytes': null, " +
@@ -447,7 +457,7 @@ namespace NEsper.Avro.Core
             AssertValue(10, bean, "myInt");
             AssertValue("y", bean, "myString");
             AssertValue(true, bean, "myBoolean");
-            AssertValue(new ByteBuffer(new[] {(byte) 170}), bean, "myBytes");
+            AssertValue(new[] {(byte) 170}, bean, "myBytes");
             AssertValue(50d, bean, "myDouble");
             AssertValue(100f, bean, "myFloat");
             AssertValue(20L, bean, "myLong");
@@ -470,10 +480,10 @@ namespace NEsper.Avro.Core
             AvroGenericDataEventBean bean,
             String propertyName)
         {
-            if (expected is ByteBuffer) {
-                AreEqualsByteBuf((ByteBuffer) expected, (ByteBuffer) bean.Get(propertyName));
+            if (expected is byte[]) {
+                AreEqualsBytes((byte[]) expected, (byte[]) bean.Get(propertyName));
                 var getter = bean.EventType.GetGetter(propertyName);
-                AreEqualsByteBuf((ByteBuffer) expected, (ByteBuffer) getter.Get(bean));
+                AreEqualsBytes((byte[]) expected, (byte[]) getter.Get(bean));
             }
             else {
                 Assert.AreEqual(expected, bean.Get(propertyName));
@@ -498,11 +508,11 @@ namespace NEsper.Avro.Core
             }
         }
 
-        private void AreEqualsByteBuf(
-            ByteBuffer expected,
-            ByteBuffer received)
+        private void AreEqualsBytes(
+            byte[] expected,
+            byte[] received)
         {
-            Assert.IsTrue(Arrays.AreEqual(expected.Array, received.Array));
+            Arrays.AreEqual(expected, received);
         }
 
         private GenericRecord GetRecordWithValues(RecordSchema schema)
@@ -511,7 +521,7 @@ namespace NEsper.Avro.Core
             datum.Put("myInt", 10);
             datum.Put("myString", "y");
             datum.Put("myBoolean", true);
-            datum.Put("myBytes", new ByteBuffer(new[] {(byte) 170}));
+            datum.Put("myBytes", new[] {(byte) 170});
             datum.Put("myDouble", 50d);
             datum.Put("myFloat", 100f);
             datum.Put("myLong", 20L);
@@ -521,9 +531,9 @@ namespace NEsper.Avro.Core
         private void AssertTypesBoxed(EventType eventType)
         {
             AssertPropertyType(typeof(int?), null, eventType, "myInt");
-            AssertPropertyType(typeof(string), null, eventType, "myString");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool?), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(ByteBuffer), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
             AssertPropertyType(typeof(double?), null, eventType, "myDouble");
             AssertPropertyType(typeof(float?), null, eventType, "myFloat");
             AssertPropertyType(typeof(long?), null, eventType, "myLong");

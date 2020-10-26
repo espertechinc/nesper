@@ -37,7 +37,7 @@ namespace com.espertech.esperio.csv
 				_reader = source.GetAsReader() ;
 			}
 
-			this._source = source;
+			_source = source;
 		}
 		
 		/// <summary>Close the underlying resource.</summary>

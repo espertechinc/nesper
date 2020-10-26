@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -34,7 +33,7 @@ WithLikeWExprs(execs);
 WithRegexpWConstants(execs);
 WithRegexpWExprs(execs);
 WithLikeRegexStringAndNull(execs);
-WithLikeRegExInvalid(execs);
+WithLikeRegexInvalid(execs);
 WithLikeRegexEscapedChar(execs);
 WithLikeRegexStringAndNullOM(execs);
 WithRegexStringAndNullCompile(execs);
@@ -61,10 +60,10 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
     execs = execs ?? new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeRegexEscapedChar());
     return execs;
-}public static IList<RegressionExecution> WithLikeRegExInvalid(IList<RegressionExecution> execs = null)
+}public static IList<RegressionExecution> WithLikeRegexInvalid(IList<RegressionExecution> execs = null)
 {
     execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeRegExInvalid());
+    execs.Add(new ExprCoreLikeRegexInvalid());
     return execs;
 }public static IList<RegressionExecution> WithLikeRegexStringAndNull(IList<RegressionExecution> execs = null)
 {
@@ -172,7 +171,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 			}
 		}
 
-		private class ExprCoreLikeRegExInvalid : RegressionExecution
+		private class ExprCoreLikeRegexInvalid : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
@@ -185,7 +184,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 				TryInvalidExpr(env, "IntPrimitive regexp BoolPrimitive");
 				TryInvalidExpr(env, "BoolPrimitive regexp string");
 				TryInvalidExpr(env, "string regexp IntPrimitive");
-
+				
 				TryInvalidCompile(
 					env,
 					"select TheString regexp \"*any*\" from SupportBean",
@@ -266,7 +265,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 			{
 				var fields = "c0,c1".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean")
-					.WithExpressions(fields, "IntBoxed like '%01%'", "DoubleBoxed regexp '[0-9][0-9].[0-9]'");
+					.WithExpressions(fields, "IntBoxed like '%01%'", "DoubleBoxed regexp '[0-9][0-9].[0-9]d'");
 
 				builder.WithAssertion(MakeSupportBeanEvent(101, 1.1)).Expect(fields, true, false);
 				builder.WithAssertion(MakeSupportBeanEvent(102, 11d)).Expect(fields, false, true);

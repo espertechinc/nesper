@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.core
 {

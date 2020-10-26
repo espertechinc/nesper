@@ -22,13 +22,10 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 using static com.espertech.esper.regressionlib.support.client.AnnotationAssertUtil;
-
-using DescriptionAttribute = com.espertech.esper.common.client.annotation.DescriptionAttribute;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {

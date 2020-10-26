@@ -10,7 +10,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.analyze

@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -49,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var array = Array.CreateInstance(_arrayComponentType, enumcoll.Count);
+						var array = Arrays.CreateInstanceChecked(_arrayComponentType, enumcoll.Count);
 						if (enumcoll.IsEmpty()) {
 							return array;
 						}

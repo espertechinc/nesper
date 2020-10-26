@@ -14,8 +14,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-using com.espertech.esper.common.@internal.@event.json.parser.forge;
 using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.@event.json.writer;
 using com.espertech.esper.common.@internal.@event.property;
@@ -36,12 +34,16 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		private Type _underlyingType;
 		// Indicates that the underlying type is transient and must be replaced.
 		private bool _underlyingTypeIsTransient;
+		// Type of the delegate
+		private Type _delegateType;
 		// Type of the deserializer
 		private Type _deserializerType;
 		// Type of the serializer
 		private Type _serializerType;
+		// Delegate instance
+		private IJsonDelegate _delegate;
 		// Deserializer instance
-		private JsonCompositeDeserializer _deserializer;
+		private IJsonDeserializer _deserializer;
 		// Serializer instance
 		private IJsonSerializer _serializer;
 
@@ -52,13 +54,13 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public Type DeserializerType => _deserializerType;
 
-		public JsonCompositeDeserializer Deserializer => _deserializer;
+		public IJsonDeserializer Deserializer => _deserializer;
 
 		public Type SerializerType => _serializerType;
 
 		public IJsonSerializer Serializer => _serializer;
 
-		//public JsonSerializationContext SerializationContext => _serializationContext;
+		public IJsonDelegate Delegate => _delegate;
 		
 		public JsonEventType(
 			EventTypeMetadata metadata,
@@ -88,15 +90,6 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			_underlyingTypeIsTransient = underlyingTypeIsTransient;
 		}
 
-		/// <summary>
-		/// Allocates a new JsonComposite that matches this JsonEventType.
-		/// </summary>
-		/// <returns></returns>
-		public IJsonComposite AllocateComposite()
-		{
-			return (IJsonComposite) _deserializer.Allocator.Invoke();
-		}
-		
 		public override EventPropertyWriterSPI GetWriter(string propertyName)
 		{
 			return GetInternalWriter(propertyName);
@@ -118,14 +111,14 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				case MappedProperty mapProp: {
 					var field = _detail.FieldDescriptors.Get(mapProp.PropertyNameAtomic);
 					return field != null
-						? new JsonEventBeanPropertyWriterMapProp(field, mapProp.Key)
+						? new JsonEventBeanPropertyWriterMapProp(_delegate, field, mapProp.Key)
 						: null;
 				}
 
 				case IndexedProperty indexedProp: {
 					var field = _detail.FieldDescriptors.Get(indexedProp.PropertyNameAtomic);
 					return field != null 
-						? new JsonEventBeanPropertyWriterIndexedProp(field, indexedProp.Index)
+						? new JsonEventBeanPropertyWriterIndexedProp(_delegate, field, indexedProp.Index)
 						: null;
 				}
 
@@ -215,11 +208,20 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			catch (TypeLoadException ex) {
 				throw new EPException("Failed to load Json underlying class: " + ex.Message, ex);
 			}
+			
+			// resolve delegate
+	        try {
+	            _delegateType = classLoader.GetClass(_detail.DelegateClassName);
+	            _delegate = TypeHelper.Instantiate<IJsonDelegate>(_delegateType);
+	        }
+	        catch (TypeLoadException e) {
+	            throw new EPException("Failed to find class: " + e.Message, e);
+	        }
 
 			// resolve deserializer
 			try {
 				_deserializerType = classLoader.GetClass(_detail.DeserializerClassName);
-				_deserializer = TypeHelper.Instantiate<JsonCompositeDeserializer>(_deserializerType);
+				_deserializer = TypeHelper.Instantiate<IJsonDeserializer>(_deserializerType);
 			}
 			catch (TypeLoadException e) {
 				throw new EPException("Failed to find class: " + e.Message, e);
@@ -239,17 +241,9 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public object Parse(string json)
 		{
-			try {
-				var jsonDocumentOptions = new JsonDocumentOptions();
-				var jsonDocument = JsonDocument.Parse(json, jsonDocumentOptions);
-				return _deserializer.Deserialize(jsonDocument.RootElement);
-			}
-			catch (EPException) {
-				throw;
-			}
-			catch (Exception ex) {
-				throw new EPException("Failed to parse Json: " + ex.Message, ex);
-			}
+			var jsonDocumentOptions = new JsonDocumentOptions();
+			var jsonDocument = JsonDocument.Parse(json, jsonDocumentOptions);
+			return _deserializer.Deserialize(jsonDocument.RootElement);
 		}
 
 		public bool IsDeepEqualsConsiderOrder(JsonEventType other)
@@ -295,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 					continue;
 				}
 
-				var eventPropertyWriter = new JsonEventBeanPropertyWriter(field);
+				var eventPropertyWriter = new JsonEventBeanPropertyWriter(_delegate, field);
 
 				writeableProps.Add(prop);
 				writeablePropsMap.Put(

@@ -14,7 +14,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.common.@internal.@event.arr;

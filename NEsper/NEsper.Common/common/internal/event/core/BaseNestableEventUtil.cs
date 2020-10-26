@@ -912,7 +912,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBean[] wrapper)
         {
             if (wrapper != null) {
-                var array = Array.CreateInstance(underlyingType, wrapper.Length);
+                var array = Arrays.CreateInstanceChecked(underlyingType, wrapper.Length);
                 for (var i = 0; i < wrapper.Length; i++) {
                     try {
                         array.SetValue(wrapper[i].Underlying, i);

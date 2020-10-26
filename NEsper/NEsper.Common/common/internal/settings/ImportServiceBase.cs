@@ -14,7 +14,6 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -296,6 +295,11 @@ namespace com.espertech.esper.common.@internal.settings
                         return clazz;
                     }
                 } // class not found with this import
+
+                // clazz = ClassForNameProvider.ClassForName();
+                // if ((clazz != null) && (!requireAnnotation || clazz.IsAttribute())) {
+                //     return clazz;
+                // }
             }
 
 #if false

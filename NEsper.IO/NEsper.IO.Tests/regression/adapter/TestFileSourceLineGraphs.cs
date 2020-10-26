@@ -53,7 +53,7 @@ namespace com.espertech.esperio.regression.adapter
             epl = epl.Replace("${SUBS_HERE}", substituion);
             var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
             try {
-                var outputOp = new DefaultSupportCaptureOp<object>(container.LockManager());
+                var outputOp = new DefaultSupportCaptureOp(container.LockManager());
                 runtime.DataFlowService.Instantiate(
                     stmtGraph.DeploymentId,
                     dataflowName,
@@ -72,8 +72,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             var deployment = CompileDeploy(runtime, epl);
 
-            var outputOp = new DefaultSupportCaptureOp<object>(
-                container.LockManager());
+            var outputOp = new DefaultSupportCaptureOp(container.LockManager());
             var instance = runtime.DataFlowService.Instantiate(
                 deployment.DeploymentId,
                 "ReadCSV",
@@ -128,7 +127,7 @@ namespace com.espertech.esperio.regression.adapter
             public int SomeInt { get; set; }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEndOfFileMarker()
         {
             CompileDeploy(runtime, "@public @buseventtype create objectarray schema MyBOF (filename string)");
@@ -153,12 +152,15 @@ namespace com.espertech.esperio.regression.adapter
 
             var epl = "create dataflow MyEOFEventFileReader " +
                       "FileSource -> mylines<MyLine>, mybof<MyBOF>, myeof<MyEOF> { " +
-                      "classpathFile: true, numLoops: 1, format: 'line', " +
+                      "numLoops: 1, format: 'line', " +
                       "propertyNameLine: 'line', propertyNameFile: 'filename'}\n" +
                       "EventBusSink(mylines, mybof, myeof) {}\n";
             var deployment = CompileDeploy(runtime, epl);
 
-            foreach (var filename in new[] {"regression/line_file_1.txt", "regression/line_file_2.txt"}) {
+            foreach (var filename in new[] {
+                "../../../../etc/regression/line_file_1.txt",
+                "../../../../etc/regression/line_file_2.txt"
+            }) {
                 var options = new EPDataFlowInstantiationOptions();
                 options.AddParameterURI("FileSource/file", filename);
                 var instance = runtime.DataFlowService.Instantiate(deployment.DeploymentId, "MyEOFEventFileReader", options);
@@ -171,20 +173,19 @@ namespace com.espertech.esperio.regression.adapter
                 listener.NewDataListFlattened,
                 "filename,cnt".SplitCsv(),
                 new[] {
-                    new object[] {"regression/line_file_1.txt", 3L},
-                    new object[] {"regression/line_file_2.txt", 2L}
+                    new object[] {"../../../../etc/regression/line_file_1.txt", 3L},
+                    new object[] {"../../../../etc/regression/line_file_2.txt", 2L}
                 });
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFileBeanEvent()
         {
             var graph = "create dataflow ReadCSV " +
                         "FileSource -> mystream<MyLineEvent> { " +
-                        "  file: 'regression/myzippedtext.zip', " +
-                        "  classpathFile: true, " +
+                        "  file: '../../../../etc/regression/myzippedtext.zip', " +
                         "  format: 'line'," +
-                        "  propertyNameLine: 'theLine'" +
+                        "  propertyNameLine: 'TheLine'" +
                         "}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
@@ -194,15 +195,16 @@ namespace com.espertech.esperio.regression.adapter
                 compare,
                 new object[] {
                     new MyLineEvent("this is the first line"),
-                    new MyLineEvent("this is the second line"), new MyLineEvent("this is the third line")
+                    new MyLineEvent("this is the second line"),
+                    new MyLineEvent("this is the third line")
                 });
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             var epl = "create dataflow FlowOne " +
-                      "FileSource -> mystream<MyInvalidEvent> { file: 'regression/myzippedtext.zip', classpathFile: true, format: 'line'," +
+                      "FileSource -> mystream<MyInvalidEvent> { file: '../../../../etc/regression/myzippedtext.zip', format: 'line'," +
                       "${SUBS_HERE}}" +
                       "DefaultSupportCaptureOp(mystream) {}";
 
@@ -221,16 +223,16 @@ namespace com.espertech.esperio.regression.adapter
             TryInvalid(
                 "FlowOne",
                 epl,
-                "propertyNameLine: 'someInt'",
-                "Failed to instantiate data flow 'FlowOne': Failed to obtain operator instance for 'FileSource': Invalid property type for property 'someInt', expected a property of type String");
+                "propertyNameLine: 'SomeInt'",
+                "Failed to instantiate data flow 'FlowOne': Failed to obtain operator instance for 'FileSource': Invalid property type for property 'SomeInt', expected a property of type String");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPropertyOrderWLoop()
         {
             var graph = "create dataflow ReadCSV " +
                         "create objectarray schema MyLine (line string)," +
-                        "FileSource -> mystream<MyLine> { file: 'regression/ints.csv', classpathFile: true, numLoops: 3, format: 'line'}" +
+                        "FileSource -> mystream<MyLine> { file: '../../../../etc/regression/ints.csv', numLoops: 3, format: 'line'}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
             Assert.AreEqual(1, received.Count);
@@ -238,12 +240,12 @@ namespace com.espertech.esperio.regression.adapter
             EPAssertionUtil.AssertEqualsExactOrder(compare, new object[] {new object[] {"1, 0"}, new object[] {"2, 0"}, new object[] {"3, 0"}});
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestZipFileLine()
         {
             var graph = "create dataflow ReadCSV " +
                         "create objectarray schema MyLine (line string)," +
-                        "FileSource -> mystream<MyLine> { file: 'regression/myzippedtext.zip', classpathFile: true, format: 'line'}" +
+                        "FileSource -> mystream<MyLine> { file: '../../../../etc/regression/myzippedtext.zip', format: 'line'}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
             Assert.AreEqual(1, received.Count);

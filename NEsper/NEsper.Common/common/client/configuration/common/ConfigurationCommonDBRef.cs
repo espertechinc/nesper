@@ -12,11 +12,9 @@ using System.Data;
 
 using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.client.configuration.common
 {

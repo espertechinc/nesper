@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;

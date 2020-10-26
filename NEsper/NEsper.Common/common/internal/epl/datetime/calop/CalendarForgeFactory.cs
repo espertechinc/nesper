@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {

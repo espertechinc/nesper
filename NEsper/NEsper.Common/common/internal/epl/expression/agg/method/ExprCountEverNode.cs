@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.count;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {

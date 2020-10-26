@@ -139,7 +139,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public bool Pop(int maxTimeoutInMillis, out T item)
         {
-            long endTime = DateTimeHelper.CurrentTimeMillis + maxTimeoutInMillis;
+            var endTime = DateTimeHelper.CurrentTimeMillis + maxTimeoutInMillis;
 
             Monitor.Enter(_queueLock);
             try

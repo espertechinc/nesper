@@ -11,14 +11,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.runtime.client;
 
 using static com.espertech.esper.runtime.@internal.kernel.service.Deployer; // addPathDependencies, getRecoveryInformation
 using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperInitStatement; // initializeStatements
 using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperInitializeEPLObjects; // initializeEPLObjects, validateStagedEPLObjects
-using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperResolver; // resolveDependencies
+// resolveDependencies
 using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperUpdatePath; // updatePath;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service

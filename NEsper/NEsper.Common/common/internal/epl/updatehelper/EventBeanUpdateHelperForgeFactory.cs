@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.assign;
 using com.espertech.esper.common.@internal.epl.expression.core;

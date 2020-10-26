@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "GetJsonIndexedProp",
                 ExprDotName(beanExpression, "Underlying"),
-                Constant(_field.FieldName),
+                Constant(_field.PropertyName),
                 key);
         }
 
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             return JsonFieldGetterHelperSchema.GetJsonIndexedProp(
                 eventBean.Underlying,
-                _field.FieldName,
+                _field.PropertyName,
                 index);
         }
     }

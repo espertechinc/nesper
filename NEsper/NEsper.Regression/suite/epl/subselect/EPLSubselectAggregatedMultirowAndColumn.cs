@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -20,8 +18,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.suite.epl.subselect.EPLSubselectAggregatedMultirowAndColumn;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {

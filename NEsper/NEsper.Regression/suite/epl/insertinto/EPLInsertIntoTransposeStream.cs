@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using Avro.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -29,7 +28,6 @@ using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
-using static NEsper.Avro.Extensions.SchemaBuilder;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;

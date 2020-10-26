@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.statement.dispatch

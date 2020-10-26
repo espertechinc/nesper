@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using Antlr4.Runtime.Misc;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;

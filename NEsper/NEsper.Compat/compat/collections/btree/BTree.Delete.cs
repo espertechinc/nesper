@@ -11,7 +11,7 @@
         /// <returns></returns>
         public Cursor Erase(Cursor cursor)
         {
-            bool internalDelete = false;
+            var internalDelete = false;
             if (!cursor.Node.Leaf) {
                 // Deletion of a value on an internal node. Swap the key with the largest
                 // value of our left child.
@@ -41,7 +41,7 @@
             // (iter.Node) when rebalancing is performed at the leaf level.
 
             // Merge/rebalance as we walk back up the tree.
-            Cursor res = new Cursor(cursor);
+            var res = new Cursor(cursor);
             for (;;) {
                 if (cursor.Node == Root) {
                     TryShrink();
@@ -58,7 +58,7 @@
 
                 var merged = TryMergeOrRebalance(ref cursor);
                 if (cursor.Node.Leaf) {
-                    res = cursor;
+                    res = new Cursor(cursor);
                 }
 
                 if (!merged) {

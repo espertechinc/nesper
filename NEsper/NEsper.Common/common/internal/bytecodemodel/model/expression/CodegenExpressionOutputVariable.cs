@@ -6,8 +6,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.function;
 
-using Microsoft.CodeAnalysis.Classification;
-
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionOutputVariable : CodegenExpression

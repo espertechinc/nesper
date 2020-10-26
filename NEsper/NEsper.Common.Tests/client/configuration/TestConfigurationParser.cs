@@ -13,7 +13,6 @@ using System.Linq;
 using System.Net;
 using System.Xml.XPath;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.configuration.runtime;
@@ -21,15 +20,12 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
-using com.espertech.esper.common.@internal.epl.agg.table;
-using com.espertech.esper.common.@internal.epl.dataflow.ops;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
-using com.espertech.esper.epl.db.drivers;
 
 using NUnit.Framework;
 

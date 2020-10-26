@@ -11,10 +11,8 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.fireandforget;
-using com.espertech.esper.common.@internal.context.query;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.faf;
 

@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.client;
 
@@ -82,7 +83,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
                 return null;
             }
 
-            Array array = Array.CreateInstance(_componentType, events.Length);
+            Array array = Arrays.CreateInstanceChecked(_componentType, events.Length);
             int length = 0;
             for (int i = 0; i < events.Length; i++)
             {
@@ -100,7 +101,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             }
             if (length != events.Length)
             {
-                Array reduced = Array.CreateInstance(_componentType, events.Length);
+                Array reduced = Arrays.CreateInstanceChecked(_componentType, events.Length);
                 Array.Copy(array, 0, reduced, 0, length);
                 array = reduced;
             }

@@ -626,11 +626,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Compiler.Compile(epl, args);
             }
             catch (EPCompileException ex) {
-                var exceptionMessage = ex.Message;
-                if (exceptionMessage.StartsWith("Error during compilation: ")) {
-                    message = "Error during compilation: " + message;
-                }
-
                 SupportMessageAssertUtil.AssertMessage(ex, message);
             }
         }

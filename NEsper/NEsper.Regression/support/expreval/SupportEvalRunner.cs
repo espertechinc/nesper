@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
@@ -66,9 +65,11 @@ namespace com.espertech.esper.regressionlib.support.expreval
 			}
 
 			var typesPerStream = new EventType[] {eventType};
-			var typeAliases = new string[] {builder.StreamAlias == null ? "somealias" : builder.StreamAlias};
+			var typeAliases = new string[] {
+				builder.StreamAlias ?? "somealias"
+			};
 
-			IDictionary<string, ExprEvaluator> nodes = new Dictionary<string, ExprEvaluator>();
+			var nodes = new Dictionary<string, ExprEvaluator>();
 			foreach (var entry in builder.Expressions) {
 				if (builder.ExcludeNamesExcept != null && !builder.ExcludeNamesExcept.Equals(entry.Key)) {
 					continue;
@@ -192,19 +193,21 @@ namespace com.espertech.esper.regressionlib.support.expreval
 			RegressionEnvironment env,
 			SupportEvalBuilder builder)
 		{
-			EventBean @event;
+			EventBean theEvent;
 			if (assertion.Underlying is IDictionary<string, object>) {
-				@event = new MapEventBean((IDictionary<string, object>) assertion.Underlying, eventType);
+				theEvent = new MapEventBean((IDictionary<string, object>) assertion.Underlying, eventType);
 			}
 			else {
 				if (eventType.UnderlyingType != assertion.Underlying) {
 					eventType = GetSubtype(assertion.Underlying, env);
 				}
 
-				@event = new BeanEventBean(assertion.Underlying, eventType);
+				theEvent = new BeanEventBean(assertion.Underlying, eventType);
 			}
 
-			var eventsPerStream = new EventBean[] {@event};
+			var eventsPerStream = new EventBean[] {
+				theEvent
+			};
 
 			foreach (var expected in assertion.Builder.Results) {
 				if (builder.ExcludeNamesExcept != null && !builder.ExcludeNamesExcept.Equals(expected.Key)) {
@@ -212,6 +215,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 				}
 
 				var eval = nodes.Get(expected.Key);
+				
 				object result = null;
 				try {
 					result = eval.Evaluate(eventsPerStream, true, null);

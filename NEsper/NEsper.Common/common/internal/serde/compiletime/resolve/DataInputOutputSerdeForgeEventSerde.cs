@@ -12,11 +12,10 @@ using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.path;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // exprDotMethodChain;
-using static com.espertech.esper.common.@internal.@event.path.EventTypeResolver; // GETEVENTSERDEFACTORY;
+
+// GETEVENTSERDEFACTORY;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {

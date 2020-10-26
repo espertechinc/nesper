@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -229,8 +228,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
                 catch (EPCompileException ex) {
                     if (namedWindow) {
-                        Assert.AreEqual(
-                            "Failed to plan subquery number 1 querying MyInfraIS: Consuming statements to a named window cannot declare a data window view onto the named window [select (select TheString from MyInfraIS#lastevent) from MyInfraIS]",
+                        StringAssert.StartsWith(
+                            "Error during compilation: " +
+                            "Failed to plan subquery number 1 querying MyInfraIS: " +
+                            "Consuming statements to a named window cannot declare a data window view onto the named window " +
+                            "[select (select TheString from MyInfraIS#lastevent) from MyInfraIS]",
                             ex.Message);
                     }
                     else {

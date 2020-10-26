@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -25,7 +23,6 @@ using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;

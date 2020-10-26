@@ -17,7 +17,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 namespace com.espertech.esper.runtime.@internal.kernel.thread

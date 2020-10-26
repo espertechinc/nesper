@@ -9,12 +9,12 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -163,7 +163,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNodeRenderableFlags flags)
         {
             writer.Write("new ");
-            writer.Write(_classIdent);
+
+            if (IdentifierUtil.IsGenericOrNestedTypeName(_classIdent)) {
+                writer.Write('`');
+                writer.Write(_classIdent);
+                writer.Write('`');
+            }
+            else {
+                writer.Write(_classIdent);
+            }
+
             if (_numArrayDimensions == 0) {
                 ExprNodeUtilityPrint.ToExpressionStringParams(writer, ChildNodes);
             }

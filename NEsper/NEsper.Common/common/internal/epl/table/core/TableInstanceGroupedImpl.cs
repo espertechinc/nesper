@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {

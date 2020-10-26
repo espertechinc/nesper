@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec

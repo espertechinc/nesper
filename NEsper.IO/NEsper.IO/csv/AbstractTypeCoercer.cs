@@ -21,7 +21,7 @@ namespace com.espertech.esperio.csv
     public abstract class AbstractTypeCoercer
     {
         /// <summary>For logging. </summary>
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>Constructors for coercion. </summary>
         protected IDictionary<string, Func<string, object>> propertyFactories;

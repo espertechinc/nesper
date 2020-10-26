@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             int index)
         {
             var und = (JsonEventObjectBase) @object;
-            if (und.TryGetNativeValue(field.FieldName, out var value)) {
+            if (und.TryGetNativeValue(field.PropertyName, out var value)) {
                 if (value == null) {
                     return false;
                 }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 throw new InvalidOperationException(MESSAGE_VALUE_NOT_AN_ARRAY);
             }
 
-            throw new KeyNotFoundException(field.FieldName);
+            throw new KeyNotFoundException(field.PropertyName);
         }
 
         /// <summary>

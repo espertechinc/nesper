@@ -10,8 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.deserializers.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2dim
 {
@@ -31,11 +32,9 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
 
         public Type EnumTypeArray => _enumTypeArray;
         
-        public override object GetResult() => _result;
-
         private Array ToEnumArray(IList<object> baseList)
         {
-            var asArray = Array.CreateInstance(_enumType, baseList.Count);
+            var asArray = Arrays.CreateInstanceChecked(_enumType, baseList.Count);
             for (int ii = 0; ii < baseList.Count; ii++) {
                 asArray.SetValue(baseList[ii], ii);
             }
@@ -46,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
         private Array To2DArray(IList<Array> baseList)
         {
             var arrayType = _enumType.MakeArrayType();
-            var asArray = Array.CreateInstance(arrayType, baseList.Count);
+            var asArray = Arrays.CreateInstanceChecked(arrayType, baseList.Count);
             for (int ii = 0; ii < baseList.Count; ii++) {
                 asArray.SetValue(baseList[ii], ii);
             }

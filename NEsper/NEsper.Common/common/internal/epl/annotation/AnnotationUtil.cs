@@ -14,7 +14,6 @@ using System.Reflection;
 
 using Castle.DynamicProxy;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -342,7 +341,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             var componentType = annotationAttribute.AnnotationType.GetElementType();
-            var array = Array.CreateInstance(componentType, valueAsArray.Length);
+            var array = Arrays.CreateInstanceChecked(componentType, valueAsArray.Length);
 
             for (var i = 0; i < valueAsArray.Length; i++) {
                 var arrayValue = valueAsArray.GetValue(i);

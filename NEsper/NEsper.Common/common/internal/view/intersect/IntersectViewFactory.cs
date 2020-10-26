@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.view.intersect

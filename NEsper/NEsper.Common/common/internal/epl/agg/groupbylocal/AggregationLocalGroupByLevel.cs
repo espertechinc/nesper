@@ -8,11 +8,9 @@
 
 using System;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {

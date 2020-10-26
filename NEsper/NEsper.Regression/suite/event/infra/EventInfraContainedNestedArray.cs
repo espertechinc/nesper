@@ -7,10 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -85,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			BiConsumer<EventType, string[]> json = (
 				type,
 				ids) => {
-				JArray property = new JArray();
+				var property = new JArray();
 				for (var i = 0; i < ids.Length; i++) {
 					var inner = new JObject(new JProperty("Leaf", new JObject(new JProperty("Id", ids[i]))));
 					property.Add(inner);

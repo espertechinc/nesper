@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.deserializers.forge;
 using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.@event.json.serializers.forge;
-using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 

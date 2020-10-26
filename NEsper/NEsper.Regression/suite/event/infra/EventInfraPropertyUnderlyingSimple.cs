@@ -28,6 +28,8 @@ using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
+using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
+
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
 	public class EventInfraPropertyUnderlyingSimple : RegressionExecution
@@ -67,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				log.Info("Asserting type " + pair.First);
 				RunAssertionPassUnderlying(env, pair.First, pair.Second, path);
 				RunAssertionPropertiesWGetter(env, pair.First, pair.Second, path);
-				RunAssertionTypeValidProp(env, pair.First, pair.Second != FBEAN);
+				RunAssertionTypeValidProp(env, pair.First, pair.Second != FBEAN && pair.Second != FAVRO);
 				RunAssertionTypeInvalidProp(env, pair.First, pair.Second == FXML);
 			}
 
@@ -166,8 +168,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				? env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName)
 				: env.Runtime.EventTypeService.GetEventType(env.DeploymentId("schema"), typeName);
 
+			var intType = boxed
+				? typeof(int?)
+				: typeof(int);
+
 			var expectedType = new object[][] {
-				new object[] {"MyInt", boxed ? typeof(int?) : typeof(int), null, null},
+				new object[] {"MyInt", intType, null, null},
 				new object[] {"MyString", typeof(string), null, null}
 			};
 			SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
@@ -176,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			Assert.IsNotNull(eventType.GetGetter("MyInt"));
 			Assert.IsTrue(eventType.IsProperty("MyInt"));
-			Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("MyInt"));
+			Assert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
 			Assert.AreEqual(
 				new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
 				eventType.GetPropertyDescriptor("MyString"));
@@ -281,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var @object = new JObject();
 			@object.Add("MyInt", a);
 			@object.Add("MyString", b);
-			var json = @object.ToString();
+			var json = @object.ToString(Newtonsoft.Json.Formatting.None);
 			env.SendEventJson(json, eventTypeName);
 			return json;
 		};

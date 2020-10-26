@@ -132,6 +132,21 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (!columnType.IsAssignmentCompatible(writeablePropertyType) && 
                     !columnTypeUnboxed.IsAssignmentCompatible(targetTypeUnboxed)) {
+                    
+                    // Arrays can be assigned to each other if the underlying target types
+                    // can be assigned from one another.
+                    if (columnType.IsArray && 
+                        targetTypeBoxed.IsArray &&
+                        columnType.GetArrayRank() == targetTypeBoxed.GetArrayRank()) {
+                        var columnElementType = columnType.GetElementType();
+                        var targetElementType = targetTypeBoxed.GetElementType();
+                        if (columnElementType.IsAssignmentCompatible(targetElementType)) {
+                            return new TypeWidenerCompatibleArrayCoercer(
+                                columnElementType,
+                                targetElementType);
+                        }
+                    }
+
                     var writablePropName = writeablePropertyType.CleanName();
                     if (writeablePropertyType.IsArray) {
                         writablePropName = writeablePropertyType.GetElementType().CleanName() + "[]";
@@ -439,6 +454,47 @@ namespace com.espertech.esper.common.@internal.util
                     codegenMethodScope,
                     typeof(TypeWidenerCharArrayToCollectionCoercer),
                     codegenClassScope);
+            }
+        }
+
+        internal class TypeWidenerCompatibleArrayCoercer : TypeWidenerSPI
+        {
+            private Type inputElementType;
+            private Type targetElementType;
+
+            public TypeWidenerCompatibleArrayCoercer(
+                Type inputElementType,
+                Type targetElementType)
+            {
+                this.inputElementType = inputElementType;
+                this.targetElementType = targetElementType;
+                this.WidenResultType = targetElementType.MakeArrayType();
+            }
+
+            public Type WidenResultType { get; }
+
+            public object Widen(object input)
+            {
+                var inputArray = (Array) input;
+                var targetArray = Array.CreateInstance(targetElementType, inputArray.Length);
+                for (int ii = 0; ii < inputArray.Length; ii++) {
+                    targetArray.SetValue(inputArray.GetValue(ii), ii);
+                }
+
+                return targetArray;
+            }
+
+            public CodegenExpression WidenCodegen(
+                CodegenExpression expression,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
+            {
+                return StaticMethod(
+                    typeof(CompatExtensions),
+                    "UnwrapIntoArray",
+                    new[] {targetElementType},
+                    expression,
+                    ConstantTrue());
             }
         }
     }

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 				return null;
 			}
 
-			var array = Array.CreateInstance(_componentType, len);
+			var array = Arrays.CreateInstanceChecked(_componentType, len);
 			for (int i = 0; i < len; i++) {
 				var value = _componentBinding.Read(input, unitKey);
 				array.SetValue(value, i);

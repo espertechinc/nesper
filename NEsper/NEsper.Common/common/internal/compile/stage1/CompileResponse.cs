@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-
-using com.espertech.esper.common.@internal.compile.stage3;
+﻿using System.Reflection;
 
 namespace com.espertech.esper.common.@internal.compile.stage1
 {

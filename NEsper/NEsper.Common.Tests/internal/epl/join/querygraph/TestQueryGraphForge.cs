@@ -12,12 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph

@@ -135,25 +135,25 @@ namespace com.espertech.esper.compat.collections
             TK startKey,
             bool isInclusive)
         {
-            int index = GetHeadIndex(startKey, isInclusive);
+            var index = GetHeadIndex(startKey, isInclusive);
             if (index == -1)
                 index = 0;
 
-            for (int ii = index; ii < _itemList.Count; ii++) {
+            for (var ii = index; ii < _itemList.Count; ii++) {
                 yield return _itemList[ii];
             }
         }
 
         public void ForEach(Action<KeyValuePair<TK, TV>> action)
         {
-            for (int ii = 0; ii < _itemList.Count; ii++) {
+            for (var ii = 0; ii < _itemList.Count; ii++) {
                 action.Invoke(_itemList[ii]);
             }
         }
 
         public void ForEach(Action<int, KeyValuePair<TK, TV>> action)
         {
-            for (int ii = 0; ii < _itemList.Count; ii++) {
+            for (var ii = 0; ii < _itemList.Count; ii++) {
                 action.Invoke(ii, _itemList[ii]);
             }
         }
@@ -215,8 +215,8 @@ namespace com.espertech.esper.compat.collections
             KeyValuePair<TK, TV>[] array,
             int arrayIndex)
         {
-            int arrayLength = array.Length;
-            int itemLength = _itemList.Count;
+            var arrayLength = array.Length;
+            var itemLength = _itemList.Count;
             for (int ii = arrayIndex, listIndex = 0; ii < arrayLength && listIndex < itemLength; ii++, listIndex++) {
                 array[ii] = _itemList[listIndex];
             }
@@ -281,7 +281,7 @@ namespace com.espertech.esper.compat.collections
             Bound<TK> start,
             Bound<TK> end)
         {
-            int tailIndex = GetTailIndex(end);
+            var tailIndex = GetTailIndex(end);
             if (tailIndex != -1) {
                 if (tailIndex >= _itemList.Count) {
                     tailIndex = _itemList.Count - 1;
@@ -497,7 +497,7 @@ namespace com.espertech.esper.compat.collections
             TK value,
             bool isInclusive)
         {
-            int headIndex = BinarySearch(value);
+            var headIndex = BinarySearch(value);
             if (headIndex >= 0) // key found
             {
                 if (isInclusive == false) {
@@ -533,7 +533,7 @@ namespace com.espertech.esper.compat.collections
             TK value,
             bool isInclusive)
         {
-            int tailIndex = BinarySearch(value);
+            var tailIndex = BinarySearch(value);
             if (tailIndex >= 0) // key found
             {
                 if (isInclusive == false) {
@@ -559,7 +559,7 @@ namespace com.espertech.esper.compat.collections
             Bound<TK> end)
         {
             var headIndex = AdvanceIntoRange(GetHeadIndex(start), start);
-            for (int ii = headIndex; ii < _itemList.Count && BoundExtensions.IsLessThan(end, _itemList[ii].Key, _itemComparer.KeyComparer); ii++) {
+            for (var ii = headIndex; ii < _itemList.Count && BoundExtensions.IsLessThan(end, _itemList[ii].Key, _itemComparer.KeyComparer); ii++) {
                 yield return _itemList[ii];
             }
         }

@@ -9,7 +9,6 @@
 using System.Reflection;
 using System.Threading;
 
-using com.espertech.esper.common;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;

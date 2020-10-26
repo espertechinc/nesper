@@ -44,12 +44,12 @@ namespace com.espertech.esper.compat.collections
             if ((set1 != null) && (set2 != null)) {
                 // Reversed the sets if set1 is larger than set2
                 if (set1.Count > set2.Count) {
-                    ICollection<T> temp = set1;
+                    var temp = set1;
                     set2 = set1;
                     set1 = temp;
                 }
 
-                foreach (T item in set2) {
+                foreach (var item in set2) {
                     if (set1.Contains(item)) {
                         iset.Add(item);
                     }

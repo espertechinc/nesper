@@ -10,7 +10,6 @@ using System;
 
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.agg.core;
-using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {

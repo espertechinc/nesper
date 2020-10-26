@@ -12,7 +12,6 @@ using com.espertech.esper.compat.logging;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core

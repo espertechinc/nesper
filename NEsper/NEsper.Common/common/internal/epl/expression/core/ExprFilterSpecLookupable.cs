@@ -9,7 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;

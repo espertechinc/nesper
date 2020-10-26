@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "HandleJsonCreateFragmentIndexed",
                 underlyingExpression,
-                Constant(_field.FieldName),
+                Constant(_field.PropertyName),
                 Constant(Index),
                 eventType,
                 factory);

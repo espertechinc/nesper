@@ -14,8 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
     public class CodegenStackGenerator

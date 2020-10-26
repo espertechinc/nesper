@@ -11,13 +11,13 @@ using System.Data;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.multithread;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionlib.support.wordexample;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -85,238 +85,245 @@ namespace com.espertech.esper.regressionrun.suite.multithread
                 typeof(SupportIntListAggregationForge));
         }
 
+        private void PerformanceRun(RegressionExecution execution)
+        {
+            using (new PerformanceContext()) {
+                RegressionRunner.Run(session, execution);
+            }
+        }
+
         [Test, RunInApplicationDomain]
         public void TestMultithreadContextCountSimple()
         {
-            RegressionRunner.Run(session, new MultithreadContextCountSimple());
+            PerformanceRun(new MultithreadContextCountSimple());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadContextInitiatedTerminatedWithNowParallel()
         {
-            RegressionRunner.Run(session, new MultithreadContextInitiatedTerminatedWithNowParallel());
+            PerformanceRun(new MultithreadContextInitiatedTerminatedWithNowParallel());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadContextPartitioned()
         {
-            RegressionRunner.Run(session, new MultithreadContextPartitioned());
+            PerformanceRun(new MultithreadContextPartitioned());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadContextTemporalStartStop()
         {
-            RegressionRunner.Run(session, new MultithreadContextTemporalStartStop());
+            PerformanceRun(new MultithreadContextTemporalStartStop());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadContextUnique()
         {
-            RegressionRunner.Run(session, new MultithreadContextUnique());
+            PerformanceRun(new MultithreadContextUnique());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadDeployAtomic()
         {
-            RegressionRunner.Run(session, new MultithreadDeployAtomic());
+            PerformanceRun(new MultithreadDeployAtomic());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadDeterminismInsertInto()
         {
-            RegressionRunner.Run(session, new MultithreadDeterminismInsertInto());
+            PerformanceRun(new MultithreadDeterminismInsertInto());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadedViewTimeWindowSceneTwo()
         {
-            RegressionRunner.Run(session, new MultithreadViewTimeWindowSceneTwo());
+            PerformanceRun(new MultithreadViewTimeWindowSceneTwo());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadMultithreadContextPartitionedWCount()
         {
-            RegressionRunner.Run(session, new MultithreadContextPartitionedWCount());
+            PerformanceRun(new MultithreadContextPartitionedWCount());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadNamedWindowDelete()
         {
-            RegressionRunner.Run(session, new MultithreadNamedWindowDelete());
+            PerformanceRun(new MultithreadNamedWindowDelete());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtDatabaseJoin()
         {
-            RegressionRunner.Run(session, new MultithreadStmtDatabaseJoin());
+            PerformanceRun(new MultithreadStmtDatabaseJoin());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtFilter()
         {
-            RegressionRunner.Run(session, new MultithreadStmtFilter());
+            PerformanceRun(new MultithreadStmtFilter());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtFilterSubquery()
         {
-            RegressionRunner.Run(session, new MultithreadStmtFilterSubquery());
+            PerformanceRun(new MultithreadStmtFilterSubquery());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtInsertInto()
         {
-            RegressionRunner.Run(session, new MultithreadStmtInsertInto());
+            PerformanceRun(new MultithreadStmtInsertInto());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtIterate()
         {
-            RegressionRunner.Run(session, new MultithreadStmtIterate());
+            PerformanceRun(new MultithreadStmtIterate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtJoin()
         {
-            RegressionRunner.Run(session, new MultithreadStmtJoin());
+            PerformanceRun(new MultithreadStmtJoin());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtListenerCreateStmt()
         {
-            RegressionRunner.Run(session, new MultithreadStmtListenerCreateStmt());
+            PerformanceRun(new MultithreadStmtListenerCreateStmt());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtListenerRoute()
         {
-            RegressionRunner.Run(session, new MultithreadStmtListenerRoute());
+            PerformanceRun(new MultithreadStmtListenerRoute());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtMgmt()
         {
-            RegressionRunner.Run(session, new MultithreadStmtMgmt());
+            PerformanceRun(new MultithreadStmtMgmt());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowConsume()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowConsume());
+            PerformanceRun(new MultithreadStmtNamedWindowConsume());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowDelete()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowDelete());
+            PerformanceRun(new MultithreadStmtNamedWindowDelete());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowFAF()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowFAF());
+            PerformanceRun(new MultithreadStmtNamedWindowFAF());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowIterate()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowIterate());
+            PerformanceRun(new MultithreadStmtNamedWindowIterate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowJoinUniqueView()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowJoinUniqueView());
+            PerformanceRun(new MultithreadStmtNamedWindowJoinUniqueView());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowMerge()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowMerge());
+            PerformanceRun(new MultithreadStmtNamedWindowMerge());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowMultiple()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowMultiple());
+            PerformanceRun(new MultithreadStmtNamedWindowMultiple());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowSubqueryAgg()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowSubqueryAgg());
+            PerformanceRun(new MultithreadStmtNamedWindowSubqueryAgg());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowSubqueryLookup()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowSubqueryLookup());
+            PerformanceRun(new MultithreadStmtNamedWindowSubqueryLookup());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowUpdate()
         {
-            RegressionRunner.Run(session, new MultithreadStmtNamedWindowUpdate());
+            PerformanceRun(new MultithreadStmtNamedWindowUpdate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtPattern()
         {
-            RegressionRunner.Run(session, new MultithreadStmtPattern());
+            PerformanceRun(new MultithreadStmtPattern());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtStateless()
         {
-            RegressionRunner.Run(session, new MultithreadStmtStateless());
+            PerformanceRun(new MultithreadStmtStateless());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtStatelessEnummethod()
         {
-            RegressionRunner.Run(session, new MultithreadStmtStatelessEnummethod());
+            PerformanceRun(new MultithreadStmtStatelessEnummethod());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtSubquery()
         {
-            RegressionRunner.Run(session, new MultithreadStmtSubquery());
+            PerformanceRun(new MultithreadStmtSubquery());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtTimeWindow()
         {
-            RegressionRunner.Run(session, new MultithreadStmtTimeWindow());
+            PerformanceRun(new MultithreadStmtTimeWindow());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadStmtTwoPatterns()
         {
-            RegressionRunner.Run(session, new MultithreadStmtTwoPatterns());
+            PerformanceRun(new MultithreadStmtTwoPatterns());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadUpdate()
         {
-            RegressionRunner.Run(session, new MultithreadUpdate());
+            PerformanceRun(new MultithreadUpdate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadUpdateIStreamSubselect()
         {
-            RegressionRunner.Run(session, new MultithreadUpdateIStreamSubselect());
+            PerformanceRun(new MultithreadUpdateIStreamSubselect());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadVariables()
         {
-            RegressionRunner.Run(session, new MultithreadVariables());
+            PerformanceRun(new MultithreadVariables());
         }
 
         [Test, RunInApplicationDomain]
         public void TestMultithreadViewTimeWindow()
         {
-            RegressionRunner.Run(session, new MultithreadViewTimeWindow());
+            PerformanceRun(new MultithreadViewTimeWindow());
         }
     }
 } // end of namespace

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.support;
@@ -21,15 +20,12 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
-using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {

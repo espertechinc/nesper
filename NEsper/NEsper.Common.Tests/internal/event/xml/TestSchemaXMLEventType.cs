@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Net;
 using System.Xml;
 using System.Xml.XPath;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.container;
 using NUnit.Framework;
 
@@ -88,8 +86,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
             Assert.AreEqual(typeof(bool?), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
 
-            Assert.AreEqual("c", eventSchemaOne.Get("nested3.nested4[2].Id"));
-            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].Id"));
+            Assert.AreEqual("c", eventSchemaOne.Get("nested3.nested4[2].id"));
+            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
         }
 
         [Test, RunInApplicationDomain]

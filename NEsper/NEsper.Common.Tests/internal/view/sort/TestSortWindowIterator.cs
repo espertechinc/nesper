@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.collections.btree;
 
 using NUnit.Framework;
 

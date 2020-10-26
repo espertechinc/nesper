@@ -7,8 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using System.Runtime.Remoting;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;

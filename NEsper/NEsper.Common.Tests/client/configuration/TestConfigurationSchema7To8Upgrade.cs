@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 using System.Net;
 
 using com.espertech.esper.container;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace com.espertech.esper.common.client.configuration
 {

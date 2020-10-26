@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.compiler.client
 {
@@ -27,6 +28,12 @@ namespace com.espertech.esper.compiler.client
             string expression,
             int lineNumber)
             : base(message, expression, lineNumber)
+        {
+        }
+
+        protected EPCompileExceptionSyntaxItem(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

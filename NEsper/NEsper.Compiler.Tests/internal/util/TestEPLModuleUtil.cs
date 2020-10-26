@@ -6,18 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 namespace com.espertech.esper.compiler.@internal.util
 {
     [TestFixture]
 	public class TestEPLModuleUtil  {
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestParse()
 		{
 

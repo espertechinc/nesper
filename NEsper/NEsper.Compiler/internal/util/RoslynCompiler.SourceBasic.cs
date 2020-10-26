@@ -1,6 +1,4 @@
-﻿using com.espertech.esper.common.@internal.bytecodemodel.core;
-
-namespace com.espertech.esper.compiler.@internal.util
+﻿namespace com.espertech.esper.compiler.@internal.util
 {
     public partial class RoslynCompiler
     {

@@ -29,7 +29,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 using static com.espertech.esper.common.@internal.view.core.ViewFactoryForgeUtil;
 
 namespace com.espertech.esper.common.@internal.view.groupwin

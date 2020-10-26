@@ -95,8 +95,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 metadata,
                 propertyTypes,
                 superTypes,
-                optionalConfig != null ? optionalConfig.StartTimestampPropertyName : null,
-                optionalConfig != null ? optionalConfig.EndTimestampPropertyName : null,
+                optionalConfig?.StartTimestampPropertyName,
+                optionalConfig?.EndTimestampPropertyName,
                 beanEventTypeFactory,
                 eventTypeNameResolver);
 
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             }
 
             if (isArray) {
-                clazz = Array.CreateInstance(clazz, 0).GetType();
+                clazz = clazz.MakeArrayType();
             }
 
             return clazz;

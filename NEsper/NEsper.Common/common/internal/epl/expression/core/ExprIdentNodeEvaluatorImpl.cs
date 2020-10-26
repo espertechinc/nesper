@@ -15,13 +15,10 @@ using com.espertech.esper.common.@internal.@event.variant;
 
 using System;
 
-using com.espertech.esper.common.@internal.epl.dataflow.realize;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-
-using Constant = System.Reflection.Metadata.Constant;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -48,11 +45,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             _streamNum = streamNum;
             _propertyGetter = propertyGetter;
             _identType = returnType;
-            
-            // Ident nodes when evaluated can be supplied with a null underlying.  There needs to be more work done
-            // to think about how we handle these cases.  Esper doesn't explicitly deal with this because boxed and
-            // unboxed types are implicitly converted.  -- TBD
-
             _returnType = returnType;
             _identNode = identNode;
             _eventType = eventType;

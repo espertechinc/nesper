@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.settings;

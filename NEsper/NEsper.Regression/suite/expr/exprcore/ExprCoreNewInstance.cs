@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -111,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "new String[][] {} as c5, " +
 				          "new String[][] {{},{},{\"x\"},{}} as c6, " +
 				          "new String[][] {{\"x\",\"y\"},{\"z\"}} as c7, " +
-				          "new Integer[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
+				          "new Int32[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
 				          "new " +
 				          typeof(DateTimeEx).FullName +
 				          "[][] {} as c9, " +
@@ -210,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpression(fields[5], "new String[] {}")
 					.WithExpression(fields[6], "new String[] {\"x\"}")
 					.WithExpression(fields[7], "new String[] {\"x\",\"y\"}")
-					.WithExpression(fields[8], "new Integer[] {IntPrimitive,IntPrimitive+1,IntPrimitive+2,IntPrimitive+3}")
+					.WithExpression(fields[8], "new Int32[] {IntPrimitive,IntPrimitive+1,IntPrimitive+2,IntPrimitive+3}")
 					.WithExpression(fields[9], "new " + typeof(DateTimeEx).FullName + "[] {}")
 					.WithExpression(fields[10], "new Object[] {}")
 					.WithExpression(fields[11], "new Object[] {1}")
@@ -270,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var fields = "new double[1],c1,c2,new double[1][2],c4".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean")
 					.WithExpression(fields[0], "new double[1]")
-					.WithExpression(fields[1], "new Integer[2*2]")
+					.WithExpression(fields[1], "new `System.Nullable<System.Int32>`[2*2]")
 					.WithExpression(fields[2], "new " + typeof(DateTimeEx).FullName + "[IntPrimitive]")
 					.WithExpression(fields[3], "new double[1][2]")
 					.WithExpression(fields[4], "new " + typeof(DateTimeEx).FullName + "[IntPrimitive][IntPrimitive]");
@@ -279,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					stmt => {
 						var @out = stmt.EventType;
 						Assert.AreEqual(typeof(double[]), @out.GetPropertyType("new double[1]"));
-						Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c1"));
+						Assert.AreEqual(typeof(int?[]), @out.GetPropertyType("c1"));
 						Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c2"));
 						Assert.AreEqual(typeof(double[][]), @out.GetPropertyType("new double[1][2]"));
 						Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c4"));
@@ -444,6 +443,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.CompileDeploy(soda, epl).AddListener("s0");
 				var expectedAggType = new[] {
 					new object[] {"c0", typeof(SupportBean)},
+					new object[] {"c2", typeof(SupportBean)},
+					new object[] {"c3", typeof(string)},
 					new object[] {"new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)}
 				};
 				SupportEventTypeAssertionUtil.AssertEventTypeProperties(

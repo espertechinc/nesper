@@ -13,7 +13,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.variable;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             [Test, RunInApplicationDomain]
             public void WithArrayInvalid() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayInvalid());
 
-            [Test, RunInApplicationDomain]
+            [Test]
             public void WithArrayBoxed() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayBoxed());
 
             [Test, RunInApplicationDomain]

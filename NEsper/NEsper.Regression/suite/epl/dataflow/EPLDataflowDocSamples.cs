@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
-using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;

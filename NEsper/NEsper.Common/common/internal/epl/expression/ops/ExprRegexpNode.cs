@@ -10,9 +10,9 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -75,17 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             if (constantPattern) {
                 var patternText = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
-                if (!patternText.StartsWith("^")) {
-                    patternText = "^" + patternText;
-                }
 
-                if (!patternText.EndsWith("$")) {
-                    patternText = patternText + "$";
-                }
-                
                 Regex pattern;
                 try {
-                    pattern = new Regex(patternText);
+                    pattern = RegexExtensions.Compile(patternText, out patternText);
                 }
                 catch (ArgumentException ex) {
                     throw new ExprValidationException(

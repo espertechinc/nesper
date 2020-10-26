@@ -7,13 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.serde;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.json.writer
 {
@@ -32,45 +36,12 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             _eventType = eventType;
             _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
-
-        public EventBean CopyUsingSerialization(EventBean theEvent)
-        {
-            // Serialize
-            byte[] streamBytes;
-            using (var stream = new MemoryStream()) {
-                using (var writer = new Utf8JsonWriter(stream)) {
-                    var context = new JsonSerializationContext(writer);
-                    _eventType.Serializer.Serialize(context, theEvent.Underlying);
-                    writer.Flush();
-                }
-
-                stream.Flush();
-                streamBytes = stream.ToArray();
-            }
-            
-            // Deserialize
-            
-            var jsonDocumentOptions = new JsonDocumentOptions();
-            var jsonDocument = JsonDocument.Parse(streamBytes, jsonDocumentOptions);
-            var underlying = _eventType.Deserializer.Deserialize(jsonDocument.RootElement);
-            
-            return _eventBeanTypedEventFactory.AdapterForTypedJson(underlying, _eventType);
-        }
         
         public EventBean Copy(EventBean theEvent)
         {
             var source = theEvent.Underlying;
-            if (source is IJsonComposite sourceComposite) {
-                var targetComposite = _eventType.AllocateComposite();
-                foreach (var propertyName in sourceComposite.PropertyNames) {
-                    var sourceValue = sourceComposite[propertyName];
-                    targetComposite[propertyName] = sourceValue;
-                }
-
-                return _eventBeanTypedEventFactory.AdapterForTypedJson(targetComposite, _eventType);
-            }
-
-            return CopyUsingSerialization(theEvent);
+            var target = _eventType.Delegate.TryCopy(source);
+            return _eventBeanTypedEventFactory.AdapterForTypedJson(target, _eventType);
         }
     }
 } // end of namespace

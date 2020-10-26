@@ -61,7 +61,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				.Block
 				.IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
 				.BlockReturn(ConstantNull())
-				.Debug("M5 => {0}", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.MethodReturn(FlexCast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")));
 			return LocalMethod(method, args.Expressions);
 		}

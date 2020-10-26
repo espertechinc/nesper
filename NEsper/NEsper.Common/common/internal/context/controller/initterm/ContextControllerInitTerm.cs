@@ -17,8 +17,6 @@ using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm

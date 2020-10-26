@@ -8,10 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.compat.util;
 
@@ -31,12 +34,12 @@ namespace NEsper.Avro.IO
             if (jobject != null) {
                 var valueSchema = schema.ValueSchema;
                 var valueType = GetNativeType(valueSchema);
-                var valueDict = typeof(IDictionary<,>)
-                    .MakeGenericType(typeof(string), valueType)
-                    .GetConstructor(new Type[0])
-                    .Invoke(null);
+                var valueDictType = typeof(Dictionary<,>).MakeGenericType(typeof(string), valueType); 
+                var valueDict = valueDictType.GetConstructor(new Type[0]).Invoke(null);
 
-                var magicDict = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(valueDict);
+                var magicDict = MagicMarker.SingletonInstance
+                    .GetStringDictionaryFactory(valueDictType)
+                    .Invoke(valueDict);
 
                 foreach (var property in jobject.Properties()) {
                     magicDict[property.Name] = DecodeAny(valueSchema, property.Value);
@@ -55,7 +58,7 @@ namespace NEsper.Avro.IO
             var jarray = value as JArray;
             if (jarray != null) {
                 var itemType = GetNativeType(schema.ItemSchema);
-                var itemArray = Array.CreateInstance(itemType, jarray.Count);
+                var itemArray = Arrays.CreateInstanceChecked(itemType, jarray.Count);
                 var itemIndex = 0;
 
                 foreach (var item in jarray.Values()) {
@@ -73,11 +76,24 @@ namespace NEsper.Avro.IO
             this UnionSchema schema,
             JToken value)
         {
-            foreach (var schemaType in schema.Schemas) {
-                try {
-                    return DecodeAny(schemaType, value);
+            // if its type is null, then it is encoded as a JSON null
+            if (value.Type == JTokenType.Null) {
+                if (schema.Schemas.Any(_ => _.IsNullSchema())) {
+                    return null;
                 }
-                catch (ArgumentException) {
+            }
+            
+            // otherwise it is encoded as a JSON object with one name/value pair whose name is the type's name and whose value
+            // is the recursively encoded value. For Avro's named types (record, fixed or enum) the user-specified name is used,
+            // for other types the type name is used
+
+            if (value is JObject valueAsObject) {
+                foreach (var schemaType in schema.Schemas.Where(_ => !_.IsNullSchema())) {
+                    var schemaTypeName = schemaType.Name;
+                    var candidateProperty = valueAsObject[schemaTypeName];
+                    if (candidateProperty != null) {
+                        return DecodeAny(schemaType, candidateProperty);
+                    }
                 }
             }
 
@@ -117,6 +133,28 @@ namespace NEsper.Avro.IO
             }
 
             throw new ArgumentException("invalid value type: " + value.GetType().FullName);
+        }
+
+        public static byte[] DecodeBytes(
+            this PrimitiveSchema schema,
+            JToken value)
+        {
+            var jvalue = value as JValue;
+            if (jvalue != null) {
+                var underlying = jvalue.Value;
+                if (underlying is byte[] byteArrayUnderlying) {
+                    return byteArrayUnderlying;
+                }
+
+                // Strings are unicode, not bytes but Newtonsoft returns the encoded JSON
+                // as a string anyway.
+                if (underlying is string stringUnderlying) {
+                    return stringUnderlying.GetUnicodeBytes();
+                }
+            }
+
+            throw new ArgumentException("invalid value type: " + value.GetType().FullName);
+
         }
 
         public static T DecodePrimitive<T>(
@@ -171,7 +209,7 @@ namespace NEsper.Avro.IO
                     return DecodePrimitive<bool>((PrimitiveSchema) schema, value);
 
                 case Schema.Type.Bytes:
-                    return DecodePrimitive<byte[]>((PrimitiveSchema) schema, value);
+                    return DecodeBytes((PrimitiveSchema) schema, value);
 
                 case Schema.Type.String:
                     return DecodeString((PrimitiveSchema) schema, value);

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 namespace com.espertech.esper.container
 {
@@ -35,6 +34,7 @@ namespace com.espertech.esper.container
         /// <returns></returns>
         T Resolve<T>(string name);
 
+#if false
         /// <summary>
         /// Resolves the specified arguments as anonymous type.
         /// </summary>
@@ -50,7 +50,8 @@ namespace com.espertech.esper.container
         /// <param name="argumentsAsDictionary">The arguments as dictionary.</param>
         /// <returns></returns>
         T Resolve<T>(IDictionary<object, object> argumentsAsDictionary);
-
+#endif
+        
         /// <summary>
         /// Registers the singleton.
         /// </summary>

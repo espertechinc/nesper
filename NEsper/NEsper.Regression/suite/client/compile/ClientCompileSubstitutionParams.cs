@@ -352,7 +352,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 catch (EPCompileException ex) {
                     AssertMessage(
                         ex,
-                        "Error during compilation: " +
                         "Exception processing statement: " +
                         "Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
                 }

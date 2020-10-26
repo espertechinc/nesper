@@ -7,13 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.common.@internal.statement.insertintolatch;
 using com.espertech.esper.common.@internal.statement.multimatch;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.util
 {

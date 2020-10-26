@@ -11,14 +11,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

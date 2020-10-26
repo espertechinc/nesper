@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Castle.Core.Internal;
-using Castle.MicroKernel.ModelBuilder.Descriptors;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.compile.stage2;

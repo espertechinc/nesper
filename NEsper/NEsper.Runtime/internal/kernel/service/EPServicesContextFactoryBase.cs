@@ -129,14 +129,24 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var beanEventTypeFactoryPrivate = new BeanEventTypeFactoryPrivate(eventBeanTypedEventFactory, eventTypeFactory, beanEventTypeStemService);
             
             EventTypeRepositoryBeanTypeUtil.BuildBeanTypes(
-                beanEventTypeStemService, eventTypeRepositoryPreconfigured, resolvedBeanEventTypes, beanEventTypeFactoryPrivate,
+                beanEventTypeStemService,
+                eventTypeRepositoryPreconfigured,
+                resolvedBeanEventTypes,
+                beanEventTypeFactoryPrivate,
                 configs.Common.EventTypesBean);
             EventTypeRepositoryMapTypeUtil.BuildMapTypes(
-                eventTypeRepositoryPreconfigured, configs.Common.MapTypeConfigurations, configs.Common.EventTypesMapEvents,
-                configs.Common.EventTypesNestableMapEvents, beanEventTypeFactoryPrivate, importServiceRuntime);
+                eventTypeRepositoryPreconfigured,
+                configs.Common.MapTypeConfigurations,
+                configs.Common.EventTypesMapEvents,
+                configs.Common.EventTypesNestableMapEvents,
+                beanEventTypeFactoryPrivate,
+                importServiceRuntime);
             EventTypeRepositoryOATypeUtil.BuildOATypes(
-                eventTypeRepositoryPreconfigured, configs.Common.ObjectArrayTypeConfigurations, configs.Common.EventTypesNestableObjectArrayEvents,
-                beanEventTypeFactoryPrivate, importServiceRuntime);
+                eventTypeRepositoryPreconfigured,
+                configs.Common.ObjectArrayTypeConfigurations,
+                configs.Common.EventTypesNestableObjectArrayEvents,
+                beanEventTypeFactoryPrivate, 
+                importServiceRuntime);
             
             var xmlFragmentEventTypeFactory = new XMLFragmentEventTypeFactory(beanEventTypeFactoryPrivate, null, eventTypeRepositoryPreconfigured);
             

@@ -72,14 +72,14 @@ namespace com.espertech.esper.compat.collections
             }
             else if (_tail > _head)
             {
-                for (int ii = _head; ii < _tail; ii++)
+                for (var ii = _head; ii < _tail; ii++)
                     yield return _array[ii];
             }
             else
             {
-                for (int ii = _head; ii < _array.Length; ii++)
+                for (var ii = _head; ii < _array.Length; ii++)
                     yield return _array[ii];
-                for (int ii = 0; ii < _tail; ii++)
+                for (var ii = 0; ii < _tail; ii++)
                     yield return _array[ii];
             }
         }
@@ -91,21 +91,21 @@ namespace com.espertech.esper.compat.collections
             }
             else if (_tail > _head)
             {
-                for (int ii = _head; ii < _tail; ii++)
+                for (var ii = _head; ii < _tail; ii++)
                     action.Invoke(_array[ii]);
             }
             else
             {
-                for (int ii = _head; ii < _array.Length; ii++)
+                for (var ii = _head; ii < _array.Length; ii++)
                     action.Invoke(_array[ii]);
-                for (int ii = 0; ii < _tail; ii++)
+                for (var ii = 0; ii < _tail; ii++)
                     action.Invoke(_array[ii]);
             }
         }
 
         private void DoubleCapacity()
         {
-            int newLength = _array.Length << 1;
+            var newLength = _array.Length << 1;
             if (newLength < 0)
                 throw new IllegalStateException("ArrayDeque overflow");
 
@@ -182,7 +182,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (_tail > _head)
             {
-                int tindex = index;
+                var tindex = index;
                 if (tindex >= _tail)
                     throw new ArgumentOutOfRangeException();
                 if (tindex == _head)
@@ -193,7 +193,7 @@ namespace com.espertech.esper.compat.collections
                 }
                 else
                 {
-                    for (int ii = tindex + 1; ii < _tail; ii++)
+                    for (var ii = tindex + 1; ii < _tail; ii++)
                         _array[ii - 1] = _array[ii];
 
                     if (--_tail < 0)
@@ -207,7 +207,7 @@ namespace com.espertech.esper.compat.collections
             }
             else
             {
-                int tindex = index;
+                var tindex = index;
                 if (tindex == _head)
                 {
                     _array[_head++] = default(T);
@@ -216,10 +216,10 @@ namespace com.espertech.esper.compat.collections
                 }
                 else if (tindex > _head)
                 {
-                    for (int ii = tindex + 1 ; ii < _array.Length ; ii++)
+                    for (var ii = tindex + 1 ; ii < _array.Length ; ii++)
                         _array[ii - 1] = _array[ii];
                     _array[_array.Length - 1] = _array[0];
-                    for (int ii = 1 ; ii < _tail ; ii++)
+                    for (var ii = 1 ; ii < _tail ; ii++)
                         _array[ii - 1] = _array[ii];
 
                     if (--_tail < 0)
@@ -229,7 +229,7 @@ namespace com.espertech.esper.compat.collections
                 }
                 else
                 {
-                    for (int ii = 1 ; ii < _tail ; ii++)
+                    for (var ii = 1 ; ii < _tail ; ii++)
                         _array[ii - 1] = _array[ii];
 
                     if (--_tail < 0)
@@ -257,7 +257,7 @@ namespace com.espertech.esper.compat.collections
 
             if (_tail > _head)
             {
-                for (int ii = _head; continuation.Value && ii < _tail; ii++)
+                for (var ii = _head; continuation.Value && ii < _tail; ii++)
                 {
                     if (handler.Invoke(value = _array[ii], continuation))
                     {
@@ -269,7 +269,7 @@ namespace com.espertech.esper.compat.collections
             }
             else if (_tail != _head)
             {
-                for (int ii = _head; continuation.Value && ii < _array.Length; ii++)
+                for (var ii = _head; continuation.Value && ii < _array.Length; ii++)
                 {
                     if (handler.Invoke(value = _array[ii], continuation))
                     {
@@ -278,7 +278,7 @@ namespace com.espertech.esper.compat.collections
                         --ii;
                     }
                 }
-                for (int ii = 0; continuation.Value && ii < _tail; ii++)
+                for (var ii = 0; continuation.Value && ii < _tail; ii++)
                 {
                     if (handler.Invoke(value = _array[ii], continuation))
                     {
@@ -298,7 +298,7 @@ namespace com.espertech.esper.compat.collections
 
             if (_tail > _head)
             {
-                for (int ii = _head; ii < _tail; ii++)
+                for (var ii = _head; ii < _tail; ii++)
                 {
                     if (predicate.Invoke(value = _array[ii]))
                     {
@@ -310,7 +310,7 @@ namespace com.espertech.esper.compat.collections
             }
             else if (_tail != _head)
             {
-                for (int ii = _head; ii < _array.Length; ii++)
+                for (var ii = _head; ii < _array.Length; ii++)
                 {
                     if (predicate.Invoke(value = _array[ii]))
                     {
@@ -319,7 +319,7 @@ namespace com.espertech.esper.compat.collections
                         --ii;
                     }
                 }
-                for (int ii = 0; ii < _tail; ii++)
+                for (var ii = 0; ii < _tail; ii++)
                 {
                     if (predicate.Invoke(value = _array[ii]))
                     {
@@ -335,16 +335,16 @@ namespace com.espertech.esper.compat.collections
         {
             if (_tail > _head)
             {
-                for (int ii = _head; ii < _tail; ii++)
+                for (var ii = _head; ii < _tail; ii++)
                     if (Equals(_array[ii], item))
                         return RemoveInternal(ref ii, true);
             }
             else
             {
-                for (int ii = _head; ii < _array.Length; ii++)
+                for (var ii = _head; ii < _array.Length; ii++)
                     if (Equals(_array[ii], item))
                         return RemoveInternal(ref ii, true);
-                for (int ii = 0; ii < _tail; ii++)
+                for (var ii = 0; ii < _tail; ii++)
                     if (Equals(_array[ii], item))
                         return RemoveInternal(ref ii, true);
             }
@@ -363,16 +363,16 @@ namespace com.espertech.esper.compat.collections
         {
             if (_tail > _head)
             {
-                for (int ii = _head; ii < _tail; ii++)
+                for (var ii = _head; ii < _tail; ii++)
                     if (Equals(_array[ii], item))
                         return true;
             }
             else
             {
-                for (int ii = _head; ii < _array.Length; ii++)
+                for (var ii = _head; ii < _array.Length; ii++)
                     if (Equals(_array[ii], item))
                         return true;
-                for (int ii = 0; ii < _tail; ii++)
+                for (var ii = 0; ii < _tail; ii++)
                     if (Equals(_array[ii], item))
                         return true;
             }
@@ -488,7 +488,7 @@ namespace com.espertech.esper.compat.collections
                     throw new ArgumentOutOfRangeException();
                 }
 
-                int indx = _head;
+                var indx = _head;
                 if (indx == _array.Length)
                     indx = 0;
 
@@ -505,7 +505,7 @@ namespace com.espertech.esper.compat.collections
                     throw new ArgumentOutOfRangeException();
                 }
 
-                int indx = _tail - 1;
+                var indx = _tail - 1;
                 if (indx == -1)
                     indx = _array.Length - 1;
 

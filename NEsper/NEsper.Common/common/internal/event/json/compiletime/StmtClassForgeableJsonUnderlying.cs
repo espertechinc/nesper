@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -22,7 +21,6 @@ using com.espertech.esper.common.@internal.@event.json.serializers.forge;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil; // getCasesNumberNtoM, makeNoSuchElementDefault
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
@@ -176,9 +174,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				clazz.BaseList.AssignType(typeof(JsonEventObjectBase));
 			}
 			else {
-				clazz.BaseList
-					.AssignType(desc.OptionalSupertype.UnderlyingType)
-					.AddInterface(typeof(IJsonComposite));
+				clazz.BaseList.AssignType(desc.OptionalSupertype.UnderlyingType);
 			}
 
 			return clazz;

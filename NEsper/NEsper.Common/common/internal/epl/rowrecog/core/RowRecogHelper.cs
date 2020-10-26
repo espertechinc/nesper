@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;

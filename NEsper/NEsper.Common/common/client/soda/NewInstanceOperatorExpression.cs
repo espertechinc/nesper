@@ -9,6 +9,8 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -91,7 +93,16 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("new ");
-            writer.Write(className);
+            
+            if (IdentifierUtil.IsGenericOrNestedTypeName(className)) {
+                writer.Write('`');
+                writer.Write(className);
+                writer.Write('`');
+            }
+            else {
+                writer.Write(className);
+            }
+
             if (numArrayDimensions == 0) {
                 writer.Write("(");
                 ExpressionBase.ToPrecedenceFreeEPL(Children, writer);

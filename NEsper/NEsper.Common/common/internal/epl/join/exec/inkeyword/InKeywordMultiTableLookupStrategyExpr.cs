@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -17,8 +16,6 @@ using com.espertech.esper.common.@internal.epl.join.indexlookupplan;
 using com.espertech.esper.common.@internal.epl.join.rep;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
 {

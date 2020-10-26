@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
@@ -350,7 +351,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         variableType.IsArray &&
                         coercedValueType.GetElementType().GetBoxedType() == variableType.GetElementType()) {
                         var coercedSourceArray = (Array) coercedValue;
-                        var coercedDestArray = Array.CreateInstance(variableType.GetElementType(), coercedSourceArray.Length);
+                        var coercedDestArray = Arrays.CreateInstanceChecked(variableType.GetElementType(), coercedSourceArray.Length);
                         for (int ii = 0; ii < coercedSourceArray.Length; ii++) {
                             coercedDestArray.SetValue(coercedSourceArray.GetValue(ii), ii);
                         }

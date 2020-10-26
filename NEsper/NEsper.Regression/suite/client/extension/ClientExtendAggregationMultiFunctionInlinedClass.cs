@@ -6,12 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;

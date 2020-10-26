@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.serde;
+using com.espertech.esper.compat.collections;
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
     public class JsonDeserializerEventObjectArray : JsonDeserializerBase
     {
@@ -29,15 +29,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
             throw new NotImplementedException();
         }
 
-        public override object GetResult() => 
-            throw new NotImplementedException();
-
         public static object CollectionToTypedArray(
             ICollection<object> events,
             Type componentType)
         {
             var length = events.Count;
-            var array = Array.CreateInstance(componentType, length);
+            var array = Arrays.CreateInstanceChecked(componentType, length);
             var enumerator = events.GetEnumerator();
             
             for (var ii = 0; ii < length && enumerator.MoveNext(); ii++) {

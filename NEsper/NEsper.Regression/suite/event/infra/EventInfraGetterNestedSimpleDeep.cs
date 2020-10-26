@@ -63,12 +63,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					// no change
 				}
 				else if (val.IsNullAtInner) {
-					IDictionary<string, object> inner = Collections.SingletonDataMap("Leaf", null);
+					var inner = Collections.SingletonDataMap("Leaf", null);
 					@event.Put("Property", inner);
 				}
 				else {
-					IDictionary<string, object> leaf = Collections.SingletonDataMap("Id", val.Id);
-					IDictionary<string, object> inner = Collections.SingletonDataMap("Leaf", leaf);
+					var leaf = Collections.SingletonDataMap("Id", val.Id);
+					var inner = Collections.SingletonDataMap("Leaf", leaf);
 					@event.Put("Property", inner);
 				}
 

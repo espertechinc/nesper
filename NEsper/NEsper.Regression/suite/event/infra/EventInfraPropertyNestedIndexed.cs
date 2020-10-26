@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 
@@ -55,68 +54,30 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, true, AVRO_TYPENAME, FAVRO, typeof(GenericRecord), AVRO_TYPENAME + "_1", path);
 
 			// Json
-			var eplJson = "create json schema " +
-			              JSON_TYPENAME +
-			              "_4(lvl4 int);\n" +
-			              "create json schema " +
-			              JSON_TYPENAME +
-			              "_3(lvl3 int, l4 " +
-			              JSON_TYPENAME +
-			              "_4[]);\n" +
-			              "create json schema " +
-			              JSON_TYPENAME +
-			              "_2(lvl2 int, l3 " +
-			              JSON_TYPENAME +
-			              "_3[]);\n" +
-			              "create json schema " +
-			              JSON_TYPENAME +
-			              "_1(lvl1 int, l2 " +
-			              JSON_TYPENAME +
-			              "_2[]);\n" +
-			              "@Name('types') @public @buseventtype create json schema " +
-			              JSON_TYPENAME +
-			              "(l1 " +
-			              JSON_TYPENAME +
-			              "_1[]);\n";
+			var eplJson =
+				"create json schema " + JSON_TYPENAME + "_4(lvl4 int);\n" +
+				"create json schema " + JSON_TYPENAME + "_3(lvl3 int, l4 " + JSON_TYPENAME + "_4[]);\n" +
+				"create json schema " + JSON_TYPENAME + "_2(lvl2 int, l3 " + JSON_TYPENAME + "_3[]);\n" +
+				"create json schema " + JSON_TYPENAME + "_1(lvl1 int, l2 " + JSON_TYPENAME + "_2[]);\n" +
+				"@Name('types') @public @buseventtype " +
+				"create json schema " + JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1[]);\n";
 			env.CompileDeploy(eplJson, path);
 			RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object), JSON_TYPENAME + "_1", path);
 			env.UndeployModuleContaining("types");
 
 			// Json-Class-Provided
 			var eplJsonProvided =
-				"@JsonSchema(ClassName='" +
-				typeof(MyLocalJSONProvidedLvl4).MaskTypeName() +
-				"') create json schema " +
-				JSONPROVIDED_TYPENAME +
-				"_4();\n" +
-				"@JsonSchema(ClassName='" +
-				typeof(MyLocalJSONProvidedLvl3).MaskTypeName() +
-				"') create json schema " +
-				JSONPROVIDED_TYPENAME +
-				"_3(lvl3 int, l4 " +
-				JSONPROVIDED_TYPENAME +
-				"_4[]);\n" +
-				"@JsonSchema(ClassName='" +
-				typeof(MyLocalJSONProvidedLvl2).MaskTypeName() +
-				"') create json schema " +
-				JSONPROVIDED_TYPENAME +
-				"_2(lvl2 int, l3 " +
-				JSONPROVIDED_TYPENAME +
-				"_3[]);\n" +
-				"@JsonSchema(ClassName='" +
-				typeof(MyLocalJSONProvidedLvl1).MaskTypeName() +
-				"') create json schema " +
-				JSONPROVIDED_TYPENAME +
-				"_1(lvl1 int, l2 " +
-				JSONPROVIDED_TYPENAME +
-				"_2[]);\n" +
-				"@JsonSchema(ClassName='" +
-				typeof(MyLocalJSONProvidedTop).MaskTypeName() +
-				"') @name('types') @public @buseventtype create json schema " +
-				JSONPROVIDED_TYPENAME +
-				"(l1 " +
-				JSONPROVIDED_TYPENAME +
-				"_1[]);\n";
+				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl4).FullName + "') " +
+				"create json schema " + JSONPROVIDED_TYPENAME + "_4();\n" +
+				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl3).FullName + "') " +
+				"create json schema " + JSONPROVIDED_TYPENAME + "_3(lvl3 int, l4 " + JSONPROVIDED_TYPENAME + "_4[]);\n" +
+				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl2).FullName + "') " + 
+				"create json schema " + JSONPROVIDED_TYPENAME + "_2(lvl2 int, l3 " + JSONPROVIDED_TYPENAME + "_3[]);\n" +
+				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl1).FullName + "') " +
+				"create json schema " + JSONPROVIDED_TYPENAME + "_1(lvl1 int, l2 " + JSONPROVIDED_TYPENAME + "_2[]);\n" +
+				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedTop).FullName + "') " +
+				"@name('types') @public @buseventtype " +
+				"create json schema " + JSONPROVIDED_TYPENAME + "(l1 " + JSONPROVIDED_TYPENAME + "_1[]);\n";
 			env.CompileDeploy(eplJsonProvided, path);
 			RunAssertion(env, false, JSONPROVIDED_TYPENAME, FJSON, typeof(MyLocalJSONProvidedLvl1), "EventInfraPropertyNestedIndexedJsonProvided_1", path);
 
@@ -186,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			var eventType = env.Statement("s0").EventType;
 			foreach (var property in fields) {
-				Assert.AreEqual(property.StartsWith("exists") ? typeof(bool?) : typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType(property)));
+				Assert.AreEqual(property.StartsWith("exists") ? typeof(bool?) : typeof(int?), eventType.GetPropertyType(property).GetBoxedType());
 			}
 
 			send.Invoke(typename, env, 1, 2, 3, 4);
@@ -221,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				: env.Runtime.EventTypeService.GetEventType(env.DeploymentId("types"), typeName);
 
 			var arrayType = nestedClass == typeof(object[]) ? nestedClass : TypeHelper.GetArrayType(nestedClass);
-			arrayType = arrayType == typeof(GenericRecord[]) ? typeof(ICollection) : arrayType;
+			//arrayType = arrayType == typeof(GenericRecord[]) ? typeof(ICollection) : arrayType;
 			var expectedType = new object[][] {
 				new object[] {"l1", arrayType, fragmentTypeName, true}
 			};
@@ -236,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("l1"), arrayType));
 			foreach (var prop in Arrays.AsList("l1[0].lvl1", "l1[0].l2[0].lvl2", "l1[0].l2[0].l3[0].lvl3")) {
-				Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType(prop)));
+				Assert.AreEqual(typeof(int?), eventType.GetPropertyType(prop).GetBoxedType());
 			}
 
 			var lvl1Fragment = eventType.GetFragmentType("l1");

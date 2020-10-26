@@ -25,7 +25,6 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionrun.runner;
-using com.espertech.esper.regressionrun.Runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
@@ -246,14 +245,6 @@ namespace com.espertech.esper.regressionrun.suite.expr
         }
 
         [Test, RunInApplicationDomain]
-        public void TestExprFilterInAndBetween()
-        {
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterInAndBetween.Executions());
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterInAndBetween.Executions());
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterInAndBetween.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestExprFilterLargeThreading()
         {
             var session = RegressionRunner.Session();
@@ -289,14 +280,6 @@ namespace com.espertech.esper.regressionrun.suite.expr
         public void TestExprFilterOptimizableLookupableLimitedExprNone()
         {
             RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableLookupableLimitedExpr.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprFilterOptimizableOrRewrite()
-        {
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableOrRewrite.Executions());
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableOrRewrite.Executions());
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableOrRewrite.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -898,6 +881,211 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 _session,
                 _indexPlanning,
                 ExprFilterOptimizableValueLimitedExpr.WithEqualsIsConstant());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ExprFilterOptimizableOrRewrite
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprFilterOptimizableOrRewrite.Executions());
+        /// </code>
+        /// </summary>
+
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        public class TestExprFilterOptimizableOrRewrite : AbstractTestBase
+        {
+            private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
+
+            public TestExprFilterOptimizableOrRewrite(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning)
+            {
+                _indexPlanning = indexPlanning;
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithContextPartitionedInitiated() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithContextPartitionedInitiated());
+
+            [Test, RunInApplicationDomain]
+            public void WithContextPartitionedInitiatedSameEvent() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithContextPartitionedInitiatedSameEvent());
+
+            [Test, RunInApplicationDomain]
+            public void WithContextPartitionedCategory() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithContextPartitionedCategory());
+
+            [Test, RunInApplicationDomain]
+            public void WithContextPartitionedHash() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithContextPartitionedHash());
+
+            [Test, RunInApplicationDomain]
+            public void WithContextPartitionedSegmented() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithContextPartitionedSegmented());
+
+            [Test, RunInApplicationDomain]
+            public void WithHint() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithHint());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubquery() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithBooleanExprAnd() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithBooleanExprAnd());
+
+            [Test, RunInApplicationDomain]
+            public void WithBooleanExprSimple() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithBooleanExprSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrRewriteAndOrMulti() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithOrRewriteAndOrMulti());
+
+            [Test, RunInApplicationDomain]
+            public void WithAndRewriteInnerOr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithAndRewriteInnerOr());
+
+            [Test, RunInApplicationDomain]
+            public void WithAndRewriteNotEqualsWithOrConsolidateSecond() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithAndRewriteNotEqualsWithOrConsolidateSecond());
+
+            [Test, RunInApplicationDomain]
+            public void WithAndRewriteNotEqualsConsolidate() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithAndRewriteNotEqualsConsolidate());
+
+            [Test, RunInApplicationDomain]
+            public void WithAndRewriteNotEqualsOr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithAndRewriteNotEqualsOr());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrRewriteEightOr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithOrRewriteEightOr());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrRewriteFourOr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithOrRewriteFourOr());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrRewriteThreeWithOverlap() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithOrRewriteThreeWithOverlap());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrRewriteWithAnd() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithOrRewriteWithAnd());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrRewriteThreeOr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithOrRewriteThreeOr());
+
+            [Test, RunInApplicationDomain]
+            public void WithTwoOr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableOrRewrite.WithTwoOr());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprFilterInAndBetween
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprFilterInAndBetween.Executions());
+        /// </code>
+        /// </summary>
+
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        public class TestExprFilterInAndBetween : AbstractTestBase
+        {
+            private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
+
+            public TestExprFilterInAndBetween(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning)
+            {
+                _indexPlanning = indexPlanning;
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInMultipleWithBool() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithInMultipleWithBool());
+
+            [Test, RunInApplicationDomain]
+            public void WithInMultipleNonMatchingFirst() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithInMultipleNonMatchingFirst());
+
+            [Test, RunInApplicationDomain]
+            public void WithReuseNot() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithReuseNot());
+
+            [Test, RunInApplicationDomain]
+            public void WithReuse() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithReuse());
+
+            [Test, RunInApplicationDomain]
+            public void WithInInvalid() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithInInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithNotIn() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithNotIn());
+
+            [Test, RunInApplicationDomain]
+            public void WithInExpr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithInExpr());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleIntAndEnumWrite() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithSimpleIntAndEnumWrite());
+
+            [Test, RunInApplicationDomain]
+            public void WithInDynamic() => RunAssertionFilter(
+                _session,
+                _indexPlanning,ExprFilterInAndBetween.WithInDynamic());
         }
     }
 } // end of namespace

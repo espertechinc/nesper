@@ -51,13 +51,7 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                var exceptionMessage = ex.Message;
-                if (exceptionMessage.StartsWith("Error during compilation: ")) {
-                    AssertMessage(ex, "Error during compilation: " + message);
-                }
-                else {
-                    AssertMessage(ex, message);
-                }
+                AssertMessage(ex, message);
             }
         }
 
@@ -72,13 +66,7 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                var exceptionMessage = ex.Message;
-                if (exceptionMessage.StartsWith("Error during compilation: ")) {
-                    AssertMessage(ex, "Error during compilation: " + message);
-                }
-                else {
-                    AssertMessage(ex, message);
-                }
+                AssertMessage(ex, message);
             }
         }
 
@@ -104,6 +92,10 @@ namespace com.espertech.esper.regressionlib.framework
             }
 
             var exceptionMessage = ex.Message;
+            if (exceptionMessage.StartsWith("Error during compilation: ")) {
+                message = "Error during compilation: " + message;
+            }
+            
             try {
                 StringAssert.StartsWith(message, exceptionMessage);
             }

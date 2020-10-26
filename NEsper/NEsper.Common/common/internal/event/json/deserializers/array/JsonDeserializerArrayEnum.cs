@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.deserializers.core;
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 {
@@ -25,8 +25,6 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
         }
 
         public Type EnumType => _enumType;
-
-        public override object GetResult() => _result;
 
         protected IList<object> DeserializeToList(JsonElement element)
         {

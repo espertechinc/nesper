@@ -484,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				.WithExpression(fields[3], "cast(yyyymmdd,System.Int64,dateformat:\"yyyyMMdd\")")
 				.WithExpression(fields[4], "cast(yyyymmdd,dateTimeEx,dateformat:\"yyyyMMdd\")")
 				.WithExpression(fields[5], "cast(yyyymmdd,dtx,dateformat:\"yyyyMMdd\")")
-				.WithExpression(fields[6], "cast(yyyymmdd,date,dateformat:\"yyyyMMdd\").get(\"month\")")
+				.WithExpression(fields[6], "cast(yyyymmdd,datetime,dateformat:\"yyyyMMdd\").get(\"month\")")
 				.WithExpression(fields[7], "cast(yyyymmdd,dtx,dateformat:\"yyyyMMdd\").get(\"month\")")
 				.WithExpression(fields[8], "cast(yyyymmdd,long,dateformat:\"yyyyMMdd\").get(\"month\")");
 
@@ -602,9 +602,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			RegressionEnvironment env,
 			AtomicLong milestone)
 		{
-			var epl = "@Name('s0') select cast(yyyymmdd,date,dateformat:\"yyyyMMdd\") from MyDateType";
+			var epl = "@Name('s0') select cast(yyyymmdd,datetime,dateformat:\"yyyyMMdd\") from MyDateType";
 			env.CompileDeploy(epl).AddListener("s0").Milestone(milestone.GetAndIncrement());
-			Assert.AreEqual("cast(yyyymmdd,date,dateformat:\"yyyyMMdd\")", env.Statement("s0").EventType.PropertyNames[0]);
+			Assert.AreEqual("cast(yyyymmdd,datetime,dateformat:\"yyyyMMdd\")", env.Statement("s0").EventType.PropertyNames[0]);
 			env.UndeployAll();
 		}
 
@@ -657,10 +657,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			          "cast('1997-07-16T19:20:30.45+01:00',dtx,dateformat:'iso') as c4," +
 			          "cast('1997-07-16T19:20:30.45',dtx,dateformat:'iso') as c5," +
 			          "cast('1997-07-16T19:20:30.45',long,dateformat:'iso') as c6," +
-			          "cast('1997-07-16T19:20:30.45',date,dateformat:'iso') as c7," +
+			          "cast('1997-07-16T19:20:30.45',datetime,dateformat:'iso') as c7," +
 			          "cast(TheString,dtx,dateformat:'iso') as c8," +
 			          "cast(TheString,long,dateformat:'iso') as c9," +
-			          "cast(TheString,date,dateformat:'iso') as c10," +
+			          "cast(TheString,datetime,dateformat:'iso') as c10," +
 			          "cast('1997-07-16T19:20:30.45',datetimeoffset,dateformat:'iso') as c11," +
 			          "cast('1997-07-16T19:20:30+01:00',datetime,dateformat:'iso') as c12," +
 			          "cast('1997-07-16',datetimeoffset,dateformat:'iso') as c13," +
@@ -732,27 +732,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			// not a valid named parameter
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
-				"select cast(TheString, date, x:1) from SupportBean",
-				"Failed to validate select-clause expression 'cast(TheString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
+				"select cast(TheString, datetime, x:1) from SupportBean",
+				"Failed to validate select-clause expression 'cast(TheString,datetime,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
 
 #if INVALID // we do not validate date format patterns
 			// invalid date format
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
-				"select cast(TheString, date, dateformat:'BBBBMMDD') from SupportBean",
-				"Failed to validate select-clause expression 'cast(TheString,date,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
+				"select cast(TheString, datetime, dateformat:'BBBBMMDD') from SupportBean",
+				"Failed to validate select-clause expression 'cast(TheString,datetime,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
 #endif
 			
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
-				"select cast(TheString, date, dateformat:1) from SupportBean",
-				"Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormat");
+				"select cast(TheString, datetime, dateformat:1) from SupportBean",
+				"Failed to validate select-clause expression 'cast(TheString,datetime,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormat");
 
 			// invalid input
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
-				"select cast(IntPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
-				"Failed to validate select-clause expression 'cast(IntPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
+				"select cast(IntPrimitive, datetime, dateformat:'yyyyMMdd') from SupportBean",
+				"Failed to validate select-clause expression 'cast(IntPrimitive,datetime,dateform...(49 chars)': Use of the 'dateformat' named parameter requires a string-type input");
 
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
@@ -763,8 +763,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             // invalid parser
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                $"select cast('xx', date, dateformat:{typeof(DateTimeFormat).FullName}.For(\"yyyyMMddHHmmssVV\")) from SupportBean",
-                $"Failed to validate select-clause expression 'cast(\"xx\",date,dateformat:com.espertech...(91 chars)': Invalid format, expected string-format or DateFormat but received {typeof(DateTimeFormat).FullName}");
+                $"select cast('xx', datetime, dateformat:{typeof(DateTimeFormat).FullName}.For(\"yyyyMMddHHmmssVV\")) from SupportBean",
+                $"Failed to validate select-clause expression 'cast(\"xx\",datetime,dateformat:com.espertech...(91 chars)': Invalid format, expected string-format or DateFormat but received {typeof(DateTimeFormat).FullName}");
             
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,

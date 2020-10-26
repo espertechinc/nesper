@@ -26,8 +26,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.deserializers.forge;
 using com.espertech.esper.common.@internal.@event.json.forge;
-using com.espertech.esper.common.@internal.@event.json.parser.forge;
-using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.@event.json.serializers.forge;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
@@ -163,6 +161,18 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					forgeableDesc)
 			};
 
+			var delegateClassNameSimple = jsonClassNameSimple + "__Delegate";
+			var @delegate = new ProxyStmtClassForgeableFactory() {
+				ProcMake = (
+					namespaceScope,
+					classPostfix) => new StmtClassForgeableJsonDelegate(
+					CodegenClassType.JSONDELEGATE,
+					delegateClassNameSimple,
+					namespaceScope,
+					underlyingClassNameFull,
+					forgeableDesc)
+			};
+
 			var deserializerClassNameSimple = jsonClassNameSimple + "__Deserializer";
 			var deserializer = new ProxyStmtClassForgeableFactory() {
 				ProcMake = (
@@ -190,7 +200,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			var serializerClassNameFull = $"{services.Namespace}.{serializerClassNameSimple}";
 			var deserializerClassNameFull = $"{services.Namespace}.{deserializerClassNameSimple}";
-			// var deserializerFactoryClassNameFull = $"{services.Namespace}.{deserializerFactoryClassNameSimple}";
+			var delegateClassNameFull = $"{services.Namespace}.{delegateClassNameSimple}";
 			
 			// include event type name as underlying-class may occur multiple times
 			var serdeClassNameFull = $"{services.Namespace}.{jsonClassNameSimple}__{metadata.Name}__Serde";
@@ -198,6 +208,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			var detail = new JsonEventTypeDetail(
 				underlyingClassNameFull,
 				optionalUnderlyingProvided,
+				delegateClassNameFull,
 				deserializerClassNameFull,
 				serializerClassNameFull,
 				serdeClassNameFull,
@@ -226,7 +237,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			var additionalForgeables = new List<StmtClassForgeableFactory>();
 
-			// generate serializer and deserializer forgeables for application classes
+			// generate serializer, deserializer, and delegate forgeables for application classes
 			GenerateApplicationClassForgables(
 				optionalUnderlyingProvided, deepClasses, additionalForgeables, raw.Annotations, services);
 
@@ -234,6 +245,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				additionalForgeables.Add(underlying);
 			}
 
+			additionalForgeables.Add(@delegate);
 			additionalForgeables.Add(deserializer);
 			additionalForgeables.Add(serializer);
 

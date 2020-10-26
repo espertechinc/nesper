@@ -6,12 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
-using com.espertech.esper.common.@internal.epl.methodbase;
-using com.espertech.esper.compat;
-
 namespace com.espertech.esper.common.@internal.epl.datetime.eval
 {
     public enum DateTimeMethodEnum

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace com.espertech.esper.compat.collections.btree
 {
@@ -220,7 +221,7 @@ namespace com.espertech.esper.compat.collections.btree
 
                 isExactMatch = false;
                 
-                for (int ii = 0; ii < Count; ii++) {
+                for (var ii = 0; ii < Count; ii++) {
                     var key = _accessor(_values[ii]);
                     var cmp = comp.Compare(k, key);
                     if (cmp == 0) {
@@ -228,7 +229,7 @@ namespace com.espertech.esper.compat.collections.btree
                         return ii;
                     } else if (cmp < 0) {
                         //isExactMatch = false;
-                        return ii - 1;
+                        return ii;
                     }
                 }
 
@@ -250,7 +251,7 @@ namespace com.espertech.esper.compat.collections.btree
                 // node.  For simplicity, we've chosen to normalize to a linear search.  We
                 // may revisit this decision and allow a variable search mechanism.
 
-                for (int ii = 0; ii < _values.Length; ii++) {
+                for (var ii = 0; ii < _values.Length; ii++) {
                     var key = _accessor(_values[ii]);
                     var cmp = comp.Compare(k, key);
                     if (cmp < 0) {
@@ -273,7 +274,7 @@ namespace com.espertech.esper.compat.collections.btree
             {
                 Debug.Assert(i <= Count);
                 _values[Count] = x;
-                for (int j = Count; j > i; --j) {
+                for (var j = Count; j > i; --j) {
                     SwapValues(j, this, j - 1);
                 }
 
@@ -281,7 +282,7 @@ namespace com.espertech.esper.compat.collections.btree
 
                 if (!IsLeaf) {
                     ++i;
-                    for (int j = Count; j > i; --j) {
+                    for (var j = Count; j > i; --j) {
                         SetChild(j, GetChild(j - 1));
                         GetChild(j).Position = j;
                     }
@@ -299,7 +300,7 @@ namespace com.espertech.esper.compat.collections.btree
             {
                 if (!IsLeaf) {
                     Debug.Assert(GetChild(i + 1).Count == 0);
-                    for (int j = i + 1; j < Count; ++j) {
+                    for (var j = i + 1; j < Count; ++j) {
                         SetChild(j, GetChild(j + 1));
                         //GetChild(j).Position = j;
                     }
@@ -331,7 +332,7 @@ namespace com.espertech.esper.compat.collections.btree
                 Debug.Assert(toMove <= src.Count);
 
                 // Make room in the left node for the new values.
-                for (int i = 0; i < toMove; ++i) {
+                for (var i = 0; i < toMove; ++i) {
                     SetValue(i + Count, default);
                 }
 
@@ -341,26 +342,26 @@ namespace com.espertech.esper.compat.collections.btree
                 Parent.SwapValues(Position, src, toMove - 1);
 
                 // Move the values from the right to the left node.
-                for (int i = 1; i < toMove; ++i) {
+                for (var i = 1; i < toMove; ++i) {
                     SwapValues(Count + i, src, i - 1);
                 }
 
                 // Shift the values in the right node to their correct position.
-                for (int i = toMove; i < src.Count; ++i) {
+                for (var i = toMove; i < src.Count; ++i) {
                     src.SwapValues(i - toMove, src, i);
                 }
 
-                for (int i = 1; i <= toMove; ++i) {
+                for (var i = 1; i <= toMove; ++i) {
                     src.DestroyValue(src.Count - i);
                 }
 
                 if (!IsLeaf) {
                     // Move the child pointers from the right to the left node.
-                    for (int i = 0; i < toMove; ++i) {
+                    for (var i = 0; i < toMove; ++i) {
                         SetChild(1 + Count + i, src.GetChild(i));
                     }
 
-                    for (int i = 0; i <= src.Count - toMove; ++i) {
+                    for (var i = 0; i <= src.Count - toMove; ++i) {
                         Debug.Assert(i + toMove <= src.MaxCount);
                         src.SetChild(i, src.GetChild(i + toMove));
                         src.SetChild(i + toMove, default);
@@ -383,11 +384,11 @@ namespace com.espertech.esper.compat.collections.btree
                 Debug.Assert(toMove <= Count);
 
                 // Make room in the right node for the new values.
-                for (int i = 0; i < toMove; ++i) {
+                for (var i = 0; i < toMove; ++i) {
                     dest.SetValue(i + dest.Count, default);
                 }
 
-                for (int i = dest.Count - 1; i >= 0; --i) {
+                for (var i = dest.Count - 1; i >= 0; --i) {
                     dest.SwapValues(i, dest, i + toMove);
                 }
 
@@ -398,19 +399,19 @@ namespace com.espertech.esper.compat.collections.btree
                 DestroyValue(Count - toMove);
 
                 // Move the values from the left to the right node.
-                for (int i = 1; i < toMove; ++i) {
+                for (var i = 1; i < toMove; ++i) {
                     SwapValues(Count - toMove + i, dest, i - 1);
                     DestroyValue(Count - toMove + i);
                 }
 
                 if (!IsLeaf) {
                     // Move the child pointers from the left to the right node.
-                    for (int i = dest.Count; i >= 0; --i) {
+                    for (var i = dest.Count; i >= 0; --i) {
                         dest.SetChild(i + toMove, dest.GetChild(i));
                         dest.SetChild(i, null);
                     }
 
-                    for (int i = 1; i <= toMove; ++i) {
+                    for (var i = 1; i <= toMove; ++i) {
                         dest.SetChild(i - 1, GetChild(Count - toMove + i));
                         SetChild(Count - toMove + i, null);
                     }
@@ -450,7 +451,7 @@ namespace com.espertech.esper.compat.collections.btree
                 Debug.Assert(Count >= 1);
 
                 // Move values from the left sibling to the right sibling.
-                for (int i = 0; i < dest.Count; ++i) {
+                for (var i = 0; i < dest.Count; ++i) {
                     dest.SetValue(i, default);
                     SwapValues(Count + i, dest, i);
                     DestroyValue(Count + i);
@@ -464,7 +465,7 @@ namespace com.espertech.esper.compat.collections.btree
                 Parent.SetChild(Position + 1, dest);
 
                 if (!IsLeaf) {
-                    for (int i = 0; i <= dest.Count; ++i) {
+                    for (var i = 0; i <= dest.Count; ++i) {
                         Debug.Assert(GetChild(Count + i + 1) != null);
                         dest.SetChild(i, GetChild(Count + i + 1));
                         SetChild(Count + i + 1, null);
@@ -487,7 +488,7 @@ namespace com.espertech.esper.compat.collections.btree
                 SwapValues(Count, Parent, Position);
 
                 // Move the values from the right to the left node.
-                for (int i = 0; i < src.Count; ++i) {
+                for (var i = 0; i < src.Count; ++i) {
                     SetValue(1 + Count + i, default);
                     SwapValues(1 + Count + i, src, i);
                     src.DestroyValue(i);
@@ -495,7 +496,7 @@ namespace com.espertech.esper.compat.collections.btree
 
                 if (!IsLeaf) {
                     // Move the child pointers from the right to the left node.
-                    for (int i = 0; i <= src.Count; ++i) {
+                    for (var i = 0; i <= src.Count; ++i) {
                         SetChild(1 + Count + i, src.GetChild(i));
                         src.SetChild(i, null);
                     }
@@ -518,30 +519,30 @@ namespace com.espertech.esper.compat.collections.btree
                 Debug.Assert(IsLeaf == that.IsLeaf);
 
                 // Swap the values.
-                for (int i = Count; i < that.Count; ++i) {
+                for (var i = Count; i < that.Count; ++i) {
                     this.SetValue(i, default);
                 }
 
-                for (int i = that.Count; i < Count; ++i) {
+                for (var i = that.Count; i < Count; ++i) {
                     that.SetValue(i, default);
                 }
 
-                int n = Math.Max(Count, that.Count);
-                for (int i = 0; i < n; ++i) {
+                var n = Math.Max(Count, that.Count);
+                for (var i = 0; i < n; ++i) {
                     this.SwapValues(i, that, i);
                 }
 
-                for (int i = Count; i < that.Count; ++i) {
+                for (var i = Count; i < that.Count; ++i) {
                     that.DestroyValue(i);
                 }
 
-                for (int i = that.Count; i < Count; ++i) {
+                for (var i = that.Count; i < Count; ++i) {
                     this.DestroyValue(i);
                 }
 
                 if (!IsLeaf) {
                     // Swap the child pointers.
-                    for (int i = 0; i <= n; ++i) {
+                    for (var i = 0; i <= n; ++i) {
                         var lvalue = this._children[i];
                         var rvalue = that._children[i];
                         this.SetChild(i, rvalue);
@@ -549,11 +550,11 @@ namespace com.espertech.esper.compat.collections.btree
                         // btree_swap_helper(*mutable_child(i), *src.mutable_Child(i));
                     }
 
-                    for (int i = 0; i <= this.Count; ++i) {
+                    for (var i = 0; i <= this.Count; ++i) {
                         that.GetChild(i).Parent = that;
                     }
 
-                    for (int i = 0; i <= that.Count; ++i) {
+                    for (var i = 0; i <= that.Count; ++i) {
                         this.GetChild(i).Parent = this;
                     }
                 }
@@ -568,7 +569,7 @@ namespace com.espertech.esper.compat.collections.btree
             internal void DestroyRecursive()
             {
                 if (!IsLeaf) {
-                    for (int ii = 0; ii < Count; ++ii) {
+                    for (var ii = 0; ii < Count; ++ii) {
                         _children[ii]?.DestroyRecursive();
                     }
                 }
@@ -581,7 +582,7 @@ namespace com.espertech.esper.compat.collections.btree
             /// </summary>
             internal void DestroyValues()
             {
-                for (int i = 0; i < Count; ++i) {
+                for (var i = 0; i < Count; ++i) {
                     DestroyValue(i);
                 }
             }
@@ -594,19 +595,28 @@ namespace com.espertech.esper.compat.collections.btree
                     $"{nameof(Size)}: {Size}, {nameof(IsLeaf)}: {IsLeaf}, {nameof(IsRoot)}: {IsRoot}";
             }
 
+            public string Indent(int level)
+            {
+                var stringBuilder = new StringBuilder();
+                for (var ii = 0; ii < level; ii++) {
+                    stringBuilder.Append("  ");
+                }
+
+                return stringBuilder.ToString();
+            }
+            
             public void Dump(
                 TextWriter textWriter,
                 int level)
             {
-                for (int i = 0; i < Count; ++i) {
+                var indent = Indent(level);
+
+                for (var i = 0; i < Count; ++i) {
                     if (!IsLeaf) {
                         _children[i].Dump(textWriter, level + 1);
                     }
 
-                    for (int j = 0; j < level; ++j) {
-                        textWriter.Write("  ");
-                    }
-
+                    textWriter.Write(indent);
                     textWriter.Write(Key(i));
                     textWriter.Write(" (");
                     textWriter.Write(i);

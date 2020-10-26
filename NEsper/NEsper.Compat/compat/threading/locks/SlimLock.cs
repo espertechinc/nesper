@@ -8,7 +8,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace com.espertech.esper.compat.threading.locks

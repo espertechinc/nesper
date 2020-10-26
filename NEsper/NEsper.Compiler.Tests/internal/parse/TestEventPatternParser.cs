@@ -12,20 +12,17 @@ using System.Reflection;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
     [TestFixture]
 	public class TestEventPatternParser  {
-        [Test, RunInApplicationDomain]
+        [Test]
 	    public void TestDisplayAST() {
 	        string expression = "A -> [10] B until C -> D";
 
@@ -34,7 +31,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        SupportParserHelper.DisplayAST(ast.First);
 	    }
 
-        [Test, RunInApplicationDomain]
+        [Test]
 	    public void TestInvalidCases() {
 	        // Base vocabulary
 	        AssertIsInvalid("a(");
@@ -178,7 +175,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        AssertIsInvalid("A(y(g)..z = 1)");
 	    }
 
-        [Test, RunInApplicationDomain]
+        [Test]
 	    public void TestValidCases() {
 	        string className = typeof(SupportBean).Name;
 
@@ -394,7 +391,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        AssertIsValid("every-distinct(value, bcd) [5] A");
 	    }
 
-        [Test, RunInApplicationDomain]
+        [Test]
 	    public void TestParserNodeGeneration() {
 	        string expression = "a(m=1) -> not b() or every c() and d() where a:b (5) and timer:interval(10)";
 

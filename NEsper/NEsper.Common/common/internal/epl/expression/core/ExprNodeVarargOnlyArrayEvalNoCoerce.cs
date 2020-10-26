@@ -6,9 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -30,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var array = Array.CreateInstance(forge.varargClass, evals.Length);
+            var array = Arrays.CreateInstanceChecked(forge.varargClass, evals.Length);
             for (var i = 0; i < evals.Length; i++) {
                 var value = evals[i].Evaluate(eventsPerStream, isNewData, context);
                 array.SetValue(value, i);

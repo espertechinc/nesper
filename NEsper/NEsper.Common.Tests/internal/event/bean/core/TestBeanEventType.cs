@@ -10,13 +10,10 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
-using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -160,7 +157,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var nestedTypeFragment = eventTypeComplex.GetFragmentType("Nested");
             var nestedType = nestedTypeFragment.FragmentType;
-            Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested).Name, nestedType.Name);
+            Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested).FullName, nestedType.Name);
             Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), nestedType.UnderlyingType);
             Assert.AreEqual(typeof(string), nestedType.GetPropertyType("NestedValue"));
             Assert.IsNull(eventTypeComplex.GetFragmentType("Indexed[0]"));
@@ -168,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             nestedTypeFragment = eventTypeNested.GetFragmentType("Indexed[0]");
             nestedType = nestedTypeFragment.FragmentType;
             Assert.IsFalse(nestedTypeFragment.IsIndexed);
-            Assert.AreEqual(typeof(SupportBeanCombinedProps.NestedLevOne).Name, nestedType.Name);
+            Assert.AreEqual(typeof(SupportBeanCombinedProps.NestedLevOne).FullName, nestedType.Name);
             Assert.AreEqual(typeof(IDictionary<string, SupportBeanCombinedProps.NestedLevTwo>), nestedType.GetPropertyType("Mapprop"));
 
             SupportEventTypeAssertionUtil.AssertConsistency(eventTypeComplex);

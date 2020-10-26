@@ -9,7 +9,6 @@
 using System;
 using System.IO;
 using System.Numerics;
-using System.Text.RegularExpressions;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;

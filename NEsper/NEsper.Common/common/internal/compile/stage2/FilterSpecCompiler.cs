@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -21,7 +20,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;

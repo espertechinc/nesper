@@ -1,7 +1,7 @@
 ﻿using System;
 
 using com.espertech.esper.common.client.configuration;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 

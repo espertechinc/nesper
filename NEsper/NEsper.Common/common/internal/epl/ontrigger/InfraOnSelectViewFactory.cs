@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {

@@ -9,8 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using Antlr4.Runtime.Misc;
-
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -18,7 +16,6 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.enummethod.compile;
-using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;

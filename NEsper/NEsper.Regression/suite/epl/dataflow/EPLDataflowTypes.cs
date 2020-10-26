@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;

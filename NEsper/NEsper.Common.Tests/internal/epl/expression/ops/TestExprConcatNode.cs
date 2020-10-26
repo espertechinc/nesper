@@ -9,14 +9,12 @@
 using System.Collections.Generic;
 using System.Threading;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 

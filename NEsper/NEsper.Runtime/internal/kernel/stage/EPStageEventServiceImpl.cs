@@ -34,7 +34,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
-using com.espertech.esper.runtime.@internal.kernel.statement;
 using com.espertech.esper.runtime.@internal.kernel.thread;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 using com.espertech.esper.runtime.@internal.schedulesvcimpl;

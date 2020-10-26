@@ -72,7 +72,7 @@ namespace com.espertech.esper.compat.collections.btree
         /// </summary>
         public int Height {
             get {
-                int h = 0;
+                var h = 0;
                 if (Root != null) {
                     // Count the length of the chain from the leftmost node up to the
                     // root. We actually count from the root back around to the level below

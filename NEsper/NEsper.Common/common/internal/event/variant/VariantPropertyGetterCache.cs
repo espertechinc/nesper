@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
         {
             var oldSize = oldArray.Length;
             var elementType = oldArray.GetType().GetElementType();
-            var newArray = Array.CreateInstance(elementType, newSize);
+            var newArray = Arrays.CreateInstanceChecked(elementType, newSize);
             var preserveLength = Math.Min(oldSize, newSize);
             if (preserveLength > 0) {
                 Array.Copy(oldArray, 0, newArray, 0, preserveLength);

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
@@ -224,8 +225,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			string[] values,
 			EPAssertionUtil.AssertionCollectionValueString extractorEvents)
 		{
-			string[] keys = string.IsNullOrWhiteSpace(keyCSV) ? new string[0] : keyCSV.SplitCsv();
-			EPAssertionUtil.AssertMapOfCollection((IDictionary<object, object>) val, keys, values, extractorEvents);
+			var keys = string.IsNullOrWhiteSpace(keyCSV) ? new string[0] : keyCSV.SplitCsv();
+			var dictionary = val.UnwrapDictionary();
+			EPAssertionUtil.AssertMapOfCollection(dictionary, keys, values, extractorEvents);
 		}
 	}
 } // end of namespace

@@ -18,7 +18,7 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                for (int ii = 0; ii < _keyValuePairs.Length; ii++)
+                for (var ii = 0; ii < _keyValuePairs.Length; ii++)
                 {
                     if (Equals(key, _keyValuePairs[ii].Key))
                     {
@@ -56,7 +56,7 @@ namespace com.espertech.esper.compat.collections
 
         public bool Contains(KeyValuePair<TK, TV> item)
         {
-            for (int ii = 0; ii < _keyValuePairs.Length; ii++)
+            for (var ii = 0; ii < _keyValuePairs.Length; ii++)
             {
                 if (Equals(item, _keyValuePairs[ii]))
                 {
@@ -69,7 +69,7 @@ namespace com.espertech.esper.compat.collections
 
         public bool ContainsKey(TK key)
         {
-            for (int ii = 0; ii < _keyValuePairs.Length; ii++)
+            for (var ii = 0; ii < _keyValuePairs.Length; ii++)
             {
                 if (Equals(key, _keyValuePairs[ii].Key))
                 {
@@ -87,7 +87,7 @@ namespace com.espertech.esper.compat.collections
 
         public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
-            for (int ii = 0; ii < _keyValuePairs.Length; ii++)
+            for (var ii = 0; ii < _keyValuePairs.Length; ii++)
             {
                 yield return _keyValuePairs[ii];
             }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.compat.collections
 
         public bool TryGetValue(TK key, out TV value)
         {
-            for (int ii = 0; ii < _keyValuePairs.Length; ii++)
+            for (var ii = 0; ii < _keyValuePairs.Length; ii++)
             {
                 if (Equals(key, _keyValuePairs[ii].Key))
                 {
@@ -120,7 +120,7 @@ namespace com.espertech.esper.compat.collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int ii = 0; ii < _keyValuePairs.Length; ii++)
+            for (var ii = 0; ii < _keyValuePairs.Length; ii++)
             {
                 yield return _keyValuePairs[ii];
             }

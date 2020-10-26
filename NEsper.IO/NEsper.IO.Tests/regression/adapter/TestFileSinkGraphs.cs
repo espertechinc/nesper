@@ -6,18 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.dataflow.core;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esperio.file;
+using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
 
@@ -33,16 +32,16 @@ namespace com.espertech.esperio.regression.adapter
 		[SetUp]
 		public void SetUp()
 		{
-			var configuration = new Configuration();
+			var configuration = new Configuration(SupportContainer.Reset());
 			configuration.Runtime.Threading.IsInternalTimerEnabled = false;
-			configuration.Common.AddImportType(typeof(FileSinkFactory));
-			configuration.Common.AddImportType(typeof(DefaultSupportSourceOpForge));
+			configuration.Common.AddImportNamespace(typeof(FileSinkFactory));
+			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
 			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 			runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
 			runtime.Initialize();
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestInvalid()
 		{
 			string graph;
@@ -50,7 +49,10 @@ namespace com.espertech.esperio.regression.adapter
 			graph = "create dataflow FlowOne " +
 			        "DefaultSupportSourceOp -> mystreamOne<MyMapEvent> {}" +
 			        "FileSink(mystreamOne, mystreamOne) {file: 'x:\\a.bb'}";
-			TryInvalidCompileGraph(runtime, graph, "Failed to obtain operator 'FileSink': FileSinkForge expected a single input port");
+			TryInvalidCompileGraph(runtime, graph,
+				"Error during compilation: " +
+				"Failed to obtain operator 'FileSink': " +
+				"FileSinkForge expected a single input port");
 
 			graph = "create dataflow FlowOne " +
 			        "DefaultSupportSourceOp -> mystreamOne<MyMapEvent> {}" +
@@ -58,7 +60,9 @@ namespace com.espertech.esperio.regression.adapter
 			TryInvalidInstantiate(
 				"FlowOne",
 				graph,
-				"Failed to instantiate data flow 'FlowOne': Failed to obtain operator instance for 'FileSink': Parameter by name 'file' has no value");
+				"Failed to instantiate data flow 'FlowOne': " +
+				"Failed to obtain operator instance for 'FileSink': " +
+				"Parameter by name 'file' has no value");
 		}
 
 		private void TryInvalidInstantiate(
@@ -67,7 +71,7 @@ namespace com.espertech.esperio.regression.adapter
 			string message)
 		{
 			var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
-			var outputOp = new DefaultSupportCaptureOp<object>(container.LockManager());
+			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
 			try {
 				runtime.DataFlowService.Instantiate(
 					stmtGraph.DeploymentId,
@@ -87,7 +91,7 @@ namespace com.espertech.esperio.regression.adapter
 			}
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestWriteCSV()
 		{
 			RunAssertion("MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEvents(), true);
@@ -95,7 +99,7 @@ namespace com.espertech.esperio.regression.adapter
 			RunAssertion("MyMapEvent", DefaultSupportGraphEventUtil.GetMapEvents(), false);
 			RunAssertion("MyDefaultSupportGraphEvent", DefaultSupportGraphEventUtil.GetPONOEvents(), true);
 
-			CompileDeploy(runtime, "@public @buseventtype create json schema MyJsonEvent(myDouble double, myInt int, myString string)");
+			CompileDeploy(runtime, "@public @buseventtype create json schema MyJsonEvent(MyDouble double, MyInt int, MyString string)");
 			RunAssertion("MyJsonEvent", DefaultSupportGraphEventUtil.GetJsonEvents(), true);
 		}
 
@@ -106,17 +110,16 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			// test classpath file
 			var tempPath = Path.GetTempPath();
-			var tempFile = Path.Combine(tempPath, "out_1.csv");
+			var tempFile = Path.Combine(tempPath, "out_1.csv").Replace("\\", "/");
 
 			try {
-				var graph = "create dataflow WriteCSV " +
-				            "DefaultSupportSourceOp -> instream<" +
-				            typeName +
-				            ">{}" +
-				            "FileSink(instream) { " + 
-				            "file: '" + tempFile + "', " +
-				            "append: " + append +
-				            "}";
+				var graph =
+					"create dataflow WriteCSV " +
+					"DefaultSupportSourceOp -> instream<" + typeName + ">{}" +
+					"FileSink(instream) { " +
+					"file: '" + tempFile + "', " +
+					"append: " + append +
+					"}";
 				var stmtGraph = CompileDeploy(runtime, graph).Statements[0];
 
 				var source = new DefaultSupportSourceOp(events);
@@ -125,15 +128,16 @@ namespace com.espertech.esperio.regression.adapter
 				var instance = runtime.DataFlowService.Instantiate(stmtGraph.DeploymentId, "WriteCSV", options);
 				instance.Run();
 
-				var contents = FileUtil
-					.ReadTextFile(tempFile)
-					.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+				var contents = File.ReadAllLines(tempFile)
+					.Where(_ => !string.IsNullOrEmpty(_))
+					.ToArray();
 				var expected = new string[] {
 					"1.1,1,\"one\"",
 					"2.2,2,\"two\""
 				};
 
-				EPAssertionUtil.AssertEqualsExactOrder(expected, contents);
+				CollectionAssert.AreEqual(expected, contents);
+				//EPAssertionUtil.AssertEqualsExactOrder(expected, contents);
 			}
 			finally {
 				try {

@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.attributes;
 
 namespace com.espertech.esper.compat.collections
@@ -118,7 +117,7 @@ namespace com.espertech.esper.compat.collections
             _hashTable = new Dictionary<TK, LinkedListNode<Pair<TK, TV>>>((_hashList.Count * 3) / 2)
                 .WithSafeSupport();
 
-            for (LinkedListNode<Pair<TK, TV>> node = _hashList.First; node != null; node = node.Next) {
+            for (var node = _hashList.First; node != null; node = node.Next) {
                 _hashTable.Add(node.Value.First, node);
             }
         }
@@ -205,7 +204,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (source.Count != 0)
             {
-                IEnumerator<KeyValuePair<TK, TV>> enumObj = source.GetEnumerator();
+                var enumObj = source.GetEnumerator();
                 while (enumObj.MoveNext())
                 {
                     this[enumObj.Current.Key] = enumObj.Current.Value;
@@ -222,7 +221,7 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                IEnumerator<KeyValuePair<TK, TV>> kvPairEnum = GetEnumerator();
+                var kvPairEnum = GetEnumerator();
                 kvPairEnum.MoveNext();
                 return kvPairEnum.Current.Value;
             }
@@ -335,7 +334,7 @@ namespace com.espertech.esper.compat.collections
                 var rawArray = new TK[Count];
                 var rawIndex = 0;
                 
-                foreach (Pair<TK, TV> keyValuePair in _hashList)
+                foreach (var keyValuePair in _hashList)
                 {
                     rawArray[rawIndex++] = keyValuePair.First;
                 }
@@ -469,7 +468,7 @@ namespace com.espertech.esper.compat.collections
             }
             set
             {
-                LinkedListNode<Pair<TK, TV>> linkedListNode = _hashTable.Get(key);
+                var linkedListNode = _hashTable.Get(key);
                 if (linkedListNode != null)
                 {
                     linkedListNode.Value.Second = value;
@@ -541,9 +540,9 @@ namespace com.espertech.esper.compat.collections
                 throw new ArgumentOutOfRangeException();
             }
 
-            int ii = arrayIndex;
+            var ii = arrayIndex;
 
-            foreach (Pair<TK, TV> keyValuePair in _hashList)
+            foreach (var keyValuePair in _hashList)
             {
                 array[ii++] = new KeyValuePair<TK, TV>(keyValuePair.First, keyValuePair.Second);
             }

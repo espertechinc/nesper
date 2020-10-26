@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.deserializers.core;
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 {
@@ -23,8 +23,6 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
         {
             _itemDeserializer = itemDeserializer;
         }
-
-        public override object GetResult() => _result;
 
         public override object Deserialize(JsonElement element)
         {

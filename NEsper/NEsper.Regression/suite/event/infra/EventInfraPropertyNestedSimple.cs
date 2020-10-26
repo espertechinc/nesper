@@ -18,7 +18,6 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 using com.espertech.esper.regressionlib.support.util;
@@ -46,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var path = new RegressionPath();
 
-			RunAssertion(env, BEAN_TYPENAME, FBEAN, typeof(InfraNestedSimplePropLvl1), nameof(InfraNestedSimplePropLvl1), path);
+			RunAssertion(env, BEAN_TYPENAME, FBEAN, typeof(InfraNestedSimplePropLvl1), typeof(InfraNestedSimplePropLvl1).FullName, path);
 			RunAssertion(env, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1", path);
 			RunAssertion(env, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
 			RunAssertion(env, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".L1", path);
@@ -59,10 +58,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"create json schema " + JSON_TYPENAME + "_1(Lvl1 int, L2 " + JSON_TYPENAME + "_2);\n" +
 				"@Name('types') @public @buseventtype " +
 				"create json schema " + JSON_TYPENAME + "(L1 " + JSON_TYPENAME + "_1);\n";
-			env.CompileDeploy(epl, path);
-			Type nestedClass = SupportJsonEventTypeUtil.GetUnderlyingType(env, "types", JSON_TYPENAME + "_1");
-			RunAssertion(env, JSON_TYPENAME, FJSON, nestedClass, JSON_TYPENAME + "_1", path);
 
+			env.CompileDeploy(epl, path);
+			var nestedClass = SupportJsonEventTypeUtil.GetUnderlyingType(env, "types", JSON_TYPENAME + "_1");
+			RunAssertion(env, JSON_TYPENAME, FJSON, nestedClass, JSON_TYPENAME + "_1", path);
+			
 			epl = $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedTop).MaskTypeName()}') @name('types') @public @buseventtype create json schema {JSONPROVIDED_TYPENAME}();\n";
 			env.CompileDeploy(epl, path);
 			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, typeof(MyLocalJSONProvidedLvl1), typeof(MyLocalJSONProvidedLvl1).FullName, path);

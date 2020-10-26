@@ -7,18 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
-using com.espertech.esper.common.@internal.epl.enummethod.eval;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -53,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						isNewData,
 						context) => {
 						int length = enumcoll.Count;
-						var array = Array.CreateInstance(arrayComponentType, length);
+						var array = Arrays.CreateInstanceChecked(arrayComponentType, length);
 						if (enumcoll.IsEmpty()) {
 							return array;
 						}

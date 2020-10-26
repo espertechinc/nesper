@@ -141,7 +141,25 @@
     <plugin-method-datetime method-name="methodname1" forge-class="com.mycompany.MyDateTimeMethodForge" />
     <plugin-method-enum method-name="methodname2" forge-class="com.mycompany.MyEnumMethodForge" />
 
-    <bytecode include-comments="true" include-debugsymbols="true" attach-epl="false" attach-module-epl="true" attach-pattern-epl="true" instrumented="true" allow-subscriber="true" access-modifier-context="internal" access-modifier-event-type="public" access-modifier-expression="internal" access-modifier-named-window="public" access-modifier-script="internal" access-modifier-table="public" access-modifier-variable="internal" bus-modifier-event-type="bus" threadpool-compiler-num-threads="1234" threadpool-compiler-capacity="4321" max-methods-per-class="5555" allow-inlined-class="false"/>
+    <bytecode include-comments="true"
+              include-debugsymbols="true" 
+              attach-epl="false" 
+              attach-module-epl="true" 
+              attach-pattern-epl="true" 
+              instrumented="true" 
+              allow-subscriber="true" 
+              access-modifier-context="internal" 
+              access-modifier-event-type="public" 
+              access-modifier-expression="internal" 
+              access-modifier-named-window="public" 
+              access-modifier-script="internal" 
+              access-modifier-table="public" 
+              access-modifier-variable="internal" 
+              bus-modifier-event-type="bus" 
+              threadpool-compiler-num-threads="1234" 
+              threadpool-compiler-capacity="4321" 
+              max-methods-per-class="5555" 
+              allow-inlined-class="false" />
 
     <logging>
       <code enabled="true"/>

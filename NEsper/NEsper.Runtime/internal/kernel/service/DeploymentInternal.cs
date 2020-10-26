@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.script.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.runtime.client;
 

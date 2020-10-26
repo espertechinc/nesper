@@ -7,14 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -41,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var array = Array.CreateInstance(_arrayComponentType, enumcoll.Count);
+						var array = Arrays.CreateInstanceChecked(_arrayComponentType, enumcoll.Count);
 						if (enumcoll.IsEmpty()) {
 							return array;
 						}

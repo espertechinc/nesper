@@ -51,7 +51,6 @@ using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.container;

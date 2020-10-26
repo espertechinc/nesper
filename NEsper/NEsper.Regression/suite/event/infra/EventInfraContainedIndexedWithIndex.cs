@@ -92,8 +92,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				var @event = new JObject(new JProperty("Indexed", array));
 				env.SendEventJson(@event.ToString(), "LocalEvent");
 			};
-			var jsonepl = "@public @buseventtype create json schema LocalInnerEvent(Id string);\n" +
-			              "@public @buseventtype create json schema LocalEvent(Indexed LocalInnerEvent[]);\n";
+			var jsonepl =
+				"@public @buseventtype create json schema LocalInnerEvent(Id string);\n" +
+				"@public @buseventtype create json schema LocalEvent(Indexed LocalInnerEvent[]);\n";
 			RunAssertion(env, jsonepl, json);
 
 			// Json-Class-Provided
@@ -133,7 +134,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			string createSchemaEPL,
 			BiConsumer<EventType, string[]> sender)
 		{
-
 			env.CompileDeploy(
 					createSchemaEPL +
 					"@Name('s0') select * from LocalEvent[Indexed[0]];\n" +

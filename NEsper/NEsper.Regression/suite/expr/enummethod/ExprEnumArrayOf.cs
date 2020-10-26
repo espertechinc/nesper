@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "Strvals.selectfrom(v => Int.Parse(v)).arrayOf()");
+				builder.WithExpression(fields[0], "Strvals.selectfrom(v => Int32.Parse(v)).arrayOf()");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 

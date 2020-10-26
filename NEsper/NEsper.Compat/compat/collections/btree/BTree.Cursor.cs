@@ -120,7 +120,7 @@ namespace com.espertech.esper.compat.collections.btree
             {
                 while (count > 0) {
                     if (Node.Leaf) {
-                        int rest = Node.Count - Position;
+                        var rest = Node.Count - Position;
                         Position += Math.Min(rest, count);
                         count = count - rest;
                         if (Position < Node.Count) {
@@ -138,14 +138,20 @@ namespace com.espertech.esper.compat.collections.btree
             public void IncrementSlow()
             {
                 if (Node.Leaf) {
-                    Assert(Position >= Node.Count);
+                    if (Position < Node.Count) {
+                        throw new IllegalStateException("Cursor.Position < Node.Count");
+                    }
 
                     // Save the current state of the enumerator
                     var saveNode = this.Node;
                     var savePosn = this.Position;
 
                     while (Position == Node.Count && !Node.IsRoot) {
-                        Assert(Node.Parent.GetChild(Node.Position) == Node);
+                        //Assert(Node.Parent.GetChild(Node.Position) == Node);
+                        if (Node.Parent.GetChild(Node.Position) != Node) {
+                            throw new IllegalStateException("GetChild != Node");
+                        }
+
                         Position = Node.Position;
                         Node = Node.Parent;
                     }
@@ -156,7 +162,10 @@ namespace com.espertech.esper.compat.collections.btree
                     }
                 }
                 else {
-                    Assert(Position < Node.Count);
+                    if (Position >= Node.Count) {
+                        throw new IllegalStateException("Cursor.Position >= Node.Count");
+                    }
+
                     Node = Node.GetChild(Position + 1);
                     while (!Node.Leaf) {
                         Node = Node.GetChild(0);
@@ -178,14 +187,20 @@ namespace com.espertech.esper.compat.collections.btree
             public void DecrementSlow()
             {
                 if (Node.Leaf) {
-                    Assert(Position <= -1);
+                    //Assert(Position <= -1);
+                    if (Position > -1) {
+                        throw new IllegalStateException("Position > -1");
+                    }
 
                     // Save the current state of the enumerator
                     var saveNode = this.Node;
                     var savePosn = this.Position;
 
                     while (Position < 0 && !Node.IsRoot) {
-                        Assert(Node.Parent.GetChild(Node.Position) == Node);
+                        //Assert(Node.Parent.GetChild(Node.Position) == Node);
+                        if (Node.Parent.GetChild(Node.Position) != Node) {
+                            throw new IllegalStateException("GetChild != Node");
+                        }
                         Position = Node.Position - 1;
                         Node = Node.Parent;
                     }
@@ -196,7 +211,10 @@ namespace com.espertech.esper.compat.collections.btree
                     }
                 }
                 else {
-                    Assert(Position >= 0);
+                    // Assert(Position >= 0);
+                    if (Position < 0) {
+                        throw new IllegalStateException("Cursor.Position < 0");
+                    }
                     Node = Node.GetChild(Position);
                     while (!Node.Leaf) {
                         Node = Node.GetChild(Node.Count);

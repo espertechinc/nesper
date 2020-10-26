@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
-using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 

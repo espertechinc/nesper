@@ -19,7 +19,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl

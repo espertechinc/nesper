@@ -12,8 +12,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
-using com.espertech.esper.regressionlib.support.util;
-
 
 using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 

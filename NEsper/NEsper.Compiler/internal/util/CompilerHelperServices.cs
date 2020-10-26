@@ -9,15 +9,12 @@
 using System;
 using System.Collections.Generic;
 
-using Antlr4.Runtime.Misc;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
@@ -26,7 +23,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
-using com.espertech.esper.common.@internal.epl.expression.declared.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.epl.index.compile;

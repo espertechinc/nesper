@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.arr
 {
@@ -54,7 +55,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             foreach (var index in arrayIndexesToCopy) {
                 var array = shallowCopy[index] as Array;
                 if (array != null && array.Length != 0) {
-                    var copied = Array.CreateInstance(array.GetType().GetElementType(), array.Length);
+                    var elementType = array.GetType().GetElementType();
+                    var copied = Arrays.CreateInstanceChecked(elementType, array.Length);
                     array.CopyTo(copied, 0);
                     shallowCopy[index] = copied;
                 }

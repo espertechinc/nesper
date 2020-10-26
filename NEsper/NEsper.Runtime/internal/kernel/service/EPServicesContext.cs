@@ -58,7 +58,6 @@ using com.espertech.esper.common.@internal.statement.multimatch;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;

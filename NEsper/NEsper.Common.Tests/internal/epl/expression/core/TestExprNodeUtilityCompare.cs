@@ -8,7 +8,7 @@
 
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCompare;
 

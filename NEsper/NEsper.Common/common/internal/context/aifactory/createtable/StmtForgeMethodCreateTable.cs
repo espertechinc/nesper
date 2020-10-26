@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Antlr4.Runtime.Misc;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;

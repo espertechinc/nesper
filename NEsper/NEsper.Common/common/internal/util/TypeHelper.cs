@@ -2894,7 +2894,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetArrayType(Type resultType)
         {
-            return Array.CreateInstance(resultType, 0).GetType();
+            return resultType.MakeArrayType();
         }
 
         public static Type GetArrayType(

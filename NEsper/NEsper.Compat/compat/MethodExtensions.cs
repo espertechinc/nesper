@@ -12,8 +12,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.compat
 {
     public static class MethodExtensions

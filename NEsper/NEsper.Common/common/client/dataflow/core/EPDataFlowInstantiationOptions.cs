@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;

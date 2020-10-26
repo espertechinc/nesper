@@ -22,6 +22,7 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.IO;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NEsper.Avro.Util.Support
 {
@@ -62,25 +63,14 @@ namespace NEsper.Avro.Util.Support
             Schema schema,
             string json)
         {
-            throw new NotImplementedException();
-
-#if NOT_IMPLEMENTED
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            var jsonEntity = (JToken) JsonConvert.DeserializeObject(json);
+            var avroEntity = JsonDecoder.DecodeAny(schema, jsonEntity);
+            if (avroEntity is GenericRecord)
             {
-                try
-                {
-                    var decoder = new BinaryDecoder(stream);
-                    //Decoder decoder = DecoderFactory.Get().JsonDecoder(schema, din);
-                    var reader = new GenericDatumReader<GenericRecord>(schema, schema);
-                    //var reader = new GenericDatumReader<GenericRecord>(schema);
-                    return (GenericRecord)reader.Read(null, decoder);
-                }
-                catch (IOException ex)
-                {
-                    throw new EPException("Failed to parse json: " + ex.Message, ex);
-                }
+                return (GenericRecord)avroEntity;
             }
-#endif
+
+            throw new ArgumentException("schema was not a record");
         }
 
         public static string CompareSchemas(

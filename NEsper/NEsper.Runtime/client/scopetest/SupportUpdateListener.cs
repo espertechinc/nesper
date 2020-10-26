@@ -62,7 +62,10 @@ namespace com.espertech.esper.runtime.client.scopetest
         ///     last
         ///     reset
         /// </value>
-        public EventBean[] LastOldData { get; set; }
+        public EventBean[] LastOldData {
+            get;
+            set;
+        }
 
         /// <summary>Get a list of all insert-stream event arrays received. </summary>
         /// <value>list of event arrays</value>

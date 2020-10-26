@@ -10,8 +10,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.avro
 {

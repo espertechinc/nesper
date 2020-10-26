@@ -209,7 +209,7 @@ namespace com.espertech.esper.common.client.configuration.common
                 }
 
                 if (isArray) {
-                    castToTypeClass = Array.CreateInstance(castToTypeClass, 0).GetType();
+                    castToTypeClass = castToTypeClass.MakeArrayType();
                 }
             }
 

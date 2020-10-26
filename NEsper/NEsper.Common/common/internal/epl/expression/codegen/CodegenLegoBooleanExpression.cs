@@ -175,21 +175,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             bool doBreakLoop,
             CodegenExpression returnValue)
         {
+            // if ((pass != null) && (pass == false))
+            //   equivalent
+            // if (false.Equals(pass))
+            
             if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
                 throw new IllegalStateException("Invalid non-boolean expression");
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
 
+#if DEPRECATED
             CodegenExpression condition;
+            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
             if (evaluationType.CanNotBeNull()) {
                 condition = passCheck;
             }
             else {
                 condition = And(NotEqualsNull(Ref(PASS_NAME)), passCheck);
             }
+#else
+            CodegenExpression condition = ExprDotMethod(ConstantFalse(), "Equals", Ref(PASS_NAME));
+#endif
 
+            block.CommentFullLine("CodegenDoIfNotNullAndNotPass");
+            
             if (doContinue) {
                 block.IfCondition(condition).BlockContinue();
             }
@@ -209,21 +219,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             bool doBreakLoop,
             CodegenExpression returnValue)
         {
+            // if ((pass == null) || (pass.Value == false))
+            //   equivalent
+            // if (!true.Equals(pass))
+
             if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
                 throw new IllegalStateException("Invalid non-boolean expression");
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
 
+#if DEPRECATED
             CodegenExpression condition;
+            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
             if (evaluationType.CanNotBeNull()) {
                 condition = passCheck;
             }
             else {
                 condition = Or(EqualsNull(Ref(PASS_NAME)), passCheck);
             }
+#else
+            CodegenExpression condition = Not(ExprDotMethod(ConstantTrue(), "Equals", Ref(PASS_NAME)));
+#endif
 
+            block.CommentFullLine("CodegenDoIfNullOrNotPass");
+            
             if (doContinue) {
                 block.IfCondition(condition).BlockContinue();
             }

@@ -17,15 +17,11 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
-using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
-using NUnit.Framework;
 
-using static com.espertech.esper.common.@internal.supportunit.util.SupportExprNodeFactory;
+using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {

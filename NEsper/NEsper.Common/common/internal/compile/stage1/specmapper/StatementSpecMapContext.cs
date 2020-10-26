@@ -12,7 +12,6 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.classprovided.compiletime;

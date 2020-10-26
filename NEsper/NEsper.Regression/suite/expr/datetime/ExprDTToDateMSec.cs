@@ -25,31 +25,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static ICollection<RegressionExecution> Executions() {
             List<RegressionExecution> executions = new List<RegressionExecution>();
-            executions.Add(new ExprToCalendarChain());
-            executions.Add(new ExprDTToDateCalMSecValue());
+            executions.Add(new ExprToDateTimeExChain());
+            executions.Add(new ExprDTToDateTimeExMSecValue());
             return executions;
         }
 
-        public class ExprToCalendarChain : RegressionExecution
+        public class ExprToDateTimeExChain : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                env.CompileDeploy("@Name('s0') select current_timestamp.ToDateTimeEx().AddDays(1) as c from SupportBean");
+                env.CompileDeploy("@Name('s0') select current_timestamp.toDateTimeEx().AddDays(1) as c from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("c"));
+
+                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
+                Assert.That(theEvent, Is.Not.Null);
+                Assert.That(theEvent.Get("c"), Is.InstanceOf<DateTimeEx>());
+
+                var expDateTime = DateTimeEx.UtcInstance(0).AddDays(1);
+                var theDateTime = (DateTimeEx) theEvent.Get("c");
+                Assert.That(theDateTime, Is.EqualTo(expDateTime));
 
                 env.UndeployAll();
             }
         }
 
-        public class ExprDTToDateCalMSecValue : RegressionExecution
+        public class ExprDTToDateTimeExMSecValue : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("select current_timestamp.toCalendar().add(Calendar.DAY_OF_MONTH,1) from SupportBean");
+                env.CompileDeploy("select current_timestamp.toDateTimeEx().AddDays(1) from SupportBean");
 
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));

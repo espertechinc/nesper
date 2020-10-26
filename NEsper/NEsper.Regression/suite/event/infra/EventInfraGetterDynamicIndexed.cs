@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				}
 			};
 			var beanepl = 
-				$"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()}" +
+				$"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n" +
 				$"@public @buseventtype create schema LocalEventSubA as {typeof(LocalEventSubA).MaskTypeName()};\n";
 			RunAssertion(env, beanepl, bean);
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 					var @event = new JObject();
 					var array = new JArray();
 					@event.Add("Array", array);
-					foreach (string value in nullable.Value) {
+					foreach (var value in nullable.Value) {
 						array.Add(value);
 					}
 					env.SendEventJson(@event.ToString(), "LocalEvent");
@@ -123,7 +123,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			string createSchemaEPL,
 			BiConsumer<EventType, NullableObject<string[]>> sender)
 		{
-
 			var path = new RegressionPath();
 			env.CompileDeploy(createSchemaEPL, path);
 

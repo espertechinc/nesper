@@ -637,7 +637,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    Console.WriteLine("Rep = {0}", rep);
                     TryAssertionSingleRowSplitAndType(env, rep);
                 }
             }

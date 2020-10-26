@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.suite.@event.xml;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;

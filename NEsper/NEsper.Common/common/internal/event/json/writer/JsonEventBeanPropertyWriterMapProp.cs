@@ -12,8 +12,7 @@ using System.Linq;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-using com.espertech.esper.common.@internal.@event.json.serde;
+using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.compat.collections;
 
 
@@ -26,8 +25,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 		private readonly string _key;
 
 		public JsonEventBeanPropertyWriterMapProp(
+			IJsonDelegate @delegate,
 			JsonUnderlyingField field,
-			string key) : base(field)
+			string key) : base(@delegate, field)
 		{
 			_key = key;
 		}
@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 			object value,
 			object und)
 		{
-			var lookup = (ILookup<string, object>) und;
-			//SerializationContext.GetValue(_field.FieldName, und),
-			JsonWriteMapProp(value, lookup[Field.FieldName], _key);
+			if (Delegate.TryGetProperty(Field.PropertyName, und, out var propertyValue)) {
+				JsonWriteMapProp(value, propertyValue, _key);
+			}
 		}
 
 		public override CodegenExpression WriteCodegen(

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.@event.json.deserializers.array;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2dim

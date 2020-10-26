@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
 

@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.nwtable;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;

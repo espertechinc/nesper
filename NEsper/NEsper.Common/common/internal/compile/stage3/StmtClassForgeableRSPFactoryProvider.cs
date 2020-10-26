@@ -662,6 +662,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		        .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
 		        .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
 		        .AddParam(typeof(ExprEvaluatorContext), ExprForgeCodegenNames.NAME_EXPREVALCONTEXT);
+
 	        processMethod.Block.Apply(
 		        InstrumentationCode.Instblock(
 			        classScope,

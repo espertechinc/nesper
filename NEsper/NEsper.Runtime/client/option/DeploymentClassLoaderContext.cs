@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.client.option
 {

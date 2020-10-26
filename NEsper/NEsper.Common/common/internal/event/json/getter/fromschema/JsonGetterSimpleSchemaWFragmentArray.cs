@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "HandleJsonCreateFragmentArray",
                 underlyingExpression,
-                Constant(Field.FieldName),
+                Constant(Field.PropertyName),
                 eventType,
                 factory);
         }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
             return JsonFieldGetterHelperSchema.HandleJsonCreateFragmentArray(
                 (JsonEventObjectBase) @object,
-                Field.FieldName,
+                Field.PropertyName,
                 FragmentType,
                 EventBeanTypedEventFactory);
         }

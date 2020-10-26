@@ -16,7 +16,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using com.espertech.esper.compat.attributes;
 using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.compat.collections
@@ -541,12 +540,8 @@ namespace com.espertech.esper.compat.collections
                 return true;
             }
 
-            if (lvalue == null) {
-                return rvalue.Count == 0;
-            }
-
-            if (rvalue == null) {
-                return lvalue.Count == 0;
+            if (lvalue == null || rvalue == null) {
+                return false;
             }
 
             if (lvalue.Count != rvalue.Count) {
@@ -606,12 +601,8 @@ namespace com.espertech.esper.compat.collections
                 return true;
             }
 
-            if (lvalue == null) {
-                return rvalue.Length == 0;
-            }
-
-            if (rvalue == null) {
-                return lvalue.Length == 0;
+            if (lvalue == null || rvalue == null) {
+                return false;
             }
 
             if (lvalue.Length != rvalue.Length) {
@@ -619,7 +610,7 @@ namespace com.espertech.esper.compat.collections
             }
 
             var length = lvalue.Length;
-            for (int ii = 0; ii < length; ii++) {
+            for (var ii = 0; ii < length; ii++) {
                 var lsvalue = lvalue.GetValue(ii);
                 var rsvalue = rvalue.GetValue(ii);
                 if (!DeepEquals(lsvalue, rsvalue)) {
@@ -1562,7 +1553,7 @@ namespace com.espertech.esper.compat.collections
             if (value is Array array) {
                 var result = 0;
                 var length = array.Length;
-                for (int ii = 0; ii < length; ii++) {
+                for (var ii = 0; ii < length; ii++) {
                     var subValue = array.GetValue(ii);
                     if (subValue != null) {
                         result *= 397;
@@ -1597,7 +1588,7 @@ namespace com.espertech.esper.compat.collections
             var result = 0;
             if (values != null) {
                 foreach (var item in values) {
-                    int itemHash = item?.GetHashCode() ?? 0;
+                    var itemHash = item?.GetHashCode() ?? 0;
                     result *= 397;
                     result ^= itemHash;
                 }
@@ -1610,10 +1601,10 @@ namespace com.espertech.esper.compat.collections
         {
             var result = 0;
             if (objects != null) {
-                for (int ii = 0; ii < objects.Length; ii++) {
+                for (var ii = 0; ii < objects.Length; ii++) {
                     var item = objects[ii];
                     if (item != null) {
-                        int itemHash = item.GetHashCode();
+                        var itemHash = item.GetHashCode();
                         result *= 397;
                         result ^= itemHash;
                     }

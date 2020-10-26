@@ -91,7 +91,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         public bool Contains(T item)
         {
-            for (int ii = _fromIndex; ii < _toIndex; ii++)
+            for (var ii = _fromIndex; ii < _toIndex; ii++)
             {
                 if (Equals(_parent[ii], item))
                 {
@@ -152,7 +152,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="System.NotImplementedException"></exception>
         public int IndexOf(T item)
         {
-            for (int ii = _fromIndex; ii < _toIndex; ii++)
+            for (var ii = _fromIndex; ii < _toIndex; ii++)
             {
                 if (Equals(_parent[ii], item))
                 {
@@ -210,7 +210,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="System.NotImplementedException"></exception>
         public IEnumerator<T> GetEnumerator()
         {
-            for (int ii = _fromIndex; ii < _toIndex; ii++)
+            for (var ii = _fromIndex; ii < _toIndex; ii++)
             {
                 yield return _parent[ii];
             }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace com.espertech.esper.compat.collections.btree
+﻿namespace com.espertech.esper.compat.collections.btree
 {
     public partial class BTree<TK, TV>
     {
@@ -276,13 +274,13 @@ namespace com.espertech.esper.compat.collections.btree
                 Assert(!CompareKeys(hi, node.Key(node.Count - 1)));
             }
 
-            for (int i = 1; i < node.Count; ++i) {
+            for (var i = 1; i < node.Count; ++i) {
                 Assert(!CompareKeys(node.Key(i), node.Key(i - 1)));
             }
 
-            int count = node.Count;
+            var count = node.Count;
             if (!node.IsLeaf) {
-                for (int i = 0; i <= node.Count; ++i) {
+                for (var i = 0; i <= node.Count; ++i) {
                     Assert(node.GetChild(i) != null);
                     Assert(node.GetChild(i).Parent == node);
                     Assert(node.GetChild(i).Position == i);

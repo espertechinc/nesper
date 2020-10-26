@@ -400,7 +400,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    Console.WriteLine("EPLOtherCreateSchemaCopyProperties: rep={0}", rep);
                     TryAssertionSchemaCopyProperties(env, rep);
                 }
             }
@@ -575,7 +574,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    Console.WriteLine("EPLOtherCreateSchemaInvalid: rep={0}", rep);
                     TryAssertionInvalid(env, rep);
                 }
 

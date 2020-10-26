@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.forge;
-using com.espertech.esper.common.@internal.@event.json.parser.forge;
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {

@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.type;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;

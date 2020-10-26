@@ -12,7 +12,6 @@ using System.Threading;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
-using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -238,12 +237,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create variable System.Double[] dbls = new System.Double[3];\n" +
+                var epl = "create variable `System.Nullable<System.Double>`[] dbls = new `System.Nullable<System.Double>`[3];\n" +
                           "@priority(1) on SupportBean set dbls[IntPrimitive] = 1;\n" +
                           "@Name('s0') select dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
-                CollectionAssert.AreEqual(new double?[] {null, 1d, null}, (Double[]) env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                CollectionAssert.AreEqual(new double?[] {null, 1d, null}, (double?[]) env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
                 env.UndeployAll();
             }
         }

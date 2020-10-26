@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {

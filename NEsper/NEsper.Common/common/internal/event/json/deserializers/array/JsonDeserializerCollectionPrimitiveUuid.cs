@@ -8,8 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 {
     public class JsonDeserializerCollectionPrimitiveUuid : JsonDeserializerCollectionBase<Guid>

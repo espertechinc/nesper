@@ -8,16 +8,12 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 using NUnit.Framework;
 namespace com.espertech.esper.compiler.@internal.util
 {
     [TestFixture]
 	public class TestSQLLexer  {
-        [Test, RunInApplicationDomain]
+        [Test]
 	    public void TestLexSampleSQL()
 	    {
 		    string[][] testcases = new string[][] {

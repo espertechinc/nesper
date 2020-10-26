@@ -8,7 +8,6 @@
 
 using System;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;

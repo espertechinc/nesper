@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filtersvc;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.mgr

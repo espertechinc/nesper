@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options = new EPDataFlowInstantiationOptions()

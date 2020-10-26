@@ -46,7 +46,7 @@ namespace NEsper.Avro.Core
                     var originalValue = original.Get(field);
                     if (originalValue == null) {
                     } else if (originalValue is Array originalArray) {
-                        var copyArray = Array.CreateInstance(
+                        var copyArray = Arrays.CreateInstanceChecked(
                             originalArray.GetType().GetElementType(),
                             originalArray.Length);
                         Array.Copy(originalArray, 0, copyArray, 0, copyArray.Length);

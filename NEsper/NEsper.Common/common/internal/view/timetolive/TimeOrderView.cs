@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
-using com.espertech.esper.common.@internal.view.sort;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 

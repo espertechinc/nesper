@@ -1428,13 +1428,34 @@ namespace com.espertech.esper.common.client.scopetest
                     "Object not an array but type '" + (array == null ? "null" : array.GetType().FullName) + "'");
             }
 
-            var size = asArray.Length;
-            var val = new object[size];
-            for (var i = 0; i < size; i++) {
-                val[i] = asArray.GetValue(i);
-            }
+            if (asArray.Rank == 1) {
+                var size = asArray.Length;
+                var val = new object[size];
+                for (var i = 0; i < size; i++) {
+                    val[i] = asArray.GetValue(i);
+                }
 
-            return val;
+                return val;
+            }
+            else if (asArray.Rank == 2) {
+                var elementType = asArray.GetType().GetElementType();
+                var numRows = asArray.GetLength(0);
+                var numCols = asArray.GetLength(1);
+                var val = new object[numRows];
+                for (var row = 0; row < numRows; row++) {
+                    var rowArray = Arrays.CreateInstanceChecked(elementType, numCols);
+                    for (var col = 0; col < numCols; col++) {
+                        rowArray.SetValue(asArray.GetValue(row, col), col);
+                    }
+
+                    val[row] = rowArray;
+                }
+
+                return val;
+            }
+            else {
+                throw new NotSupportedException("currently no support for rank > 2");
+            }
         }
 
         /// <summary>Assert that two property values are the same, allowing arrays as properties. </summary>

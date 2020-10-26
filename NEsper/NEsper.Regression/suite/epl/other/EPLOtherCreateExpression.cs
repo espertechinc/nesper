@@ -13,7 +13,6 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
@@ -125,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create expression E1 {''}", path);
+                env.CompileDeploy("@Name('s0') create expression E1 {''}", path);
                 Assert.AreEqual(StatementType.CREATE_EXPRESSION, env.Statement("s0").GetProperty(StatementProperty.STATEMENTTYPE));
                 Assert.AreEqual("E1", env.Statement("s0").GetProperty(StatementProperty.CREATEOBJECTNAME));
 

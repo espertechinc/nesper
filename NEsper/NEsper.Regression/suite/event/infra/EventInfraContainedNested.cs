@@ -7,10 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;

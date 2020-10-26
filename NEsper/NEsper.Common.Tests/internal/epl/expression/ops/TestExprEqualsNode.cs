@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 

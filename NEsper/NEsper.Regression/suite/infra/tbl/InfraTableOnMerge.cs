@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -459,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 string epl =
                     "create table MyTable(dbls double[]);\n" +
-                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new System.Double[3] as dbls;\n" +
+                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new `System.Nullable<System.Double>`[3] as dbls;\n" +
                     "@priority(1) on SupportBean merge MyTable when matched then update set dbls[IntPrimitive] = 1;\n" +
                     "@Name('s0') select MyTable.dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");

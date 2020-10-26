@@ -41,9 +41,9 @@ namespace com.espertech.esperio.regression.adapter
             _container = SupportContainer.Reset();
 
             _propertyTypes = new Dictionary<String, Object>();
-            _propertyTypes.Put("myInt", typeof(int?));
-            _propertyTypes.Put("myDouble", typeof(double?));
-            _propertyTypes.Put("myString", typeof(String));
+            _propertyTypes.Put("MyInt", typeof(int?));
+            _propertyTypes.Put("MyDouble", typeof(double?));
+            _propertyTypes.Put("MyString", typeof(String));
 
             _eventTypeName = "mapEvent";
             var configuration = new Configuration(_container);
@@ -64,8 +64,8 @@ namespace com.espertech.esperio.regression.adapter
             _currentTime = 0;
             SendTimeEvent(0);
 
-            _propertyOrderNoTimestamps = new[] {"myInt", "myDouble", "myString"};
-            _propertyOrderTimestamps = new[] {"timestamp", "myInt", "myDouble", "myString"};
+            _propertyOrderNoTimestamps = new[] {"MyInt", "MyDouble", "MyString"};
+            _propertyOrderTimestamps = new[] {"timestamp", "MyInt", "MyDouble", "MyString"};
         }
 
         private void RunNullEPService(CSVInputAdapter adapter)
@@ -101,9 +101,9 @@ namespace com.espertech.esperio.regression.adapter
             var data = _listener.GetNewDataList()[howManyBack];
             Assert.AreEqual(1, data.Length);
             var theEvent = data[0];
-            Assert.AreEqual(myInt, theEvent.Get("myInt"));
-            Assert.AreEqual(myDouble, theEvent.Get("myDouble"));
-            Assert.AreEqual(myString, theEvent.Get("myString"));
+            Assert.AreEqual(myInt, theEvent.Get("MyInt"));
+            Assert.AreEqual(myDouble, theEvent.Get("MyDouble"));
+            Assert.AreEqual(myString, theEvent.Get("MyString"));
         }
 
         private void SendTimeEvent(int timeIncrement)
@@ -153,9 +153,9 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsTrue(_listener.GetAndClearIsInvoked());
             Assert.AreEqual(1, _listener.GetLastNewData().Length);
             var theEvent = _listener.GetLastNewData()[0];
-            Assert.AreEqual(myInt, theEvent.Get("myInt"));
-            Assert.AreEqual(myDouble, theEvent.Get("myDouble"));
-            Assert.AreEqual(myString, theEvent.Get("myString"));
+            Assert.AreEqual(myInt, theEvent.Get("MyInt"));
+            Assert.AreEqual(myDouble, theEvent.Get("MyDouble"));
+            Assert.AreEqual(myString, theEvent.Get("MyString"));
             _listener.Reset();
         }
 
@@ -171,15 +171,15 @@ namespace com.espertech.esperio.regression.adapter
 
             Assert.AreEqual(1, _listener.GetNewDataList()[0].Length);
             var theEvent = _listener.GetNewDataList()[0][0];
-            Assert.AreEqual(intOne, theEvent.Get("myInt"));
-            Assert.AreEqual(doubleOne, theEvent.Get("myDouble"));
-            Assert.AreEqual(stringOne, theEvent.Get("myString"));
+            Assert.AreEqual(intOne, theEvent.Get("MyInt"));
+            Assert.AreEqual(doubleOne, theEvent.Get("MyDouble"));
+            Assert.AreEqual(stringOne, theEvent.Get("MyString"));
 
             Assert.AreEqual(1, _listener.GetNewDataList()[1].Length);
             theEvent = _listener.GetNewDataList()[1][0];
-            Assert.AreEqual(intTwo, theEvent.Get("myInt"));
-            Assert.AreEqual(doubleTwo, theEvent.Get("myDouble"));
-            Assert.AreEqual(stringTwo, theEvent.Get("myString"));
+            Assert.AreEqual(intTwo, theEvent.Get("MyInt"));
+            Assert.AreEqual(doubleTwo, theEvent.Get("MyDouble"));
+            Assert.AreEqual(stringTwo, theEvent.Get("MyString"));
         }
 
 
@@ -240,7 +240,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestComments()
         {
             const string filename = "regression/comments.csv";
@@ -260,7 +260,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestConflictingPropertyOrder()
         {
             CompileDeploy(_runtime, "@public @buseventtype create schema intsTitleRowEvent(intOne string, intTwo string)");
@@ -287,7 +287,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual("0", _listener.GetLastNewData()[0].Get("intOne"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestDestroy()
         {
             const string filename = "regression/timestampOne.csv";
@@ -296,7 +296,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(AdapterState.DESTROYED, _adapter.State);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventsPerSecAndTimestamp()
         {
             const string filename = "regression/timestampOne.csv";
@@ -312,7 +312,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventsPerSecInvalid()
         {
             const string filename = "regression/timestampOne.csv";
@@ -334,7 +334,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFewerPropertiesToSend()
         {
             const string filename = "regression/moreProperties.csv";
@@ -344,14 +344,14 @@ namespace com.espertech.esperio.regression.adapter
             events.Add(new Object[] {100, 1, 1.1, "moreProperties.one"});
             events.Add(new Object[] {100, 2, 2.2, "moreProperties.two"});
             events.Add(new Object[] {100, 3, 3.3, "moreProperties.three"});
-            var propertyOrder = new[] {"someString", "myInt", "someInt", "myDouble", "myString"};
+            var propertyOrder = new[] {"SomeString", "MyInt", "SomeInt", "MyDouble", "MyString"};
 
             const bool isLooping = false;
             StartAdapter(filename, eventsPerSec, isLooping, true, null, propertyOrder);
             AssertEvents(isLooping, events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInputStream()
         {
             var stream = _container.ResourceManager().GetResourceAsStream("regression/noTimestampOne.csv");
@@ -370,7 +370,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsLoopingNoTitleRow()
         {
             const string filename = "regression/timestampOne.csv";
@@ -386,7 +386,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertLoopingEvents(events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsLoopingTitleRow()
         {
             const string filename = "regression/titleRow.csv";
@@ -403,16 +403,16 @@ namespace com.espertech.esperio.regression.adapter
             AssertLoopingEvents(events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNoPropertyTypes()
         {
-            CompileDeploy(_runtime, "@public @buseventtype create schema allStringEvent(myInt string, myDouble string, myString string)");
+            CompileDeploy(_runtime, "@public @buseventtype create schema allStringEvent(MyInt string, MyDouble string, MyString string)");
 
             var adapterSpec = new CSVInputAdapterSpec(
                 new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
                 "allStringEvent");
             adapterSpec.EventsPerSec = 10;
-            adapterSpec.PropertyOrder = new[] {"myInt", "myDouble", "myString"};
+            adapterSpec.PropertyOrder = new[] {"MyInt", "MyDouble", "MyString"};
             adapterSpec.IsUsingEngineThread = true;
             _adapter = new CSVInputAdapter(_runtime, adapterSpec);
 
@@ -432,7 +432,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent("3", "3.3", "noTimestampOne.three");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNoTimestampNoEventsPerSec()
         {
             const string filename = "regression/timestampOne.csv";
@@ -445,7 +445,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 5, 5.5, "timestampOne.five");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNotUsingEngineThreadTimestamp()
         {
             const string filename = "regression/timestampOne.csv";
@@ -463,7 +463,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 5, 5.5, "timestampOne.five");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNotUsingEngineThreaNoTimestamp()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -481,7 +481,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 3, 3.3, "noTimestampOne.three");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNullEPService()
         {
             var adapter = new CSVInputAdapter(
@@ -495,7 +495,7 @@ namespace com.espertech.esperio.regression.adapter
             RunNullEPService(adapter);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPause()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -511,7 +511,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestResumePartialInterval()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -533,7 +533,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 2.2, "noTimestampOne.two");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestResumeWholeInterval()
         {
             const string filename = "regression/noTimestampOne.csv";
@@ -551,7 +551,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(2, 2.2, "noTimestampOne.two");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunDecreasingTimestamps()
         {
             const string filename = "regression/decreasingTimestamps.csv";
@@ -569,7 +569,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunEmptyFile()
         {
             const string filename = "regression/emptyFile.csv";
@@ -577,7 +577,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunNegativeTimestamps()
         {
             const string filename = "regression/negativeTimestamps.csv";
@@ -595,23 +595,23 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunNonexistentFile()
         {
             const string filename = "someNonexistentFile";
             AssertFailedConstruction(filename, _eventTypeName);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRuntimePropertyTypes()
         {
-            CompileDeploy(_runtime, "@public @buseventtype create schema propertyTypeEvent(myInt int, myDouble double, myString string)");
+            CompileDeploy(_runtime, "@public @buseventtype create schema propertyTypeEvent(MyInt int, MyDouble double, MyString string)");
 
             var adapterSpec = new CSVInputAdapterSpec(
                 new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
                 "propertyTypeEvent");
             adapterSpec.EventsPerSec = 10;
-            adapterSpec.PropertyOrder = new[] {"myInt", "myDouble", "myString"};
+            adapterSpec.PropertyOrder = new[] {"MyInt", "MyDouble", "MyString"};
             adapterSpec.PropertyTypes = _propertyTypes;
             adapterSpec.IsUsingEngineThread = true;
             _adapter = new CSVInputAdapter(_runtime, adapterSpec);
@@ -632,7 +632,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(3, 3.3, "noTimestampOne.three");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRuntimePropertyTypesInvalid()
         {
             var propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
@@ -650,7 +650,7 @@ namespace com.espertech.esperio.regression.adapter
             }
 
             propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
-            propertyTypesInvalid.Put("myInt", typeof(String));
+            propertyTypesInvalid.Put("MyInt", typeof(String));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
                     new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
@@ -664,7 +664,7 @@ namespace com.espertech.esperio.regression.adapter
             }
 
             propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
-            propertyTypesInvalid.Remove("myInt");
+            propertyTypesInvalid.Remove("MyInt");
             propertyTypesInvalid.Put("anotherInt", typeof(int?));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
@@ -679,7 +679,7 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunTimestamps()
         {
             const string filename = "regression/timestampOne.csv";
@@ -699,7 +699,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvents(isLooping, events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunTitleRowOnly()
         {
             const string filename = "regression/titleRowOnly.csv";
@@ -708,21 +708,21 @@ namespace com.espertech.esperio.regression.adapter
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunWrongAlias()
         {
             const string filename = "regression/noTimestampOne.csv";
             AssertFailedConstruction(filename, "myNonMapEvent");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRunWrongMapType()
         {
             const string filename = "regression/differentMap.csv";
             AssertFailedConstruction(filename, _eventTypeName);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestStartOneRow()
         {
             const string filename = "regression/oneRow.csv";
@@ -732,7 +732,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertEvent(1, 1.1, "one");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestStop()
         {
             const string filename = "regression/timestampOne.csv";
@@ -756,7 +756,7 @@ namespace com.espertech.esperio.regression.adapter
             AssertFlatEvents(events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestStopAfterEOF()
         {
             const string filename = "regression/timestampOne.csv";
@@ -764,7 +764,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(AdapterState.OPENED, _adapter.State);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTitleRowNoTimestamp()
         {
             const string filename = "regression/titleRowNoTimestamp.csv";

@@ -6,30 +6,31 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.serde;
+using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
-    public class JsonDeserializerEventObjectArray2Dim : JsonDeserializerBase
+    public class JsonDeserializerCollection : JsonDeserializerBase
     {
-        private readonly Type _componentType;
-        private readonly List<object> _events = new List<object>();
+        private readonly JsonDeserializerBase _itemDeserializer;
+        private IList<object> _result = null;
 
-        public JsonDeserializerEventObjectArray2Dim(Type componentType)
+        public JsonDeserializerCollection(JsonDeserializerBase itemDeserializer)
         {
-            _componentType = componentType;
+            _itemDeserializer = itemDeserializer;
         }
 
         public override object Deserialize(JsonElement element)
         {
-            throw new NotImplementedException();
-        }
+            if (element.ValueKind != JsonValueKind.Array) {
+                throw new IllegalStateException($"expected {nameof(JsonValueKind.Array)}, but received {element.ValueKind}");
+            }
 
-        public override object GetResult() => 
-            throw new NotImplementedException();
+            _result = JsonElementExtensions.ElementToArray(element, _itemDeserializer.Deserialize);
+            return _result;
+        }
     }
 } // end of namespace

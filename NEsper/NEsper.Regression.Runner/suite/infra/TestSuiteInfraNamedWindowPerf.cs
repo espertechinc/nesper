@@ -12,7 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.namedwindow;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 

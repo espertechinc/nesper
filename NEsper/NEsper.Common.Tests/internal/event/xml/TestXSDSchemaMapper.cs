@@ -12,7 +12,7 @@ using System.Linq;
 using System.Xml.Schema;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.supportunit.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 using NUnit.Framework;
@@ -200,11 +200,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
             }
 
-            foreach (var element in elements)
-            {
-                Console.WriteLine("name '{0}' namespace '{1}'",
-                                  element.Name,
-                                  element.Namespaces);
+            foreach (var element in elements) {
+                var namespaces = element.Namespaces;
+                var namespacesAsStr = namespaces.RenderAny();
+
+                Console.WriteLine(
+                    "name '{0}' namespace '{1}'",
+                    element.Name,
+                    namespacesAsStr);
             }
 
             var firstElement = elements.First();
@@ -214,7 +217,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 throw new PropertyAccessException("Invalid schema - the root element must have at least either attribute declarations or childs elements");
             }
 
-            Console.WriteLine(firstElementType);
+            Console.WriteLine(firstElementType.RenderAny());
         }
 
         [Test, RunInApplicationDomain]

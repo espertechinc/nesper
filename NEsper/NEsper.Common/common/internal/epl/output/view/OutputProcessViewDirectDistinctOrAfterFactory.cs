@@ -11,7 +11,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {

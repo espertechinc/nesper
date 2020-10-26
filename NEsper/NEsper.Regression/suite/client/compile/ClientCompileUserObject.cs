@@ -8,10 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.client.option;

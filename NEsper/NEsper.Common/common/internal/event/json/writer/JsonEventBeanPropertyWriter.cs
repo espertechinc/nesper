@@ -6,15 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
-using com.espertech.esper.common.@internal.@event.json.parser.core;
-using com.espertech.esper.common.@internal.@event.json.serde;
+using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -22,16 +19,26 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 {
     public class JsonEventBeanPropertyWriter : EventPropertyWriterSPI
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly IJsonDelegate _delegate;
+        
         /// <summary>
         /// The field being assigned.
         /// </summary>
         private readonly JsonUnderlyingField _field;
 
         public JsonEventBeanPropertyWriter(
+            IJsonDelegate @delegate,
             JsonUnderlyingField field)
         {
+            _delegate = @delegate;
             _field = field;
         }
+
+        public IJsonDelegate Delegate => _delegate;
+
+        public JsonUnderlyingField Field1 => _field;
 
         /// <summary>
         /// The field being assigned.
@@ -59,8 +66,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             object value,
             object und)
         {
-            throw new NotImplementedException("broken: cccafd65-2be7-4774-8af6-72ed61e65ca0");
-            //SerializationContext.SetValue(_field.FieldName, value, und);
+            if (!_delegate.TrySetProperty(_field.PropertyName, und, value)) {
+                log.Warn($"Attempted to write property \"{_field.PropertyName}\" failed");
+            }
         }
         
         /// <summary>

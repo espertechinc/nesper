@@ -8,7 +8,6 @@
 
 using System;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.stats

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.streamtype

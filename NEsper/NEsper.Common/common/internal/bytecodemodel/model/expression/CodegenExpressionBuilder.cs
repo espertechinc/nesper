@@ -479,8 +479,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return StaticMethod(
                 typeof(CompatExtensions),
                 "Unwrap",
-                new[] { elementType },
-                expression);
+                new[] {elementType},
+                expression,
+                ConstantTrue());
         }
 
         

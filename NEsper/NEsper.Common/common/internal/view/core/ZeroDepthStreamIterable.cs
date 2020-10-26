@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 
 namespace com.espertech.esper.common.@internal.view.core
 {

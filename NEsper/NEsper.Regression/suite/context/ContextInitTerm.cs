@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 "select Id as id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
-            var fields = new[] {"Id", "sbint", "starttime", "endtime"};
+            var fields = new[] {"id", "sbint", "starttime", "endtime"};
             Assert.AreEqual(
                 StatementType.CREATE_CONTEXT,
                 env.Statement("ctx").GetProperty(StatementProperty.STATEMENTTYPE));

@@ -8,6 +8,8 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Net;
 
 using com.espertech.esper.common.client;
@@ -18,7 +20,7 @@ namespace com.espertech.esperio
 	/// <summary>
 	/// An input source for adapters.
 	/// </summary>
-	public class AdapterInputSource
+	public class AdapterInputSource : IDisposable
 	{
 		private readonly IContainer _container;
 		private readonly Uri _url;
@@ -26,29 +28,34 @@ namespace com.espertech.esperio
 		private readonly FileInfo _file;
 		private readonly Stream _inputStream;
 		private readonly TextReader _reader;
-		
+		private ZipArchive _zipArchive;
+
 		/// <summary>
 		/// Ctor.
 		/// </summary>
 		/// <param name="container">the service container</param>
 		/// <param name="resource">the name of the resource on the classpath to use as the source for an adapter</param>
-		
-		public AdapterInputSource(IContainer container, string resource)
+
+		public AdapterInputSource(
+			IContainer container,
+			string resource)
 		{
 			_container = container;
-		    _resource = resource ?? throw new ArgumentException("Cannot create AdapterInputStream from a null resource");
+			_resource = resource ?? throw new ArgumentException("Cannot create AdapterInputStream from a null resource");
 			_url = null;
 			_file = null;
 			_inputStream = null;
 			_reader = null;
 		}
-		
+
 		/// <summary>
 		/// Ctor.
 		/// </summary>
 		/// <param name="container">the service container</param>
 		/// <param name="url">the URL for the resource to use as source for an adapter</param>
-		public AdapterInputSource(IContainer container, Uri url)
+		public AdapterInputSource(
+			IContainer container,
+			Uri url)
 		{
 			_container = container;
 			_url = url ?? throw new ArgumentException("Cannot create AdapterInputStream from a null URL");
@@ -57,31 +64,35 @@ namespace com.espertech.esperio
 			_inputStream = null;
 			_reader = null;
 		}
-		
+
 		/// <summary>
 		/// Ctor.
 		/// </summary>
 		/// <param name="container">the service container</param>
 		/// <param name="file">the file to use as a source</param>
-		public AdapterInputSource(IContainer container, FileInfo file)
+		public AdapterInputSource(
+			IContainer container,
+			FileInfo file)
 		{
 			_container = container;
-		    _file = file ?? throw new ArgumentException("file cannot be null");
+			_file = file ?? throw new ArgumentException("file cannot be null");
 			_url = null;
 			_resource = null;
 			_inputStream = null;
 			_reader = null;
 		}
-		
+
 		/// <summary>
 		/// Ctor.
 		/// </summary>
 		/// <param name="container">the service container</param>
 		/// <param name="inputStream">the stream to use as a source</param>
-		public AdapterInputSource(IContainer container, Stream inputStream)
+		public AdapterInputSource(
+			IContainer container,
+			Stream inputStream)
 		{
 			_container = container;
-		    _inputStream = inputStream ?? throw new ArgumentException("stream cannot be null");
+			_inputStream = inputStream ?? throw new ArgumentException("stream cannot be null");
 			_file = null;
 			_url = null;
 			_resource = null;
@@ -93,16 +104,26 @@ namespace com.espertech.esperio
 		/// </summary>
 		/// <param name="container">the service container</param>
 		/// <param name="reader">reader is any reader for reading a file or string</param>
-		public AdapterInputSource(IContainer container, TextReader reader)
+		public AdapterInputSource(
+			IContainer container,
+			TextReader reader)
 		{
 			_container = container;
-		    _reader = reader ?? throw new ArgumentException("reader cannot be null");
+			_reader = reader ?? throw new ArgumentException("reader cannot be null");
 			_url = null;
 			_resource = null;
 			_file = null;
-			_inputStream  = null;
+			_inputStream = null;
 		}
-		
+
+		public void Dispose()
+		{
+			if (_zipArchive != null) {
+				_zipArchive.Dispose();
+				_zipArchive = null;
+			}
+		}
+
 		/// <summary>
 		/// Get the resource as an input stream. If this resource was specified as an InputStream, 
 		/// return that InputStream, otherwise, create and return a new InputStream from the 
@@ -111,43 +132,30 @@ namespace com.espertech.esperio
 		/// <returns>a stream from the resource</returns>
 		public Stream GetAsStream()
 		{
-			if(_reader != null)
-			{
+			if (_reader != null) {
 				return null;
 			}
-			if(_inputStream != null)
-			{
+
+			if (_inputStream != null) {
 				return _inputStream;
 			}
-			if(_file != null)
-			{
-				try
-				{
-					return _file.OpenRead() ;
-				} 
-				catch (IOException e)
-				{
-					throw new EPException(e);
+
+			if (_file != null) {
+				if (_file.Extension == ".zip") {
+					return OpenZipFile(_file);
 				}
+
+				return _file.OpenRead();
 			}
-			if(_url != null)
-			{
-				try
-				{
-					WebClient webClient = new WebClient() ;
-					return webClient.OpenRead(_url) ;
-				} 
-				catch (IOException e)
-				{
-					throw new EPException(e);
-				}
+
+			if (_url != null) {
+				var webClient = new WebClient();
+				return webClient.OpenRead(_url);
 			}
-			else 
-			{
-				return ResolvePathAsStream(_resource);
-			}
+
+			return ResolvePathAsStream(_resource);
 		}
-		
+
 		/// <summary>
 		/// Return the reader if it was set, null otherwise.
 		/// </summary>
@@ -156,7 +164,18 @@ namespace com.espertech.esperio
 		{
 			return _reader;
 		}
-		
+
+		private Stream OpenZipFile(FileInfo fileInfo)
+		{
+			_zipArchive = ZipFile.OpenRead(fileInfo.FullName);
+			var zipEntry = _zipArchive.Entries.FirstOrDefault();
+			if (zipEntry == null) {
+				throw new EPException("Zip archive '" + fileInfo.Name + "' is empty");
+			}
+
+			return zipEntry.Open();
+		}
+
 		/// <summary>
 		/// Return true if calling getStream() will return a new InputStream created from the
 		/// resource, which, assuming that the resource hasn't been changed, will have the same
@@ -167,20 +186,16 @@ namespace com.espertech.esperio
 		/// <returns>true if each call to getStream() will create a new InputStream from the
 		/// resource, false if each call will get the same instance of the InputStream
 		/// </returns>
-		public bool IsResettable
-		{
-			get { return _inputStream == null && _reader == null; }
-		}
-		
-		private Stream ResolvePathAsStream(string path)
-	    {
-            var stream = _container.ResourceManager().GetResourceAsStream(path ) ;
-            if (stream == null)
-            {
-                throw new EPException(path + " not found");
-            }
+		public bool IsResettable => _inputStream == null && _reader == null;
 
-		    return stream;
-	    }
+		private Stream ResolvePathAsStream(string path)
+		{
+			var stream = _container.ResourceManager().GetResourceAsStream(path);
+			if (stream == null) {
+				throw new EPException(path + " not found");
+			}
+
+			return stream;
+		}
 	}
 }

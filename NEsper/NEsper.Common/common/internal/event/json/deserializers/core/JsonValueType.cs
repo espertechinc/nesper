@@ -6,17 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.@event.json.forge;
-
-namespace com.espertech.esper.common.@internal.@event.json.parser.forge
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
-    public interface JsonAllocatorForge
+    public enum JsonValueType
     {
-        CodegenExpression NewDelegate(
-            JsonDelegateRefs fields,
-            CodegenMethod method,
-            CodegenClassScope classScope);
+        OBJECT,
+        ARRAY,
+        STRING,
+        NUMBER,
+        NULL,
+        BOOLEAN
     }
 } // end of namespace

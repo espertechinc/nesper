@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 dimensions[i] = size.Value;
             }
 
-            return Array.CreateInstance(_forge.TargetClass, dimensions);
+            return Arrays.CreateInstanceChecked(_forge.TargetClass, dimensions);
         }
 
         public static CodegenExpression EvaluateCodegen(
@@ -95,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var @params = new CodegenExpression[dimValue.Length + 1];
                 @params[0] = Clazz(forge.TargetClass);
                 Array.Copy(dimValue, 0, @params, 1, dimValue.Length);
-                make = StaticMethod(typeof(Array), "CreateInstance", @params);
+                make = StaticMethod(typeof(Arrays), "CreateJagged", @params);
             }
             
             method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(requiredType, make));

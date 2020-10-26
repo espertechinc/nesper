@@ -61,7 +61,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             foreach (var name in arrayPropertiesToCopy) {
                 var raw = props.Get(name);
                 if (raw is Array array && array.Length != 0) {
-                    var copied = Array.CreateInstance(array.GetType().GetElementType(), array.Length);
+                    var elementType = array.GetType().GetElementType();
+                    var copied = Arrays.CreateInstanceChecked(elementType, array.Length);
                     Array.Copy(array, 0, copied, 0, array.Length);
                     shallowCopy.Put(name, copied);
                 }

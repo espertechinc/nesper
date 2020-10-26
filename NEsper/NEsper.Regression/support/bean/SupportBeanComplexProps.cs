@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.regressionlib.suite.client.runtime;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {

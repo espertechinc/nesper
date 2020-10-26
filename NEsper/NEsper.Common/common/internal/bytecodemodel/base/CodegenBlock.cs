@@ -12,8 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-using Castle.Core.Internal;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;

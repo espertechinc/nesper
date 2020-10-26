@@ -17,7 +17,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.epl.join;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Core;
@@ -164,17 +164,17 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             [Test, RunInApplicationDomain]
-            public void WithUnidirectionalRelOp() => RegressionRunner.Run(
+            public void WithUnidirectionalRelOp() => RegressionRunner.RunPerformanceSensitive(
                 _session,
                 EPLJoin2StreamRangePerformance.WithUnidirectionalRelOp());
 
             [Test, RunInApplicationDomain]
-            public void WithKeyAndRangeInverted() => RegressionRunner.Run(
+            public void WithKeyAndRangeInverted() => RegressionRunner.RunPerformanceSensitive(
                 _session,
                 EPLJoin2StreamRangePerformance.WithKeyAndRangeInverted());
 
             [Test, RunInApplicationDomain]
-            public void WithKeyAndRange() => RegressionRunner.Run(
+            public void WithKeyAndRange() => RegressionRunner.RunPerformanceSensitive(
                 _session,
                 EPLJoin2StreamRangePerformance.WithKeyAndRange());
 

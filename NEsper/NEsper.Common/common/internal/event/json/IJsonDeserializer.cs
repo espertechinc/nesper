@@ -10,10 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.compat.collections;
-
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+namespace com.espertech.esper.common.@internal.@event.json
 {
     /// <summary>
     /// Deserializes an entity.
@@ -21,25 +18,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     public interface IJsonDeserializer
     {
         /// <summary>
-        /// Allocates a vanilla json composite object.
-        /// </summary>
-        public Func<object> Allocator { get; }
-
-        /// <summary>
         /// Deserializes the entity.
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
         public object Deserialize(JsonElement element);
     }
-
-#if false
-    /// <summary>
-    /// Called to deserialize a JsonElement.
-    /// </summary>
-    /// <param name="element"></param>
-    public delegate T JsonDeserializer<out T>(JsonElement element);
-#endif
 
     public static class JsonDeserializerExtensions
     {

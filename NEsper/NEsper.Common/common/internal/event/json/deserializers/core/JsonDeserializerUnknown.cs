@@ -6,12 +6,26 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-namespace com.espertech.esper.common.@internal.@event.json.parser.core
+using System.Text.Json;
+
+using com.espertech.esper.compat;
+
+namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
-    public abstract class JsonDeserializerGenericBase : JsonDeserializerBase
+    public class JsonDeserializerUnknown : JsonDeserializerBase
     {
-        public JsonDeserializerGenericBase()
+        public JsonDeserializerUnknown()
         {
         }
+
+        public override object Deserialize(JsonElement element)
+        {
+            if (element.ValueKind != JsonValueKind.Undefined) {
+                throw new IllegalStateException($"expected {nameof(JsonValueKind.Undefined)}, but received {element.ValueKind}");
+            }
+
+            return null;
+        }
+
     }
 } // end of namespace

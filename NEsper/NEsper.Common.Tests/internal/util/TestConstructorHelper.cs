@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;

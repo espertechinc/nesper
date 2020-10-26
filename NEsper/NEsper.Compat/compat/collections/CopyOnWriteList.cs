@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat.collections
@@ -63,7 +62,7 @@ namespace com.espertech.esper.compat.collections
         {
             var list = _arrayList;
             var length = list.Length;
-            for (int ii = 0; ii < length; ii++ )
+            for (var ii = 0; ii < length; ii++ )
             {
                 action.Invoke(list[ii]);
             }
@@ -80,7 +79,7 @@ namespace com.espertech.esper.compat.collections
         {
             using (_writerLock.Acquire())
             {
-                List<T> tempList = new List<T>(_arrayList);
+                var tempList = new List<T>(_arrayList);
                 tempList.Add(item);
                 _arrayList = tempList.ToArray();
             }
@@ -94,7 +93,7 @@ namespace com.espertech.esper.compat.collections
         {
             using (_writerLock.Acquire())
             {
-                List<T> tempList = new List<T>(_arrayList);
+                var tempList = new List<T>(_arrayList);
                 tempList.AddRange(itemList);
                 _arrayList = tempList.ToArray();
             }
@@ -165,7 +164,7 @@ namespace com.espertech.esper.compat.collections
 
             using (_writerLock.Acquire())
             {
-                List<T> tempList = new List<T>(_arrayList);
+                var tempList = new List<T>(_arrayList);
                 result = tempList.Remove(item);
                 if (result)
                 {
@@ -184,8 +183,8 @@ namespace com.espertech.esper.compat.collections
         {
             using (_writerLock.Acquire())
             {
-                List<T> tempList = new List<T>(_arrayList);
-                foreach (T item in items)
+                var tempList = new List<T>(_arrayList);
+                foreach (var item in items)
                 {
                     tempList.Remove(item);
                 }
@@ -207,7 +206,7 @@ namespace com.espertech.esper.compat.collections
         {
             var list = _arrayList;
             var length = list.Length;
-            for (int ii = 0; ii < length; ii++)
+            for (var ii = 0; ii < length; ii++)
             {
                 yield return list[ii];
             }
@@ -255,7 +254,7 @@ namespace com.espertech.esper.compat.collections
         {
             using (_writerLock.Acquire())
             {
-                List<T> tempList = new List<T>(_arrayList);
+                var tempList = new List<T>(_arrayList);
                 tempList.Insert(index, item);
                 _arrayList = tempList.ToArray();
             }
@@ -271,7 +270,7 @@ namespace com.espertech.esper.compat.collections
         {
             using (_writerLock.Acquire())
             {
-                List<T> tempList = new List<T>(_arrayList);
+                var tempList = new List<T>(_arrayList);
                 tempList.RemoveAt(index);
                 _arrayList = tempList.ToArray();
             }
@@ -292,7 +291,7 @@ namespace com.espertech.esper.compat.collections
                 
                 using (_writerLock.Acquire())
                 {
-                    List<T> tempList = new List<T>(_arrayList);
+                    var tempList = new List<T>(_arrayList);
                     tempList[index] = value;
                     _arrayList = tempList.ToArray();
                 }

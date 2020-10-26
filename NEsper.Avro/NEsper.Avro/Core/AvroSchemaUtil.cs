@@ -662,12 +662,22 @@ namespace NEsper.Avro.Core
                 if (!nullableElements) {
                     // Schema union = SchemaBuilder.Union().NullType().And().Type(arrayOfReq).EndUnion();
                     // assembler.Name(propertyName).Type(union).NoDefault();
-                    fields.Add(TypeBuilder.Union(TypeBuilder.NullType(), arrayOfReq));
+                    fields.Add(
+                        TypeBuilder.Field(
+                            propertyName,
+                            TypeBuilder.Union(
+                                TypeBuilder.NullType(),
+                                arrayOfReq)));
                 }
                 else {
                     // Schema union = SchemaBuilder.Union().NullType().And().Type(arrayOfOpt).EndUnion();
                     // assembler.Name(propertyName).Type(union).NoDefault();
-                    fields.Add(TypeBuilder.Union(TypeBuilder.NullType(), arrayOfOpt));
+                    fields.Add(
+                        TypeBuilder.Field(
+                            propertyName,
+                            TypeBuilder.Union(
+                                TypeBuilder.NullType(),
+                                arrayOfOpt)));
                 }
             }
         }

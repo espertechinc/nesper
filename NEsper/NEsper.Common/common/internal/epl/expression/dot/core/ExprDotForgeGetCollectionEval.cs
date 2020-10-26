@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				return list[indexNum];
 			}
 
-			return collection.Skip(indexNum - 1).FirstOrDefault();
+			return collection.Skip(indexNum).FirstOrDefault();
 		}
 
 		public EPType TypeInfo {

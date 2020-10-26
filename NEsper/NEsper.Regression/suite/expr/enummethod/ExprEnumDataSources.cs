@@ -345,7 +345,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "OrderEvent");
 
                 var c = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
-                Console.WriteLine("c = {0}", c);
                 var cArray = c.UnwrapIntoArray<object>();
                 EPAssertionUtil.AssertEqualsExactOrder(cArray, new object[] {detailTwo});
 

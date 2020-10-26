@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace com.espertech.esper.compat.collections.btree
@@ -27,7 +25,7 @@ namespace com.espertech.esper.compat.collections.btree
             IndexAccessor keyAccessor)
         {
             while (s < e) {
-                int c = comp.Compare(keyAccessor(s), k);
+                var c = comp.Compare(keyAccessor(s), k);
                 if (c == 0) {
                     return s;
                 }
@@ -59,8 +57,8 @@ namespace com.espertech.esper.compat.collections.btree
             IndexAccessor keyAccessor)
         {
             while (s != e) {
-                int mid = (s + e) / 2;
-                int c = comp.Compare(keyAccessor(mid), k);
+                var mid = (s + e) / 2;
+                var c = comp.Compare(keyAccessor(mid), k);
                 if (c < 0) {
                     s = mid + 1;
                 }
@@ -105,7 +103,7 @@ namespace com.espertech.esper.compat.collections.btree
             ref T lvalue,
             ref T rvalue)
         {
-            T tvalue = rvalue;
+            var tvalue = rvalue;
             rvalue = lvalue;
             lvalue = tvalue;
         }
@@ -116,7 +114,9 @@ namespace com.espertech.esper.compat.collections.btree
         /// <param name="assertion"></param>
         internal static void Assert(bool assertion)
         {
-            Debug.Assert(assertion);
+            if (!assertion) {
+                throw new IllegalStateException();
+            }
         }
     }
 }

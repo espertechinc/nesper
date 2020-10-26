@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -60,14 +61,9 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     var events = listener.GetNewDataListCopy();
                     var found = false;
                     foreach (var arr in events) {
-                        foreach (var item in arr) {
-                            var value = item.Get("val").AsInt32();
-                            if (value == valueExpected) {
-                                found = true;
-                                break;
-                            }
-                        }
-
+                        found = arr
+                            .Select(item => item.Get("val").AsInt32())
+                            .Any(value => value == valueExpected);
                         if (found) {
                             break;
                         }

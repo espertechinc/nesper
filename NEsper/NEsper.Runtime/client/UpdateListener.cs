@@ -8,8 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.client;
-
 namespace com.espertech.esper.runtime.client
 {
     using UpdateEventHandler = EventHandler<UpdateEventArgs>;

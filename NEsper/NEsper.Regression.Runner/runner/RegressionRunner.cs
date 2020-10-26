@@ -12,12 +12,11 @@ using System.Reflection;
 
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.runtime.client;
 
 using NEsper.Avro.Core;
 
-namespace com.espertech.esper.regressionrun.Runner
+namespace com.espertech.esper.regressionrun.runner
 {
     public class RegressionRunner
     {
@@ -60,6 +59,15 @@ namespace com.espertech.esper.regressionrun.Runner
         {
             foreach (var execution in RegressionFilter.FilterBySystemProperty(executions)) {
                 Run(session, execution, usePerfContext);
+            }
+        }
+        
+        public static void RunPerformanceSensitive(
+            RegressionSession session,
+            RegressionExecution execution)
+        {
+            using (new PerformanceContext()) {
+                RunInternal(session, execution);
             }
         }
 

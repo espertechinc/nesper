@@ -8,10 +8,6 @@
 
 using System;
 
-using Castle.MicroKernel.Registration;
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 namespace com.espertech.esper.common.@internal.epl.util
 {
     public enum EPLExpressionParamType

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
@@ -23,7 +24,7 @@ using com.espertech.esper.regressionlib.support.extend.pattern;
 using com.espertech.esper.regressionlib.support.extend.vdw;
 using com.espertech.esper.regressionlib.support.extend.view;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -244,6 +245,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
 
             configuration.Common.AddImportType(typeof(ClientExtendSingleRowFunction));
+            configuration.Common.AddImportType(typeof(BigInteger));
 
             configuration.Runtime.Threading.IsRuntimeFairlock = true;
             configuration.Common.Logging.IsEnableQueryPlan = true;

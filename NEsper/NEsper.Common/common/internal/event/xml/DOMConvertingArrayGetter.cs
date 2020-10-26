@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -150,7 +151,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Type componentType,
             SimpleTypeParser parser)
         {
-            var array = Array.CreateInstance(componentType, result.Length);
+            var array = Arrays.CreateInstanceChecked(componentType, result.Length);
             for (var i = 0; i < result.Length; i++) {
                 var text = result[i].InnerText;
                 if (text == null || text.Length == 0) {

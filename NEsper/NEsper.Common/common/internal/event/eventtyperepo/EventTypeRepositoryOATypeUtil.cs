@@ -23,8 +23,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
-using static com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil;
-
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
     public class EventTypeRepositoryOATypeUtil
@@ -156,7 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 }
 
                 if (isArray) {
-                    clazz = Array.CreateInstance(clazz, 0).GetType();
+                    clazz = clazz.MakeArrayType();
                 }
 
                 return clazz;

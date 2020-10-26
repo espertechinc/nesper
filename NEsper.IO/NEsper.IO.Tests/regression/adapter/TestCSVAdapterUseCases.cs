@@ -9,31 +9,38 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.dataflow.core;
+using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esperio.csv;
+using com.espertech.esperio.file;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
+
+using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
 {
     [TestFixture]
     public class TestCSVAdapterUseCases
     {
-        private static readonly String NEW_LINE = Environment.NewLine;
+        private static readonly string NEW_LINE = Environment.NewLine;
 
-        internal const String CSV_FILENAME_ONELINE_TRADE = "regression/csvtest_tradedata.csv";
+        internal const string CSV_FILENAME_ONELINE_TRADE = "../../../../etc/regression/csvtest_tradedata.csv";
 
-        private const string CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "regression/csvtest_tradedata_multiple.csv";
-        private const string CSV_FILENAME_TIMESTAMPED_PRICES = "regression/csvtest_timestamp_prices.csv";
-        private const string CSV_FILENAME_TIMESTAMPED_TRADES = "regression/csvtest_timestamp_trades.csv";
+        private const string CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "../../../../etc/regression/csvtest_tradedata_multiple.csv";
+        private const string CSV_FILENAME_TIMESTAMPED_PRICES = "../../../../etc/regression/csvtest_timestamp_prices.csv";
+        private const string CSV_FILENAME_TIMESTAMPED_TRADES = "../../../../etc/regression/csvtest_timestamp_trades.csv";
 
         private readonly bool _useBean;
 
@@ -55,20 +62,23 @@ namespace com.espertech.esperio.regression.adapter
             _useBean = ub;
         }
 
-        private Configuration MakeConfig(String typeName)
+        private Configuration MakeConfig(string typeName)
         {
             return MakeConfig(typeName, false);
         }
 
-        private Configuration MakeConfig(String typeName, bool useBean)
+        private Configuration MakeConfig(string typeName, bool useBean)
         {
             var configuration = new Configuration(_container);
+            configuration.Common.AddImportNamespace(typeof(FileSourceCSV));
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp));
+            
             if (useBean) {
                 configuration.Common.AddEventType(typeName, typeof (ExampleMarketDataBean));
             }
             else {
-                IDictionary<String, Object> eventProperties = new Dictionary<String, Object>();
-                eventProperties.Put("symbol", typeof (String));
+                IDictionary<string, object> eventProperties = new Dictionary<string, object>();
+                eventProperties.Put("symbol", typeof (string));
                 eventProperties.Put("price", typeof (double));
                 eventProperties.Put("volume", typeof (int?));
                 configuration.Common.AddEventType(typeName, eventProperties);
@@ -77,20 +87,38 @@ namespace com.espertech.esperio.regression.adapter
             return configuration;
         }
 
-        private void TrySource(AdapterInputSource source)
+        private void TrySource(Supplier<AdapterInputSource> sourceSupplier)
         {
+            var source = sourceSupplier.Invoke();
             var spec = new CSVInputAdapterSpec(source, "TypeC");
 
             _runtime = EPRuntimeProvider.GetRuntime("testPlayFromInputStream", MakeConfig("TypeC"));
             _runtime.Initialize();
             InputAdapter feed = new CSVInputAdapter(_runtime, spec);
 
-            var stmt = CompileUtil.CompileDeploy(_runtime, "select * from TypeC#length(100)").Statements[0];
+            var stmt = CompileDeploy(_runtime, "select * from TypeC#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             feed.Start();
             Assert.AreEqual(1, listener.GetNewDataList().Count);
+
+            source = sourceSupplier.Invoke();
+
+            // test graph
+            var graph = "create dataflow ReadCSV " +
+                        "FileSource -> mystream<TypeC> { hasTitleLine: true }" +
+                        "DefaultSupportCaptureOp(mystream) {}";
+            var deployment = CompileDeploy(_runtime, graph);
+
+            var outputOp = new DefaultSupportCaptureOp();
+            var options = new EPDataFlowInstantiationOptions();
+            options.OperatorProvider = new DefaultSupportGraphOpProvider(outputOp);
+            options.ParameterProvider = new DefaultSupportGraphParamProvider(Collections.SingletonDataMap("adapterInputSource", source));
+            var instance = _runtime.DataFlowService.Instantiate(deployment.DeploymentId, "ReadCSV", options);
+            instance.Run();
+            var received = outputOp.GetAndReset()[0].ToArray();
+            Assert.AreEqual(1, received.Length);
         }
 
         /// <summary>
@@ -109,13 +137,13 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using the application thread
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAppThread()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
             _runtime.Initialize();
 
-            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
+            var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -128,17 +156,17 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(1, listener.GetNewDataList().Count);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCoordinated()
         {
-            IDictionary<String, Object> priceProps = new Dictionary<String, Object>();
+            IDictionary<string, object> priceProps = new Dictionary<string, object>();
             priceProps.Put("timestamp", typeof (long?));
-            priceProps.Put("symbol", typeof (String));
+            priceProps.Put("symbol", typeof (string));
             priceProps.Put("price", typeof (double?));
 
-            IDictionary<String, Object> tradeProps = new Dictionary<String, Object>();
+            IDictionary<string, object> tradeProps = new Dictionary<string, object>();
             tradeProps.Put("timestamp", typeof (long?));
-            tradeProps.Put("symbol", typeof (String));
+            tradeProps.Put("symbol", typeof (string));
             tradeProps.Put("notional", typeof (double?));
 
             var config = new Configuration(_container);
@@ -162,10 +190,10 @@ namespace com.espertech.esperio.regression.adapter
             inputTradesSpec.PropertyTypes = tradeProps;
             var inputTrades = new CSVInputAdapter(inputTradesSpec);
 
-            var stmtPrices = CompileUtil.CompileDeploy(_runtime, "select symbol, price from PriceEvent#length(100)").Statements[0];
+            var stmtPrices = CompileDeploy(_runtime, "select symbol, price from PriceEvent#length(100)").Statements[0];
             var listenerPrice = new SupportUpdateListener();
             stmtPrices.Events += listenerPrice.Update;
-            var stmtTrade = CompileUtil.CompileDeploy(_runtime, "select symbol, notional from TradeEvent#length(100)").Statements[0];
+            var stmtTrade = CompileDeploy(_runtime, "select symbol, notional from TradeEvent#length(100)").Statements[0];
             var listenerTrade = new SupportUpdateListener();
             stmtTrade.Events += listenerTrade.Update;
 
@@ -203,7 +231,7 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using no existing (dynamic) event type (no timestamp)
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestDynamicType()
         {
             var spec = new CSVInputAdapterSpec(
@@ -214,15 +242,17 @@ namespace com.espertech.esperio.regression.adapter
             _runtime = EPRuntimeProvider.GetDefaultRuntime(config);
             _runtime.Initialize();
 
+            CompileDeploy(_runtime, "@public @buseventtype create schema TypeB(symbol string, price string, volume string)");
+
             InputAdapter feed = new CSVInputAdapter(_runtime, spec);
 
-            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeB#length(100)").Statements[0];
+            var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeB#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            Assert.AreEqual(typeof (String), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof (String), stmt.EventType.GetPropertyType("price"));
-            Assert.AreEqual(typeof (String), stmt.EventType.GetPropertyType("volume"));
+            Assert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("symbol"));
+            Assert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("price"));
+            Assert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("volume"));
 
             feed.Start();
             Assert.AreEqual(1, listener.GetNewDataList().Count);
@@ -231,13 +261,13 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using an engine thread
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEngineThread1000PerSec()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
             _runtime.Initialize();
 
-            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
+            var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -256,13 +286,13 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file using an engine thread.
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEngineThread1PerSec()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
             _runtime.Initialize();
 
-            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
+            var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -287,13 +317,13 @@ namespace com.espertech.esperio.regression.adapter
         /// Play a CSV file using an existing event type definition (no timestamps).  Should
         /// not require a timestamp column, should block thread until played in.
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExistingTypeNoOptions()
         {
             _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
             _runtime.Initialize();
 
-            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
+            var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -305,23 +335,27 @@ namespace com.espertech.esperio.regression.adapter
         /// <summary>
         /// Play a CSV file that is from memory.
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPlayFromInputStream()
         {
-            var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
-            Stream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(myCSV));
-            TrySource(new AdapterInputSource(_container, inputStream));
+            TrySource(() => {
+                var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+                var inputStream = new MemoryStream(Encoding.ASCII.GetBytes(myCSV));
+                return new AdapterInputSource(_container, inputStream);
+            });
         }
 
         /// <summary>
         /// Play a CSV file that is from memory.
         /// </summary>
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPlayFromStringReader()
         {
-            var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
-            var reader = new StringReader(myCSV);
-            TrySource(new AdapterInputSource(_container, reader));
+            TrySource(() => {
+                var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+                var reader = new StringReader(myCSV);
+                return new AdapterInputSource(_container, reader);
+            });
         }
     }
 }

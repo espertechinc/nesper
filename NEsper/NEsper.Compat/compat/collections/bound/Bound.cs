@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace com.espertech.esper.compat.collections.bound
+﻿namespace com.espertech.esper.compat.collections.bound
 {
     public class Bound<TV>
     {

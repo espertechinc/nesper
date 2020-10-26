@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +14,8 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.context.module.EPStatementInitServices; //GETSTATEMENTRESULTSERVICE
+
+//GETSTATEMENTRESULTSERVICE
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {

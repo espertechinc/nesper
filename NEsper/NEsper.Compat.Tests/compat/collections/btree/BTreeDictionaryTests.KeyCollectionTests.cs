@@ -14,7 +14,7 @@ namespace com.espertech.esper.compat.collections.btree
             // Keys
             // --------------------------------------------------------------------------------
 
-            [Test, RunInApplicationDomain]
+            [Test]
             public void KeysMustNotBeNull()
             {
                 var btreeDictionary = new BTreeDictionary<string, string>();
@@ -22,7 +22,7 @@ namespace com.espertech.esper.compat.collections.btree
                 Assert.That(btreeDictionary.Keys.Count, Is.EqualTo(0));
             }
 
-            [Test, RunInApplicationDomain]
+            [Test]
             public void KeysAreReadOnly()
             {
                 var btreeDictionary = new BTreeDictionary<string, string>();
@@ -35,7 +35,7 @@ namespace com.espertech.esper.compat.collections.btree
                 Assert.Throws<NotSupportedException>(() => btreeKeys.Clear());
             }
 
-            [Test, RunInApplicationDomain]
+            [Test]
             public void KeysContainsCheck()
             {
                 var btreeDictionary = new BTreeDictionary<string, string>();
@@ -47,7 +47,7 @@ namespace com.espertech.esper.compat.collections.btree
                 Assert.That(btreeDictionary.Keys.Contains(null), Is.False);
             }
 
-            [Test, RunInApplicationDomain]
+            [Test]
             public void KeysCanBeCopied()
             {
                 var btreeDictionary = new BTreeDictionary<string, string>();
@@ -153,7 +153,7 @@ namespace com.espertech.esper.compat.collections.btree
                     });
             }
 
-            [Test, RunInApplicationDomain]
+            [Test]
             public void CanEnumerateKeys()
             {
                 int numKeys = 65536;

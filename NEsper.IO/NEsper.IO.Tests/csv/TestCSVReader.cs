@@ -32,7 +32,7 @@ namespace com.espertech.esperio.csv
             _container = SupportContainer.Reset();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClose()
         {
             var path = "regression/parseTests.csv";
@@ -55,7 +55,7 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestLooping()
         {
             AssertLooping("regression/endOnNewline.csv");
@@ -63,7 +63,7 @@ namespace com.espertech.esperio.csv
             AssertLooping("regression/endOnCommentedEOF.csv");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNonLooping()
         {
             AssertNonLooping("regression/endOnNewline.csv");
@@ -71,7 +71,7 @@ namespace com.espertech.esperio.csv
             AssertNonLooping("regression/endOnCommentedEOF.csv");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParsing()
         {
             var path = "regression/parseTests.csv";
@@ -118,7 +118,7 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestReset()
         {
             var reader = new CSVReader(new AdapterInputSource(_container, "regression/endOnNewline.csv"));
@@ -138,7 +138,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(expected, nextRecord);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTitleRow()
         {
             var reader = new CSVReader(new AdapterInputSource(_container, "regression/titleRow.csv"));
@@ -146,7 +146,7 @@ namespace com.espertech.esperio.csv
 
             // isUsingTitleRow is false by default, so get the title row
             var nextRecord = reader.GetNextRecord();
-            var expected = new[] {"myString", "myInt", "timestamp", "myDouble"};
+            var expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
             Assert.AreEqual(expected, nextRecord);
 
             // Acknowledge the title row and reset the file afterwards
@@ -183,17 +183,17 @@ namespace com.espertech.esperio.csv
             reader.IsUsingTitleRow = false;
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {"myString", "myInt", "timestamp", "myDouble"};
+            expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
             Assert.AreEqual(expected, nextRecord);
 
             reader.Reset();
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {"myString", "myInt", "timestamp", "myDouble"};
+            expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
             Assert.AreEqual(expected, nextRecord);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNestedProperties()
         {
             var container = ContainerExtensions.CreateDefaultContainer();
@@ -218,7 +218,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(1, f.Point.X);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNestedMapProperties()
         {
             var configuration = new Configuration(_container);

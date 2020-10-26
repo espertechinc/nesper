@@ -12,7 +12,6 @@ using System.Xml;
 
 using Avro.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
@@ -308,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
-                @object.Add("id", id);
+                @object.Add("Id", id);
                 env.SendEventJson(@object.ToString(), "EventOne");
             }
             else {
@@ -380,8 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy(
-                        "@Name('s0') insert into SupportBeanArrayEvent select window(*) @eventbean from SupportBean#keepall")
+                env.CompileDeploy("@Name('s0') insert into SupportBeanArrayEvent select window(*) @eventbean from SupportBean#keepall")
                     .AddListener("s0");
 
                 var e1 = new SupportBean("E1", 1);
@@ -1064,13 +1062,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         [Serializable]
         public class MyLocalJsonProvidedEventOne
         {
-            public string id;
+            public string Id;
         }
 
         [Serializable]
         public class MyLocalJsonProvidedEventTwo
         {
-            public string id;
+            public string Id;
             public int val;
         }
 

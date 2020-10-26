@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;

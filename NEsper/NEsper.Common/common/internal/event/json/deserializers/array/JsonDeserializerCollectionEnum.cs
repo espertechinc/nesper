@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.deserializers.core;
 using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.array

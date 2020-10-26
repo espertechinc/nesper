@@ -15,7 +15,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	[TestFixture]
 	public class TestASTUtil : AbstractCompilerTest
 	{
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestEscapeDot()
 		{
 			string[][] inout = new string[][] {
@@ -41,7 +41,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			}
 		}
 
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void TestUnescapeDot()
 		{
 			string[][] inout = new string[][] {

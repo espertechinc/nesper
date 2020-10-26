@@ -6,17 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
-using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.infra.nwtable;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
@@ -134,7 +129,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraOnMergePerf()
         {
-            RegressionRunner.Run(_session, InfraNWTableOnMergePerf.Executions());
+            RegressionRunner.RunPerformanceSensitive(_session, InfraNWTableOnMergePerf.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -386,10 +381,10 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithSelectGroupBy() => RegressionRunner.Run(_session, InfraNWTableFAFSubquery.WithSelectGroupBy());
 
             [Test, RunInApplicationDomain]
-            public void WithSelectIndexPerfWSubstitution() => RegressionRunner.Run(_session, InfraNWTableFAFSubquery.WithSelectIndexPerfWSubstitution());
+            public void WithSelectIndexPerfWSubstitution() => RegressionRunner.RunPerformanceSensitive(_session, InfraNWTableFAFSubquery.WithSelectIndexPerfWSubstitution());
 
             [Test, RunInApplicationDomain]
-            public void WithSelectIndexPerfCorrelated() => RegressionRunner.Run(_session, InfraNWTableFAFSubquery.WithSelectIndexPerfCorrelated());
+            public void WithSelectIndexPerfCorrelated() => RegressionRunner.RunPerformanceSensitive(_session, InfraNWTableFAFSubquery.WithSelectIndexPerfCorrelated());
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, InfraNWTableFAFSubquery.WithInvalid());
