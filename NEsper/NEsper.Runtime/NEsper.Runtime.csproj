@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
@@ -21,51 +21,6 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(NetFramework)'!='true'">
-    <Compile Remove="epl\db\drivers\DbDriverODBC.cs" />
-    <Compile Remove="epl\db\drivers\DbDriverOleDb.cs" />
-    <Compile Remove="esper\util\EsperSectionHandler.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\core\VirtualMachineMetrics.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.AbstractBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Counter.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.CounterMBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Gauge.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.GaugeMBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Histogram.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.HistogramMBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.MetaContext.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Meter.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.MeterMBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.MetricMBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.TimerImpl.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.TimerMBean.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\util\DeadlockHealthCheck.cs" />
-    <Compile Remove="internal\metrics\codahale_metrics\metrics\util\JmxGauge.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
-    <PackageReference Include="Castle.Core" Version="4.4.1" />
-    <PackageReference Include="Castle.Windsor" Version="5.0.1" />
-    <PackageReference Include="Common.Logging" Version="3.4.1" />
-    <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
-    <PackageReference Include="Crc32.NET" Version="1.2.0" />
-    <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
-    <!--
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.8.2" />
-    -->
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(NetCore)'=='true'">
-    <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
-    <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
-  </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />

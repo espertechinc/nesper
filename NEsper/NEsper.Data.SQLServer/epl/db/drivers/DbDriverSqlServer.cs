@@ -11,7 +11,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 
-namespace com.espertech.esper.common.@internal.db.drivers
+using com.espertech.esper.common.@internal.db.drivers;
+
+namespace com.espertech.esper.epl.db.drivers
 {
     /// <summary>
     /// A database driver specific to the SQLServer
@@ -56,16 +58,12 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <value>
         /// 	<c>true</c> if [use position parameters]; otherwise, <c>false</c>.
         /// </value>
-        protected override bool UsePositionalParameters {
-            get { return false; }
-        }
+        protected override bool UsePositionalParameters => false;
 
         /// <summary>
         /// Gets the parameter prefix.
         /// </summary>
         /// <value>The param prefix.</value>
-        protected override string ParamPrefix {
-            get { return "@"; }
-        }
+        protected override string ParamPrefix => "@";
     }
 }

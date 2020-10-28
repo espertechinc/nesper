@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,24 +18,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="suite\client\runtime\ClientRuntimeJMX.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Npgsql" Version="4.0.8" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp3.1'">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
   </ItemGroup>
-
-  <!--
-  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp3.1'">
-    <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
-  </ItemGroup>
-  -->
 
   <ItemGroup>
     <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro\NEsper.Avro.csproj" />
@@ -47,6 +37,7 @@
     <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
   </ItemGroup>
 
+  <!--
   <ItemGroup>
     <None Update="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -55,4 +46,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  -->
 </Project>

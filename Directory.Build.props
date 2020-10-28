@@ -18,7 +18,7 @@
 
 	<PropertyGroup>
 		<VersionPrefix Condition="'$(VersionPrefix)' == ''">8.5.0</VersionPrefix>
-		<VersionSuffix Condition="'$(VersionSuffix)' == ''">beta-1</VersionSuffix>
+		<VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">

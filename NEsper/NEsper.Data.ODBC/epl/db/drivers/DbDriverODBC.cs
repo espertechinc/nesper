@@ -12,7 +12,9 @@ using System.Data.Common;
 using System.Data.Odbc;
 using System.Runtime.Serialization;
 
-namespace com.espertech.esper.common.@internal.db.drivers
+using com.espertech.esper.common.@internal.db.drivers;
+
+namespace com.espertech.esper.epl.db.drivers
 {
     /// <summary>
     /// Generic database driver using ODBC.

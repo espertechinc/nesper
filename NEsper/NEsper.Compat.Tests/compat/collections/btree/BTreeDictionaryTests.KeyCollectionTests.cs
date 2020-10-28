@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
 
 using NUnit.Framework;
@@ -164,7 +163,7 @@ namespace com.espertech.esper.compat.collections.btree
 
                 var expected = Enumerable.Range(0, numKeys)
                     .Select(v => v.ToString("000000"))
-                    .ToImmutableList();
+                    .ToList();
                 CollectionAssert.AreEqual(
                     expected,
                     btreeDictionary.Keys);
