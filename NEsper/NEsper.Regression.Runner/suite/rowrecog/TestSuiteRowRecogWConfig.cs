@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new RowRecogIntervalResolution(10000000));
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Configuration.Runtime.MatchRecognize.MaxStates = 3L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = false;
             RegressionRunner.Run(session, new RowRecogMaxStatesEngineWideNoPreventStart());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Configuration.Runtime.MatchRecognize.MaxStates = 3L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = true;
             RegressionRunner.Run(session, new RowRecogMaxStatesEngineWide3Instance());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Configuration.Runtime.MatchRecognize.MaxStates = 4L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = true;
             RegressionRunner.Run(session, new RowRecogMaxStatesEngineWide4Instance());
-            session.Destroy();
+            session.Dispose();
         }
 
         private void Configure(Configuration configuration)

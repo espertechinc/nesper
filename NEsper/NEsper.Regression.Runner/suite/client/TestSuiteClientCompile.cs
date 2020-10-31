@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         [TearDown]
         public void TearDown()
         {
-            _session.Destroy();
+            _session.Dispose();
             _session = null;
         }
 
@@ -79,9 +79,9 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
 
             [Test, RunInApplicationDomain]
-            public void Withe() => RegressionRunner.Run(
+            public void WithManifestSimple() => RegressionRunner.Run(
                 _session,
-                ClientCompileOutput.Withe());
+                ClientCompileOutput.WithManifestSimple());
         }
 
         /// <summary>

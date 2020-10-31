@@ -50,7 +50,10 @@ namespace com.espertech.esper.regressionrun.runner
             {
                 config = new Configuration(container);
 
+#if NETFRAMEWORK
                 config.Common.Scripting.AddEngine(typeof(ScriptingEngineJScript));
+#endif
+                config.Common.Scripting.AddEngine(typeof(ScriptingEngineJavascriptV8));
                 
                 // Runtime
                 config.Runtime.Threading.IsInternalTimerEnabled = false;
@@ -59,7 +62,6 @@ namespace com.espertech.esper.regressionrun.runner
                 
                 // Compiler
                 config.Compiler.ByteCode.AttachEPL = true;
-                config.Compiler.Logging.AuditDirectory = "C:\\src\\Espertech\\NEsper-8.5.0\\NEsper\\NEsper.Regression.Review\\generated";
 
                 if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
                     try {

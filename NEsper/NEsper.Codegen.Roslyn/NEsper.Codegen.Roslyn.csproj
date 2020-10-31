@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -22,7 +22,7 @@
   <ItemGroup Condition="'$(NetCore)'=='true'">
   </ItemGroup>
   
-  <ItemGroup Condition="'$(NetFramework)' == 'net471'">
+  <ItemGroup Condition="'$(NetFramework)' == 'net472'">
   </ItemGroup>
   
   <ItemGroup>

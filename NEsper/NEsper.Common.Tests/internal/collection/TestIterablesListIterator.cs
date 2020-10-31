@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder(expectedValues, iterator.GetEnumerator());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIterator()
         {
             ICollection<IEnumerable<EventBean>> iterables = new LinkedList<IEnumerable<EventBean>>();

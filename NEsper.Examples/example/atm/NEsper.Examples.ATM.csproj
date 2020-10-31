@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -14,11 +14,12 @@
         <PackageReference Include="System.Data.Common" Version="4.3.0" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(NetFramework)' == 'net471'">
+    <ItemGroup Condition="'$(NetFramework)' == 'net472'">
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NLog" Version="4.5.6" />
+        <PackageReference Include="NLog" Version="4.7.5" />
+
         <PackageReference Include="NUnit" Version="3.10.1" />
     </ItemGroup>
 

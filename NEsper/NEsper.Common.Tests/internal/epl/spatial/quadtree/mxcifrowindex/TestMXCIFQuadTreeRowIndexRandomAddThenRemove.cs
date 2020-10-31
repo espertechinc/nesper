@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
     [TestFixture]
     public class TestMxcifQuadTreeRowIndexRandomAddThenRemove : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRun()
         {
             SupportQuadTreeToolUnique<PointRegionQuadTree<object>> tools = new SupportQuadTreeToolUnique<PointRegionQuadTree<object>>(

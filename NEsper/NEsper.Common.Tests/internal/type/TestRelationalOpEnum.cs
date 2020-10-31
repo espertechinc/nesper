@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBigNumberComputers()
         {
             object[][] parameters = {
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestDoubleComputers()
         {
             double[][] parameters = {
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalidGetComputer()
         {
             // Since we only do double, long and string compares
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.type
             TryInvalid(typeof(SupportBean));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestLongComputers()
         {
             long[][] parameters = {
@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestStringComputers()
         {
             string[][] parameters = {

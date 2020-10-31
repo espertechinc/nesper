@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             instanceofNodes = new ExprInstanceofNode[5];
 
             instanceofNodes[0] = new ExprInstanceofNode(new[] { "long" });
-            instanceofNodes[0].AddChildNode(new SupportExprNode(1l, typeof(long?)));
+            instanceofNodes[0].AddChildNode(new SupportExprNode(1L, typeof(long?)));
 
             instanceofNodes[1] = new ExprInstanceofNode(new[] { typeof(SupportBean).FullName, "int", "string" });
             instanceofNodes[1].AddChildNode(new SupportExprNode("", typeof(string)));
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private ExprInstanceofNode[] instanceofNodes;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             Assert.IsFalse(instanceofNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsTrue(instanceofNodes[0].EqualsNode(instanceofNodes[0], false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             for (var i = 0; i < instanceofNodes.Length; i++)
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(true, instanceofNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             for (var i = 0; i < instanceofNodes.Length; i++)
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             Assert.AreEqual(
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(instanceofNodes[1]));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             var instanceofNode = new ExprInstanceofNode(new string[0]);

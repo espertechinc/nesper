@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             return Encoding.UTF8.GetBytes(item);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPerformanceMurmurHash()
         {
             var warmupLoopCount = 1; // 1000000;
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             // Comment me in - System.out.println("Delta " + (delta / 1000000000.0));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSimpleFlow()
         {
             var state = CountMinSketchStateHashes.MakeState(DefaultSpec);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             Assert.AreEqual(1, EstimateCount(state, "text"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSpace()
         {
             var eps = 0.001;

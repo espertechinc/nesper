@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.util
         private HashableMultiKey firstValues;
         private HashableMultiKey secondValues;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompareSingleProperty()
         {
             comparator = new ComparatorHashableMultiKey(new bool[] { false });
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompareTwoProperties()
         {
             comparator = new ComparatorHashableMultiKey(new bool[] { false, false });
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             comparator = new ComparatorHashableMultiKey(new bool[] { false, false });

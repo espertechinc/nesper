@@ -25,8 +25,6 @@ namespace com.espertech.esper.regressionlib
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
-            AppDomainSetup appDomainSetup = new AppDomainSetup();
-
 #if NETSTANDARD2_0
 #else
             //var clearScript = typeof(ScriptingEngineJScript);

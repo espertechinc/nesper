@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             list = new VersionedValueList<string>("abc", 2, "a", 1000, 10000, new MonitorLock(), 10, true);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlowNoTime()
         {
             TryInvalid(0);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             Assert.AreEqual("e", list.GetVersion(10));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestHighWatermark()
         {
             list.AddValue(3, "b", 3000);

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestFrequencyParameter : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             try
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsWildcard()
         {
             FrequencyParameter freq = new FrequencyParameter(1);
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsFalse(freq.IsWildcard(1, 20));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetValues()
         {
             FrequencyParameter freq = new FrequencyParameter(3);
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.type
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 2, 3, 4, 5 }, result);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestContainsPoint()
         {
             FrequencyParameter freqThree = new FrequencyParameter(3);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsTrue(freqOne.ContainsPoint(2));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFormat()
         {
             FrequencyParameter freqThree = new FrequencyParameter(3);

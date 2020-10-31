@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Compiler.Scripts.DefaultDialect = "dummy";
             RegressionRunner.Run(session, new EPLScriptExpressionConfiguration());
-            session.Destroy();
+            session.Dispose();
         }
         
         [Test, RunInApplicationDomain]
@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddEventType<SupportBean>();
             session.Configuration.Compiler.Scripts.IsEnabled = false;
             RegressionRunner.Run(session, new EPLScriptExpressionDisable());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

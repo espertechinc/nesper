@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestDatabaseTypeEnum : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestLookup()
         {
             object[][] types = {
@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.util
                 new object[] {"decimal", DatabaseTypeEnum.DECIMAL},
                 new object[] {typeof(bool?).FullName, DatabaseTypeEnum.BOOLEAN},
                 new object[] {typeof(byte).FullName, DatabaseTypeEnum.BYTE},
-                new object[] {"short", DatabaseTypeEnum.INT16},
-                new object[] {"int", DatabaseTypeEnum.INT32},
+                new object[] {"int16", DatabaseTypeEnum.INT16},
+                new object[] {"int32", DatabaseTypeEnum.INT32},
                 new object[] {"System.Int32", DatabaseTypeEnum.INT32},
                 new object[] {typeof(int).FullName, DatabaseTypeEnum.INT32},
                 new object[] {typeof(int?).FullName, DatabaseTypeEnum.INT32}
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTypes()
         {
             object[][] types = {

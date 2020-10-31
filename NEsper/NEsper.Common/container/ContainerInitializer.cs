@@ -9,6 +9,10 @@
 using System;
 using System.Linq;
 
+#if NETSTANDARD
+using System.Runtime.Loader;
+#endif
+
 using Castle.MicroKernel.Registration;
 
 using com.espertech.esper.common.client.util;

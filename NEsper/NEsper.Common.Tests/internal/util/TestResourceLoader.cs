@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
     {
         private const string TEST_RESOURCE = "regression/esper.test.readconfig.cfg.xml";
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestResolveResourceAsURL()
         {
             Assert.That(container.ResourceManager().ResolveResourceURL("somefile"), Is.Null);

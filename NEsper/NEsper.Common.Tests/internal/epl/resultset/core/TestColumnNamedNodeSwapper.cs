@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             return topNode;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPartReplaced()
         {
             exprTree = MakeEqualsNode();
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Assert.IsTrue(childNodes[1] == newFullExpr);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestWholeReplaced()
         {
             exprTree = new ExprIdentNodeImpl("swapped");

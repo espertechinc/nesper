@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestMethodResolver : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestResolveMethodStaticOnly()
         {
             Type declClass = typeof(Math);
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestResolveMethodStaticAndInstance()
         {
             bool[] allowEventBeanType = new bool[10];
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, true, null, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestResolveMethodNotFound()
         {
             bool[] allowEventBeanType = new bool[10];

@@ -12,10 +12,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+#if NETSTANDARD
+using System.Runtime.Loader;
+#endif
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -34,34 +40,32 @@ namespace com.espertech.esper.compiler.@internal.util
             .Cast<LanguageVersion>()
             .Max();
 
-        private static readonly IDictionary<Assembly, PortableExecutableReference> PortableExecutionReferenceCache =
+        private readonly IDictionary<Assembly, PortableExecutableReference> _portableExecutionReferenceCache =
             new Dictionary<Assembly, PortableExecutableReference>();
-        private static readonly IDictionary<string, CacheBinding> AssemblyCacheBindings = 
+        private readonly IDictionary<string, CacheBinding> _assemblyCacheBindings = 
             new Dictionary<string, CacheBinding>();
 
-        private IReadOnlyCollection<MetadataReference> _metadataReferences = null;
-
-        static RoslynCompiler()
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
-                Log.Info("AssemblyResolve for {0}", args.Name);
-                if (AssemblyCacheBindings.TryGetValue(args.Name, out var bindingPair)) {
-                    Log.Debug("AssemblyResolve: Located {0}", args.Name);
-                    return bindingPair.Assembly;
-                }
-
-                Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
-                return null;
-            };
-        }
+        private IList<MetadataReference> _metadataReferences = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoslynCompiler"/> class.
         /// </summary>
-        public RoslynCompiler()
+        public RoslynCompiler(IContainer container)
         {
             Sources = new List<Source>();
+#if NETSTANDARD
+            LoadContext = container.LoadContext();
+#endif
+            InitializeAssemblyResolution();
         }
+
+#if NETSTANDARD
+        /// <summary>
+        /// Gets the assembly load context.
+        /// </summary>
+
+        public AssemblyLoadContext LoadContext { get; private set; }
+#endif
 
         /// <summary>
         /// Gets the assembly.
@@ -82,6 +86,38 @@ namespace com.espertech.esper.compiler.@internal.util
         /// Gets or sets the codegen class.
         /// </summary>
         public IList<Source> Sources { get; set; }
+
+        /// <summary>
+        /// Initializes the assembly resolution mechanism.
+        /// </summary>
+        private void InitializeAssemblyResolution()
+        {
+#if NETSTANDARD
+            LoadContext.Resolving += (
+                context,
+                name) => {
+                Log.Info("AssemblyResolve for {0}", name.Name);
+                if (_assemblyCacheBindings.TryGetValue(name.Name, out var bindingPair)) {
+                    Log.Debug("AssemblyResolve: Located {0}", name.Name);
+                    return bindingPair.Assembly;
+                }
+
+                Log.Warn("AssemblyResolve: Unable to locate {0}", name.Name);
+                return null;
+            };
+#else
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+                Log.Info("AssemblyResolve for {0}", args.Name);
+                if (_assemblyCacheBindings.TryGetValue(args.Name, out var bindingPair)) {
+                    Log.Debug("AssemblyResolve: Located {0}", args.Name);
+                    return bindingPair.Assembly;
+                }
+
+                Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
+                return null;
+            };
+#endif
+        } 
         
         public RoslynCompiler WithCodeLogging(bool isCodeLogging)
         {
@@ -120,27 +156,35 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Gets the current metadata references.  Metadata references are specific to the AppDomain.
         /// </summary>
-        internal IReadOnlyCollection<MetadataReference> GetCurrentMetadataReferences()
+        internal ICollection<MetadataReference> GetCurrentMetadataReferences()
         {
             if (_metadataReferences == null) {
                 var metadataReferences = new List<MetadataReference>();
 
-                lock (AssemblyCacheBindings) {
-                    foreach (var assemblyBinding in AssemblyCacheBindings) {
+                lock (_assemblyCacheBindings) {
+                    foreach (var assemblyBinding in _assemblyCacheBindings) {
                         metadataReferences.Add(assemblyBinding.Value.MetadataReference);
                     }
                 }
 
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+#if NETSTANDARD
+                var assemblies = Enumerable.Concat(
+                    AssemblyLoadContext.Default.Assemblies,
+                    LoadContext.Assemblies);
+#else
+                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+#endif
+
+                foreach (var assembly in assemblies) {
                     if (!IsGeneratedAssembly(assembly) &&
                         !assembly.IsDynamic && 
                         !string.IsNullOrEmpty(assembly.Location)) {
-                        lock (PortableExecutionReferenceCache) {
-                            if (!PortableExecutionReferenceCache.TryGetValue(
+                        lock (_portableExecutionReferenceCache) {
+                            if (!_portableExecutionReferenceCache.TryGetValue(
                                 assembly,
                                 out var portableExecutableReference)) {
                                 portableExecutableReference = MetadataReference.CreateFromFile(assembly.Location);
-                                PortableExecutionReferenceCache[assembly] = portableExecutableReference;
+                                _portableExecutionReferenceCache[assembly] = portableExecutableReference;
                             }
 
                             metadataReferences.Add(portableExecutableReference);
@@ -278,12 +322,6 @@ namespace com.espertech.esper.compiler.@internal.util
                 WriteCodeAudit(syntaxTreePairs, CodeAuditDirectory);
             }
 
-#if false
-            else {
-                WriteCodeAudit(syntaxTreePairs, @"C:\\src\\Espertech\\NEsper-8.5.0\\NEsper\\NEsper.Regression.Review\\generated");
-            }
-#endif
-
 #if DIAGNOSTICS
             Console.WriteLine("EmitToImage: {0}", assemblyName);
             foreach (var syntaxTreePair in syntaxTreePairs) {
@@ -296,15 +334,22 @@ namespace com.espertech.esper.compiler.@internal.util
 #if DIAGNOSTICS
             Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
 #endif
-            Assembly = Assembly.Load(assemblyData);
 
+#if NETSTANDARD
+            using (var stream = new MemoryStream(assemblyData)) {
+                Assembly = LoadContext.LoadFromStream(stream);
+            }
+#else
+            Assembly = AppDomain.CurrentDomain.Load(assemblyData);
+#endif
+            
 #if DIAGNOSTICS
             Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
             Console.WriteLine($"\tFullName:{_assembly.FullName}");
             Console.WriteLine($"\tName:{_assembly.GetName()}");
 #endif
 
-            lock (AssemblyCacheBindings) {
+            lock (_assemblyCacheBindings) {
                 var metadataReference = MetadataReference.CreateFromImage(assemblyData);
 
 #if DIAGNOSTICS
@@ -313,7 +358,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 Console.WriteLine($"\tDisplay: {metadataReference.Display}");
                 Console.WriteLine($"\tProperties: {metadataReference.Properties}");
 #endif
-                AssemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
+                _metadataReferences.Add(metadataReference);
+                _assemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
             }
 
             return Assembly;
@@ -362,7 +408,6 @@ namespace com.espertech.esper.compiler.@internal.util
             namespaceVisitor.Visit(syntaxTree.GetRoot());
             return namespaceVisitor.Namespace;
         }
-
 
         public class NamespaceVisitor : CSharpSyntaxWalker
         {

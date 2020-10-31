@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
 #endif
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetConnection()
         {
             TryAndCloseConnectionWithFactory(

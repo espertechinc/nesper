@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.collection
         private InterchangeablePair<string, string> pair4a = new InterchangeablePair<string, string>(null, null);
         private InterchangeablePair<string, string> pair4b = new InterchangeablePair<string, string>(null, null);
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             Assert.IsTrue(pair1a.Equals(pair1d) && pair1d.Equals(pair1a));
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsFalse(pair4a.Equals(pair1b) || pair4a.Equals(pair2a) || pair4a.Equals(pair3a));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestHashCode()
         {
             if ("a".GetHashCode() > "b".GetHashCode()) {
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(pair2b.GetHashCode() == pair3a.GetHashCode());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSetBehavior()
         {
             ISet<InterchangeablePair<EventBean, EventBean>> eventPairs = new HashSet<InterchangeablePair<EventBean, EventBean>>();

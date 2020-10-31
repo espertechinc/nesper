@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestLikeUtil : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestLike()
         {
             TryMatches("%aa%", '\\',

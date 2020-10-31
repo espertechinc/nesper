@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.collection
     [TestFixture]
     public class TestIntSeqKeyFactory : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFactory()
         {
             Assert.IsTrue(IntSeqKeyFactory.From(new int[0]) is IntSeqKeyRoot);

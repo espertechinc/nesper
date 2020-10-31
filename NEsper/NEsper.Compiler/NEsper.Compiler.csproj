@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <AssemblyName>NEsper.Compiler</AssemblyName>
-    <AssemblyTitle>NEsper.Compiler</AssemblyTitle>
-    <PackageId>NEsper.Compiler</PackageId>
-    <RootNamespace>com.espertech.esper.compiler</RootNamespace>
-    <Summary>A compiler for NEsper.</Summary>
-    <Description>A compiler for NEsper.</Description>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>CS1591;</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyName>NEsper.Compiler</AssemblyName>
+        <AssemblyTitle>NEsper.Compiler</AssemblyTitle>
+        <PackageId>NEsper.Compiler</PackageId>
+        <RootNamespace>com.espertech.esper.compiler</RootNamespace>
+        <Summary>A compiler for NEsper.</Summary>
+        <Description>A compiler for NEsper.</Description>
+        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>CS1591;</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
-    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
-    <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj"/>
+        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj"/>
+        <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0"/>
+    </ItemGroup>
 </Project>

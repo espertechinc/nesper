@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
 
         private DispatchService service;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAdd()
         {
             var dispatchables = new SupportDispatchable[2];
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             Assert.AreSame(dispatchables[1], dispatchList[1]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddAndDispatch()
         {
             // Dispatch without work to do, should complete
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             Assert.AreEqual(1, disTwo.GetAndResetNumExecuted());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddDispatchTwice()
         {
             var disOne = new SupportDispatchable();

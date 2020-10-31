@@ -115,40 +115,44 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			EPCompiled compiled,
 			DeploymentOptions options)
 		{
-			if (options == null) {
-				options = new DeploymentOptions();
-			}
-
-			ValidateRuntimeAlive();
-			CheckManifest(-1, compiled.Manifest);
-
-			DeploymentInternal deployerResult;
-
-			using (GetDeploymentLock(options))
-			{
-				var statementIdRecovery = _services.EpServicesHA.StatementIdRecoveryService;
-				var currentStatementId = statementIdRecovery.CurrentStatementId;
-				if (currentStatementId == null) {
-					currentStatementId = 1;
+			using (_services.Container.EnterContextualReflection()) {
+				if (options == null) {
+					options = new DeploymentOptions();
 				}
 
-				var deploymentId = DeployerHelperResolver.DetermineDeploymentIdCheckExists(-1, options, _runtime.ServicesContext.DeploymentLifecycleService);
-				deployerResult = Deployer.DeployFresh(
-					deploymentId,
-					currentStatementId.Value,
-					compiled,
-					options.StatementNameRuntime,
-					options.StatementUserObjectRuntime,
-					options.StatementSubstitutionParameter,
-					options.DeploymentClassLoaderOption,
-					_runtime);
-				statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
+				ValidateRuntimeAlive();
+				CheckManifest(-1, compiled.Manifest);
 
-				// dispatch event
-				DispatchOnDeploymentEvent(deployerResult, -1);
+				DeploymentInternal deployerResult;
+
+				using (GetDeploymentLock(options)) {
+					var statementIdRecovery = _services.EpServicesHA.StatementIdRecoveryService;
+					var currentStatementId = statementIdRecovery.CurrentStatementId;
+					if (currentStatementId == null) {
+						currentStatementId = 1;
+					}
+
+					var deploymentId = DeployerHelperResolver.DetermineDeploymentIdCheckExists(
+						-1,
+						options,
+						_runtime.ServicesContext.DeploymentLifecycleService);
+					deployerResult = Deployer.DeployFresh(
+						deploymentId,
+						currentStatementId.Value,
+						compiled,
+						options.StatementNameRuntime,
+						options.StatementUserObjectRuntime,
+						options.StatementSubstitutionParameter,
+						options.DeploymentClassLoaderOption,
+						_runtime);
+					statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
+
+					// dispatch event
+					DispatchOnDeploymentEvent(deployerResult, -1);
+				}
+
+				return MakeDeployment(deployerResult);
 			}
-
-			return MakeDeployment(deployerResult);
 		}
 
 		public EPStatement GetStatement(

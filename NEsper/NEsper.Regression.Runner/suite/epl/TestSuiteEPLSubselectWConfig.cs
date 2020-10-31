@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Runtime.Expression.IsSelfSubselectPreeval = false;
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new EPLSubselectOrderOfEvalNoPreeval());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

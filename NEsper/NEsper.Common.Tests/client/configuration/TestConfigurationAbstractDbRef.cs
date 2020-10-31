@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.configuration
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTypeMapping()
         {
             TryInvalid(

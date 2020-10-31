@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             TestSuiteExprDateTime.AddIdStsEtsEvent(session.Configuration);
             RegressionRunner.Run(session, ExprDTResolution.Executions(true));
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

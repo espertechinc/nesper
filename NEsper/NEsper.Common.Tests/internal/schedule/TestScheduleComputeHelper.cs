@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.schedule
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompute()
         {
             ScheduleSpec spec = null;

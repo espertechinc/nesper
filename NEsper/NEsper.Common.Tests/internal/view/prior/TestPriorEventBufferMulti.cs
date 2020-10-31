@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlow()
         {
             buffer.Update(new[] { events[0], events[1] }, null);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             Assert.AreEqual(events[2], buffer.GetRelativeToEvent(events[5], 1));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             try

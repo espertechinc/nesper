@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             eventType = (BeanEventType) theEvent.EventType;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetGetter()
         {
             EventPropertyGetter getter = prop.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             Assert.IsNull(invalidPropIndexed.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(string), prop.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));

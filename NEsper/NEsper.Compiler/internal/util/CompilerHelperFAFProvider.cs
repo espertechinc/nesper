@@ -304,7 +304,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 properties,
                 new EmptyList<CodegenInnerClass>());
 
-            var compiler = new RoslynCompiler()
+            var container = compileTimeServices.Container;
+            var compiler = container
+                .RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new List<CodegenClass>() { clazz });

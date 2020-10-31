@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.configuration
 {
     public class TestConfigurationParser : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRegressionFileConfig()
         {
             var config = new Configuration(container);
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.client.configuration
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestConfigurationDefaults()
         {
             var config = new Configuration(container);

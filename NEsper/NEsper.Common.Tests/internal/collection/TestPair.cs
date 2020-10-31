@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.collection
         private Pair<string, string> pair4 = new Pair<string, string>(null, "b");
         private Pair<string, string> pair5 = new Pair<string, string>(null, null);
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestHashCode()
         {
             Assert.IsTrue(pair1.GetHashCode() == CompatExtensions.HashAll<object>("a", "b"));
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(pair1.GetHashCode() != pair5.GetHashCode());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             Assert.AreEqual(pair2, pair1);

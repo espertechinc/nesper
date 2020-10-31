@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session.Configuration.Compiler.Expression.MathContext = new MathContext(MidpointRounding.AwayFromZero, 2);
             session.Configuration.Common.AddEventType(typeof(SupportBeanNumeric));
             RegressionRunner.Run(session, new ResultSetAggregateFilteredWMathContext());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session.Configuration.Compiler.Expression.ExtendedAggregation = false;
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new ResultSetAggregateExtInvalid());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

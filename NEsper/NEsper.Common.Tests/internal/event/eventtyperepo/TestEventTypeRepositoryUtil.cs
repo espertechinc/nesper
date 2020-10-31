@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
     public class TestEventTypeRepositoryUtil : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSort()
         {
             var setOne = new LinkedHashSet<string>();

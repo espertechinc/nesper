@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
     [TestFixture]
     public class TestMxcifQuadTreeFilterIndexRandomAddThenRemove : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRun()
         {
             var toolsOne = new SupportQuadTreeToolUnique<MXCIFQuadTree>(

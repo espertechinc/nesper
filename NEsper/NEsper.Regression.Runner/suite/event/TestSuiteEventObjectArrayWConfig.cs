@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 new[] {"bean", "TheString", "map"},
                 new object[] {typeof(SupportBean), "string", "map"});
             RegressionRunner.Run(session, new EventObjectArrayConfiguredStatic());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         {
             var session = RegressionRunner.Session();
             RegressionRunner.Run(session, new EventObjectArrayInheritanceConfigRuntime());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

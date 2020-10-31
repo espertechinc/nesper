@@ -21,20 +21,20 @@ namespace com.espertech.esper.common.@internal.type
 
         private WildcardParameter wildcard;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestContainsPoint()
         {
             Assert.IsTrue(wildcard.ContainsPoint(3));
             Assert.IsTrue(wildcard.ContainsPoint(2));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFormat()
         {
             Assert.AreEqual("*", wildcard.Formatted());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetValuesInRange()
         {
             var result = wildcard.GetValuesInRange(1, 10);
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.AreEqual(10, result.Count);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsWildcard()
         {
             Assert.IsTrue(wildcard.IsWildcard(1, 10));

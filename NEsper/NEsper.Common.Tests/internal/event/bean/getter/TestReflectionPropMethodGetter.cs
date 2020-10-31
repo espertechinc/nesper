@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             unitTestBean = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, testEvent);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetter()
         {
             ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             Assert.AreEqual(null, getter.Get(unitTestBean));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPerformance()
         {
             ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");

@@ -31,6 +31,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// </summary>
         void Destroy();
 
+#if INHERITED_HIDE
         bool IsHAEnabled { get; }
+#endif
     }
 } // end of namespace

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Common.AddEventType(typeof(SupportBean_S0));
             RegressionRunner.Run(session, new InfraTableMTGroupedMergeReadMergeWriteSecondaryIndexUpd());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

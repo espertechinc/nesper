@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Configuration.Compiler.Expression.MathContext = MathContext.DECIMAL32;
             session.Configuration.Compiler.ByteCode.AllowSubscriber = true;
             RegressionRunner.Run(session, ExprCoreBigNumberSupportMathContext.Executions());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Common.Execution.ThreadingProfile = ThreadingProfile.LARGE;
             configuration.Common.AddEventType(typeof(SupportBean_S0));
             RegressionRunner.Run(session, new ExprCoreConcat());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Common.AddEventType(typeof(SupportBeanDuckTypeOne));
             configuration.Common.AddEventType(typeof(SupportBeanDuckTypeTwo));
             RegressionRunner.Run(session, new ExprCoreDotExpressionDuckTyping());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Configuration.Compiler.Expression.DivisionByZeroReturnsNull = true;
             session.Configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
             RegressionRunner.Run(session, ExprCoreMathDivisionRules.Executions());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

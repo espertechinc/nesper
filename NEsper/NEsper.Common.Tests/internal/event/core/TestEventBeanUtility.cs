@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     [TestFixture]
     public class TestEventBeanUtility : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestArrayOp()
         {
             var testEvent = MakeEventArray(new[] { "a1", "a2", "a3" });
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Console.Out.WriteLine(EventBeanUtility.PrintEvents(testEvent));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestArrayOpAdd()
         {
             var testEvent = MakeEventArray(new[] { "a1", "a2", "a3" });
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     EventBeanUtility.AddToArray(new[] { testEvent[0] }, Arrays.AsList(new EventBean[0])));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlattenList()
         {
             // test many arrays
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.IsNull(events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlatten()
         {
             // test many arrays
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.IsNull(events);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAppend()
         {
             var setOne = MakeEventArray(new[] { "a1", "a2" });
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.AreEqual(setTwo[0], total[1]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToArray()
         {
             // Test list with 2 elements
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.IsNull(array);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyArray()
         {
             // try 2 properties

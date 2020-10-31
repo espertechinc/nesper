@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             getterOutOfBounds = MakeGetter(Int32.MaxValue);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCtor()
         {
             try
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGet()
         {
             Assert.AreEqual(bean.ArrayProperty[0], getter.Get(theEvent));

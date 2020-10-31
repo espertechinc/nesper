@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             var otherLikeNodeNot = supportExprNodeFactory.MakeLikeNode(true, "@");
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse(likeNodeNormal.EqualsNode(otherLikeNodeNot, false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             // Build :      s0.string like "%abc__"  (with or witout escape)
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse((bool) likeNodeNot.Forge.ExprEvaluator.Evaluate(MakeEvent("dskfsljkdfabcxx"), false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), likeNodeNormal.Type);
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(typeof(bool?), likeNodeNormalEscaped.Type);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             Assert.AreEqual("s0.TheString like \"%abc__\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNormal));
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNormalEscaped));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             // No subnodes: Exception is thrown.

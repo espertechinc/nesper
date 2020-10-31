@@ -45,7 +45,6 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         EPDataFlowSignalHandler,
         IFuture<object[]>
     {
-        private long _id = DebugId<DefaultSupportCaptureOp<T>>.NewId();
         private IList<IList<T>> _received = new List<IList<T>>();
         private IList<T> _current = new List<T>();
 
@@ -85,8 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public void OnSignal(EPDataFlowSignal signal)
         {
-            _received.Add(_current);
-            _current = new List<T>();
+            using (_iLock.Acquire()) {
+                _received.Add(_current);
+                _current = new List<T>();
+            }
         }
 
         public IList<IList<T>> GetAndReset()
@@ -116,9 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             }
         }
 
-        public bool HasValue {
-            get { return _numRowLatch.Count <= 0; }
-        }
+        public bool HasValue => _numRowLatch.Count <= 0;
 
         public bool IsDone()
         {

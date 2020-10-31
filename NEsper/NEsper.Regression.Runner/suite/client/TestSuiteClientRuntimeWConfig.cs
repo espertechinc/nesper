@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Configuration.Common.AddAnnotationImportType(typeof(MyAnnotationValueEnumAttribute));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new ClientRuntimeStatementAnnotation.ClientRuntimeAnnotationImportInvalid());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionSession session = RegressionRunner.Session();
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new ClientRuntimeSubscriberDisallowed());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

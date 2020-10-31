@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     [TestFixture]
     public class TestFilterOperator : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRanges()
         {
             Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, false, false) == FilterOperator.RANGE_OPEN);
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, true, true) == FilterOperator.NOT_RANGE_HALF_CLOSED);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsComparison()
         {
             Assert.IsTrue(FilterOperator.GREATER.IsComparisonOperator());
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Assert.IsFalse(FilterOperator.NOT_EQUAL.IsComparisonOperator());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsRange()
         {
             Assert.IsTrue(FilterOperator.RANGE_OPEN.IsRangeOperator());
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Assert.IsFalse(FilterOperator.NOT_EQUAL.IsRangeOperator());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsInvertedRange()
         {
             Assert.IsFalse(FilterOperator.RANGE_OPEN.IsInvertedRangeOperator());

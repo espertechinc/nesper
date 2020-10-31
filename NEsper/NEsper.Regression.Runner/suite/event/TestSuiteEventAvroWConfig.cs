@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             RegressionRunner.Run(session, EventAvroHook.Executions());
 
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net462;</TargetFrameworks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <AssemblyName>NEsper.Scripting.ClearScript</AssemblyName>
-    <AssemblyTitle>NEsper.Scripting.ClearScript</AssemblyTitle>
-    <PackageId>NEsper.Scripting.ClearScript</PackageId>
-    <RootNamespace>NEsper.Scripting.ClearScript</RootNamespace>
-    <Description>NEsper ClearScript Scripting.</Description>
-    <Summary>NEsper ClearScript Scripting.</Summary>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-  </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyName>NEsper.Scripting.ClearScript</AssemblyName>
+        <AssemblyTitle>NEsper.Scripting.ClearScript</AssemblyTitle>
+        <PackageId>NEsper.Scripting.ClearScript</PackageId>
+        <RootNamespace>NEsper.Scripting.ClearScript</RootNamespace>
+        <Description>NEsper ClearScript Scripting.</Description>
+        <Summary>NEsper ClearScript Scripting.</Summary>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ClearScript.V8" Version="5.5.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.ClearScript" Version="6.0.2"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
-    <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj"/>
+        <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj"/>
+    </ItemGroup>
 </Project>

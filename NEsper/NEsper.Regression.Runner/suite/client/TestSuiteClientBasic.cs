@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         [TearDown]
         public void TearDown()
         {
-            _session.Destroy();
+            _session.Dispose();
             _session = null;
         }
 

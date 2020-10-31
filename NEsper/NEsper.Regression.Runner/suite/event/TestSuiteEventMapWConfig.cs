@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         {
             RegressionSession session = RegressionRunner.Session();
             RegressionRunner.Run(session, new EventMapNestedConfigRuntime());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         {
             RegressionSession session = RegressionRunner.Session();
             RegressionRunner.Run(session, new EventMapInheritanceRuntime());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

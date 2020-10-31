@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             emptyIterator = CreateSingleCursor(null);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNext()
         {
             Assert.That(filledIterator.MoveNext(), Is.True);
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             //Assert.That(() => emptyIterator.Current, Throws.InstanceOf<NoSuchElementException>());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestHasNext()
         {
             Assert.That(filledIterator.MoveNext(), Is.True);

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -17,7 +17,7 @@
         <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45"/>
     </ItemGroup>
 
-    <ItemGroup Condition="'$(NetFramework)' == 'net471'">
+    <ItemGroup Condition="'$(NetFramework)' == 'net472'">
     </ItemGroup>
 
     <ItemGroup>

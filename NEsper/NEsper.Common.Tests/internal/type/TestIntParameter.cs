@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestIntParameter : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsWildcard()
         {
             IntParameter intParam = new IntParameter(5);
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsFalse(intParam.IsWildcard(4, 6));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetValues()
         {
             IntParameter intParam = new IntParameter(3);
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.type
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 3 }, result);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestContainsPoint()
         {
             IntParameter intParam = new IntParameter(3);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsFalse(intParam.ContainsPoint(2));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFormat()
         {
             IntParameter intParam = new IntParameter(3);

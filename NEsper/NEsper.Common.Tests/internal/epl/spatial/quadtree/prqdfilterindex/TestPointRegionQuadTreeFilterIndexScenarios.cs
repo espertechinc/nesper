@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
     [TestFixture]
     public class TestPointRegionQuadTreeFilterIndexScenarios : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideAddMany()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 2, 3);
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestDimension()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(1000, 100000, 9000, 900000);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             AssertCollectAll(tree, "P3");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSuperslim()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 1, 100);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             Compare(10, 95, "P2", (XYPointWValue<object>) se.Points);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideMultiChild()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 4, 3);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             Compare(90, 45, "P5", collection[2]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRemoveNonExistent()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 20, 20);
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideSingleMerge()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 3, 2);
@@ -190,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             Compare(80, 61, "P4", collection[1]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideMerge()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 3, 2);

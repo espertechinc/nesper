@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
     [TestFixture]
     public class TestAssemblyNode : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetSubstreams()
         {
             var top = new SupportJoinProcNode(2, 3);

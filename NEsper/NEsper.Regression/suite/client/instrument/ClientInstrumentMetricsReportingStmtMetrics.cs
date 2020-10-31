@@ -116,10 +116,10 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
             var fiftyMillis = TimeSpan.FromMilliseconds(50);
             
-            Assert.IsTrue(userOne >= USER_GOAL_ONE, "userOne=" + userOne);
-            Assert.IsTrue(userTwo >= USER_GOAL_TWO, "userTwo=" + userTwo);
-            Assert.IsTrue(totalOne + fiftyMillis >= TOTAL_GOAL_ONE, "totalOne=" + totalOne);
-            Assert.IsTrue(totalTwo + fiftyMillis >= TOTAL_GOAL_TWO, "totalTwo=" + totalTwo);
+            Assert.That(userOne, Is.GreaterThanOrEqualTo(USER_GOAL_ONE), "userOne=" + userOne);
+            Assert.That(userTwo, Is.GreaterThanOrEqualTo(USER_GOAL_TWO), "userTwo=" + userTwo);
+            Assert.That(totalOne + fiftyMillis, Is.GreaterThanOrEqualTo(TOTAL_GOAL_ONE), "totalOne=" + totalOne);
+            Assert.That(totalTwo + fiftyMillis, Is.GreaterThanOrEqualTo(TOTAL_GOAL_TWO), "totalTwo=" + totalTwo);
 
             for (var i = 0; i < 4; i++) {
                 Assert.AreEqual(1L, received[i].Get("OutputIStreamCount"));

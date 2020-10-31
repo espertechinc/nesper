@@ -35,14 +35,14 @@ namespace com.espertech.esper.common.@internal.view.sort
             testMap = new OrderedListDictionary<object, object>(comparator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmpty()
         {
             var enumerator = testMap.GetMultiLevelEnumerator();
             EPAssertionUtil.AssertEqualsExactOrder(null, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMixedEntryElement()
         {
             var list1 = new List<EventBean>();
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                 }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestOneElement()
         {
             var list = new List<EventBean>();
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a") }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoByTwoEntryElement()
         {
             var list1 = new List<EventBean>();
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b"), events.Get("c"), events.Get("d") }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoInOneEntryElement()
         {
             var list = new List<EventBean>();
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b") }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoSeparateEntryElement()
         {
             var list1 = new List<EventBean>();

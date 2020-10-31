@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             return MXCIFQuadTreeFilterIndexGet.Get(x, y, width, height, tree);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFewValues()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Assert.AreEqual("R4", Get(51.01654641861326, 43.49009281983866, 1, 1, tree));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetSetRemove()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPoints()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 10, 10);
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "R0,R1,R2,R3,R4,R5,R6,R7,R8,R9");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSetRemoveTwiceSamePoint()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);

@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
+            session.Dispose();
             session = null;
         }
 

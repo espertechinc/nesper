@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             dependencyGraph = new DependencyGraph(5, false);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuild()
         {
             var plan = NStreamQueryPlanBuilder.Build(
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             log.Debug(".testBuild plan=" + plan);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCreateStreamPlan()
         {
             QueryPlanIndexForge[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph, typesPerStream, new string[queryGraph.NumStreams][][]);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.IsNotNull(unkeyedSpecScan.IndexNum);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestComputeBestPath()
         {
             NStreamQueryPlanBuilder.BestChainResult bestChain = NStreamQueryPlanBuilder.ComputeBestPath(0, queryGraph, dependencyGraph);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.IsTrue(Arrays.AreEqual(bestChain.Chain, new int[] { 0, 1, 2, 3, 4 }));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestComputeNavigableDepth()
         {
             ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.AreEqual(1, depth);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuildDefaultNestingOrder()
         {
             int[] result = NStreamQueryPlanBuilder.BuildDefaultNestingOrder(4, 0);
@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.IsTrue(Arrays.AreEqual(result, new int[] { 0, 1, 2 }));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsDependencySatisfied()
         {
             DependencyGraph graph = new DependencyGraph(3, false);

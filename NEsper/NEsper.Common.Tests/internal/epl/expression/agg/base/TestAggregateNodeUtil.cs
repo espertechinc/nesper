@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
     [TestFixture]
     public class TestAggregateNodeUtil : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetAggregatesBottomUp()
         {
             ExprNode top = new SupportAggregateExprNode(null);

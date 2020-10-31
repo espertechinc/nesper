@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     [TestFixture]
     public class TestExprNodeUtilityValidate : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetValidatedSubtree()
         {
             SupportExprNode.ValidateCount = 0;

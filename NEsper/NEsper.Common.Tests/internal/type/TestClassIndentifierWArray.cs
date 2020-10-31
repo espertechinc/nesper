@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestClassIndentifierWArray : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParse()
         {
             AssertParse("x[]", "x", 1, false);

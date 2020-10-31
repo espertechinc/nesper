@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return new ExprIdentNodeImpl(typesPerStream[stream], p, stream);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuildNoOuter()
         {
             var graph = MakeQueryGraph();
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.AreEqual(2, spec.ExecNodeSpecs.Length);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuildOuter()
         {
             var graph = MakeQueryGraph();

@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             builder = new PropertyListBuilderExplicit(config);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuildPropList()
         {
             IList<PropertyStem> descList = builder.AssessProperties(typeof(SupportLegacyBean));
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             //EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             TryInvalidField("x", typeof(SupportBean));

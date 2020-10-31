@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             Configure(session.Configuration);
             session.Configuration.Compiler.Execution.FilterIndexPlanning = config;
             RegressionRunner.Run(session, executions);
-            session.Destroy();
+            session.Dispose();
         }
 
         private void RunAssertionFilter<T>(
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Configuration.Common.Execution.ThreadingProfile = ThreadingProfile.LARGE;
             session.Configuration.Compiler.Logging.IsEnableFilterPlan = true;
             RegressionRunner.Run(session, new ExprFilterLargeThreading());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAdd()
         {
             graph.Add(0, 1);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             TryInvalidAdd(-1, 2);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetInner()
         {
             TryInvalidGetInner(4);
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 0, 2, 3 }, graph.GetInner(1));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetOuter()
         {
             TryInvalidGetOuter(4);
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 0, 1, 2 }, graph.GetOuter(3));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsInner()
         {
             graph.Add(0, 1);
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             TryInvalidIsInner(-1, 1);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsOuter()
         {
             graph.Add(0, 1);

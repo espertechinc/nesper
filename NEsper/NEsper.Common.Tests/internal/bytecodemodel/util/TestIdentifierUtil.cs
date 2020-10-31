@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             Assert.AreEqual(input, IdentifierUtil.GetIdentifierMayStartNumeric(input));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetIdent()
         {
             // These tests are not applicable given the adjustments we had to make to identifier

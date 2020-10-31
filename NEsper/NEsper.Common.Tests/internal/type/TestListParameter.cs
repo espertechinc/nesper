@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.type
             listParam.Add(new FrequencyParameter(3));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsWildcard()
         {
             // Wildcard is expected to make only a best-guess effort, not be perfect
@@ -33,14 +33,14 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsFalse(listParam.IsWildcard(6, 10));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetValues()
         {
             var result = listParam.GetValuesInRange(1, 8);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 3, 5, 6 }, result);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestContainsPoint()
         {
             Assert.IsTrue(listParam.ContainsPoint(0));
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsTrue(listParam.ContainsPoint(5));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFormat()
         {
             Assert.AreEqual("5, */3", listParam.Formatted());

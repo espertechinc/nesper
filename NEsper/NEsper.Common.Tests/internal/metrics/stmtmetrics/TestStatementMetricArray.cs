@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     [TestFixture]
     public class TestStatementMetricArray : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlowReportActive()
         {
             var rep = new StatementMetricArray("uri", "name", 3, false, container.RWLockManager());
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             Assert.AreEqual(1, rep.SizeLastElement());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlowReportInactive()
         {
             var rep = new StatementMetricArray("uri", "name", 3, true, container.RWLockManager());

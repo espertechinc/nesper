@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
 
             var exec = new InfraNamedWindowOnUpdateWMultiDispatch();
             RegressionRunner.Run(session, exec);
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

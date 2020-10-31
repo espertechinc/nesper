@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     [TestFixture]
     public class TestPropertyHelper : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddMappedProperties()
         {
             IList<PropertyStem> result = new List<PropertyStem>();
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EPAssertionUtil.AssertEqualsAnyOrder(new object[] { "a", "AB", "ABC", "ab", "abc", "fooBah" }, propertyNames.ToArray());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddIntrospectProperties()
         {
             IList<PropertyStem> result = new List<PropertyStem>();
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.That(indexedProperty.ReadMethod, Is.Not.Null);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRemoveDuplicateProperties()
         {
             IList<PropertyStem> result = new List<PropertyStem>();
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual("y", result[1].PropertyName);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRemoveProperties()
         {
             IList<PropertyStem> result = new List<PropertyStem>();
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual("x", result[0].PropertyName);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetGetter()
         {
             var supportEventTypeFactory = SupportEventTypeFactory.GetInstance(container);

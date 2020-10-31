@@ -27,14 +27,14 @@ namespace com.espertech.esper.common.@internal.collection
             return Arrays.AsList(fields).GetEnumerator();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmpty()
         {
             var enumerator = SuperEnumerator.For(Make(null), Make(null));
             Assert.IsFalse(enumerator.MoveNext());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlow()
         {
             var enumerator = SuperEnumerator.For(Make("a"), Make(null));

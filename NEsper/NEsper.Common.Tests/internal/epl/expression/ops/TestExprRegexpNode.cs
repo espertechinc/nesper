@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             var otherRegexpNodeNot = supportExprNodeFactory.MakeRegexpNode(true);
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse(regexpNodeNormal.EqualsNode(otherRegexpNodeNot, false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             Assert.IsFalse((bool) regexpNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent("bcd"), false, null));
@@ -67,21 +67,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsFalse((bool) regexpNodeNot.Forge.ExprEvaluator.Evaluate(MakeEvent("ab"), false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), regexpNodeNormal.Type);
             Assert.AreEqual(typeof(bool?), regexpNodeNot.Type);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             Assert.AreEqual("s0.TheString regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNormal));
             Assert.AreEqual("s0.TheString not regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNot));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             // No subnodes: Exception is thrown.

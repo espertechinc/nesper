@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private PointRegionQuadTree<object> tree;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFewValues()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100);
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             Assert.AreEqual("P4", PointRegionQuadTreeFilterIndexGet<object>.Get(51.01654641861326, 43.49009281983866, tree));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetSetRemove()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPoints()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 10, 10);
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             AssertCollectAll(tree, "P0,P1,P2,P3,P4,P5,P6,P7,P8,P9");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSetRemoveTwiceSamePoint()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100);

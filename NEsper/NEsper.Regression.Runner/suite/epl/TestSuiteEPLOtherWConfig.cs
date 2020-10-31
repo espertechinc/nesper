@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Compiler.StreamSelection.DefaultStreamSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new EPLOtherIStreamRStreamConfigSelectorIRStream());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Compiler.StreamSelection.DefaultStreamSelector = StreamSelector.RSTREAM_ONLY;
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new EPLOtherIStreamRStreamConfigSelectorRStream());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Compiler.Expression.UdfCache = false;
             session.Configuration.Common.AddEventType(typeof(SupportTemperatureBean));
             RegressionRunner.Run(session, new EPLOtherStaticFunctionsNoUDFCache());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

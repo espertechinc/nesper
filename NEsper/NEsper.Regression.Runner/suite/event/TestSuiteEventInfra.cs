@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
+            session.Dispose();
             session = null;
         }
 

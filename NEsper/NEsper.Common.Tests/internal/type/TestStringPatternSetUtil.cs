@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsTrue(StringPatternSetUtil.Evaluate(true, patterns, "456"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCombinationLike()
         {
             patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetLike("%123%"), true));
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.type
             RunAssertion();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCombinationRegex()
         {
             patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetRegex("(.)*123(.)*"), true));
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.type
             RunAssertion();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmpty()
         {
             Assert.IsTrue(StringPatternSetUtil.Evaluate(true, patterns, "abc"));

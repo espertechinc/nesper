@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
     [TestFixture]
     public class TestTimePeriodComputeConstGivenCalAdd : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestComputeDelta()
         {
             TimePeriodComputeConstGivenCalAddEval addMonth = new TimePeriodComputeConstGivenCalAddEval();

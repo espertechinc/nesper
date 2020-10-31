@@ -776,12 +776,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidContains(
                     env,
                     "expression js:abc[dummy abc = 1;] select * from SupportBean",
-                    "Expected ';'");
+                    "Error during compilation: SyntaxError: Unexpected identifier");
+                    //"Expected ';'");
 
                 TryInvalidContains(
                     env,
                     "expression js:abc(aa) [return aa..bb(1);] select abc(1) from SupportBean",
-                    "Expected identifier");
+                    "Error during compilation: SyntaxError: Unexpected token '.'");
+                    //"Expected identifier");
 
                 TryInvalidCompile(
                     env,

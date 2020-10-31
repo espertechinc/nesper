@@ -114,7 +114,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    try {
 			    return gEscaped.startEventPropertyRule();
 		    }
-		    catch (Exception eEscaped) {
+		    catch {
+			    // ignored
 		    }
 
 		    throw ExceptionConvertor.ConvertProperty(e, propertyName, true, g);

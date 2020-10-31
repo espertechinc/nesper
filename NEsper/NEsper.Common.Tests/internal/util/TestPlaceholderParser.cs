@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestPlaceholderParser : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParseInvalid()
         {
             TryParseInvalid("${lib");
             TryParseInvalid("${lib} ${aa");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParseValid()
         {
             object[][] testdata = {

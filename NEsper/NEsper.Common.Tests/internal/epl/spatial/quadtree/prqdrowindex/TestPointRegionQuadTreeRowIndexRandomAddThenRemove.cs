@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
     [TestFixture]
     public class TestPointRegionQuadTreeRowIndexRandomAddThenRemove : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRun()
         {
             var toolsOne = new SupportQuadTreeToolUnique<PointRegionQuadTree<object>>(

@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             return result;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompute()
         {
             // test null

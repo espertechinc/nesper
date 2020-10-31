@@ -29,6 +29,7 @@ using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -51,14 +52,18 @@ namespace com.espertech.esper.compiler.@internal.util
             string fireAndForgetEPLQuery,
             CompilerArguments arguments)
         {
-            return CompileQueryInternal(new CompilableEPL(fireAndForgetEPLQuery), arguments);
+            using (arguments.Configuration.Container.EnterContextualReflection()) {
+                return CompileQueryInternal(new CompilableEPL(fireAndForgetEPLQuery), arguments);
+            }
         }
 
         public EPCompiled CompileQuery(
             EPStatementObjectModel fireAndForgetEPLQueryModel,
             CompilerArguments arguments)
         {
-            return CompileQueryInternal(new CompilableSODA(fireAndForgetEPLQueryModel), arguments);
+            using (arguments.Configuration.Container.EnterContextualReflection()) {
+                return CompileQueryInternal(new CompilableSODA(fireAndForgetEPLQueryModel), arguments);
+            }
         }
 
         public EPCompiled Compile(
@@ -69,41 +74,43 @@ namespace com.espertech.esper.compiler.@internal.util
                 arguments = new CompilerArguments(new Configuration());
             }
 
-            try {
-                var module = EPLModuleUtil.ParseInternal(epl, null);
-                IList<Compilable> compilables = new List<Compilable>();
-                foreach (var item in module.Items.Where(m => !m.IsCommentOnly)) {
-                    var stmtEpl = item.Expression;
-                    compilables.Add(new CompilableEPL(stmtEpl));
+            using (arguments.Configuration.Container.EnterContextualReflection()) {
+                try {
+                    var module = EPLModuleUtil.ParseInternal(epl, null);
+                    IList<Compilable> compilables = new List<Compilable>();
+                    foreach (var item in module.Items.Where(m => !m.IsCommentOnly)) {
+                        var stmtEpl = item.Expression;
+                        compilables.Add(new CompilableEPL(stmtEpl));
+                    }
+
+                    // determine module name
+                    var moduleName = DetermineModuleName(arguments.Options, module);
+                    var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
+
+                    // get compile services
+                    var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
+                    AddModuleImports(module.Imports, compileTimeServices);
+
+                    // compile
+                    return CompilerHelperModuleProvider.Compile(
+                        compilables,
+                        moduleName,
+                        new EmptyDictionary<ModuleProperty, object>(),
+                        compileTimeServices,
+                        arguments.Options);
                 }
-
-                // determine module name
-                var moduleName = DetermineModuleName(arguments.Options, module);
-                var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
-
-                // get compile services
-                ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
-                AddModuleImports(module.Imports, compileTimeServices);
-
-                // compile
-                return CompilerHelperModuleProvider.Compile(
-                    compilables,
-                    moduleName,
-                    new EmptyDictionary<ModuleProperty, object>(),
-                    compileTimeServices,
-                    arguments.Options);
-            }
-            catch (EPCompileException) {
-                throw;
-            }
-            catch (ParseException t) {
-                throw new EPCompileException(
-                    "Failed to parse: " + t.Message,
-                    t,
-                    new EmptyList<EPCompileExceptionItem>());
-            }
-            catch (Exception ex) {
-                throw new EPCompileException(ex.Message, ex, new EmptyList<EPCompileExceptionItem>());
+                catch (EPCompileException) {
+                    throw;
+                }
+                catch (ParseException t) {
+                    throw new EPCompileException(
+                        "Failed to parse: " + t.Message,
+                        t,
+                        new EmptyList<EPCompileExceptionItem>());
+                }
+                catch (Exception ex) {
+                    throw new EPCompileException(ex.Message, ex, new EmptyList<EPCompileExceptionItem>());
+                }
             }
         }
 
@@ -151,58 +158,61 @@ namespace com.espertech.esper.compiler.@internal.util
             Module module,
             CompilerArguments arguments)
         {
-            if (arguments == null) {
-                arguments = new CompilerArguments(new Configuration());
+            using (arguments.Configuration.Container.EnterContextualReflection()) {
+
+                if (arguments == null) {
+                    arguments = new CompilerArguments(new Configuration());
+                }
+
+                // determine module name
+                var moduleName = DetermineModuleName(arguments.Options, module);
+                var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
+
+                // get compile services
+                var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
+                AddModuleImports(module.Imports, compileTimeServices);
+
+                IList<Compilable> compilables = new List<Compilable>();
+                foreach (var item in module.Items) {
+                    if (item.IsCommentOnly) {
+                        continue;
+                    }
+
+                    if (item.Expression != null && item.Model != null) {
+                        throw new EPCompileException("Module item has both an EPL expression and a statement object model");
+                    }
+
+                    if (item.Expression != null) {
+                        compilables.Add(new CompilableEPL(item.Expression));
+                    }
+                    else if (item.Model != null) {
+                        compilables.Add(new CompilableSODA(item.Model));
+                    }
+                    else {
+                        throw new EPCompileException(
+                            "Module item has neither an EPL expression nor a statement object model");
+                    }
+                }
+
+                IDictionary<ModuleProperty, object> moduleProperties = new Dictionary<ModuleProperty, object>();
+                AddModuleProperty(moduleProperties, ModuleProperty.ARCHIVENAME, module.ArchiveName);
+                AddModuleProperty(moduleProperties, ModuleProperty.URI, module.Uri);
+                if (arguments.Configuration.Compiler.ByteCode.IsAttachModuleEPL) {
+                    AddModuleProperty(moduleProperties, ModuleProperty.MODULETEXT, module.ModuleText);
+                }
+
+                AddModuleProperty(moduleProperties, ModuleProperty.USEROBJECT, module.UserObjectCompileTime);
+                AddModuleProperty(moduleProperties, ModuleProperty.USES, module.Uses.ToArrayOrNull());
+                AddModuleProperty(moduleProperties, ModuleProperty.IMPORTS, module.Imports.ToArrayOrNull());
+
+                // compile
+                return CompilerHelperModuleProvider.Compile(
+                    compilables,
+                    moduleName,
+                    moduleProperties,
+                    compileTimeServices,
+                    arguments.Options);
             }
-
-            // determine module name
-            var moduleName = DetermineModuleName(arguments.Options, module);
-            var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
-
-            // get compile services
-            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
-            AddModuleImports(module.Imports, compileTimeServices);
-
-            IList<Compilable> compilables = new List<Compilable>();
-            foreach (var item in module.Items) {
-                if (item.IsCommentOnly) {
-                    continue;
-                }
-
-                if (item.Expression != null && item.Model != null) {
-                    throw new EPCompileException("Module item has both an EPL expression and a statement object model");
-                }
-
-                if (item.Expression != null) {
-                    compilables.Add(new CompilableEPL(item.Expression));
-                }
-                else if (item.Model != null) {
-                    compilables.Add(new CompilableSODA(item.Model));
-                }
-                else {
-                    throw new EPCompileException(
-                        "Module item has neither an EPL expression nor a statement object model");
-                }
-            }
-
-            IDictionary<ModuleProperty, object> moduleProperties = new Dictionary<ModuleProperty, object>();
-            AddModuleProperty(moduleProperties, ModuleProperty.ARCHIVENAME, module.ArchiveName);
-            AddModuleProperty(moduleProperties, ModuleProperty.URI, module.Uri);
-            if (arguments.Configuration.Compiler.ByteCode.IsAttachModuleEPL) {
-                AddModuleProperty(moduleProperties, ModuleProperty.MODULETEXT, module.ModuleText);
-            }
-
-            AddModuleProperty(moduleProperties, ModuleProperty.USEROBJECT, module.UserObjectCompileTime);
-            AddModuleProperty(moduleProperties, ModuleProperty.USES, module.Uses.ToArrayOrNull());
-            AddModuleProperty(moduleProperties, ModuleProperty.IMPORTS, module.Imports.ToArrayOrNull());
-
-            // compile
-            return CompilerHelperModuleProvider.Compile(
-                compilables,
-                moduleName,
-                moduleProperties,
-                compileTimeServices,
-                arguments.Options);
         }
 
         public Module ReadModule(
@@ -259,7 +269,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var moduleName = DetermineModuleName(arguments.Options, module);
             var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
-            ModuleCompileTimeServices moduleCompileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
+            var moduleCompileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
 
             var statementNumber = 0;
             try {
@@ -306,7 +316,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var moduleName = arguments.Options.ModuleName?.Invoke(new ModuleNameContext(null));
             var moduleUses = arguments.Options.ModuleUses?.Invoke(new ModuleUsesContext(moduleName, null));
 
-            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, true);
+            var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, true);
             try {
                 return CompilerHelperFAFProvider.Compile(compilable, compileTimeServices, arguments);
             }

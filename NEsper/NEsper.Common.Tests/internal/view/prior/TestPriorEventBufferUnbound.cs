@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.view.prior
         private PriorEventBufferUnbound buffer;
         private EventBean[] events;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlow()
         {
             buffer.Update(new[] { events[0], events[1] }, null);
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             Assert.IsNull(buffer.GetNewData(2));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             try

@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.view.util
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestUpdate()
         {
             // Observer starts with no data

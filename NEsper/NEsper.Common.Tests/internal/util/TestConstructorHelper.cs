@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestConstructorHelper : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidInvokeConstructor()
         {
             object[] parameters = new object[] { "test", 1 };
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual(parameters, objThree.Arguments);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalidInvokeConstructor()
         {
             // No Ctor

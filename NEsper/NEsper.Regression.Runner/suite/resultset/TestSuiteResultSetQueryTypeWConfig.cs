@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new ResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution(5000000));
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

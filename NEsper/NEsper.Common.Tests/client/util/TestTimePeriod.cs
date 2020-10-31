@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client.util
     [TestFixture]
     public class TestTimePeriod : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestLargestAbsoluteValue()
         {
             Assert.AreEqual(1, (int) new TimePeriod().SetYears(1).LargestAbsoluteValue());
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.util
                     .LargestAbsoluteValue());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToStringISO8601()
         {
             Assert.AreEqual("T10M", new TimePeriod().SetMinutes(10).ToStringISO8601());

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             builder = new PropertyListBuilderPublic(config);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuildPropList()
         {
             IList<PropertyStem> descList = builder.AssessProperties(typeof(SupportLegacyBean));

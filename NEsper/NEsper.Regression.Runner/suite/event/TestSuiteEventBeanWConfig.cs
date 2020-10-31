@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.EventMeta.DefaultAccessorStyle = AccessorStyle.PUBLIC;
             session.Configuration.Common.AddEventType(typeof(SupportLegacyBean));
             RegressionRunner.Run(session, new EventBeanPropertyResolutionAccessorStyleGlobalPublic());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE;
             session.Configuration.Common.AddEventType(typeof(SupportBeanDupProperty));
             RegressionRunner.Run(session, new EventBeanPropertyResolutionCaseDistinctInsensitive());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.AddEventType(typeof(SupportBeanDupProperty));
             session.Configuration.Common.AddEventType(typeof(SupportBeanComplexProps));
             RegressionRunner.Run(session, new EventBeanPropertyResolutionCaseInsensitive());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
             session.Configuration.Common.AddEventType("BeanWCIED", typeof(SupportBean));
             RegressionRunner.Run(session, new EventBeanPropertyResolutionCaseInsensitiveEngineDefault());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.AddEventType("AnotherLegacyEvent", typeof(SupportLegacyBean), anotherLegacyEvent);
 
             RegressionRunner.Run(session, new EventBeanPublicAccessors());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.AddEventType("BeanWithCaseInsensitive", typeof(SupportBean), beanWithCaseInsensitive);
 
             RegressionRunner.Run(session, new EventBeanPropertyResolutionCaseInsensitiveConfigureType());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.AddEventType("MySupportBean", typeof(SupportBean), mySupportBean);
 
             RegressionRunner.Run(session, new EventBeanExplicitOnly());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

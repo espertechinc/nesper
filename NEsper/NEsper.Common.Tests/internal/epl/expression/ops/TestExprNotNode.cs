@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private ExprNotNode notNode;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEqualsNode()
         {
             Assert.IsTrue(notNode.EqualsNode(notNode, false));
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue(notNode.EqualsNode(new ExprNotNode(), false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             notNode.AddChildNode(new SupportBoolExprNode(true));
@@ -48,20 +48,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue((bool) notNode.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), notNode.EvaluationType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             notNode.AddChildNode(new SupportExprNode(true));
             Assert.AreEqual("not true", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(notNode));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             // fails with zero expressions

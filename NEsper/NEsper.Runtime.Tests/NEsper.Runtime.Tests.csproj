@@ -1,30 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <AssemblyName>NEsper.Runtime.Tests</AssemblyName>
-    <AssemblyTitle>NEsper.Runtime.Tests</AssemblyTitle>
-    <PackageId>NEsper.Runtime.Tests</PackageId>
-    <RootNamespace>com.espertech.esper.runtime</RootNamespace>
-    <Summary>Unit tests for NEsper.Runtime</Summary>
-    <Description>Unit tests for NEsper.Runtime</Description>
-    <PackageTags>NEsper Esper ESP CEP</PackageTags>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-  </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyName>NEsper.Runtime.Tests</AssemblyName>
+        <AssemblyTitle>NEsper.Runtime.Tests</AssemblyTitle>
+        <PackageId>NEsper.Runtime.Tests</PackageId>
+        <RootNamespace>com.espertech.esper.runtime</RootNamespace>
+        <Summary>Unit tests for NEsper.Runtime</Summary>
+        <Description>Unit tests for NEsper.Runtime</Description>
+        <PackageTags>NEsper Esper ESP CEP</PackageTags>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit.ApplicationDomain" Version="11.1.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NUnit" Version="3.12.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
-    <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj" />
-    <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(NetFramework)'=='true'">
+        <PackageReference Include="NUnit.ApplicationDomain" Version="11.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj"/>
+        <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj"/>
+        <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(NetFramework)'=='true'">
+        <Compile Remove="RunInApplicationDomainAttribute.cs"/>
+    </ItemGroup>
 </Project>

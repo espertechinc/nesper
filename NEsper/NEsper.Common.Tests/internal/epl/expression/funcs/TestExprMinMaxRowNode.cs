@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return maxNode;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEqualsNode()
         {
             Assert.IsTrue(minMaxNode.EqualsNode(minMaxNode, false));
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsFalse(minMaxNode.EqualsNode(new ExprOrNode(), false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(typeof(double?), minMaxNode.Forge.EvaluationType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             minMaxNode.AddChildNode(new SupportExprNode(9d));
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual("max(9.0d,6,0.5d)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             // Must have 2 or more subnodes

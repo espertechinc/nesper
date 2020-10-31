@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             Configure(2, false, session.Configuration);
             RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Noprevent());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             Configure(2, true, session.Configuration);
             RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Prevent());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             Configure(4, true, session.Configuration);
             RegressionRunner.Run(session, new PatternOperatorFollowedByMax4Prevent());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new PatternMicrosecondResolution(true));
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new PatternMicrosecondResolutionCrontab());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             session.Configuration.Runtime.Expression.TimeZone = TimeZoneHelper.GetTimeZoneInfo("GMT-4:00");
             RegressionRunner.Run(session, new PatternObserverTimerScheduleTimeZoneEST());
-            session.Destroy();
+            session.Dispose();
         }
 
         private void Configure(long max, bool preventStart, Configuration configuration)

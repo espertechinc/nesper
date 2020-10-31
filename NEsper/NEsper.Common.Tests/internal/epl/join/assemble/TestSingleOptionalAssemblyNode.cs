@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             resultSingleEvent = supportJoinResultNodeFactory.MakeOneStreamResult(4, 1, 1, 1); // 1 nodes 1 event each for (1)
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestProcessMultipleEvents()
         {
             IList<EventBean[]> resultFinalRows = new List<EventBean[]>();
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             Assert.AreEqual(nodeTwo.Events.First(), row[1]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestProcessSingleEvent()
         {
             optAssemblyNode.Init(resultSingleEvent);
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             Assert.AreEqual(node.Events.First(), row[1]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestChildResult()
         {
             optAssemblyNode.Init(resultMultipleEvents);

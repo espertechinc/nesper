@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             _schemaTypeInt = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Int);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMap()
         {
             var uri = container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
 #if DEPRECATED
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMap()
         {
             Uri uri = _container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 #endif
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvent()
         {
             //URL url = ResourceLoader.ResolveClassPathOrURLResource("schema", "regression/typeTestSchema.xsd");
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Console.WriteLine(firstElementType.RenderAny());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExtendedElements()
         {
             var uri = container.ResourceManager().ResolveResourceURL("regression/schemaWithExtensions.xsd");

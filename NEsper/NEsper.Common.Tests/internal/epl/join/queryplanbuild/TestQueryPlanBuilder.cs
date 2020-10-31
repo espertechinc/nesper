@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPlan()
         {
             OuterJoinDesc[] descList = {

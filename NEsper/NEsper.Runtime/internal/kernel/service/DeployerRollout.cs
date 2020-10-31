@@ -61,7 +61,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				try {
 					inits[i] = ResolveDependenciesInitEPLObjects(i, deploymentIds[i], moduleProviders[i], runtime.ServicesContext, runtime.StageService);
 				}
-				catch (EPDeployException ex) {
+				catch (EPDeployException) {
 					RolloutCleanPathAndTypes(inits, deploymentIds, runtime.ServicesContext);
 					throw;
 				}

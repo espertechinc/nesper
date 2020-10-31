@@ -8,9 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
+using com.espertech.esper.compat;
+
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -35,7 +39,7 @@ namespace com.espertech.esper.regressionrun.runner
             var session = Session();
             configurable.Configure(session.Configuration);
             Run(session, configurable, true);
-            session.Destroy();
+            session.Dispose();
         }
 
         public static RegressionSession Session()
@@ -50,7 +54,7 @@ namespace com.espertech.esper.regressionrun.runner
         {
             Run<T>(session, executions, true);
         }
-        
+
         public static void Run<T>(
             RegressionSession session,
             ICollection<T> executions,
@@ -58,17 +62,17 @@ namespace com.espertech.esper.regressionrun.runner
             where T : RegressionExecution
         {
             foreach (var execution in RegressionFilter.FilterBySystemProperty(executions)) {
-                Run(session, execution, usePerfContext);
+                using (PerformanceScope(usePerfContext)) {
+                    RunInternal(session, execution);
+                }
             }
         }
-        
+
         public static void RunPerformanceSensitive(
             RegressionSession session,
             RegressionExecution execution)
         {
-            using (new PerformanceContext()) {
-                RunInternal(session, execution);
-            }
+            Run(session, execution, true);
         }
 
         public static void Run(
@@ -76,12 +80,7 @@ namespace com.espertech.esper.regressionrun.runner
             RegressionExecution execution,
             bool usePerfContext = false)
         {
-            if (usePerfContext) {
-                using (new PerformanceContext()) {
-                    RunInternal(session, execution);
-                }
-            }
-            else {
+            using (PerformanceScope(usePerfContext)) {
                 RunInternal(session, execution);
             }
         }
@@ -90,18 +89,25 @@ namespace com.espertech.esper.regressionrun.runner
             RegressionSession session,
             RegressionExecution execution)
         {
-            if (session.Runtime == null) {
-                var exists = EPRuntimeProvider.HasRuntime(EPRuntimeProvider.DEFAULT_RUNTIME_URI);
-                var runtime = EPRuntimeProvider.GetDefaultRuntime(session.Configuration);
-                if (exists) {
-                    runtime.Initialize();
+                if (session.Runtime == null) {
+                    var exists = EPRuntimeProvider.HasRuntime(EPRuntimeProvider.DEFAULT_RUNTIME_URI);
+                    var runtime = EPRuntimeProvider.GetDefaultRuntime(session.Configuration);
+                    if (exists) {
+                        runtime.Initialize();
+                    }
+
+                    session.Runtime = runtime;
                 }
 
-                session.Runtime = runtime;
-            }
+                LOG.Info("Running test " + execution.Name());
+                execution.Run(new RegressionEnvironmentEsper(session.Configuration, session.Runtime));
+        }
 
-            LOG.Info("Running test " + execution.Name());
-            execution.Run(new RegressionEnvironmentEsper(session.Configuration, session.Runtime));
+        public static IDisposable PerformanceScope(bool usePerfContext)
+        {
+            return usePerfContext 
+                ? (IDisposable) new PerformanceContext() 
+                : (IDisposable) new VoidDisposable();
         }
     }
 } // end of namespace

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.collection
             bufferFive = new RollingEventBuffer(5);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlowSizeOne()
         {
             bufferOne.Add((EventBean[]) null);
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.collection
             TryInvalid(bufferOne, 1);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlowSizeTwo()
         {
             EventBean[] set1 = Make(2);
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.collection
             AssertEvents(new EventBean[] { set7[1], set7[0] }, bufferTwo);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlowSizeTen()
         {
             EventBean[] set1 = Make(3);

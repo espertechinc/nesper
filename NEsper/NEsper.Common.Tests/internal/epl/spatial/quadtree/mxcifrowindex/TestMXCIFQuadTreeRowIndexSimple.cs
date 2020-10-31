@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             tree = null;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddRemoveSimple()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 50, 60);
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 0, 0, 10, 10, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPoints()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 10, 10);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 0, 0, 10, 10, "R0,R1,R2,R3,R4,R5,R6,R7,R8,R9");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddRemoveSamePoint()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 0, 0, 10, 10, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFewValues()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, beginX, beginY, endX - beginX, endY - beginY, "R1");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddRemoveScenario()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);

@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddVariable("var2", typeof(long?), "2");
             configuration.Common.AddVariable("var3", typeof(long?), null);
             RegressionRunner.Run(session, new EPLVariablesTimer());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             RegressionRunner.Run(session, new EPLVariableEngineConfigXML());
 
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

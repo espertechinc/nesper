@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.collection
             vector = new SortedDoubleVector();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAdd()
         {
             Assert.AreEqual(0, vector.Count);
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.collection
             Compare(expected, vector);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRemove()
         {
             vector.Add(5);
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.collection
             vector.Remove(Double.NaN);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFindInsertIndex()
         {
             Assert.AreEqual(-1, vector.FindInsertIndex(1));

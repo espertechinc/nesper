@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     [TestFixture]
     public class TestDoubleRange : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNew()
         {
             var range = new DoubleRange(10d, 20d);
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Assert.AreEqual(10d, range.Min);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             var rangeOne = new DoubleRange(10d, 20d);
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Assert.IsFalse(rangeThree.Equals(rangeFour));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestHash()
         {
             var range = new DoubleRange(10d, 20d);

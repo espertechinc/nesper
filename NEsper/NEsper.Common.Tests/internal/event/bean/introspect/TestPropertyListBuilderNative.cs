@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestBuildPropList()
         {
             var descList = builder.AssessProperties(typeof(SupportLegacyBean));

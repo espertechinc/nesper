@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
     [TestFixture]
     public class TestMxcifQuadTreeFilterIndexScenarios : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestDimension()
         {
             var tree = MXCIFQuadTreeFactory.Make(1000, 100000, 9000, 900000);
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "R3");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRemoveNonExistent()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 20, 20);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideAddMany()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 2, 3);
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideMerge()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 3, 2);
@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideMultiChild()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 4, 3);
@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Compare(90, 45, 1, 1, "R5", collection[2]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSubdivideSingleMerge()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 3, 2);
@@ -269,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Compare(80, 61, 1, 1, "R4", collection[1]);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSuperslim()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 1, 100);

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
     [TestFixture]
     public class TestPropertyParserNoDep : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParse()
         {
             Property property;
@@ -71,13 +71,13 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             Assert.AreEqual("x..y", ((SimpleProperty) property).PropertyNameAtomic);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParseMapKey()
         {
             Assert.AreEqual("a", TryKey("a"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParseMappedProp()
         {
             MappedPropertyParseResult result = ParseMappedProperty("a.b('c')");

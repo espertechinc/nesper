@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.That(() => eventBean.GetFragment(propName), Throws.InstanceOf<PropertyAccessException>());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGet()
         {
             EventType eventType = supportEventTypeFactory.CreateBeanType(typeof(SupportBean));
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             });
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetComplexProperty()
         {
             var eventCombined = SupportBeanCombinedProps.MakeDefaultBean();
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual("NestedValue", ((EventBean) eventBean.GetFragment("Nested")).Get("NestedValue"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetIterableListMap()
         {
             var eventComplex = SupportBeanIterableProps.MakeDefaultBean();
@@ -302,7 +302,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.IsNull(eventBean.EventType.GetFragmentType("MapInteger"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetIterableListMapContained()
         {
             var eventIterableContained = SupportBeanIterablePropsContainer.MakeDefaultBean();

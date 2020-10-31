@@ -42,14 +42,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 SupportEventTypeFactory.GetInstance(container).BEAN_EVENT_TYPE_FACTORY);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyNames()
         {
             var properties = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(properties, new string[] { "MyInt", "MyIntBoxed", "MyString", "MySupportBean", "MyComplexBean", "MyNullType" });
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
@@ -69,13 +69,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetUnderlyingType()
         {
             Assert.AreEqual(typeof(object[]), eventType.UnderlyingType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsValidProperty()
         {
             Assert.IsTrue(eventType.IsProperty("MyInt"));
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetGetter()
         {
             var nestedSupportBean = new SupportBean();
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.AreEqual("NestedValue", eventType.GetGetter("MyComplexBean.Nested.NestedValue").Get(eventBean));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetSuperTypes()
         {
             Assert.IsNull(eventType.SuperTypes);

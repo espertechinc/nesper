@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.collection
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             Assert.That(() => PermutationEnumerator.Create(0), Throws.ArgumentException);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNext()
         {
             int[] numberSet = { 10, 11, 12 };

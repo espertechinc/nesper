@@ -69,14 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return equalsNode;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEqualsNode()
         {
             Assert.IsTrue(equalsNodes[0].EqualsNode(equalsNodes[1], false));
             Assert.IsFalse(equalsNodes[0].EqualsNode(equalsNodes[2], false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluateEquals()
         {
             equalsNodes[0] = MakeNode(true, false, false);
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue((bool) equalsNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluateNotEquals()
         {
             equalsNodes[0] = MakeNode(true, false, true);
@@ -131,13 +131,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), equalsNodes[1].Forge.EvaluationType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             equalsNodes[0].AddChildNode(new SupportExprNode(true));
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("true=false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(equalsNodes[0]));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             // Test success

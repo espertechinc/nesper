@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionSession session = RegressionRunner.Session();
             ConfigureMicroseconds(session);
             RegressionRunner.Run(session, new ViewGroup.ViewGroupReclaimWithFlipTime(5000000));
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionSession session = RegressionRunner.Session();
             ConfigureMicroseconds(session);
             RegressionRunner.Run(session, execs);
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             session.Configuration.Common.AddEventType(typeof(SupportMarketDataBean));
             session.Configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             RegressionRunner.Run(session, new ViewTimeBatchWSystemTime());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             session.Configuration.Common.AddEventType(typeof(SupportMarketDataBean));
             session.Configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             RegressionRunner.Run(session, new ViewTimeWinWSystemTime());
-            session.Destroy();
+            session.Dispose();
         }
 
         private void ConfigureMicroseconds(RegressionSession session)

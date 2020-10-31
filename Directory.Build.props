@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<Language>en-US</Language>
 		<NeutralLanguage>en-US</NeutralLanguage>
-	    <PackageTags>NEsper Esper ESP CEP</PackageTags>
+		<PackageTags>NEsper Esper ESP CEP</PackageTags>
 		<PackageCopyright>Copyright (C) 2014-2019 Espertech. All rights reserved.</PackageCopyright>
 		<PackageProjectUrl>http://www.espertech.com/esper</PackageProjectUrl>
 		<PackageLicenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</PackageLicenseUrl>
@@ -35,17 +35,27 @@
 		<Optimize>true</Optimize>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net46'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='net462'">
 		<NetFramework>true</NetFramework>
-		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET46;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET462;</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='net472'">
 		<NetFramework>true</NetFramework>
-		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET471;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET472;</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
 		<NetCore>true</NetCore>
 		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
 	</PropertyGroup>

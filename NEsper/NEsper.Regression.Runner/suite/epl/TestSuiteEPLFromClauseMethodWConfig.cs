@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheExpiry());
 
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheLRU());
 
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddImportType(typeof(SupportJoinMethods));
 
             RegressionRunner.Run(session, EPLFromClauseMethodJoinPerformance.Executions());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             RegressionRunner.Run(session, EPLFromClauseMethodVariable.Executions());
 
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             RegressionRunner.Run(session, EPLFromClauseMethodMultikeyWArray.Executions());
 
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

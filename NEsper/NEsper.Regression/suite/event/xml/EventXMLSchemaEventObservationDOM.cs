@@ -89,10 +89,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var stmtExampleOneText = "@Name('s0') select ID, Observation.Command, Observation.ID,\n" +
-                                     "Observation.Tag[0].ID, Observation.Tag[1].ID\n" +
-                                     "from " +
-                                     eventTypeName;
+            var stmtExampleOneText =
+                "@Name('s0') select ID, Observation.Command, Observation.ID,\n" +
+                "Observation.Tag[0].ID, Observation.Tag[1].ID\n" +
+                "from " +
+                eventTypeName;
             env.CompileDeploy(stmtExampleOneText, path).AddListener("s0");
 
             env.CompileDeploy(

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
             testWindow.Add(new TimeWindowPair(key, value));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmpty()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder(null, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmptyList()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder((object[]) null, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmptyListFront()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmptyListFrontTail()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmptyListSprinkle()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMixedEntryElement()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.collection
                 enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestObjectAndNull()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestOneElement()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -195,7 +195,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestThreeEmptyList()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder((object[]) null, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoByTwoEntryElement()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -230,7 +230,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoEmptyList()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -244,7 +244,7 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder((object[]) null, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoInOneEntryElement()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.collection
             }, enumerator);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwoSeparateEntryElement()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();

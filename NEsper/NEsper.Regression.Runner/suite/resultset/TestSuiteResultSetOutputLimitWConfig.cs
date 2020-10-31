@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Compiler.ViewResources.OutputLimitOpt = false;
             RegressionRunner.Run(session, new ResultSetOutputLimitChangeSetOpt(false));
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 new ResultSetOutputLimitMicrosecondResolution(0, "1", 1000000, 1000000));
             RegressionRunner.Run(session,
                 new ResultSetOutputLimitMicrosecondResolution(789123456789L, "0.1", 789123456789L + 100000, 100000));
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

@@ -15,13 +15,13 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class TestPermutationEnumeration : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             Assert.That(() => PermutationEnumerator.Create(0), Throws.ArgumentException);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNext()
         {
             int[][] expectedValues4 = new[] {
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.That(enumeration.MoveNext(), Is.False);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPermutation()
         {
             int[] factors = PermutationEnumerator.GetFactors(4);
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(Arrays.AreEqual(result, new[] { 3, 1, 2, 0 }));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetFactors()
         {
             int[] factors = PermutationEnumerator.GetFactors(5);
@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.collection
             //Log.debug(".testGetFactors " + Arrays.toString(factors));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFaculty()
         {
             Assert.AreEqual(0, PermutationEnumerator.Faculty(0));

@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestStringValue : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestParse()
         {
             Assert.AreEqual("a", StringValue.ParseString("\"a\""));
@@ -25,14 +25,14 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual("b", StringValue.ParseString("'b'"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInvalid()
         {
             TryInvalid("\"");
             TryInvalid("'");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRenderEPL()
         {
             Assert.AreEqual("null", TryConstant(null));
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual("\"abc\"", TryConstant("abc"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestUnescapeIndexOf()
         {
             object[][] inout = new object[][]{

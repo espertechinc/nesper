@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSimpleNumberCoercion : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetCoercer()
         {
             Assert.AreEqual(1d, SimpleNumberCoercerFactory.GetCoercer(null, typeof(double?)).CoerceBoxed(1d));
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual((short) 2, SimpleNumberCoercerFactory.GetCoercer(typeof(long?), typeof(short?)).CoerceBoxed((long) 2));
             Assert.AreEqual(4, SimpleNumberCoercerFactory.GetCoercer(typeof(long?), typeof(int?)).CoerceBoxed((long) 4));
             Assert.AreEqual((byte) 5, SimpleNumberCoercerFactory.GetCoercer(typeof(long?), typeof(byte?)).CoerceBoxed((long) 5));
-            Assert.AreEqual(8l, SimpleNumberCoercerFactory.GetCoercer(typeof(long?), typeof(long?)).CoerceBoxed((long) 8));
+            Assert.AreEqual(8L, SimpleNumberCoercerFactory.GetCoercer(typeof(long?), typeof(long?)).CoerceBoxed((long) 8));
             Assert.AreEqual(new BigInteger(8), SimpleNumberCoercerFactory.GetCoercer(typeof(int), typeof(BigInteger)).CoerceBoxed(8));
             Assert.AreEqual(9m, SimpleNumberCoercerFactory.GetCoercer(typeof(int), typeof(decimal?)).CoerceBoxed(9));
             Assert.AreEqual(9m, SimpleNumberCoercerFactory.GetCoercer(typeof(double), typeof(decimal?)).CoerceBoxed(9.0));

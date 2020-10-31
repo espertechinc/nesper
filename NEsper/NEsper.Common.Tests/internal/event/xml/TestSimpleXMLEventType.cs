@@ -60,34 +60,34 @@ namespace com.espertech.esper.common.@internal.@event.xml
             theEvent = new XMLEventBean(simpleDoc.DocumentElement, eventType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCustomProperty()
         {
             Assert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("customProp"));
             Assert.AreEqual(3.0d, theEvent.Get("customProp"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIndexedProperties()
         {
             Assert.AreEqual("5", theEvent.Get("nested1.nested2.prop3[2]"));
             Assert.AreEqual(typeof(string), theEvent.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMappedProperties()
         {
             Assert.AreEqual("SAMPLE_V8", theEvent.Get("nested3.nested4('a').prop5[1]"));
             Assert.AreEqual("SAMPLE_V10", theEvent.Get("nested3.nested4('c').prop5[0]"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNestedProperties()
         {
             Assert.AreEqual("true", theEvent.Get("nested1.prop2"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSimpleProperties()
         {
             Assert.AreEqual("SAMPLE_V6", theEvent.Get("prop4"));

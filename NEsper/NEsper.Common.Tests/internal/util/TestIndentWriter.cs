@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
             stringWriter.GetStringBuilder().Remove(0, buffer.Length);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCtor()
         {
             try
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestWrite()
         {
             writer.WriteLine("a");

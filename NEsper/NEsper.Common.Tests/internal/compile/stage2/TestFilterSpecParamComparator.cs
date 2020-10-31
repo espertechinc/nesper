@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompareAll()
         {
             var sorted = new SortedSet<FilterOperator>(comparator);
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             log.Debug(".testCompareAll " + sorted.RenderAny());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompareOneByOne()
         {
             var param1 = FilterOperator.EQUAL;

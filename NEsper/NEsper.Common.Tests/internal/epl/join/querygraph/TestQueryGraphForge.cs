@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             };
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFillEquivalency()
         {
             // test with just 3 streams
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAdd()
         {
             // Try invalid add
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             log.Debug(queryGraph.ToString());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsNavigable()
         {
             ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             Assert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetNavigableStreams()
         {
             ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 3 }, queryGraph.GetNavigableStreams(4));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetProperties()
         {
             // s1.p11 = s0.p01 and s0.p02 = s1.p12

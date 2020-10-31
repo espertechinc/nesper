@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             var metadata = new EventTypeMetadata(
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                         supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY)));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetFromMap()
         {
             var nestedSupportBean = new SupportBean();
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual("NestedValue", eventType.GetValue("MyComplexBean.Nested.NestedValue", valuesMap));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetGetter()
         {
             var nestedSupportBean = new SupportBean();
@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual("NestedValue", getter.Get(eventBean));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyNames()
         {
             var properties = eventType.PropertyNames;
@@ -195,7 +195,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 new[] { "MyInt", "MyString", "MyNullableString", "MySupportBean", "MyComplexBean", "MyNullableSupportBean", "MyNullType" });
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
@@ -214,19 +214,19 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetSuperTypes()
         {
             Assert.IsNull(eventType.SuperTypes);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetUnderlyingType()
         {
             Assert.AreEqual(typeof(IDictionary<string, object>), eventType.UnderlyingType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestIsValidProperty()
         {
             Assert.IsTrue(eventType.IsProperty("MyInt"));
@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestNestedMap()
         {
             IDictionary<string, object> levelThree = new Dictionary<string, object>();

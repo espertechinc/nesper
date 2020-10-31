@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         private ArrayBackedCollection<int?> coll;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGet()
         {
             Assert.AreEqual(0, coll.Count);

@@ -94,26 +94,19 @@ namespace com.espertech.esper.compiler.@internal.util
         public CompileResponse Compile(CompileRequest request)
         {
             var configuration = request.ModuleCompileTimeServices.Configuration;
-            var compiler = new RoslynCompiler()
+            var container = request.ModuleCompileTimeServices.Container;
+            var compiler = container
+                .RoslynCompiler()
                 .WithCodeLogging(configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(configuration.Compiler.Logging.AuditDirectory)
-                .WithSources(request.Classes
-                    .Select(_ => new RoslynCompiler.SourceBasic(_.ClassName, _.Code))
-                    .ToList<RoslynCompiler.Source>());
+                .WithSources(
+                    request.Classes
+                        .Select(_ => new RoslynCompiler.SourceBasic(_.ClassName, _.Code))
+                        .ToList<RoslynCompiler.Source>());
 
             return new CompileResponse(
                 request,
                 compiler.Compile());
-
-#if false
-            try {
-                JaninoCompiler.compile(code, filenameWithoutExtension, classpath, output, services);
-            }
-            catch (RuntimeException ex) {
-                string message = ex.getMessage().replace(CompileException.class.getName() + ": ", "");
-                throw new CompilerServicesCompileException(message, ex);
-            }
-#endif
         }
     }
 } // end of namespace

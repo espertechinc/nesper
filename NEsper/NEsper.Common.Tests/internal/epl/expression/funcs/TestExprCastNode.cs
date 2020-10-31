@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private ExprCastNode[] castNodes;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             Assert.IsFalse(castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsFalse(castNodes[0].EqualsNode(new ExprCastNode(new ClassIdentifierWArray(typeof(int).FullName)), false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             for (var i = 0; i < castNodes.Length; i++)
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(16, castNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             for (var i = 0; i < castNodes.Length; i++)
@@ -65,14 +65,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(typeof(int?), castNodes[1].TargetType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             castNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             Assert.AreEqual("cast(10L,long)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(castNodes[0]));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             var castNode = new ExprCastNode(new ClassIdentifierWArray("int"));

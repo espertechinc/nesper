@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             parentNode.AddChild(leafNode);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestProcess()
         {
             IList<Node>[] result = supportJoinResultNodeFactory.MakeOneStreamResult(4, 1, 2, 2);
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             Assert.AreEqual(result[1][0].Events.First(), parentNode.RowsList[0][1]);   // compare event
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestChildResult()
         {
             try

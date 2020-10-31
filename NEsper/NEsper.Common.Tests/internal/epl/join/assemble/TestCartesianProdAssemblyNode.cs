@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         private IList<Node>[] resultMultipleEvents;
         private IList<Node>[] resultSingleEvent;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlow()
         {
             optCartNode.Init(resultMultipleEvents);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 rowArr);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestProcessSingleEvent()
         {
             optCartNode.Init(resultSingleEvent);

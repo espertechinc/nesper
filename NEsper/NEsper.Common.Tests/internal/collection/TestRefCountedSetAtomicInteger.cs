@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.collection
     [TestFixture]
     public class TestRefCountedSetAtomicInteger : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestFlow()
         {
             RefCountedSetAtomicInteger<string> set = new RefCountedSetAtomicInteger<string>();

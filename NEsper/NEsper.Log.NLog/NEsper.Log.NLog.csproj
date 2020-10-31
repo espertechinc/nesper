@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <AssemblyName>NEsper.Log.NLog</AssemblyName>
-    <AssemblyTitle>NEsper.Log.NLog</AssemblyTitle>
-    <PackageId>NEsper.Log.NLog</PackageId>
-    <RootNamespace>com.espertech.esper</RootNamespace>
-    <Summary>NLog specific logger for NEsper.</Summary>
-    <Description>NLog specific logger for NEsper.</Description>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyName>NEsper.Log.NLog</AssemblyName>
+        <AssemblyTitle>NEsper.Log.NLog</AssemblyTitle>
+        <PackageId>NEsper.Log.NLog</PackageId>
+        <RootNamespace>com.espertech.esper</RootNamespace>
+        <Summary>NLog specific logger for NEsper.</Summary>
+        <Description>NLog specific logger for NEsper.</Description>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NLog" Version="4.5.6" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NLog" Version="4.7.5"/>
+    </ItemGroup>
 </Project>

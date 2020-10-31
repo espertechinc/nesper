@@ -49,14 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private ExprCoalesceNode[] coalesceNodes;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEquals()
         {
             Assert.IsFalse(coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
             Assert.IsTrue(coalesceNodes[0].EqualsNode(coalesceNodes[1], false));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEvaluate()
         {
             for (var i = 0; i < coalesceNodes.Length; i++)
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(5D, coalesceNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGetType()
         {
             for (var i = 0; i < coalesceNodes.Length; i++)
@@ -86,14 +86,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(typeof(double?), coalesceNodes[4].Forge.EvaluationType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestToExpressionString()
         {
             coalesceNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             Assert.AreEqual("coalesce(null,null,4)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(coalesceNodes[0]));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             var coalesceNode = new ExprCoalesceNode();

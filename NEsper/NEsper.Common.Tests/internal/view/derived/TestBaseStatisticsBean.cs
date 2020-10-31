@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.view.derived
     {
         private readonly int PRECISION_DIGITS = 6;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAddRemoveXOnly()
         {
             var stat = new BaseStatisticsBean();
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             Assert.AreEqual(1, stat.N);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAverage()
         {
             var stat = new BaseStatisticsBean();
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             Assert.AreEqual(0, stat.N);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClone()
         {
             var stat = new BaseStatisticsBean();
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(cloned.XStandardDeviationPop, 50.0, PRECISION_DIGITS));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestStddev_STDEVPA()
         {
             var stat = new BaseStatisticsBean();
@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             Assert.AreEqual(5, stat.N);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestStddevAndVariance_STDEV()
         {
             var stat = new BaseStatisticsBean();
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(stat.YStandardDeviationSample, 0.608276253, PRECISION_DIGITS));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestSum()
         {
             var stat = new BaseStatisticsBean();

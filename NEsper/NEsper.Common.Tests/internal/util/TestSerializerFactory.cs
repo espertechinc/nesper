@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTypes()
         {
             object[] expected = { 2, 3L, 4f, 5.0d, "abc", new byte[] { 10, 20 }, (byte) 20, (short) 21, true, new MyBean("E1") };

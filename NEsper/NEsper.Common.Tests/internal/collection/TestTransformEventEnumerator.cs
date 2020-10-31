@@ -22,14 +22,14 @@ namespace com.espertech.esper.common.@internal.collection
     {
         private TransformEventEnumerator enumerator;
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEmpty()
         {
             enumerator = MakeIterator(new int[0]);
             Assert.IsFalse(enumerator.MoveNext());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestOne()
         {
             enumerator = MakeIterator(new int[] { 10 });
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsFalse(enumerator.MoveNext());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestTwo()
         {
             enumerator = MakeIterator(new int[] { 10, 20 });

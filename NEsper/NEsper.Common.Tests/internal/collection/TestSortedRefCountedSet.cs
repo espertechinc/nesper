@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.collection
             refSet = new SortedRefCountedSet<string>();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMaxMinValue()
         {
             refSet.Add("a");
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsNull(refSet.MinValue);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAdd()
         {
             refSet.Add("a");
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.AreEqual("a", refSet.MinValue);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRemove()
         {
             refSet.Add("a");

@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             getterNull = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null, null);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGet()
         {
             Assert.AreEqual(bean.GetIndexed(0).GetMapped("0ma"), getter.Get(theEvent));

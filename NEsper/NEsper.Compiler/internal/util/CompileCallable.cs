@@ -38,7 +38,9 @@ namespace com.espertech.esper.compiler.@internal.util
 		public CompilableItemResult Call()
 		{
 			try {
-				var compiler = new RoslynCompiler()
+				var container = _compileTimeServices.Container;
+				var compiler = container
+					.RoslynCompiler()
 					.WithCodeLogging(_compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
 					.WithCodeAuditDirectory(_compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
 					.WithCodegenClasses(_compilableItem.Classes);

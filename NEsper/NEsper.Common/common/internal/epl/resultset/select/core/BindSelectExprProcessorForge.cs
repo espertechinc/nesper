@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class BindSelectExprProcessorForge : SelectExprProcessorForge
     {
-        private readonly long _id = DebugId<BindSelectExprProcessorForge>.NewId();
         private readonly SelectExprProcessorForge syntheticProcessorForge;
         private readonly BindProcessorForge bindProcessorForge;
 

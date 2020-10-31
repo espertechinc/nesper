@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
     [TestFixture]
     public class TestOuterJoinAnalyzer : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestAnalyze()
         {
             var descList = new OuterJoinDesc[2];

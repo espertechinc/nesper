@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Compiler.ByteCode.IsAllowInlinedClass = false;
             RegressionRunner.Run(session, new ExprClassDisable());
-            session.Destroy();
+            session.Dispose();
         }
     }
 } // end of namespace

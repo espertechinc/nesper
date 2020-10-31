@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.configuration
             }
         }
 
-        //[Test, RunInApplicationDomain]
+        //[Test]
         public void TestIt()
         {
             RunAssertion(FILE_ONE);

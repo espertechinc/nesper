@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             RegressionRunner.Run(session, exec);
 
-            session.Destroy();
+            session.Dispose();
         }
 
         private ConfigurationCommonDBRef GetDefaultConfig(IContainer container)

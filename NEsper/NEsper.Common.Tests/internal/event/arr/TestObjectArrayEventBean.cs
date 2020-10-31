@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             eventBean = new ObjectArrayEventBean(testValues, eventType);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestGet()
         {
             Assert.AreEqual(eventType, eventBean.EventType);

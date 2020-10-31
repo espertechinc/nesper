@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.schedule
             }
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestCompress()
         {
             IDictionary<ScheduleUnit, ICollection<int>> unitValues = new Dictionary<ScheduleUnit, ICollection<int>>();
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.schedule
             Assert.IsTrue(spec.UnitValues.Get(ScheduleUnit.MONTHS) == null);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestValidate()
         {
             // Test all units missing

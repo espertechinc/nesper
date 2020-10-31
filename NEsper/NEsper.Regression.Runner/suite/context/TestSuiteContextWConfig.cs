@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionrun.suite.context
             RegressionSession session = RegressionRunner.Session();
             ConfigurePrioritized(session.Configuration);
             RegressionRunner.Run(session, new ContextKeySegmentedPrioritized());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionrun.suite.context
             RegressionSession session = RegressionRunner.Session();
             ConfigurePrioritized(session.Configuration);
             RegressionRunner.Run(session, ContextKeySegmentedWInitTermPrioritized.Executions());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionrun.suite.context
             RegressionSession session = RegressionRunner.Session();
             ConfigurePrioritized(session.Configuration);
             RegressionRunner.Run(session, ContextInitTermPrioritized.Executions());
-            session.Destroy();
+            session.Dispose();
         }
 
         private static void ConfigurePrioritized(Configuration configuration)

@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 session.Configuration.Common.AddEventType(clazz);
             }
             RegressionRunner.Run(session, new ClientInstrumentInstrumentation());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
             session.Configuration.Runtime.Logging.AuditPattern = "[%u] [%d] [%s] [%i] [%c] %m";
             RegressionRunner.Run(session, ClientInstrumentAudit.Executions());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtMetrics());
 
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtGroups());
 
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionSession session = RegressionRunner.Session();
             ApplyMetricsConfig(session.Configuration, -1, 1000);
             RegressionRunner.Run(session, new ClientInstrumentMetricsReportingNW());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionSession session = RegressionRunner.Session();
             ApplyMetricsConfig(session.Configuration, 10000, -1);
             RegressionRunner.Run(session, new ClientInstrumentMetricsReportingRuntimeMetrics());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             configOne.AddIncludeLike("%@METRIC%");
             session.Configuration.Runtime.MetricsReporting.AddStmtGroup("metrics", configOne);
             RegressionRunner.Run(session, new ClientInstrumentMetricsReportingDisableStatement());
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionSession session = RegressionRunner.Session();
             ApplyMetricsConfig(session.Configuration, 10000, 10000);
             RegressionRunner.Run(session, new ClientInstrumentMetricsReportingDisableRuntime());
-            session.Destroy();
+            session.Dispose();
         }
 
         private static void ApplyMetricsConfig(Configuration configuration, long runtimeMetricInterval, long stmtMetricInterval)

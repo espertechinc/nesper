@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Compiler.AddPlugInSingleRowFunction("alwaysTrue", typeof(SupportStaticMethodLib), "AlwaysTrue");
 
             RegressionRunner.Run(session, exec);
-            session.Destroy();
+            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

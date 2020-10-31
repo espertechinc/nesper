@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestIndent : AbstractCommonTest
     {
-        [Test, RunInApplicationDomain]
+        [Test]
         public void SimpleIndentTest()
         {
             Assert.AreEqual("", Indent.CreateIndent(0));
