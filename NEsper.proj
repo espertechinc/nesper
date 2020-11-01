@@ -195,9 +195,11 @@
       <Binaries Include="NEsper\NEsper.Runtime\bin\$(Configuration)\$(Framework)\NEsper.Runtime.xml" Condition="Exists('NEsper\NEsper.Runtime\bin\$(Configuration)\$(Framework)\NEsper.Runtime.xml')" />
       <Binaries Include="NEsper\NEsper.Runtime\bin\$(Configuration)\$(Framework)\NEsper.Runtime.dll"/>
 
+      <Binaries Include="NEsper\NEsper.Data.SQLServer\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLServer.dll" Condition="Exists('NEsper\NEsper.Data.SQLServer\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLServer.dll')" />
       <Binaries Include="NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll" Condition="Exists('NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll')" />
       <Binaries Include="NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll" Condition="Exists('NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll')" />
       <Binaries Include="NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll" Condition="Exists('NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll')" />
+      <Binaries Include="NEsper\NEsper.Data.ODBC\bin\$(Configuration)\$(Framework)\NEsper.Data.ODBC.dll" Condition="Exists('NEsper\NEsper.Data.ODBC\bin\$(Configuration)\$(Framework)\NEsper.Data.ODBC.dll')" />
       <Binaries Include="NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll" Condition="Exists('NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll')" />
 
       <Binaries Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.xml" Condition="Exists('NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.xml')" />
@@ -211,7 +213,8 @@
 
   <Target Name="Copy-Binaries-All">
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net462" Targets="Copy-Binaries-Main"/>
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.1" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net472" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netcoreapp3.1" Targets="Copy-Binaries-Main"/>
   </Target>
 
   <!-- SECTION BREAK -->
@@ -273,8 +276,6 @@
   <Target Name="Distribution">
     <Message Text="Building NEsper $(Version)" />
     <CallTarget Targets="Release-All" />
-    <!-- <CallTarget Targets="Documentation" /> -->
-    <!-- <CallTarget Targets="Reference-Documentation" /> -->
     <CallTarget Targets="ZipDistribution" />
   </Target>
 </Project>
