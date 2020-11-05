@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Compat.Tests</AssemblyName>
+        <AssemblyTitle>NEsper.Compat.Tests</AssemblyTitle>
+        <PackageId>NEsper.Compat.Tests</PackageId>
+        <RootNamespace>com.espertech.esper</RootNamespace>
+        <Summary>Unit tests for NEsper.Compat.Tests</Summary>
+        <Description>Unit tests for NEsper.Compat.Tests</Description>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NEsper.Compat\NEsper.Compat.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="compat" />
+    </ItemGroup>
+</Project>

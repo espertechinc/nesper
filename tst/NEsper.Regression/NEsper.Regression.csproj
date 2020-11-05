@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Regression</AssemblyName>
+        <AssemblyTitle>NEsper.Regression</AssemblyTitle>
+        <PackageId>NEsper.Regression</PackageId>
+        <RootNamespace>com.espertech.esper.regressionlib</RootNamespace>
+        <Description>Regression tests for NEsper.</Description>
+        <Summary>Regression tests for NEsper.</Summary>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants>$(DefineConstants);MYSQL;</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
+        <PackageReference Include="Npgsql" Version="4.0.8"/>
+        <PackageReference Include="NUnit" Version="3.12.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NEsper.Avro\NEsper.Avro.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Compat\NEsper.Compat.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Compiler\NEsper.Compiler.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Log.NLog\NEsper.Log.NLog.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj"/>
+    </ItemGroup>
+
+    <!--
+    <ItemGroup>
+      <None Update="log4net.config">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="NEsperRegressionConfig.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    -->
+</Project>

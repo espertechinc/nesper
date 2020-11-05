@@ -1,4 +1,9 @@
 language: csharp
-solution: NEsperAll.sln
-dist: trusty
+solution: NEsper.sln
 dotnet: 3.0 
+install:
+  - dotnet restore NEsper.sln
+script:
+  - dotnet restore NEsper.sln
+  - dotnet build NEsper.sln
+

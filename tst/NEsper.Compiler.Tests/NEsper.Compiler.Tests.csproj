@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Compiler.Tests</AssemblyName>
+        <AssemblyTitle>NEsper.Compiler.Tests</AssemblyTitle>
+        <PackageId>NEsper.Compiler.Tests</PackageId>
+        <RootNamespace>com.espertech.esper.compiler</RootNamespace>
+        <Summary>Unit tests for NEsper.Compiler</Summary>
+        <Description>Unit tests for NEsper.Compiler</Description>
+        <PackageTags>NEsper Esper ESP CEP</PackageTags>
+        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj" />
+      <ProjectReference Include="..\..\src\NEsper.Compat\NEsper.Compat.csproj" />
+      <ProjectReference Include="..\..\src\NEsper.Compiler\NEsper.Compiler.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="client\util" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,4 @@
+apiRules:
+- exclude:
+    uidRegex: ^com\.espertech\.esper\.common\.internal\..*
+    type: Type

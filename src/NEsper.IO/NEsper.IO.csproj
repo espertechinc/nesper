@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>NEsper.IO</AssemblyName>
+    <AssemblyTitle>NEsper.IO</AssemblyTitle>
+    <PackageId>NEsper.IO</PackageId>
+    <RootNamespace>com.espertech.esperio</RootNamespace>
+    <PackageCopyright>Copyright (C) 2014-2017 Espertech. All rights reserved.</PackageCopyright>
+    <PackageTags>NEsper Esper ESP CEP</PackageTags>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+    <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,80 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "src/NEsper.Avro/NEsper.Avro.csproj",
+            "src/NEsper.Common/NEsper.Common.csproj",
+            "src/NEsper.Compat/NEsper.Compat.csproj",
+            "src/NEsper.Data.MySQL/NEsper.Data.MySQL.csproj",
+            "src/NEsper.Data.ODBC/NEsper.Data.ODBC.csproj",
+            "src/NEsper.Data.PgSQL/NEsper.Data.PgSQL.csproj",
+            "src/NEsper.Data.SQLServer/NEsper.Data.SQLServer.csproj",
+            "src/NEsper.IO/NEsper.IO.csproj"
+          ],
+          "exclude": [
+            "**/obj/**",
+            "**/bin/**"
+          ],
+          "cwd": ".."
+        }
+      ],
+      "properties": {
+        "TargetFramework": "netcoreapp3.1"
+      },
+      "filter": "filter.yml",
+      "dest": "api",
+      "disableGitFeatures": true,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/index.md"
+        ]
+      },
+      {
+        "files": [
+          "articles/**.md",
+          "articles/**/toc.yml",
+          "toc.yml",
+          "*.md"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "apidoc/**.md"
+        ],
+        "exclude": [
+          "obj/**",
+          "_site/**"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": [
+      "default"
+    ],
+    "postProcessors": [],
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}
