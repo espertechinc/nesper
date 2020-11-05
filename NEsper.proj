@@ -128,7 +128,7 @@
       <NEsperExamplesSource Include="examples\**\*.csproj" Exclude="examples\**\bin\**\*"/>
     </ItemGroup>
 
-    <Copy SourceFiles="@(NEsperExamplesSource)" DestinationFiles="@(NEsperExamplesSource->'$(BuildRoot)\examplesp\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="@(NEsperExamplesSource)" DestinationFiles="@(NEsperExamplesSource->'$(BuildRoot)\examples\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
   </Target>
 
   <Target Name="Copy-Source-All" DependsOnTargets="Copy-Source-Main;Copy-Source-Examples" />
