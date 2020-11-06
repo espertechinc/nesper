@@ -1,12 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+        <LangVersion>8.0</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Grammar</AssemblyName>
+        <AssemblyTitle>NEsper.Grammar</AssemblyTitle>
+        <PackageId>NEsper.Grammar</PackageId>
         <RootNamespace>com.espertech.esper.grammar</RootNamespace>
+        <Summary>Grammar library for NEsper.</Summary>
+        <Description>Grammar library for NEsper.</Description>
+        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <NoWarn>CS1591;</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.1.0" />
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0"  />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     </ItemGroup>
 
     <ItemGroup>
