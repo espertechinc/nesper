@@ -25,6 +25,8 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
+    [Category("DatabaseTest")]
+    [Category("IntegrationTest")]
     public class TestSuiteEPLDatabase
     {
         [SetUp]

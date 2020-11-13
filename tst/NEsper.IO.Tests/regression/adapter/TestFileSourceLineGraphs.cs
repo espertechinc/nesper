@@ -158,8 +158,8 @@ namespace com.espertech.esperio.regression.adapter
             var deployment = CompileDeploy(runtime, epl);
 
             foreach (var filename in new[] {
-                "../../../../etc/regression/line_file_1.txt",
-                "../../../../etc/regression/line_file_2.txt"
+                "../../../etc/regression/line_file_1.txt",
+                "../../../etc/regression/line_file_2.txt"
             }) {
                 var options = new EPDataFlowInstantiationOptions();
                 options.AddParameterURI("FileSource/file", filename);
@@ -173,8 +173,8 @@ namespace com.espertech.esperio.regression.adapter
                 listener.NewDataListFlattened,
                 "filename,cnt".SplitCsv(),
                 new[] {
-                    new object[] {"../../../../etc/regression/line_file_1.txt", 3L},
-                    new object[] {"../../../../etc/regression/line_file_2.txt", 2L}
+                    new object[] {"../../../etc/regression/line_file_1.txt", 3L},
+                    new object[] {"../../../etc/regression/line_file_2.txt", 2L}
                 });
         }
 
@@ -183,7 +183,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             var graph = "create dataflow ReadCSV " +
                         "FileSource -> mystream<MyLineEvent> { " +
-                        "  file: '../../../../etc/regression/myzippedtext.zip', " +
+                        "  file: '../../../etc/regression/myzippedtext.zip', " +
                         "  format: 'line'," +
                         "  propertyNameLine: 'TheLine'" +
                         "}" +
@@ -204,7 +204,7 @@ namespace com.espertech.esperio.regression.adapter
         public void TestInvalid()
         {
             var epl = "create dataflow FlowOne " +
-                      "FileSource -> mystream<MyInvalidEvent> { file: '../../../../etc/regression/myzippedtext.zip', format: 'line'," +
+                      "FileSource -> mystream<MyInvalidEvent> { file: '../../../etc/regression/myzippedtext.zip', format: 'line'," +
                       "${SUBS_HERE}}" +
                       "DefaultSupportCaptureOp(mystream) {}";
 
@@ -232,7 +232,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             var graph = "create dataflow ReadCSV " +
                         "create objectarray schema MyLine (line string)," +
-                        "FileSource -> mystream<MyLine> { file: '../../../../etc/regression/ints.csv', numLoops: 3, format: 'line'}" +
+                        "FileSource -> mystream<MyLine> { file: '../../../etc/regression/ints.csv', numLoops: 3, format: 'line'}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
             Assert.AreEqual(1, received.Count);
@@ -245,7 +245,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             var graph = "create dataflow ReadCSV " +
                         "create objectarray schema MyLine (line string)," +
-                        "FileSource -> mystream<MyLine> { file: '../../../../etc/regression/myzippedtext.zip', format: 'line'}" +
+                        "FileSource -> mystream<MyLine> { file: '../../../etc/regression/myzippedtext.zip', format: 'line'}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
             Assert.AreEqual(1, received.Count);

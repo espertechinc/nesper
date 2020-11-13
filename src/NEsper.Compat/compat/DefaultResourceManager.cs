@@ -53,9 +53,11 @@ namespace com.espertech.esper.compat
 
         public FileInfo ResolveResourceFile(string name, string searchPath)
         {
-            name = name.Replace('/', '\\').TrimStart('\\');
+            name = name
+                .Replace('/', Path.DirectorySeparatorChar)
+                .TrimStart(Path.DirectorySeparatorChar);
 
-            var filename = Path.Combine(searchPath, name.Replace('/', '\\'));
+            var filename = Path.Combine(searchPath, name);
             if (File.Exists(filename))
             {
                 return new FileInfo(filename);

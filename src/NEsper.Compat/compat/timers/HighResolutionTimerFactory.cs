@@ -11,6 +11,8 @@ using System.Threading;
 
 namespace com.espertech.esper.compat.timers
 {
+#if NETCORE
+#else
     /// <summary>
     /// Implementation of the TimerFactory that uses the HighResolutionTimer.
     /// </summary>
@@ -38,4 +40,5 @@ namespace com.espertech.esper.compat.timers
                 intervalInMillis);
         }
     }
+#endif
 }

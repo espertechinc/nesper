@@ -59,4 +59,9 @@
 		<NetCore>true</NetCore>
 		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+	</PropertyGroup>
 </Project>

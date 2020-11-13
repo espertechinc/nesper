@@ -41,7 +41,6 @@ namespace com.espertech.esper.regressionlib.support.util
         private static IContainer CreateContainer()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
             var container = ContainerExtensions.CreateDefaultContainer(false);
             container.Register<IResourceManager>(
                 xx => new DefaultResourceManager(

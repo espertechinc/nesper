@@ -173,18 +173,14 @@ namespace NEsper.Benchmark.Client
             _eventCount = 0;
             _maxEventCount = _client.totalEvents;
 
-            try
-            {
-                var highPerformanceTimer = new HighResolutionTimer(
-                    HandleTimerEvents,
-                    null,
-                    0,
-                    50);
+            try {
+                var timerFactory = new SystemTimerFactory();
+                var timer = timerFactory.CreateTimer(HandleTimerEvents, 0, 50);
 
                 Console.WriteLine(">> Press Any Key To Exit <<");
                 Console.ReadKey();
 
-                highPerformanceTimer.Dispose();
+                timer.Dispose();
             }
             catch (Exception e)
             {

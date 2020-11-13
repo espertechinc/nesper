@@ -61,7 +61,7 @@ namespace com.espertech.esperio.regression.adapter
 		public void TestCSVZipFile()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/noTimestampOne.zip', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 2}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/noTimestampOne.zip', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 2}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(2, received.Count);
@@ -90,7 +90,7 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			var graph =
 				"create dataflow ReadCSV " +
-				"FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/noTimestampOne.csv', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 3}" +
+				"FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/noTimestampOne.csv', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 3}" +
 				"DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(3, received.Count);
@@ -111,7 +111,7 @@ namespace com.espertech.esperio.regression.adapter
 		public void TestAdditionalProperties()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/moreProperties.csv', hasTitleLine: true}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/moreProperties.csv', hasTitleLine: true}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -131,7 +131,7 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (intOne int, intTwo int)");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../../etc/regression/intsTitleRow.csv', hasHeaderLine:true, propertyNames: ['intTwo','intOne'], numLoops: 1}" +
+			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../etc/regression/intsTitleRow.csv', hasHeaderLine:true, propertyNames: ['intTwo','intOne'], numLoops: 1}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -151,7 +151,7 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (p3 string, p1 int, p0 long, p2 double)");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../../etc/regression/timestampOne.csv', propertyNames: ['p0','p1','p2','p3']}" +
+			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../etc/regression/timestampOne.csv', propertyNames: ['p0','p1','p2','p3']}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -172,7 +172,7 @@ namespace com.espertech.esperio.regression.adapter
 			CompileDeploy(runtime, "@public @buseventtype create schema MyStrRowEvent (MyInt string, MyDouble string, MyString string)");
 
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyStrRowEvent> { file: '../../../../etc/regression/noTimestampOne.csv', propertyNames: [\"MyInt\", \"MyDouble\", \"MyString\"],}" +
+			            "FileSource -> mystream<MyStrRowEvent> { file: '../../../etc/regression/noTimestampOne.csv', propertyNames: [\"MyInt\", \"MyDouble\", \"MyString\"],}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -191,7 +191,7 @@ namespace com.espertech.esperio.regression.adapter
 		public void TestEmptyFile()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/emptyFile.csv'}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/emptyFile.csv'}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -202,7 +202,7 @@ namespace com.espertech.esperio.regression.adapter
 		public void TestTitleRowOnlyFile()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/titleRowOnly.csv', hasTitleLine: true}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/titleRowOnly.csv', hasTitleLine: true}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -215,7 +215,7 @@ namespace com.espertech.esperio.regression.adapter
 			// no date format specified
 			var testtime = DateTimeParsingFunctions.ParseDefaultMSec("2012-01-30T08:43:32.116");
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyOAType> { file: '../../../../etc/regression/dateprocessing_one.csv', hasTitleLine: false}" +
+			            "FileSource -> mystream<MyOAType> { file: '../../../etc/regression/dateprocessing_one.csv', hasTitleLine: false}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -234,7 +234,7 @@ namespace com.espertech.esperio.regression.adapter
 			testtime = testTimeOffset.UtcMillis();
 
 			graph = "create dataflow ReadCSV " +
-			        "FileSource -> mystream<MyOAType> { file: '../../../../etc/regression/dateprocessing_two.csv', hasTitleLine: false, dateFormat: 'yyyyMMddHHmmssfff'}" +
+			        "FileSource -> mystream<MyOAType> { file: '../../../etc/regression/dateprocessing_two.csv', hasTitleLine: false, dateFormat: 'yyyyMMddHHmmssfff'}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			received = RunDataFlow(graph);
 			Assert.AreEqual(1, received.Count);
@@ -259,7 +259,7 @@ namespace com.espertech.esperio.regression.adapter
 
 			// has-title-line and actual column names don't match the expected event type (no properties match)
 			graph = "create dataflow FlowOne " +
-			        "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/differentMap.csv', hasTitleLine:true}" +
+			        "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/differentMap.csv', hasTitleLine:true}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			TryInvalidRun(
 				"FlowOne",
@@ -367,7 +367,7 @@ namespace com.espertech.esperio.regression.adapter
 		public void TestLoopTitleRow()
 		{
 			var graph = "create dataflow ReadCSV " +
-			            "FileSource -> mystream<MyMapEvent> { file: '../../../../etc/regression/titleRow.csv', hasTitleLine:true, numLoops: 3}" +
+			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/titleRow.csv', hasTitleLine:true, numLoops: 3}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
 			Assert.AreEqual(3, received.Count);
@@ -389,7 +389,7 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			var graph = "create dataflow ReadCSV " +
 			            "FileSource -> mystream<MyMapEvent> {" +
-			            " file: '../../../../etc/regression/comments.csv', " +
+			            " file: '../../../etc/regression/comments.csv', " +
 			            " propertyNames: ['other', 'MyInt','MyDouble','MyString']" +
 			            "}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
@@ -416,7 +416,7 @@ namespace com.espertech.esperio.regression.adapter
 				" @public @buseventtype create schema MyEvent(MyString string, MyInt int, timestamp long, MyDouble double)");
 			var graph = "create dataflow ReadCSV " +
 			            "FileSource -> mystream<MyEvent> {" +
-			            " file: '../../../../etc/regression/titleRow.csv'," +
+			            " file: '../../../etc/regression/titleRow.csv'," +
 			            " hasHeaderLine: true " +
 			            "}" +
 			            "DefaultSupportCaptureOp(mystream) {}";

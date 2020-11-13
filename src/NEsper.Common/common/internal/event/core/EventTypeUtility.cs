@@ -1253,7 +1253,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                         .Aggregate((a, b) => a + "." + b);
                     item = simplePropertyTypes.Get(propertyNameWithoutIndex);
                     // The SimplePropertyType must be an "indexable", so just return the component type.
-                    return GenericExtensions.GetComponentType(item.SimplePropertyType);
+                    if (item != null) {
+                        return GenericExtensions.GetComponentType(item.SimplePropertyType);
+                    }
                 }
             }
             

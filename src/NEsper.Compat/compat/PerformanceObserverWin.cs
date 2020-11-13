@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 
 namespace com.espertech.esper.compat
 {
+#if NETCORE
+#else
     /// <summary>
     /// Implementation of the performance observer turned for use on Windows.
     /// </summary>
@@ -138,4 +140,5 @@ namespace com.espertech.esper.compat
             return (long)((timeB - timeA) * MpMilli);
         }
     }
+#endif
 }

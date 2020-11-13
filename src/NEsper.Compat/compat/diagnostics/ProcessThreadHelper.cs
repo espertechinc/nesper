@@ -7,30 +7,34 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace com.espertech.esper.compat.diagnostics
 {
     public static class ProcessThreadHelper
     {
+#if NETCORE
+#else
         [DllImport("Kernel32.dll", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
         public static extern int GetCurrentWin32ThreadId();
+#endif
+        
+        public static ProcessThread GetProcessThread()
+        {
+#if NETCORE
+            return null;
+#else
+            return GetProcessThread(GetCurrentWin32ThreadId());
+#endif
+        }
 
         public static ProcessThread GetProcessThread(int threadId)
         {
             var process = Process.GetCurrentProcess();
-            foreach (ProcessThread processThread in process.Threads) {
-                if (processThread.Id == threadId) {
-                    return processThread;
-                }
-            }
-
-            return null;
-        }
-
-        public static ProcessThread GetProcessThread()
-        {
-            return GetProcessThread(GetCurrentWin32ThreadId());
+            return process.Threads
+                .Cast<ProcessThread>()
+                .FirstOrDefault(processThread => processThread.Id == threadId);
         }
     }
 }

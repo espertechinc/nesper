@@ -109,17 +109,19 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 fields,
                 new object[] {"default", "wallStmtFour"});
 
+#if !NETCORE
             var userOne = (TimeSpan) received[0].Get("PerformanceMetrics.UserTime");
             var userTwo = (TimeSpan) received[1].Get("PerformanceMetrics.UserTime");
             var totalOne = (TimeSpan) received[2].Get("PerformanceMetrics.TotalTime");
             var totalTwo = (TimeSpan) received[3].Get("PerformanceMetrics.TotalTime");
 
             var fiftyMillis = TimeSpan.FromMilliseconds(50);
-            
+
             Assert.That(userOne, Is.GreaterThanOrEqualTo(USER_GOAL_ONE), "userOne=" + userOne);
             Assert.That(userTwo, Is.GreaterThanOrEqualTo(USER_GOAL_TWO), "userTwo=" + userTwo);
             Assert.That(totalOne + fiftyMillis, Is.GreaterThanOrEqualTo(TOTAL_GOAL_ONE), "totalOne=" + totalOne);
             Assert.That(totalTwo + fiftyMillis, Is.GreaterThanOrEqualTo(TOTAL_GOAL_TWO), "totalTwo=" + totalTwo);
+#endif
 
             for (var i = 0; i < 4; i++) {
                 Assert.AreEqual(1L, received[i].Get("OutputIStreamCount"));

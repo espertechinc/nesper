@@ -18,6 +18,8 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
+    [Category("DatabaseTest")]
+    [Category("IntegrationTest")]
     public class TestSuiteEPLDatabaseWConfig
     {
         private void Run(EPLDatabaseQueryResultCache exec)

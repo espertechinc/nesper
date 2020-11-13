@@ -36,11 +36,11 @@ namespace com.espertech.esperio.regression.adapter
     {
         private static readonly string NEW_LINE = Environment.NewLine;
 
-        internal const string CSV_FILENAME_ONELINE_TRADE = "../../../../etc/regression/csvtest_tradedata.csv";
+        internal const string CSV_FILENAME_ONELINE_TRADE = "../../../etc/regression/csvtest_tradedata.csv";
 
-        private const string CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "../../../../etc/regression/csvtest_tradedata_multiple.csv";
-        private const string CSV_FILENAME_TIMESTAMPED_PRICES = "../../../../etc/regression/csvtest_timestamp_prices.csv";
-        private const string CSV_FILENAME_TIMESTAMPED_TRADES = "../../../../etc/regression/csvtest_timestamp_trades.csv";
+        private const string CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "../../../etc/regression/csvtest_tradedata_multiple.csv";
+        private const string CSV_FILENAME_TIMESTAMPED_PRICES = "../../../etc/regression/csvtest_timestamp_prices.csv";
+        private const string CSV_FILENAME_TIMESTAMPED_TRADES = "../../../etc/regression/csvtest_timestamp_trades.csv";
 
         private readonly bool _useBean;
 

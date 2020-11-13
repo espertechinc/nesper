@@ -8,21 +8,40 @@
 
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace com.espertech.esper.compat
 {
     public class HighResolutionTimeProvider
     {
+        public static readonly HighResolutionTimeProvider Instance = new HighResolutionTimeProvider();
+
+#if NETCORE
+        public long CurrentTime => DateTimeHelper.CurrentTimeNanos;
+#else
         [DllImport("Kernel32.dll")]
         private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
 
         [DllImport("Kernel32.dll")]
         private static extern bool QueryPerformanceFrequency(out long lpFrequency);
 
-        public const long DriftAllowance = 5000000000L;
+        public long CurrentTime
+        {
+            get
+            {
+                long time;
+                QueryPerformanceCounter(out time);
+                double nanoTime = (time * 1000000000.0) / _frequency;
+                if (nanoTime > _resetTime) {
+                    ResetBaseline();
+                }
 
-        public static readonly HighResolutionTimeProvider Instance = new HighResolutionTimeProvider();
+                return (long) (_baseDelta + nanoTime);
+            }
+        }
+
+        public const long DriftAllowance = 5000000000L;
 
         /// <summary>
         /// Gets the # of nano-seconds that were reported by DateTime.GetInstance
@@ -39,25 +58,6 @@ namespace com.espertech.esper.compat
         public long BaseTime => _baseTime;
 
         private long _frequency;
-
-        /// <summary>
-        /// Gets the current time.
-        /// </summary>
-        /// <value>The current time.</value>
-        public long CurrentTime
-        {
-            get
-            {
-                long time;
-                QueryPerformanceCounter(out time);
-                double nanoTime = (time * 1000000000.0) / _frequency;
-                if (nanoTime > _resetTime) {
-                    ResetBaseline();
-                }
-
-                return (long) (_baseDelta + nanoTime);
-            }
-        }
 
         /// <summary>
         /// Represents the # of nano-seconds that were reported by DateTime.GetInstance
@@ -99,5 +99,6 @@ namespace com.espertech.esper.compat
             _baseDelta = _baseNano - _baseTime;
             _resetTime = _baseTime + DriftAllowance;
         }
+#endif
     }
 }

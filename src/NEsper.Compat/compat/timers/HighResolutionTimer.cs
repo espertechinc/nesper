@@ -15,6 +15,8 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.compat.timers
 {
+#if NETCORE
+#else
     /// <summary>
     /// Windows timers are based on the system timer.  The system timer runs at a
     /// frequency of about 50-60 hz depending on your machine.  This presents a 
@@ -269,4 +271,5 @@ namespace com.espertech.esper.compat.timers
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
+#endif
 }

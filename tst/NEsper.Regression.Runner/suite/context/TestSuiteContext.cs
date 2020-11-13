@@ -263,6 +263,8 @@ namespace com.espertech.esper.regressionrun.suite.context
             public void WithEndMultiCrontab() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndMultiCrontab());
 
             [Test, RunInApplicationDomain]
+            [Category("DatabaseTest")]
+            [Category("IntegrationTest")]
             public void WithEndDBHistorical() => RegressionRunner.Run(_session, ContextInitTermTemporalFixed.WithEndDBHistorical());
 
             [Test, RunInApplicationDomain]

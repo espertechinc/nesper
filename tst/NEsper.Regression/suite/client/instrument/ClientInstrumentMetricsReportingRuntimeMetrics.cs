@@ -54,10 +54,13 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 new object[] {"default", 21000L, 4L, 3L, 0L});
 
             var cpuGoal = 10.0d; // milliseconds of execution time
+
+#if !NETCORE
             var before = PerformanceMetricsHelper.GetCurrentMetricResult();
             MyMetricFunctions.TakeMillis(cpuGoal);
             var after = PerformanceMetricsHelper.GetCurrentMetricResult();
             Assert.IsTrue((after.UserTime - before.UserTime).TotalMilliseconds > cpuGoal);
+#endif
 
             env.UndeployAll();
         }

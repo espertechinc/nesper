@@ -22,6 +22,8 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
 {
     [TestFixture]
+    [Category("DatabaseTest")]
+    [Category("IntegrationTest")]
     public class TestDatabaseDmConnFactory : AbstractCommonTest
     {
 #if false

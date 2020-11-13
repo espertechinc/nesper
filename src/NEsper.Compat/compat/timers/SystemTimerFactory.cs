@@ -104,7 +104,7 @@ namespace com.espertech.esper.compat.timers
             {
                 if (_harmonic == null)
                 {
-#if MONO
+#if NETCORE
                     _harmonic = new HarmonicTimer(OnTimerEvent);
 #else
                     _harmonic = new HighResolutionTimer(OnTimerEvent, null, 0, 10);

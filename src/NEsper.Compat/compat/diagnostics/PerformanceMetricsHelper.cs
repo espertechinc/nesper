@@ -7,14 +7,32 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Diagnostics;
 
 namespace com.espertech.esper.compat.diagnostics
 {
     public static class PerformanceMetricsHelper
     {
+        public static ProcessThread GetProcessThread()
+        {
+#if NETCORE
+            return null;
+#else
+            var processThread = ProcessThreadHelper.GetProcessThread();
+            if (processThread != null) {
+                throw new IllegalStateException("processThread could not be determined");
+            }
+
+            return processThread;
+#endif
+        }
+
         public static void ExecCpuBound(Func<PerformanceExecutionContext, bool> cpuAction)
         {
-            var processThread = ProcessThreadHelper.GetProcessThread();
+#if NETCORE
+            throw new NotSupportedException("cpu bound execution not supported");
+#else
+            var processThread = GetProcessThread();
 
             var executionContext = new PerformanceExecutionContext();
             executionContext.InitialUserTime = processThread.UserProcessorTime;
@@ -25,7 +43,6 @@ namespace com.espertech.esper.compat.diagnostics
             executionContext.CurrentTotalTime = executionContext.InitialTotalTime;
 
             bool continuation = true;
-
             while (continuation)
             {
                 continuation = cpuAction.Invoke(executionContext);
@@ -33,6 +50,7 @@ namespace com.espertech.esper.compat.diagnostics
                 executionContext.CurrentPrivTime = processThread.PrivilegedProcessorTime;
                 executionContext.CurrentTotalTime = processThread.TotalProcessorTime;
             }
+#endif
         }
 
         /// <summary>
@@ -44,28 +62,42 @@ namespace com.espertech.esper.compat.diagnostics
             Action observableCall,
             int numInput = 1)
         {
-            var processThread = ProcessThreadHelper.GetProcessThread();
+            var processThread = GetProcessThread();
+            if (processThread != null) {
+                var initialUserTime = processThread.UserProcessorTime;
+                var initialPrivTime = processThread.PrivilegedProcessorTime;
+                var initialTotalTime = processThread.TotalProcessorTime;
 
-            var initialUserTime = processThread.UserProcessorTime;
-            var initialPrivTime = processThread.PrivilegedProcessorTime;
-            var initialTotalTime = processThread.TotalProcessorTime;
+                observableCall.Invoke();
 
-            observableCall.Invoke();
+                var finalUserTime = processThread.UserProcessorTime;
+                var finalPrivTime = processThread.PrivilegedProcessorTime;
+                var finalTotalTime = processThread.TotalProcessorTime;
 
-            var finalUserTime = processThread.UserProcessorTime;
-            var finalPrivTime = processThread.PrivilegedProcessorTime;
-            var finalTotalTime = processThread.TotalProcessorTime;
+                return new PerformanceMetrics(
+                    finalUserTime - initialUserTime,
+                    finalPrivTime - initialPrivTime,
+                    finalTotalTime - initialTotalTime,
+                    numInput);
+            }
+            else {
+                var stopwatch = new Stopwatch();
 
-            return new PerformanceMetrics(
-                finalUserTime - initialUserTime,
-                finalPrivTime - initialPrivTime,
-                finalTotalTime - initialTotalTime,
-                numInput);
+                stopwatch.Start();
+                observableCall.Invoke();
+                stopwatch.Stop();
+
+                var metric = stopwatch.Elapsed;
+                return new PerformanceMetrics(
+                    metric,
+                    metric,
+                    metric,
+                    numInput);            }
         }
 
         public static PerformanceMetrics GetCurrentMetricResult()
         {
-            var processThread = ProcessThreadHelper.GetProcessThread();
+            var processThread = GetProcessThread();
             return new PerformanceMetrics(
                 processThread.UserProcessorTime,
                 processThread.PrivilegedProcessorTime,
