@@ -19,7 +19,7 @@ namespace com.espertech.esper.runtime.client.util
         /// <summary>
         ///     Current runtime version.
         /// </summary>
-        public const string RUNTIME_VERSION = "8.5.0";
+        public const string RUNTIME_VERSION = "8.5.1";
 
         /// <summary>
         ///     Current runtime major version.
