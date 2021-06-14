@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.collection
 {
     /// <summary>
@@ -25,6 +27,10 @@ namespace com.espertech.esper.collection
     [Serializable]
     public sealed class FIFOHashSet<T> : ISet<T>
     {
+#if DIAGNOSTICS
+        private long _id = DebugId<FIFOHashSet<T>>.NewId();
+#endif
+        
         private int _primeIndex;
 
         /// <summary>
@@ -229,7 +235,7 @@ namespace com.espertech.esper.collection
         public void Clear()
         {
 #if DIAGNOSTICS
-            System.Diagnostics.Debug.Print("Clear: {0}", id);
+            System.Diagnostics.Debug.Print("Clear: {0}", _id);
 #endif
 
             _primeIndex = 0;
@@ -488,7 +494,7 @@ namespace com.espertech.esper.collection
 
 #if DIAGNOSTICS
             System.Diagnostics.Debug.Print("Add: {0} => {1} / {2} / {3}",
-                                           id,
+                                           _id,
                                            hashCode%hashIndex.Length,
                                            nodeIndex,
                                            chainIndex);
@@ -627,7 +633,7 @@ namespace com.espertech.esper.collection
 
 #if DIAGNOSTICS
                         System.Diagnostics.Debug.Print("Del: {0} => {1} / {2} / {3} / {4}",
-                               id,
+                               _id,
                                hashIndexIndex,
                                currIndex,
                                chainIndex,

@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.compile.stage1
 {
     /// <summary>
@@ -8,18 +10,20 @@ namespace com.espertech.esper.common.@internal.compile.stage1
     public class CompileResponse
     {
         private readonly CompileRequest _request;
-        private readonly Assembly _assembly;
+        private readonly Pair<Assembly, byte[]> _assemblyWithImage;
 
         public CompileRequest Request => _request;
 
-        public Assembly Assembly => _assembly;
+        public Pair<Assembly, byte[]> AssemblyWithImage => _assemblyWithImage;
 
+        public Assembly Assembly => _assemblyWithImage.First;
+        
         public CompileResponse(
             CompileRequest request,
-            Assembly assembly)
+            Pair<Assembly, byte[]> assemblyWithImage)
         {
             _request = request;
-            _assembly = assembly;
+            _assemblyWithImage = assemblyWithImage;
         }
     }
 }

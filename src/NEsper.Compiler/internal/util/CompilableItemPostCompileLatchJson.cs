@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.compiler.@internal.util
@@ -23,7 +24,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CountDownLatch _latch = new CountDownLatch(1);
 		private readonly ICollection<EventType> _eventTypes;
 		private readonly ClassLoader _parentClassLoader;
-		private ICollection<Assembly> _assemblies;
+		private IEnumerable<Pair<Assembly, byte[]>> _assembliesWithImage;
 
 		public CompilableItemPostCompileLatchJson(
 			ICollection<EventType> eventTypes,
@@ -39,14 +40,14 @@ namespace com.espertech.esper.compiler.@internal.util
 
 			// load underlying class of Json types
 			foreach (var jsonEventType in _eventTypes.OfType<JsonEventType>()) {
-				var classLoader = new PriorityClassLoader(_parentClassLoader, _assemblies);
+				var classLoader = new PriorityClassLoader(_parentClassLoader, _assembliesWithImage.Select(_ => _.First));
 				jsonEventType.Initialize(classLoader);
 			}
 		}
 
-		public void Completed(ICollection<Assembly> assemblies)
+		public void Completed(IEnumerable<Pair<Assembly, byte[]>> assembliesWithImage)
 		{
-			_assemblies = assemblies;
+			_assembliesWithImage = assembliesWithImage;
 			_latch.CountDown();
 		}
 	}

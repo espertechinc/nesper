@@ -15,7 +15,7 @@ namespace com.espertech.esper.compat.threading.locks
         : IReaderWriterLock,
             IReaderWriterLockCommon
     {
-        private readonly Guid _id;
+        private readonly long _id;
         private readonly int _lockTimeout;
 
 #if MONO
@@ -29,7 +29,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public SlimReaderWriterLock(int lockTimeout)
         {
-            _id = Guid.NewGuid();
+            _id = DebugId<SlimReaderWriterLock>.NewId();
             _lockTimeout = lockTimeout;
 #if MONO
             throw new NotSupportedException(ExceptionText);
