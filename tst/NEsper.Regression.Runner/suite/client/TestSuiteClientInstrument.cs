@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Dispose();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClientInstrumentMetricsReportingStmtMetrics()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Dispose();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClientInstrumentMetricsReportingRuntimeMetrics()
         {
             RegressionSession session = RegressionRunner.Session();

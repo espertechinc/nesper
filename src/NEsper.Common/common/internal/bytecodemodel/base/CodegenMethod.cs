@@ -359,6 +359,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private string GetGeneratorDetail(Type generator)
         {
+#if DEBUG
             var stack = new StackTrace(true);
             string stackString = null;
             for (var i = 1; i < 10; i++) {
@@ -381,6 +382,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             return generator.GetSimpleName() + " --- " + stackString;
+#else
+            return generator.GetSimpleName();
+#endif
         }
 
         private string GetStackString(

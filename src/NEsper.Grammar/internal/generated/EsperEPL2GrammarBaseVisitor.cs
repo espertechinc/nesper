@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Src\Espertech\NEsper-8.5.1\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
+// Generated from C:\Src\Espertech\NEsper-8.5.2\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
 
 // Unreachable code detected
 #pragma warning disable 0162

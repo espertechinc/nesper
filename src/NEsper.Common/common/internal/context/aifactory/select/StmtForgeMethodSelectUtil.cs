@@ -130,8 +130,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     additionalForgeables.AddAll(viewForgeDesc.MultikeyForges);
                     filterSpecCompileds.Add(filterSpecCompiled);
                 }
-                else if (streamSpec is PatternStreamSpecCompiled) {
-                    var patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
+                else if (streamSpec is PatternStreamSpecCompiled patternStreamSpec) {
                     var forges = patternStreamSpec.Root.CollectFactories();
                     foreach (var forgeNode in forges) {
                         forgeNode.CollectSelfFilterAndSchedule(filterSpecCompileds, scheduleHandleCallbackProviders);
@@ -153,8 +152,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     viewForges[stream] = viewForgeDesc.Forges;
                     additionalForgeables.AddAll(viewForgeDesc.MultikeyForges);
                 }
-                else if (streamSpec is NamedWindowConsumerStreamSpec) {
-                    var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                else if (streamSpec is NamedWindowConsumerStreamSpec namedSpec) {
                     var namedWindow =
                         services.NamedWindowCompileTimeResolver.Resolve(namedSpec.NamedWindow.EventType.Name);
                     var namedWindowType = namedWindow.EventType;
@@ -195,9 +193,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
                     EPStatementStartMethodHelperValidate.ValidateNoDataWindowOnNamedWindow(viewForges[stream]);
                 }
-                else if (streamSpec is TableQueryStreamSpec) {
-                    ValidateNoViews(streamSpec, "Table data");
-                    var tableStreamSpec = (TableQueryStreamSpec) streamSpec;
+                else if (streamSpec is TableQueryStreamSpec tableStreamSpec) {
+                    ValidateNoViews(tableStreamSpec, "Table data");
                     if (numStreams > 1 && tableStreamSpec.FilterExpressions.Count > 0) {
                         throw new ExprValidationException(
                             "Joins with tables do not allow table filter expressions, please add table filters to the where-clause instead");
@@ -226,9 +223,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         throw new ExprValidationException("Tables cannot be marked with retain");
                     }
                 }
-                else if (streamSpec is DBStatementStreamSpec) {
-                    ValidateNoViews(streamSpec, "Historical data");
-                    var sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
+                else if (streamSpec is DBStatementStreamSpec sqlStreamSpec) {
+                    ValidateNoViews(sqlStreamSpec, "Historical data");
                     var typeConversionHook = (SQLColumnTypeConversion) ImportUtil.GetAnnotationHook(
                         statementSpec.Annotations,
                         HookType.SQLCOL,
@@ -252,9 +248,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     viewableActivatorForges[stream] = new ViewableActivatorHistoricalForge(viewable);
                     historicalEventViewables[stream] = viewable;
                 }
-                else if (streamSpec is MethodStreamSpec) {
-                    ValidateNoViews(streamSpec, "Method data");
-                    var methodStreamSpec = (MethodStreamSpec) streamSpec;
+                else if (streamSpec is MethodStreamSpec methodStreamSpec) {
+                    ValidateNoViews(methodStreamSpec, "Method data");
                     var viewable = HistoricalEventViewableMethodForgeFactory.CreateMethodStatementView(
                         stream,
                         methodStreamSpec,
@@ -288,17 +283,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     throw new ExprValidationException("Tables cannot be used with match-recognize");
                 }
 
-                var isUnbound = viewForges[0].IsEmpty() &&
-                                !(statementSpec.StreamSpecs[0] is NamedWindowConsumerStreamSpec);
-                var eventType = viewForges[0].IsEmpty()
+                var viewForgeZero = viewForges[0];
+                var isUnbound = viewForgeZero.IsEmpty() && !(statementSpec.StreamSpecs[0] is NamedWindowConsumerStreamSpec);
+                var eventType = viewForgeZero.IsEmpty()
                     ? streamEventTypes[0]
-                    : viewForges[0][(viewForges[0].Count - 1)].EventType;
+                    : viewForgeZero[(viewForgeZero.Count - 1)].EventType;
                 
                 var plan = RowRecogNFAViewPlanUtil.ValidateAndPlan(services.Container, eventType, isUnbound, @base, services);
                 var forge = new RowRecogNFAViewFactoryForge(plan.Forge);
                 additionalForgeables.AddAll(plan.AdditionalForgeables);
                 scheduleHandleCallbackProviders.Add(forge);
-                viewForges[0].Add(forge);
+                viewForgeZero.Add(forge);
                 var serdeForgeables = SerdeEventTypeUtility.Plan(
                     eventType, @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver);
                 additionalForgeables.AddAll(serdeForgeables);
@@ -328,7 +323,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             var hasIStreamOnly = StatementForgeMethodSelectUtil.GetHasIStreamOnly(isNamedWindow, viewForges);
             var optionalStreamsIfAny = OuterJoinAnalyzer.OptionalStreamsIfAny(statementSpec.Raw.OuterJoinDescList);
-            StreamTypeService typeService = new StreamTypeServiceImpl(
+            var typeService = new StreamTypeServiceImpl(
                 streamEventTypes,
                 streamNames,
                 hasIStreamOnly,

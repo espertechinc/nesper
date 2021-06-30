@@ -50,6 +50,8 @@ namespace com.espertech.esper.regressionrun.runner
             {
                 config = new Configuration(container);
 
+                config.Compiler.Logging.AuditDirectory = @"E:\Logs\NEsper\NEsper.Regression.Review\generated";
+
 #if NETFRAMEWORK
                 config.Common.Scripting.AddEngine(typeof(ScriptingEngineJScript));
 #endif
@@ -64,13 +66,17 @@ namespace com.espertech.esper.regressionrun.runner
                 config.Compiler.ByteCode.AttachEPL = true;
 
                 if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
-                    try {
-                        Directory.Delete(config.Compiler.Logging.AuditDirectory, true);
+                    if (Directory.Exists(config.Compiler.Logging.AuditDirectory)) {
+                        foreach (var subDirectory in Directory.GetDirectories(config.Compiler.Logging.AuditDirectory)) {
+                            var subDirectoryName = Path.GetFileName(subDirectory);
+                            if (subDirectoryName.StartsWith("generation")) {
+                                Directory.Delete(subDirectory, true);
+                            }
+                        }
                     }
-                    catch (DirectoryNotFoundException) {
+                    else {
+                        Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
                     }
-
-                    Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
                 }
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
