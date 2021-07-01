@@ -20,20 +20,83 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     public class EPLDatabase2StreamOuterJoin
     {
         private const string ALL_FIELDS =
-            "myBigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
+            "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
 
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLDatabaseOuterJoinLeftS0());
-            execs.Add(new EPLDatabaseOuterJoinRightS1());
-            execs.Add(new EPLDatabaseOuterJoinFullS0());
-            execs.Add(new EPLDatabaseOuterJoinFullS1());
-            execs.Add(new EPLDatabaseOuterJoinRightS0());
-            execs.Add(new EPLDatabaseOuterJoinLeftS1());
-            execs.Add(new EPLDatabaseLeftOuterJoinOnFilter());
-            execs.Add(new EPLDatabaseRightOuterJoinOnFilter());
+            WithOuterJoinLeftS0(execs);
+            WithOuterJoinRightS1(execs);
+            WithOuterJoinFullS0(execs);
+            WithOuterJoinFullS1(execs);
+            WithOuterJoinRightS0(execs);
+            WithOuterJoinLeftS1(execs);
+            WithLeftOuterJoinOnFilter(execs);
+            WithRightOuterJoinOnFilter(execs);
+            WithOuterJoinReversedOnFilter(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinReversedOnFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDatabaseOuterJoinReversedOnFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRightOuterJoinOnFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseRightOuterJoinOnFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLeftOuterJoinOnFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseLeftOuterJoinOnFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinLeftS1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinLeftS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinRightS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinRightS0());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinFullS1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinFullS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinFullS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinFullS0());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinRightS1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinRightS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinLeftS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinLeftS0());
             return execs;
         }
 
@@ -46,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             SendEvent(env, 2);
             var received = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual(2, received.Get("MyInt"));
-            AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3d);
+            AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
 
             SendEvent(env, 11);
             Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -63,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             SendEvent(env, 1);
             var received = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual(1, received.Get("MyInt"));
-            AssertReceived(received, 1L, 10, "A", "Z", true, 5000m, 100m, 1.2d, 1.3d);
+            AssertReceived(received, 1L, 10, "A", "Z", true, 5000m, 100m, 1.2d, 1.3f);
 
             SendEvent(env, 11);
             received = env.Listener("s0").AssertOneGetNewAndReset();
@@ -83,9 +146,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             decimal? mynumeric,
             decimal? mydecimal,
             double? mydouble,
-            double? myreal)
+            float? myreal)
         {
-            Assert.AreEqual(mybigint, theEvent.Get("myBigint"));
+            Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));
             Assert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
             Assert.AreEqual(mychar, theEvent.Get("mychar"));
@@ -126,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean as S0 left outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 on IntPrimitive = mybigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -140,8 +203,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 right outer join " +
-                               "SupportBean as S0 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 right outer join " +
+                               "SupportBean as S0 on IntPrimitive = mybigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -155,8 +218,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 full outer join " +
-                               "SupportBean as S0 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 full outer join " +
+                               "SupportBean as S0 on IntPrimitive = mybigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -171,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean as S0 full outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 on IntPrimitive = mybigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -186,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean as S0 right outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 on IntPrimitive = mybigint";
                 TryOuterJoinNoResult(env, stmtText);
             }
         }
@@ -200,8 +263,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 left outer join " +
-                               "SupportBean as S0 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 left outer join " +
+                               "SupportBean as S0 on IntPrimitive = mybigint";
                 TryOuterJoinNoResult(env, stmtText);
             }
         }
@@ -210,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "MyInt","myint" };
+                var fields = new[] {"MyInt", "myint"};
                 var stmtText = "@Name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
@@ -218,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " left outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 " +
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 " +
                                "on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -247,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 SendEvent(env, 2, "B");
                 received = env.Listener("s0").AssertOneGetNewAndReset();
                 Assert.AreEqual(2, received.Get("MyInt"));
-                AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3d);
+                AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
@@ -261,13 +324,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "MyInt","myint" };
+                var fields = new[] {"MyInt", "myint"};
                 var stmtText = "@Name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 right outer join " +
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.mybigint'] as S1 right outer join " +
                                "SupportBean as S0 on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -296,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 SendEvent(env, 2, "B");
                 received = env.Listener("s0").AssertOneGetNewAndReset();
                 Assert.AreEqual(2, received.Get("MyInt"));
-                AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3d);
+                AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
@@ -310,11 +373,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "MyInt","MyVarChar" };
+                var fields = new[] {"MyInt", "MyVarChar"};
                 var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, MyVarChar from " +
                                "SupportBean#keepall as S0 " +
                                " right outer join " +
-                               " sql:MyDBWithRetain ['select myvarchar MyVarChar from mytesttable'] as S1 " +
+                               " sql:MyDBWithRetain ['select myvarchar as MyVarChar from mytesttable'] as S1 " +
                                "on TheString = MyVarChar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 

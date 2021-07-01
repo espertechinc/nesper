@@ -20,9 +20,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLDatabaseNoMetaLexAnalysis());
-            execs.Add(new EPLDatabaseNoMetaLexAnalysisGroup());
+            WithNoMetaLexAnalysis(execs);
+            WithNoMetaLexAnalysisGroup(execs);
+            WithPlaceholderWhere(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPlaceholderWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDatabasePlaceholderWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoMetaLexAnalysisGroup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseNoMetaLexAnalysisGroup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoMetaLexAnalysis(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseNoMetaLexAnalysis());
             return execs;
         }
 

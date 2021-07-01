@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ViewResolutionService = viewResolutionService;
             XmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
 
-            #region ESPER_8.5.1
+            #region ESPER_8.5.2
             ClassProvidedCompileTimeRegistry = classProvidedCompileTimeRegistry;
             ClassProvidedCompileTimeResolver = classProvidedCompileTimeResolver;
             SerdeEventTypeRegistry = serdeEventTypeRegistry;
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ViewResolutionService = null;
             XmlFragmentEventTypeFactory = null;
             
-            #region ESPER_8.5.1
+            #region ESPER_8.5.2
             ClassProvidedCompileTimeRegistry = null;
             ClassProvidedCompileTimeResolver = null;
             SerdeEventTypeRegistry = null;
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry { get; } = new DataFlowCompileTimeRegistry();
 
-#region ESPER_8.5.1
+#region ESPER_8.5.2
         public ClassProvidedCompileTimeRegistry ClassProvidedCompileTimeRegistry { get; }
         
         public ClassProvidedCompileTimeResolver ClassProvidedCompileTimeResolver { get; }

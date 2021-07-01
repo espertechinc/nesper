@@ -15,7 +15,7 @@ namespace com.espertech.esper.compat.threading.locks
         : IReaderWriterLock,
             IReaderWriterLockCommon
     {
-        private readonly Guid _id;
+        private readonly long _id;
         private readonly int _lockTimeout;
 
 #if MONO
@@ -29,7 +29,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public SlimReaderWriterLock(int lockTimeout)
         {
-            _id = Guid.NewGuid();
+            _id = DebugId<SlimReaderWriterLock>.NewId();
             _lockTimeout = lockTimeout;
 #if MONO
             throw new NotSupportedException(ExceptionText);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
             Console.WriteLine("{0}:AcquireReadLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
-            if (_rwLock.TryEnterReadLock(_lockTimeout)) {
+            if (_rwLock.TryEnterUpgradeableReadLock(_lockTimeout)) {
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireReadLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
@@ -168,7 +168,7 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
             Console.WriteLine("{0}:AcquireReaderLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
-            if (_rwLock.TryEnterReadLock((int) timeout)) {
+            if (_rwLock.TryEnterUpgradeableReadLock((int) timeout)) {
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireReaderLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
@@ -219,7 +219,7 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
             Console.WriteLine("{0}:ReleaseReaderLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif
-            _rwLock.ExitReadLock();
+            _rwLock.ExitUpgradeableReadLock();
 #if DIAGNOSTICS
             Console.WriteLine("{0}:ReleaseReaderLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif

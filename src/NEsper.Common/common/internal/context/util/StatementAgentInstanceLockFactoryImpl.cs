@@ -21,15 +21,18 @@ namespace com.espertech.esper.common.@internal.context.util
     /// </summary>
     public class StatementAgentInstanceLockFactoryImpl : StatementAgentInstanceLockFactory
     {
-        private readonly bool fairlocks;
-        private readonly bool disableLocking;
+        private readonly IReaderWriterLockManager _readerWriterLockManager;
+        private readonly bool _fairlocks;
+        private readonly bool _disableLocking;
 
         public StatementAgentInstanceLockFactoryImpl(
             bool fairlocks,
-            bool disableLocking)
+            bool disableLocking,
+            IReaderWriterLockManager readerWriterLockManager)
         {
-            this.fairlocks = fairlocks;
-            this.disableLocking = disableLocking;
+            this._readerWriterLockManager = readerWriterLockManager;
+            this._fairlocks = fairlocks;
+            this._disableLocking = disableLocking;
         }
 
         public IReaderWriterLock GetStatementLock(
@@ -43,14 +46,14 @@ namespace com.espertech.esper.common.@internal.context.util
             }
 
             bool foundNoLock = AnnotationUtil.HasAnnotation(annotations, typeof(NoLockAttribute));
-            if (disableLocking || foundNoLock || stateless) {
+            if (_disableLocking || foundNoLock || stateless) {
                 return new VoidReaderWriterLock();
                 //return new StatementAgentInstanceLockNoLockImpl(statementName);
-            } else if (fairlocks) {
+            } else if (_fairlocks) {
                 return new FairReaderWriterLock();
             }
             else {
-                return new SlimReaderWriterLock();
+                return _readerWriterLockManager.CreateLock(GetType());
             }
         }
     }

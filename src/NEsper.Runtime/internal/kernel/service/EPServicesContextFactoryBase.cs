@@ -226,12 +226,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             TimerService timerService = new TimerServiceImpl(epRuntime.URI, msecTimerResolution);
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory = new StatementAgentInstanceLockFactoryImpl(
-                configs.Runtime.Execution.IsFairlock, configs.Runtime.Execution.IsDisableLocking);
+                configs.Runtime.Execution.IsFairlock,
+                configs.Runtime.Execution.IsDisableLocking,
+                container.RWLockManager());
 
             var eventTableIndexService = MakeEventTableIndexService(epServicesHA.RuntimeExtensionServices);
             var expressionResultCacheSharable = new ExpressionResultCacheService(
                 configs.Runtime.Execution.DeclaredExprValueCacheSize,
-                epRuntime.Container.ThreadLocalManager());
+                container.ThreadLocalManager());
 
             var resultSetProcessorHelperFactory = MakeResultSetProcessorHelperFactory(epServicesHA.RuntimeExtensionServices);
 

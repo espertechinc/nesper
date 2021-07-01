@@ -1,0 +1,42 @@
+﻿<esper-configuration>
+  <database-reference name="db1">
+    <driver type="PgSQL" connection-string="Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;"/>
+    <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted"/>
+    <connection-lifecycle value="pooled"/>
+    <lru-cache size="1000"/>
+    <column-change-case value="lowercase"/>
+    <metadata-origin value="sample"/>
+  </database-reference>
+
+  <database-reference name="db2">
+    <driver type="PgSQL" connection-string="Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;"/>
+    <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted"/>
+    <connection-lifecycle value="retain"/>
+    <lru-cache size="1000"/>
+    <column-change-case value="uppercase"/>
+    <metadata-origin value="metadata"/>
+  </database-reference>
+
+  <engine-settings>
+    <defaults>
+      <threading>
+        <listener-dispatch preserve-order="false" timeout-msec="2000" locking="suspend"/>
+        <insert-into-dispatch preserve-order="false" timeout-msec="3000" locking="suspend"/>
+        <internal-timer enabled="false" msec-resolution="1234567"/>
+        <thread-local style="fast"/>
+      </threading>
+      <event-meta>
+        <class-property-resolution style="distinct_case_insensitive"/>
+      </event-meta>
+      <view-resources>
+        <share-views enabled="false"/>
+      </view-resources>
+      <logging>
+        <execution-path enabled="true"/>
+      </logging>
+      <variables>
+        <msec-version-release value="30000"/>
+      </variables>
+    </defaults>
+  </engine-settings>
+</esper-configuration>

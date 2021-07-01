@@ -25,4 +25,10 @@
         <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj"/>
         <ProjectReference Include="..\..\src\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="NEsperConfig.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

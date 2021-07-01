@@ -20,7 +20,8 @@ namespace com.espertech.esper.compat.diagnostics
 #else
             var processThread = ProcessThreadHelper.GetProcessThread();
             if (processThread != null) {
-                throw new IllegalStateException("processThread could not be determined");
+                return null; // known issue in windows
+                // throw new IllegalStateException("processThread could not be determined");
             }
 
             return processThread;
@@ -32,12 +33,17 @@ namespace com.espertech.esper.compat.diagnostics
 #if NETCORE
             throw new NotSupportedException("cpu bound execution not supported");
 #else
-            var processThread = GetProcessThread();
-
             var executionContext = new PerformanceExecutionContext();
+
+            var processThread = GetProcessThread();
+            if (processThread == null) {
+                throw new IllegalStateException("unable to acquire process thread; check platform");
+            }
+
             executionContext.InitialUserTime = processThread.UserProcessorTime;
             executionContext.InitialPrivTime = processThread.PrivilegedProcessorTime;
             executionContext.InitialTotalTime = processThread.TotalProcessorTime;
+
             executionContext.CurrentUserTime = executionContext.InitialUserTime;
             executionContext.CurrentPrivTime = executionContext.InitialPrivTime;
             executionContext.CurrentTotalTime = executionContext.InitialTotalTime;
@@ -98,11 +104,15 @@ namespace com.espertech.esper.compat.diagnostics
         public static PerformanceMetrics GetCurrentMetricResult()
         {
             var processThread = GetProcessThread();
-            return new PerformanceMetrics(
-                processThread.UserProcessorTime,
-                processThread.PrivilegedProcessorTime,
-                processThread.TotalProcessorTime,
-                0);
+            if (processThread != null) {
+                return new PerformanceMetrics(
+                    processThread.UserProcessorTime,
+                    processThread.PrivilegedProcessorTime,
+                    processThread.TotalProcessorTime,
+                    0);
+            }
+
+            return new PerformanceMetrics();
         }
     }
 }

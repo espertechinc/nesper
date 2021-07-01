@@ -8,7 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client
 {
@@ -21,21 +24,27 @@ namespace com.espertech.esper.common.client
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="assemblies">assemblies containing classes</param>
+        /// <param name="assembliesWithImage">assemblies containing classes</param>
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
-            ICollection<Assembly> assemblies,
+            ICollection<Pair<Assembly, byte[]>> assembliesWithImage,
             EPCompiledManifest manifest)
         {
-            Assemblies = assemblies;
+            AssembliesWithImage = assembliesWithImage;
             Manifest = manifest;
         }
 
         /// <summary>
         ///     Returns a set of assemblies.
         /// </summary>
-        /// <value>classes</value>
-        public ICollection<Assembly> Assemblies { get; }
+        public IEnumerable<Assembly> Assemblies {
+            get => AssembliesWithImage.Select(_ => _.First);
+        }
+
+        /// <summary>
+        ///     Returns a set of assemblies with images.
+        /// </summary>
+        public ICollection<Pair<Assembly, byte[]>> AssembliesWithImage { get; }
 
         /// <summary>
         ///     Returns a manifest object

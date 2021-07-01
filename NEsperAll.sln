@@ -38,9 +38,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Regression.Runner", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Grammar", "src\NEsper.Grammar\NEsper.Grammar.csproj", "{8A88FE1B-407B-48D8-A74D-C672CC0B1DBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.IO", "src\NEsper.IO\NEsper.IO.csproj", "{E1F9306E-7906-4717-872B-0E5820ED1240}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.IO", "src\NEsper.IO\NEsper.IO.csproj", "{E1F9306E-7906-4717-872B-0E5820ED1240}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.IO.Tests", "tst\NEsper.IO.Tests\NEsper.IO.Tests.csproj", "{A0876FCB-3F88-4E61-A06B-68C69EFBBFA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.IO.Tests", "tst\NEsper.IO.Tests\NEsper.IO.Tests.csproj", "{A0876FCB-3F88-4E61-A06B-68C69EFBBFA0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NEsper.Examples", "NEsper.Examples", "{3426C460-A7A9-4AFB-9D42-04733A2F7C06}"
 EndProject
@@ -62,17 +62,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Examples.StockTicker
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Examples.Transaction", "examples\NEsper.Examples\example\transaction\NEsper.Examples.Transaction.csproj", "{5BBE7B3C-ECF9-4737-8F39-E6AACF9CDAB1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NEsper.Benchmark", "examples\NEsper.Benchmark", "{549F95F9-E006-45F5-BC2E-F0258F648EA1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NEsper.Benchmark", "NEsper.Benchmark", "{549F95F9-E006-45F5-BC2E-F0258F648EA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmark.Client", "examples\NEsper.Benchmark\NEsper.Benchmark.Client\NEsper.Benchmark.Client.csproj", "{649B23B5-48D4-492C-9AAF-EA6B31C0F9A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Benchmark.Client", "examples\NEsper.Benchmark\NEsper.Benchmark.Client\NEsper.Benchmark.Client.csproj", "{649B23B5-48D4-492C-9AAF-EA6B31C0F9A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmark.Common", "examples\NEsper.Benchmark\NEsper.Benchmark.Common\NEsper.Benchmark.Common.csproj", "{D4F12936-297B-4ED4-947D-BA7E091C3A00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Benchmark.Common", "examples\NEsper.Benchmark\NEsper.Benchmark.Common\NEsper.Benchmark.Common.csproj", "{D4F12936-297B-4ED4-947D-BA7E091C3A00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmark.Perforator", "examples\NEsper.Benchmark\NEsper.Benchmark.Perforator\NEsper.Benchmark.Perforator.csproj", "{8E4E9A9A-3183-47EA-B1A4-17AA994B110C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Benchmark.Perforator", "examples\NEsper.Benchmark\NEsper.Benchmark.Perforator\NEsper.Benchmark.Perforator.csproj", "{8E4E9A9A-3183-47EA-B1A4-17AA994B110C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmark.Server", "examples\NEsper.Benchmark\NEsper.Benchmark.Server\NEsper.Benchmark.Server.csproj", "{A01CF35C-D7FA-4ECA-9293-1E763E90F6E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Benchmark.Server", "examples\NEsper.Benchmark\NEsper.Benchmark.Server\NEsper.Benchmark.Server.csproj", "{A01CF35C-D7FA-4ECA-9293-1E763E90F6E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmark.Stats", "examples\NEsper.Benchmark\NEsper.Benchmark.Stats\NEsper.Benchmark.Stats.csproj", "{D6B0328E-51F1-4735-8501-4ABFB5D1AE11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Benchmark.Stats", "examples\NEsper.Benchmark\NEsper.Benchmark.Stats\NEsper.Benchmark.Stats.csproj", "{D6B0328E-51F1-4735-8501-4ABFB5D1AE11}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Examples.NamedWindowQuery", "examples\NEsper.Examples\example\NEsper.Examples.NamedWindowQuery\NEsper.Examples.NamedWindowQuery.csproj", "{48B84BC5-1F78-47FA-A492-CF81C3658E8B}"
 EndProject
@@ -86,7 +86,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Avro", "src\NEsper.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Avro.Tests", "tst\NEsper.Avro.Tests\NEsper.Avro.Tests.csproj", "{A785D18E-6EB6-4725-B40A-0057CD592292}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Compiler.Tests", "tst\NEsper.Compiler.Tests\NEsper.Compiler.Tests.csproj", "{0A298474-987A-4A93-B6E5-4CDEC1AF4D37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Compiler.Tests", "tst\NEsper.Compiler.Tests\NEsper.Compiler.Tests.csproj", "{0A298474-987A-4A93-B6E5-4CDEC1AF4D37}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Compat.Tests", "tst\NEsper.Compat.Tests\NEsper.Compat.Tests.csproj", "{928BAEEE-56D1-41A7-90E6-03E988F9C454}"
 EndProject
@@ -99,6 +99,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tst", "tst", "{64E875A7-9654-43CF-87C3-FB3169CB7E20}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{41D78046-D558-4714-8BA5-3423331D817A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Examples.OHLC", "examples\NEsper.Examples\example\NEsper.Examples.OHLC\NEsper.Examples.OHLC.csproj", "{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -590,6 +592,18 @@ Global
 		{D3F42D31-A133-4DBD-8C9A-F4D4129350B9}.Release|x64.Build.0 = Release|Any CPU
 		{D3F42D31-A133-4DBD-8C9A-F4D4129350B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{D3F42D31-A133-4DBD-8C9A-F4D4129350B9}.Release|x86.Build.0 = Release|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x64.Build.0 = Release|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -637,6 +651,7 @@ Global
 		{928BAEEE-56D1-41A7-90E6-03E988F9C454} = {64E875A7-9654-43CF-87C3-FB3169CB7E20}
 		{A124B48C-71C7-4409-9FDE-FB73A66AA964} = {3B7A1B30-8D5A-496B-A734-9B80EB3C5794}
 		{D3F42D31-A133-4DBD-8C9A-F4D4129350B9} = {3B7A1B30-8D5A-496B-A734-9B80EB3C5794}
+		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5} = {3426C460-A7A9-4AFB-9D42-04733A2F7C06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECCBA704-EBC2-49C4-8521-486AF157D4B2}

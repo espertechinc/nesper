@@ -73,6 +73,11 @@ namespace com.espertech.esper.compiler.@internal.util
         public Assembly Assembly { get; private set; }
 
         /// <summary>
+        /// Gets the assembly image.
+        /// </summary>
+        public byte[] AssemblyImage { get; private set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether we include code logging.
         /// </summary>
         public bool IsCodeLogging { get; set; }
@@ -266,7 +271,7 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
-        public Assembly Compile()
+        public Pair<Assembly, byte[]> Compile()
         {
 #if COMPILATION_DIAGNOSTICS
             var startMicro = PerformanceObserver.MicroTime;
@@ -297,7 +302,7 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
-        private Assembly CompileInternal()
+        private Pair<Assembly, byte[]> CompileInternal()
         {
             // Convert the codegen class into it's source representation.
             var syntaxTreePairs = CreateSyntaxTree();
@@ -329,18 +334,18 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 #endif
 
-            var assemblyData = EmitToImage(compilation);
+            AssemblyImage = EmitToImage(compilation);
 
 #if DIAGNOSTICS
             Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
 #endif
 
 #if NETSTANDARD
-            using (var stream = new MemoryStream(assemblyData)) {
+            using (var stream = new MemoryStream(AssemblyImage)) {
                 Assembly = LoadContext.LoadFromStream(stream);
             }
 #else
-            Assembly = AppDomain.CurrentDomain.Load(assemblyData);
+            Assembly = AppDomain.CurrentDomain.Load(AssemblyImage);
 #endif
             
 #if DIAGNOSTICS
@@ -350,7 +355,7 @@ namespace com.espertech.esper.compiler.@internal.util
 #endif
 
             lock (_assemblyCacheBindings) {
-                var metadataReference = MetadataReference.CreateFromImage(assemblyData);
+                var metadataReference = MetadataReference.CreateFromImage(AssemblyImage);
 
 #if DIAGNOSTICS
                 Console.WriteLine($"MetaDataReference: {DateTime.Now}");
@@ -362,7 +367,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 _assemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
             }
 
-            return Assembly;
+            return new Pair<Assembly, byte[]>(Assembly, AssemblyImage);
         }
 
         private void WriteCodeAudit(IList<System.Tuple<string, string, SyntaxTree>> syntaxTreePairs, string targetDirectory)

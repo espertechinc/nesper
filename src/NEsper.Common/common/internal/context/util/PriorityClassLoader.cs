@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <summary>
         /// Priority assemblies
         /// </summary>
-        private readonly ICollection<Assembly> _priorityAssemblies;
+        private readonly IEnumerable<Assembly> _priorityAssemblies;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="priorityAssemblies"></param>
-        public PriorityClassLoader(ClassLoader parent, ICollection<Assembly> priorityAssemblies)
+        public PriorityClassLoader(ClassLoader parent, IEnumerable<Assembly> priorityAssemblies)
         {
             _parent = parent;
             _priorityAssemblies = priorityAssemblies;

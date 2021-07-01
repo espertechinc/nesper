@@ -23,9 +23,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLDatabaseOutputColumnConversion());
-            execs.Add(new EPLDatabaseInputParameterConversion());
+            WithOutputColumnConversion(execs);
+            WithInputParameterConversion(execs);
+            WithOutputRowConversion(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputRowConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDatabaseOutputRowConversion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInputParameterConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInputParameterConversion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputColumnConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOutputColumnConversion());
             return execs;
         }
 
@@ -119,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var type = SupportSQLOutputRowConversion.TypeContexts[0];
                 Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
                 Assert.AreEqual("select * from mytesttable where myint = ${myvariableORC}", type.Sql);
-                Assert.AreEqual(typeof(int?), type.Fields.Get("myint"));
+                Assert.AreEqual(typeof(int), type.Fields.Get("myint"));
 
                 var val = SupportSQLOutputRowConversion.ValueContexts[0];
                 Assert.AreEqual(10, val.Values.Get("myint"));

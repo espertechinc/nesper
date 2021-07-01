@@ -30,30 +30,163 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     public class EPLDatabaseJoin
     {
         private const string ALL_FIELDS =
-            "myBigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
+            "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
 
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLDatabaseSimpleJoinLeft());
-            execs.Add(new EPLDatabase2HistoricalStar());
-            execs.Add(new EPLDatabase2HistoricalStarInner());
-            execs.Add(new EPLDatabase3Stream());
-            execs.Add(new EPLDatabaseTimeBatch());
-            execs.Add(new EPLDatabaseTimeBatchOM());
-            execs.Add(new EPLDatabaseTimeBatchCompile());
-            execs.Add(new EPLDatabaseVariables());
-            execs.Add(new EPLDatabaseInvalidSQL());
-            execs.Add(new EPLDatabaseInvalidBothHistorical());
-            execs.Add(new EPLDatabaseInvalidPropertyEvent());
-            execs.Add(new EPLDatabaseInvalidPropertyHistorical());
-            execs.Add(new EPLDatabaseInvalid1Stream());
-            execs.Add(new EPLDatabaseInvalidSubviews());
-            execs.Add(new EPLDatabaseStreamNamesAndRename());
-            execs.Add(new EPLDatabaseWithPattern());
-            execs.Add(new EPLDatabasePropertyResolution());
-            execs.Add(new EPLDatabaseRestartStatement());
+            WithSimpleJoinLeft(execs);
+            With2HistoricalStar(execs);
+            With2HistoricalStarInner(execs);
+            With3Stream(execs);
+            WithTimeBatch(execs);
+            WithTimeBatchOM(execs);
+            WithTimeBatchCompile(execs);
+            WithVariables(execs);
+            WithInvalidSQL(execs);
+            WithInvalidBothHistorical(execs);
+            WithInvalidPropertyEvent(execs);
+            WithInvalidPropertyHistorical(execs);
+            WithInvalid1Stream(execs);
+            WithInvalidSubviews(execs);
+            WithStreamNamesAndRename(execs);
+            WithWithPattern(execs);
+            WithPropertyResolution(execs);
+            WithRestartStatement(execs);
+            WithSimpleJoinRight(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimpleJoinRight(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDatabaseSimpleJoinRight());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRestartStatement(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseRestartStatement());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyResolution(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabasePropertyResolution());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseWithPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStreamNamesAndRename(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseStreamNamesAndRename());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidSubviews(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInvalidSubviews());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid1Stream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInvalid1Stream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidPropertyHistorical(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInvalidPropertyHistorical());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidPropertyEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInvalidPropertyEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidBothHistorical(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInvalidBothHistorical());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidSQL(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInvalidSQL());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariables(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseVariables());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeBatchCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseTimeBatchCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeBatchOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseTimeBatchOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseTimeBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3Stream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabase3Stream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2HistoricalStarInner(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabase2HistoricalStarInner());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2HistoricalStar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabase2HistoricalStar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimpleJoinLeft(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseSimpleJoinLeft());
             return execs;
         }
 
@@ -118,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             decimal? mynumeric,
             decimal? mydecimal,
             double? mydouble,
-            double? myreal)
+            float? myreal)
         {
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             AssertReceived(
@@ -144,9 +277,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             decimal? mynumeric,
             decimal? mydecimal,
             double? mydouble,
-            double? myreal)
+            float? myreal)
         {
-            Assert.AreEqual(mybigint, theEvent.Get("myBigint"));
+            Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));
             Assert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
             Assert.AreEqual(mychar, theEvent.Get("mychar"));
@@ -180,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var stmtText = "@Name('s0') select * from SupportBean#lastevent sb, SupportBeanTwo#lastevent sbt, " +
                                "sql:MyDBWithRetain ['select myint from mytesttable'] as S1 " +
-                               "  where sb.TheString = sbt.stringTwo and S1.myint = sbt.IntPrimitiveTwo";
+                               "  where sb.TheString = sbt.StringTwo and S1.myint = sbt.IntPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -191,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBean("T2", -1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T2", "T2", 30});
 
                 env.Milestone(0);
@@ -200,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T3", "T3", 40});
 
                 env.UndeployAll();
@@ -216,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable \n\r where ${IntPrimitive} = mytesttable.myBigint'] as S0," +
+                               " from mytesttable \n\r where ${IntPrimitive} = mytesttable.mybigint'] as S0," +
                                "SupportBean#time_batch(10 sec) as S1";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 RuntestTimeBatch(env);
@@ -227,11 +360,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "IntPrimitive","myint","myvarchar" };
+                var fields = new[] {"IntPrimitive", "myint", "myvarchar"};
                 var stmtText = "@Name('s0') select IntPrimitive, myint, myvarchar from " +
                                "SupportBean#keepall as S0, " +
-                               " sql:MyDBWithRetain ['select myint from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S1," +
-                               " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S2 ";
+                               " sql:MyDBWithRetain ['select myint from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as S1," +
+                               " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as S2 ";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -273,12 +406,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a","b","c","d" };
+                var fields = new[] {"a", "b", "c", "d"};
                 var stmtText =
                     "@Name('s0') select TheString as a, IntPrimitive as b, S1.myvarchar as c, S2.myvarchar as d from " +
                     "SupportBean#keepall as S0 " +
                     " inner join " +
-                    " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.myBigint'] as S1 " +
+                    " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.mybigint'] as S1 " +
                     " on S1.myvarchar=S0.TheString " +
                     " inner join " +
                     " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.myint'] as S2 " +
@@ -313,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy("create variable int queryvar", path);
                 env.CompileDeploy("on SupportBean set queryvar=IntPrimitive", path);
                 var stmtText = "@Name('s0') select myint from " +
-                               " sql:MyDBWithRetain ['select myint from mytesttable where ${queryvar} = mytesttable.myBigint'] as S0, " +
+                               " sql:MyDBWithRetain ['select myint from mytesttable where ${queryvar} = mytesttable.mybigint'] as S0, " +
                                "SupportBean_A#keepall as S1";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
@@ -326,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 stmtText = "@Name('s0') select myint from " +
                            "SupportBean_A#keepall as S1, " +
-                           "sql:MyDBWithRetain ['select myint from mytesttable where ${queryvar} = mytesttable.myBigint'] as S0";
+                           "sql:MyDBWithRetain ['select myint from mytesttable where ${queryvar} = mytesttable.mybigint'] as S0";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 SendSupportBeanEvent(env, 6);
@@ -344,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var fields = ALL_FIELDS.SplitCsv();
-                var sql = "select " + ALL_FIELDS + " from mytesttable where ${IntPrimitive} = mytesttable.myBigint";
+                var sql = "select " + ALL_FIELDS + " from mytesttable where ${IntPrimitive} = mytesttable.mybigint";
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create(fields);
@@ -357,8 +490,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 model.FromClause = fromClause;
                 env.CopyMayFail(model);
                 Assert.AreEqual(
-                    "select myBigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDBWithRetain[\"select myBigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${IntPrimitive} = mytesttable.myBigint\"] as S0, " +
-                    "SupportBean#time_batch(10) as S1",
+                    "select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDBWithRetain[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${IntPrimitive} = mytesttable.mybigint\"] as s0, " +
+                    "SupportBean#time_batch(10) as s1",
                     model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -376,7 +509,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S0," +
+                               " from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as S0," +
                                "SupportBean#time_batch(10 sec) as S1";
 
                 var model = env.EplToModel(stmtText);
@@ -396,7 +529,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1");
+                    "Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, " +
+                    "reason: 42601: syntax error at or near \",\"");
             }
         }
 
@@ -405,9 +539,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var sqlOne =
-                    "sql:MyDBWithRetain ['select myvarchar from mytesttable where ${mychar} = mytesttable.myBigint']";
+                    "sql:MyDBWithRetain ['select myvarchar from mytesttable where ${mychar} = mytesttable.mybigint']";
                 var sqlTwo =
-                    "sql:MyDBWithRetain ['select mychar from mytesttable where ${myvarchar} = mytesttable.myBigint']";
+                    "sql:MyDBWithRetain ['select mychar from mytesttable where ${myvarchar} = mytesttable.mybigint']";
                 var stmtText = "@Name('s0') select S0.myvarchar as S0Name, S1.mychar as S1Name from " +
                                sqlOne +
                                " as S0, " +
@@ -423,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select myvarchar from " +
-                               " sql:MyDBWithRetain ['select mychar from mytesttable where ${S1.xxx[0]} = mytesttable.myBigint'] as S0," +
+                               " sql:MyDBWithRetain ['select mychar from mytesttable where ${S1.xxx[0]} = mytesttable.mybigint'] as S0," +
                                "SupportBeanComplexProps as S1";
                 TryInvalidCompile(
                     env,
@@ -431,7 +565,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     "Failed to validate from-clause database-access parameter expression 'S1.xxx[0]': Failed to resolve property 'S1.xxx[0]' to a stream or nested property in a stream");
 
                 stmtText = "@Name('s0') select myvarchar from " +
-                           " sql:MyDBWithRetain ['select mychar from mytesttable where ${} = mytesttable.myBigint'] as S0," +
+                           " sql:MyDBWithRetain ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as S0," +
                            "SupportBeanComplexProps as S1";
                 TryInvalidCompile(
                     env,
@@ -445,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select myvarchar from " +
-                               " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${myvarchar} = mytesttable.myBigint'] as S0," +
+                               " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${myvarchar} = mytesttable.mybigint'] as S0," +
                                "SupportBeanComplexProps as S1";
                 TryInvalidCompile(
                     env,
@@ -459,12 +593,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var sql =
-                    "sql:MyDBWithRetain ['select myvarchar, myBigint from mytesttable where ${myBigint} = myint']";
+                    "sql:MyDBWithRetain ['select myvarchar, mybigint from mytesttable where ${mybigint} = myint']";
                 var stmtText = "@Name('s0') select myvarchar as S0Name from " + sql + " as S0";
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Invalid expression 'myBigint' resolves to the historical data itself");
+                    "Invalid expression 'mybigint' resolves to the historical data itself");
             }
         }
 
@@ -489,7 +623,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S1.a as myBigint, " +
+                var stmtText = "@Name('s0') select S1.a as mybigint, " +
                                " S1.b as myint," +
                                " S1.c as myvarchar," +
                                " S1.d as mychar," +
@@ -499,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " S1.h as mydouble," +
                                " S1.i as myreal " +
                                " from SupportBean_S0 as S0," +
-                               " sql:MyDBWithRetain ['select myBigint as a, " +
+                               " sql:MyDBWithRetain ['select mybigint as a, " +
                                " myint as b," +
                                " myvarchar as c," +
                                " mychar as d," +
@@ -508,11 +642,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " mydecimal as g," +
                                " mydouble as h," +
                                " myreal as i " +
-                               "from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
+                               "from mytesttable where ${Id} = mytesttable.mybigint'] as S1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
-                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3);
+                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3f);
 
                 env.UndeployAll();
             }
@@ -525,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AdvanceTime(0);
 
                 var stmtText = "@Name('s0') select mychar from " +
-                               " sql:MyDBWithRetain ['select mychar from mytesttable where mytesttable.myBigint = 2'] as S0," +
+                               " sql:MyDBWithRetain ['select mychar from mytesttable where mytesttable.mybigint = 2'] as S0," +
                                " pattern [every timer:interval(5 sec) ]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -543,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy("create variable long VarLastTimestamp = 0", path);
                 var epl = "@Name('Poll every 5 seconds') insert into PollStream" +
                           " select * from pattern[every timer:interval(5 sec)]," +
-                          " sql:MyDBWithRetain ['select mychar from mytesttable where mytesttable.myBigint > ${VarLastTimestamp}'] as S0";
+                          " sql:MyDBWithRetain ['select mychar from mytesttable where mytesttable.mybigint > ${VarLastTimestamp}'] as S0";
                 var model = env.EplToModel(epl);
                 env.CompileDeploy(model, path);
                 env.UndeployAll();
@@ -559,13 +693,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${S1.ArrayProperty[0]} = mytesttable.myBigint'] as S0," +
+                               " from mytesttable where ${S1.ArrayProperty[0]} = mytesttable.mybigint'] as S0," +
                                "SupportBeanComplexProps as S1";
                 // S1.ArrayProperty[0] returns 10 for that bean
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
-                AssertReceived(env, 10, 100, "J", "P", true, null, 1000m, 10.2, 10.3);
+                AssertReceived(env, 10, 100, "J", "P", true, null, 1000m, 10.2, 10.3f);
 
                 env.UndeployAll();
             }
@@ -581,11 +715,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean_S0 as S0," +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
+                               " from mytesttable where ${Id} = mytesttable.mybigint'] as S1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
-                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3);
+                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3f);
 
                 env.UndeployAll();
             }
@@ -597,7 +731,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var stmtText = "@Name('s0') select mychar from " +
                                "SupportBean_S0 as S0," +
-                               " sql:MyDBWithRetain ['select mychar from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
+                               " sql:MyDBWithRetain ['select mychar from mytesttable where ${Id} = mytesttable.mybigint'] as S1";
                 var compiled = env.Compile(stmtText);
                 env.Deploy(compiled);
 
@@ -625,23 +759,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${Id} = mytesttable.myBigint'] as S0," +
+                               " from mytesttable where ${Id} = mytesttable.mybigint'] as S0," +
                                "SupportBean_S0 as S1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(long?), eventType.GetPropertyType("myBigint"));
+                Assert.AreEqual(typeof(long?), eventType.GetPropertyType("mybigint"));
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("myint"));
                 Assert.AreEqual(typeof(string), eventType.GetPropertyType("myvarchar"));
                 Assert.AreEqual(typeof(string), eventType.GetPropertyType("mychar"));
                 Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("mybool"));
-                Assert.AreEqual(typeof(decimal), eventType.GetPropertyType("mynumeric"));
-                Assert.AreEqual(typeof(decimal), eventType.GetPropertyType("mydecimal"));
+                Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mynumeric"));
+                Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mydecimal"));
                 Assert.AreEqual(typeof(double?), eventType.GetPropertyType("mydouble"));
-                Assert.AreEqual(typeof(double?), eventType.GetPropertyType("myreal"));
+                Assert.AreEqual(typeof(float?), eventType.GetPropertyType("myreal"));
 
                 SendEventS0(env, 1);
-                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3);
+                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3f);
 
                 env.UndeployAll();
             }
