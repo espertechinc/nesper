@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
@@ -46,6 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         void AddChildNodes(ICollection<EvalForgeNode> childNodes);
 
         bool IsAudit { get; set; }
+
+        void SetFactoryNodeId(
+            short factoryNodeId,
+            StatementRawInfo statementRawInfo,
+            int streamNum,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider);
 
         /// <summary>
         ///     Write expression considering precendence.

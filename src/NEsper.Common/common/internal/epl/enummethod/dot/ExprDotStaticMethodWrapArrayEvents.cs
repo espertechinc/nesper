@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapArrayEvents : ExprDotStaticMethodWrap
     {
-        private EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private BeanEventType type;
+        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+        private readonly BeanEventType type;
 
         public ExprDotStaticMethodWrapArrayEvents(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.type = type;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(type);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(type);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     typeof(BeanEventType),
                     EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
             return NewInstance(
-                typeof(ExprDotStaticMethodWrapArrayEvents.WrappingCollection),
+                typeof(WrappingCollection),
                 eventSvcMember,
                 typeMember,
                 result);
@@ -69,9 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public class WrappingCollection : ICollection<EventBean>
         {
-            private EventBeanTypedEventFactory eventBeanTypedEventFactory;
-            private BeanEventType type;
-            private Array array;
+            private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+            private readonly BeanEventType type;
+            private readonly Array array;
 
             public WrappingCollection(
                 EventBeanTypedEventFactory eventBeanTypedEventFactory,

@@ -7,13 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -22,21 +26,21 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            WithollowedByFilter(execs);
-            Withragment(execs);
+            WithFollowedByFilter(execs);
+            WithFragment(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withragment(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithFragment(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFragment());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithollowedByFilter(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithFollowedByFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedByFilter());
             return execs;
         }
@@ -60,13 +64,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     values[count++] = theEvent.Get(name);
                 }
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("a", typeof(SupportBean_A), null, false, false, false, false, true),
-                        new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
-                    },
-                    env.Statement("insert").EventType.PropertyDescriptors);
-
+                SupportEventPropUtil.AssertPropsEquals(
+                    env.Statement("insert").EventType.PropertyDescriptors.ToArray(),
+                    new SupportEventPropDesc("a", typeof(SupportBean_A)).WithFragment(),
+                    new SupportEventPropDesc("b", typeof(SupportBean_B)).WithFragment());
+                
                 env.UndeployAll();
             }
         }
@@ -78,20 +80,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var stmtTxtOne = "@Name('s0') select * from pattern [[2] a=SupportBean_A -> b=SupportBean_B]";
                 env.CompileDeploy(stmtTxtOne).AddListener("s0");
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor(
-                            "a",
-                            typeof(SupportBean_A[]),
-                            typeof(SupportBean_A),
-                            false,
-                            false,
-                            true,
-                            false,
-                            true),
-                        new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
-                    },
-                    env.Statement("s0").EventType.PropertyDescriptors);
+                SupportEventPropUtil.AssertPropsEquals(
+                    env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                    new SupportEventPropDesc("a", typeof(SupportBean_A[])).WithIndexed().WithComponentType(typeof(SupportBean_A)).WithFragment(),
+                    new SupportEventPropDesc("b", typeof(SupportBean_B)).WithFragment());
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_A("A2"));

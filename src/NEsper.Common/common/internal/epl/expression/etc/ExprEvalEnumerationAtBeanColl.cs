@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -31,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             EventType eventTypeColl)
         {
-            this._enumerationForge = enumerationForge;
-            this._eventTypeColl = eventTypeColl;
+            _enumerationForge = enumerationForge;
+            _eventTypeColl = eventTypeColl;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -45,9 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             methodNode.Block
                 .DeclareVar<FlexCollection>(

@@ -14,7 +14,6 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
-    [TestFixture]
     public class ExprFilterPlanInRangeAndBetween
     {
         public static IList<FilterTestCaseSingleFieldExecution> Executions()

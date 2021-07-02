@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string typeName)
         {
             Underlying = @event;
-            this._typeName = typeName;
+            _typeName = typeName;
         }
 
         public void Send(EventServiceSendEventCommon eventService)

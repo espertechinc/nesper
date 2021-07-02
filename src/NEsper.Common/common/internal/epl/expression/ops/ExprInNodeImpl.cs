@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="isNotIn">is true for "not in" and false for "in"</param>
         public ExprInNodeImpl(bool isNotIn)
         {
-            this._isNotIn = isNotIn;
+            _isNotIn = isNotIn;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -70,39 +71,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be the same boxed type returned by expressions under this
-            Type typeOne = Boxing.GetBoxedType(ChildNodes[0].Forge.EvaluationType);
-
-            // collections, array or map not supported
-            if ((typeOne.IsArray) ||
-                (typeOne.IsGenericCollection()) ||
-                (typeOne.IsGenericDictionary())) {
-                throw new ExprValidationException(
-                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-            }
+            var typeRoot = ChildNodes[0].Forge.EvaluationType;
+            var typeRootBoxed = Boxing.GetBoxedType(typeRoot);
+            var typeRootClass = ExprNodeUtilityValidate.ValidateLHSTypeAnyAllSomeIn(typeRootBoxed);
 
             IList<Type> comparedTypes = new List<Type>();
-            comparedTypes.Add(typeOne);
-            bool hasCollectionOrArray = false;
-            for (int i = 0; i < ChildNodes.Length - 1; i++) {
-                Type propType = ChildNodes[i + 1].Forge.EvaluationType;
-                if (propType == null) {
+            comparedTypes.Add(typeRootClass);
+
+            var hasCollectionOrArray = false;
+            for (var i = 0; i < ChildNodes.Length - 1; i++) {
+                var childType = ChildNodes[i + 1].Forge.EvaluationType;
+                if (childType.IsNullTypeSafe()) {
                     continue;
                 }
 
-                if (propType.IsArray) {
+                if (childType.IsArray) {
                     hasCollectionOrArray = true;
-                    if (propType.GetElementType() != typeof(object)) {
-                        comparedTypes.Add(propType.GetElementType());
+                    if (childType.GetElementType() != typeof(object)) {
+                        comparedTypes.Add(childType.GetElementType());
                     }
                 }
-                else if (propType.IsGenericCollection()) {
+                else if (childType.IsGenericCollection()) {
                     hasCollectionOrArray = true;
                 }
-                else if (propType.IsGenericDictionary()) {
+                else if (childType.IsGenericDictionary()) {
                     hasCollectionOrArray = true;
                 }
                 else {
-                    comparedTypes.Add(propType);
+                    comparedTypes.Add(childType);
                 }
             }
 
@@ -114,12 +110,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             catch (CoercionException ex) {
                 throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
             }
+            
+            if (coercionType.IsNullType()) {
+                throw new ExprValidationException("Implicit conversion from null-type is not allowed");
+            }
 
             // Check if we need to coerce
-            bool mustCoerce = false;
+            var mustCoerce = false;
             Coercer coercer = null;
             if (TypeHelper.IsNumeric(coercionType)) {
-                foreach (Type compareType in comparedTypes) {
+                foreach (var compareType in comparedTypes) {
                     if (coercionType != Boxing.GetBoxedType(compareType)) {
                         mustCoerce = true;
                     }
@@ -145,14 +145,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return false;
             }
 
-            ExprInNodeImpl other = (ExprInNodeImpl) node;
+            var other = (ExprInNodeImpl) node;
             return other._isNotIn == _isNotIn;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            string delimiter = "";
+            var delimiter = "";
             ChildNodes[0].ToEPL(writer, Precedence, flags);
             if (_isNotIn) {
                 writer.Write(" not in (");
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 writer.Write(" in (");
             }
 
-            for (int ii = 1 ; ii < ChildNodes.Length; ii++) {
+            for (var ii = 1 ; ii < ChildNodes.Length; ii++) {
                 var inSetValueExpr = ChildNodes[ii];
                 writer.Write(delimiter);
                 inSetValueExpr.ToEPL(writer, Precedence, flags);

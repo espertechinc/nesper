@@ -6,8 +6,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         private class ExprDotEvalSumMethodDecimal : ExprDotEvalSumMethod
         {
-            private long cnt;
-            private decimal sum;
+            private long _cnt;
+            private decimal _sum;
 
             public void Enter(object @object)
             {
@@ -15,17 +15,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     return;
                 }
 
-                cnt++;
-                sum += @object.AsDecimal();
+                _cnt++;
+                _sum += @object.AsDecimal();
             }
 
             public object Value {
                 get {
-                    if (cnt == 0) {
+                    if (_cnt == 0) {
                         return null;
                     }
 
-                    return sum;
+                    return _sum;
                 }
             }
         }

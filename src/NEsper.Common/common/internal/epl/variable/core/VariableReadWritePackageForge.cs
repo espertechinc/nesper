@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -75,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 						if (assignment.Lhs is ExprAssignmentLHSIdent) {
 							// determine types
 							if (variableMetadata.EventType != null) {
-								if ((expressionType != null) &&
-								    (!TypeHelper.IsSubclassOrImplementsInterface(expressionType, variableMetadata.EventType.UnderlyingType))) {
+								if (expressionType.IsNotNullType() &&
+								    !TypeHelper.IsSubclassOrImplementsInterface(expressionType, variableMetadata.EventType.UnderlyingType)) {
 									throw new ExprValidationException(
 										"Variable '" +
 										variableName +
@@ -99,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 								// determine if the expression type can be assigned
 								if (variableType != typeof(object)) {
 									if ((expressionType.GetBoxedType() != variableType.GetBoxedType()) &&
-									    (expressionType != null)) {
+									    (!expressionType.IsNullTypeSafe())) {
 										if ((!TypeHelper.IsNumeric(variableType)) ||
 										    (!TypeHelper.IsNumeric(expressionType))) {
 											throw new ExprValidationException(VariableUtil.GetAssigmentExMessage(variableName, variableType, expressionType));
@@ -235,7 +236,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 						"Variable '" +
 						entry.Value.VariableName +
 						"' of declared type " +
-						entry.Key.UnderlyingType.CleanName() +
+						entry.Key.UnderlyingType.TypeSafeName() +
 						"' cannot be assigned to");
 				}
 
@@ -257,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 			var method = parent.MakeChild(typeof(VariableReadWritePackage), GetType(), classScope);
 			var @ref = Ref("rw");
 			method.Block
-				.DeclareVar<VariableReadWritePackage>(@ref.Ref, NewInstance<VariableReadWritePackage>())
+				.DeclareVarNewInstance<VariableReadWritePackage>(@ref.Ref)
 				.SetProperty(@ref, "CopyMethods", MakeCopyMethods(_copyMethods, method, symbols, classScope))
 				.SetProperty(@ref, "Assignments", MakeAssignments(_assignments, _variables, method, symbols, classScope))
 				.SetProperty(@ref, "Variables", MakeVariables(_variables, method, symbols, classScope))

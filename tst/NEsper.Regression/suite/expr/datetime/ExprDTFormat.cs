@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
@@ -45,16 +46,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "LongDate.format() as val4" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
-                    new[] {
-                        typeof(string), // val0
-                        typeof(string), // val1
-                        typeof(string), // val2
-                        typeof(string), // val3
-                        typeof(string)  // val4
-                    });
+                    typeof(string));
 
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 var expected = SupportDateTime.GetArrayCoerced(startTime, "iso", "iso", "iso", "iso", "iso");
@@ -93,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "LongDate.format(\"" + sdfPattern + "\") as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fields, typeof(string));
+                SupportEventPropUtil.AssertTypesAllSame(env.Statement("s0").EventType, fields, typeof(string));
 
                 var sdt = SupportDateTime.Make(startTime);
                 env.SendEventBean(SupportDateTime.Make(startTime));

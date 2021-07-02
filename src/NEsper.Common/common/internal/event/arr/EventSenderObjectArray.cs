@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
@@ -22,10 +23,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class EventSenderObjectArray : EventSender
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly ObjectArrayEventType objectArrayEventType;
-        private readonly EPRuntimeEventProcessWrapped runtimeEventSender;
-        private readonly ThreadingCommon threadingService;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly ObjectArrayEventType _objectArrayEventType;
+        private readonly EPRuntimeEventProcessWrapped _runtimeEventSender;
+        private readonly ThreadingCommon _threadingService;
 
         /// <summary>
         ///     Ctor.
@@ -40,28 +41,28 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ThreadingCommon threadingService)
         {
-            this.runtimeEventSender = runtimeEventSender;
-            this.objectArrayEventType = objectArrayEventType;
-            this.threadingService = threadingService;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._runtimeEventSender = runtimeEventSender;
+            this._objectArrayEventType = objectArrayEventType;
+            this._threadingService = threadingService;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public void SendEvent(object theEvent)
         {
             if (!theEvent.GetType().IsArray) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
+                    "Unexpected event object of type " + theEvent.GetType().TypeSafeName() + ", expected Object[]");
             }
 
             var arr = (object[]) theEvent;
             EventBean objectArrayEvent =
-                eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
+                _eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, _objectArrayEventType);
 
-            if (threadingService.IsInboundThreading) {
-                threadingService.SubmitInbound(objectArrayEvent, runtimeEventSender);
+            if (_threadingService.IsInboundThreading) {
+                _threadingService.SubmitInbound(objectArrayEvent, _runtimeEventSender);
             }
             else {
-                runtimeEventSender.ProcessWrappedEvent(objectArrayEvent);
+                _runtimeEventSender.ProcessWrappedEvent(objectArrayEvent);
             }
         }
 
@@ -69,13 +70,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             if (!theEvent.GetType().IsArray) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
+                    "Unexpected event object of type " + theEvent.GetType().TypeSafeName() + ", expected Object[]");
             }
 
             var arr = (object[]) theEvent;
             EventBean objectArrayEvent =
-                eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
-            runtimeEventSender.RouteEventBean(objectArrayEvent);
+                _eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, _objectArrayEventType);
+            _runtimeEventSender.RouteEventBean(objectArrayEvent);
         }
     }
 } // end of namespace

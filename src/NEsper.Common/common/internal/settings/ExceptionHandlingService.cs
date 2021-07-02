@@ -16,6 +16,7 @@ using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -49,20 +50,45 @@ namespace com.espertech.esper.common.@internal.settings
         public event ConditionHandler UnhandledCondition;
         //public event ExceptionHandlerInboundPool InboundPoolHandler;
 
+
         public void HandleCondition(
             BaseCondition condition,
             StatementContext statement)
         {
+            string optionalEPL = (string) statement.StatementInformationals.Properties.Get(StatementProperty.EPL);
+            HandleCondition(
+                condition,
+                statement.DeploymentId,
+                statement.StatementName,
+                optionalEPL);
+        }
+
+        public void HandleCondition(
+            BaseCondition condition,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            HandleCondition(
+                condition,
+                exprEvaluatorContext.DeploymentId,
+                exprEvaluatorContext.StatementName,
+                exprEvaluatorContext.EPLWhenAvailable);
+        }
+
+        public void HandleCondition(
+            BaseCondition condition,
+            string deploymentId,
+            string statementName,
+            string optionalEPL)
+        {
             if (UnhandledCondition == null) {
                 var message = "Condition encountered processing deployment id '" +
-                              statement.DeploymentId +
+                              deploymentId +
                               "' statement '" +
-                              statement.StatementName +
+                              statementName +
                               "'";
-
-                var epl = (string) statement.StatementInformationals.Properties.Get(StatementProperty.EPL);
-                if (epl != null) {
-                    message += " statement text '" + epl + "'";
+                
+                if (optionalEPL != null) {
+                    message += " statement text '" + optionalEPL + "'";
                 }
 
                 message += " :" + condition.ToString();
@@ -74,8 +100,8 @@ namespace com.espertech.esper.common.@internal.settings
             UnhandledCondition(
                 new ConditionHandlerContext(
                     RuntimeURI,
-                    statement.StatementName,
-                    statement.DeploymentId,
+                    statementName,
+                    deploymentId,
                     condition));
         }
 

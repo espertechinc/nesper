@@ -34,49 +34,49 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithedSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankedSceneOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRanked(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankRanked());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRemoveStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankRemoveStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiexpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankMultiexpression());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrevAndGroupWin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankPrevAndGroupWin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithedPrev(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewRankedPrev());
             return execs;
         }

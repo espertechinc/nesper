@@ -307,6 +307,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
             else {
                 var model = EplToModel(epl);
+                Assert.AreEqual(epl, model.ToEPL());
                 CompileDeploy(model, path);
             }
 

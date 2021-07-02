@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -62,39 +63,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // check eval child node - can be String or numeric
-            Type evalChildType = ChildNodes[0].Forge.EvaluationType;
-            bool isNumericValue = TypeHelper.IsNumeric(evalChildType);
-            if ((evalChildType != typeof(string)) && (!isNumericValue)) {
+            var evalType = ChildNodes[0].Forge.EvaluationType;
+            var isNumericValue = TypeHelper.IsNumeric(evalType);
+            if ((evalType != typeof(string)) && (!isNumericValue)) {
                 throw new ExprValidationException(
                     "The 'like' operator requires a String or numeric type left-hand expression");
             }
 
             // check pattern child node
-            Type patternChildType = ChildNodes[1].Forge.EvaluationType;
-            if (patternChildType != typeof(string)) {
+            var patternForge = ChildNodes[1].Forge;
+            var patternType = patternForge.EvaluationType;
+            if (patternType != typeof(string)) {
                 throw new ExprValidationException("The 'like' operator requires a String-type pattern expression");
             }
 
-            bool isConstantPattern = ChildNodes[1].Forge.ForgeConstantType.IsCompileTimeConstant;
+            var isConstantPattern = patternForge.ForgeConstantType.IsCompileTimeConstant;
 
             // check escape character node
-            bool isConstantEscape = true;
+            var isConstantEscape = true;
             if (ChildNodes.Length == 3) {
-                if (ChildNodes[2].Forge.EvaluationType != typeof(string)) {
+                var escapeForge = ChildNodes[2].Forge;
+                if (escapeForge.EvaluationType != typeof(string)) {
                     throw new ExprValidationException(
                         "The 'like' operator escape parameter requires a character-type value");
                 }
 
-                isConstantEscape = ChildNodes[2].Forge.ForgeConstantType.IsCompileTimeConstant;
+                isConstantEscape = escapeForge.ForgeConstantType.IsCompileTimeConstant;
             }
 
             if (isConstantPattern && isConstantEscape) {
-                string patternVal = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
+                var patternVal = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
                 if (patternVal == null) {
                     throw new ExprValidationException("The 'like' operator pattern returned null");
                 }
 
-                string escape = "\\";
+                var escape = "\\";
                 char? escapeCharacter = null;
                 if (ChildNodes.Length == 3) {
                     escape = (string) ChildNodes[2].Forge.ExprEvaluator.Evaluate(null, true, null);
@@ -104,8 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     escapeCharacter = escape[0];
                 }
 
-                LikeUtil likeUtil = new LikeUtil(patternVal, escapeCharacter, false);
-                CodegenExpression likeUtilInit = NewInstance<LikeUtil>(
+                var likeUtil = new LikeUtil(patternVal, escapeCharacter, false);
+                var likeUtilInit = NewInstance<LikeUtil>(
                     Constant(patternVal),
                     Constant(escapeCharacter),
                     ConstantFalse());
@@ -134,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return false;
             }
 
-            ExprLikeNode other = (ExprLikeNode) node;
+            var other = (ExprLikeNode) node;
             if (_isNot != other._isNot) {
                 return false;
             }

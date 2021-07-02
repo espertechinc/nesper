@@ -31,6 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 	public class EventInfraPropertyMappedIndexed : RegressionExecution
 	{
 		public static readonly Type BEAN_TYPE = typeof(MyIMEvent);
+		public static readonly string BEAN_TYPENAME = nameof(MyIMEvent);
 		public static readonly string XML_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "XML";
 		public static readonly string MAP_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "Map";
 		public static readonly string OA_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "OA";
@@ -57,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				path);
 
 			RunAssertion(env, OA_TYPENAME, FOA, new object[] {new string[] {"v1", "v2"}, Collections.SingletonDataMap("k1", "v1")}, path);
-
+			
 			// Avro
 			var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
 			var datum = new GenericRecord(avroSchema);
@@ -151,28 +152,34 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("Indexed"));
 			Assert.AreEqual(typeof(string), eventType.GetPropertyType("Indexed[0]"));
 
-			Assert.AreEqual(
-				new EventPropertyDescriptor(
-					"Indexed",
-					typeof(string[]),
-					typeof(string),
-					false,
-					false,
-					true,
-					false,
-					false),
+			var indexedType = typeof(string[]);
+
+			SupportEventPropUtil.AssertPropEquals(
+				new SupportEventPropDesc("Indexed", indexedType)
+					.WithIndexed()
+					.WithComponentType(typeof(string)),
 				eventType.GetPropertyDescriptor("Indexed"));
+
+			Type mappedType;
+			Type componentType;
 			
-			Assert.AreEqual(
-				new EventPropertyDescriptor(
-					"Mapped",
-					mapType,
-					mapValueType,
-					false,
-					false,
-					false,
-					true,
-					false),
+			if ((typeName == MAP_TYPENAME) || 
+			    (typeName == OA_TYPENAME) ||
+			    (typeName == JSON_TYPENAME) ||
+			    (typeName == JSONPROVIDED_TYPENAME) ||
+			    (typeName == BEAN_TYPENAME)) {
+				componentType = typeof(object);
+				mappedType = typeof(IDictionary<string, object>);
+			} else {
+				componentType = typeof(string);
+				mappedType = typeof(IDictionary<string, string>);
+			}
+			
+			SupportEventPropUtil.AssertPropEquals(
+				new SupportEventPropDesc("Mapped", mappedType)
+					.WithComponentType(componentType)
+					.WithIndexed(false)
+					.WithMapped(),
 				eventType.GetPropertyDescriptor("Mapped"));
 
 			Assert.IsNull(eventType.GetFragmentType("Indexed"));

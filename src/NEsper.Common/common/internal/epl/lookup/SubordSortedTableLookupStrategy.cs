@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordSortedTableLookupStrategyFactory factory,
             PropertySortedEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
+            _factory = factory;
+            _index = index;
         }
 
         public LookupStrategyDesc StrategyDesc => _factory.LookupStrategyDesc;

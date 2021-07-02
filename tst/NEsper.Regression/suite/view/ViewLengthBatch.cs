@@ -45,21 +45,21 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrev(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchPrev());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNormal(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.VIEW, null));
             execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.NAMEDWINDOW, null));
             execs.Add(new ViewLengthBatchNormal(ViewLengthBatchNormalRunType.GROUPWIN, null));
@@ -68,35 +68,35 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSize3(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchSize3());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSize1(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchSize1());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSize2(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchSize2());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLengthBatchSceneOne());
             return execs;
         }

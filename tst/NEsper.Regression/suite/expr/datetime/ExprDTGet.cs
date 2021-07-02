@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           "LongDate.get('month') as val3" +
                           " from SupportDateTime";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
@@ -99,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "DateTimeOffset.get('week') as val7" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {

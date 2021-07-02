@@ -9,10 +9,13 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -53,7 +56,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 dimensions[i] = size.Value;
             }
 
-            return Arrays.CreateInstanceChecked(_forge.TargetClass, dimensions);
+            var targetClass = _forge.TargetClass;
+            var numArrayDimensions = _forge.Parent.NumArrayDimensions;
+            if (numArrayDimensions > dimensions.Length) {
+                targetClass = TypeHelper.GetArrayType(targetClass, numArrayDimensions - 1);
+            }
+
+            return Arrays.CreateInstanceChecked(targetClass, dimensions);
         }
 
         public static CodegenExpression EvaluateCodegen(
@@ -88,9 +97,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
+            var numDimensions = forge.Parent.NumArrayDimensions;
+            if (numDimensions == 0 || numDimensions > 2) {
+                throw new IllegalStateException("Only handles one- and two-dimensional arrays");
+            }
+            
             CodegenExpression make;
             if (dimValue.Length == 1) {
-                make = NewArrayByLength(forge.TargetClass, dimValue[0]);
+                var targetClass = TypeHelper.GetArrayType(forge.TargetClass, forge.Parent.NumArrayDimensions - 1);
+                make = NewArrayByLength(targetClass, dimValue[0]);
             }
             else {
                 var @params = new CodegenExpression[dimValue.Length + 1];

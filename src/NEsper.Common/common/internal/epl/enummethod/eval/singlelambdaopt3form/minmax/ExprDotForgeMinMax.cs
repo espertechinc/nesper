@@ -19,29 +19,29 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ExprDotForgeMinMax : ExprDotForgeLambdaThreeForm
 	{
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			var returnType = collectionComponentType.GetBoxedType();
-			return EPTypeHelper.SingleValue(returnType);
+			return new EPChainableTypeClass(returnType);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			return streamCountIncoming => new EnumMinMaxScalarNoParam(streamCountIncoming, enumMethod == EnumMethodEnum.MAX, type);
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => {
-				var returnType = lambda.BodyForge.EvaluationType.GetBoxedType();
-				return EPTypeHelper.SingleValue(returnType);
+				var returnType = ValidateNonNull(lambda.BodyForge.EvaluationType.GetBoxedType());
+				return EPChainableTypeHelper.SingleValueNonNull(returnType);
 			};
 		}
 

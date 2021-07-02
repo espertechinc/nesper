@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -37,8 +38,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             for (var i = 0; i < expressionReturnTypes.Length; i++) {
                 var columnType = expressionReturnTypes[i];
 
-                if (columnType is Type || columnType == null) {
-                    ctorTypes[i] = (Type) expressionReturnTypes[i];
+                if (columnType == null) {
+                    forges[i] = exprForges[i];
+                    continue;
+                }
+                
+                if (columnType is Type columnTypeAsType) {
+                    ctorTypes[i] = columnTypeAsType;
                     forges[i] = exprForges[i];
                     continue;
                 }
@@ -82,21 +88,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public class InstanceManufacturerForgeNonArray : ExprForge
         {
-            private readonly ExprForge innerForge;
+            private readonly ExprForge _innerForge;
 
             internal InstanceManufacturerForgeNonArray(
                 Type returnType,
                 ExprForge innerForge)
             {
                 EvaluationType = returnType;
-                this.innerForge = innerForge;
+                this._innerForge = innerForge;
             }
 
             public ExprEvaluator ExprEvaluator {
                 get {
-                    var inner = innerForge.ExprEvaluator;
+                    var inner = _innerForge.ExprEvaluator;
                     return new ProxyExprEvaluator {
-                        ProcEvaluate = (
+                        procEvaluate = (
                             eventsPerStream,
                             isNewData,
                             exprEvaluatorContext) => {
@@ -128,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         "@event",
                         Cast(
                             typeof(EventBean),
-                            innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
+                            _innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
                     .IfRefNullReturnNull("@event")
                     .MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("@event"))));
                 return LocalMethod(methodNode);
@@ -136,28 +142,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             public Type EvaluationType { get; }
 
-            public ExprNodeRenderable ExprForgeRenderable => innerForge.ExprForgeRenderable;
+            public ExprNodeRenderable ExprForgeRenderable => _innerForge.ExprForgeRenderable;
         }
 
         public class InstanceManufacturerForgeArray : ExprForge,
             ExprNodeRenderable
         {
-            private readonly Type componentReturnType;
-            private readonly ExprForge innerForge;
+            private readonly Type _componentReturnType;
+            private readonly ExprForge _innerForge;
 
             internal InstanceManufacturerForgeArray(
                 Type componentReturnType,
                 ExprForge innerForge)
             {
-                this.componentReturnType = componentReturnType;
-                this.innerForge = innerForge;
+                this._componentReturnType = componentReturnType;
+                this._innerForge = innerForge;
             }
 
             public ExprEvaluator ExprEvaluator {
                 get {
-                    var inner = innerForge.ExprEvaluator;
+                    var inner = _innerForge.ExprEvaluator;
                     return new ProxyExprEvaluator {
-                        ProcEvaluate = (
+                        procEvaluate = (
                             eventsPerStream,
                             isNewData,
                             exprEvaluatorContext) => {
@@ -167,7 +173,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                             }
 
                             var events = (EventBean[]) result;
-                            var values = Arrays.CreateInstanceChecked(componentReturnType, events.Length);
+                            var values = Arrays.CreateInstanceChecked(_componentReturnType, events.Length);
                             for (var i = 0; i < events.Length; i++) {
                                 values.SetValue(events[i].Underlying, i);
                             }
@@ -186,7 +192,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                var arrayType = TypeHelper.GetArrayType(componentReturnType);
+                var arrayType = TypeHelper.GetArrayType(_componentReturnType);
                 var methodNode = codegenMethodScope.MakeChild(
                     arrayType,
                     typeof(InstanceManufacturerForgeArray),
@@ -195,24 +201,24 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 methodNode.Block
                     .DeclareVar<object>(
                         "result",
-                        innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
+                        _innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                     .IfCondition(Not(InstanceOf(Ref("result"), typeof(EventBean[]))))
                     .BlockReturn(ConstantNull())
                     .DeclareVar<EventBean[]>("events", Cast(typeof(EventBean[]), Ref("result")))
-                    .DeclareVar(arrayType, "values", NewArrayByLength(componentReturnType, ArrayLength(Ref("events"))))
+                    .DeclareVar(arrayType, "values", NewArrayByLength(_componentReturnType, ArrayLength(Ref("events"))))
                     .ForLoopIntSimple("i", ArrayLength(Ref("events")))
                     .AssignArrayElement(
                         "values",
                         Ref("i"),
                         Cast(
-                            componentReturnType,
+                            _componentReturnType,
                             ExprDotName(ArrayAtIndex(Ref("events"), Ref("i")), "Underlying")))
                     .BlockEnd()
                     .MethodReturn(Ref("values"));
                 return LocalMethod(methodNode);
             }
 
-            public Type EvaluationType => TypeHelper.GetArrayType(componentReturnType);
+            public Type EvaluationType => TypeHelper.GetArrayType(_componentReturnType);
 
             public ExprNodeRenderable ExprForgeRenderable => this;
 

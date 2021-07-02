@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.dataflow.filtersvcadapter;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -112,9 +113,9 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementInformationals.Annotations,
                 statementContextRuntimeServices.VariableManagementService,
                 statementContextRuntimeServices.TableExprEvaluatorContext);
-            this.FilterService = filterService;
-            this.SchedulingService = schedulingService;
-            this.InternalEventRouteDest = internalEventRouteDest;
+            FilterService = filterService;
+            SchedulingService = schedulingService;
+            InternalEventRouteDest = internalEventRouteDest;
         }
 
         public IContainer Container { get; set; }
@@ -336,5 +337,13 @@ namespace com.espertech.esper.common.@internal.context.util
         public string ModuleName { get; }
 
         public EventTableFactoryFactoryContext EventTableFactoryContext => this;
+        
+        public string EPLWhenAvailable => (string) StatementInformationals.Properties.Get(StatementProperty.EPL);
+
+        public TimeZoneInfo TimeZone => ImportServiceRuntime.TimeZone;
+
+        public TimeAbacus TimeAbacus => ImportServiceRuntime.TimeAbacus;
+
+        public bool IsWritesToTables => StatementInformationals.IsWritesToTables;
     }
 } // end of namespace

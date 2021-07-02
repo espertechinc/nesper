@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var threads = new Thread[runnables.Length];
             for (var i = 0; i < runnables.Length; i++) {
                 threads[i] = new Thread(runnables[i].Run);
-                threads[i].Name = typeof(MultithreadContextPartitionedWCount).Name;
+                threads[i].Name = nameof(MultithreadContextPartitionedWCount);
                 threads[i].Start();
             }
 

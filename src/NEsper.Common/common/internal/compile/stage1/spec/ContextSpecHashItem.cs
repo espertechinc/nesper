@@ -63,9 +63,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             methodLookupableMake.Block.MethodReturn(LocalMethod(methodLookupable));
 
             method.Block
-                .DeclareVar<ContextControllerDetailHashItem>(
-                    "item",
-                    NewInstance(typeof(ContextControllerDetailHashItem)))
+                .DeclareVarNewInstance<ContextControllerDetailHashItem>("item")
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(methodLookupableMake, Ref("eventType"), symbols.GetAddInitSvc(method)))

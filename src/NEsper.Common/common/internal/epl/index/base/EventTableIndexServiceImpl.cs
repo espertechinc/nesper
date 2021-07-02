@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.index.composite;
@@ -33,7 +34,6 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             int indexedStreamNum,
             EventType eventType,
             string[] indexProps,
-            Type[] indexTypes,
             MultiKeyFromObjectArray transformFireAndForget,
             DataInputOutputSerde keySerde,
             bool unique,
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventPropertyValueGetter getter,
             DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext)
+            StateMgmtSetting stateMgmtSettings)
         {
             return new PropertyHashedEventTableFactory(
                 indexedStreamNum,
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventType eventType,
             DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext)
+            StateMgmtSetting stateMgmtSettings)
         {
             return new UnindexedEventTableFactory(indexedStreamNum);
         }
@@ -71,7 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             DataInputOutputSerde serde,
             DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext)
+            EventTableFactoryFactoryContext eventTableFactoryContext,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new PropertySortedEventTableFactory(indexedStreamNum, indexedProp, getter, indexType);
         }
@@ -111,7 +112,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             bool unique,
             EventPropertyValueGetter[] getters,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext)
+            EventTableFactoryFactoryContext eventTableFactoryContext,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new PropertyHashedArrayFactory(streamNum, propertyNames, unique, null, getters);
         }

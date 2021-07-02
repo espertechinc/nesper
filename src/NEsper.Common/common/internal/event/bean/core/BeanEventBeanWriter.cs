@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="writers">writers</param>
         public BeanEventBeanWriter(BeanEventPropertyWriter[] writers)
         {
-            this._writers = writers;
+            _writers = writers;
         }
 
         public void Write(

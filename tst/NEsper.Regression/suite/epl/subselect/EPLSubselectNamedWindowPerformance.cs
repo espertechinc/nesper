@@ -38,42 +38,42 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithDisableShareCreate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectDisableShareCreate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDisableShare(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectDisableShare());
             return execs;
         }
 
         public static IList<RegressionExecution> WithShareCreate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectShareCreate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoShare(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectNoShare());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeyedRange(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectKeyedRange());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRange(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectRange(false, false));
             execs.Add(new EPLSubselectRange(true, true));
             return execs;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithKeyAndRange(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectKeyAndRange(false, false));
             execs.Add(new EPLSubselectKeyAndRange(true, true));
             return execs;
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithConstantValue(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectConstantValue(false, false));
             execs.Add(new EPLSubselectConstantValue(true, true));
             return execs;

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     {
         /// <summary>Constructor.</summary>
         /// <param name="message">is the error message</param>
-        public PatternObjectException(String message)
+        public PatternObjectException(string message)
             : base(message)
         {
         }
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// <param name="message">is the error message</param>
         /// <param name="cause">is the inner exception</param>
         public PatternObjectException(
-            String message,
+            string message,
             Exception cause)
             : base(message, cause)
         {

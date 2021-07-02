@@ -26,11 +26,46 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ClientExtendSRFEventBeanFootprint());
-            execs.Add(new ClientExtendSRFPropertyOrSingleRowMethod());
-            execs.Add(new ClientExtendSRFChainMethod());
-            execs.Add(new ClientExtendSRFSingleMethod());
+            WithEventBeanFootprint(execs);
+            WithPropertyOrSingleRowMethod(execs);
+            WithChainMethod(execs);
+            WithSingleMethod(execs);
+            WithFailedValidation(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFailedValidation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientExtendSRFFailedValidation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendSRFSingleMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithChainMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendSRFChainMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyOrSingleRowMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendSRFPropertyOrSingleRowMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventBeanFootprint(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendSRFEventBeanFootprint());
             return execs;
         }
 
@@ -68,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                #if false
+#if false
                 // test select-clause
                 string[] fields = {"c0", "c1"};
                 var text = "@Name('s0') select IsNullValue(*, 'TheString') as c0," +
@@ -118,8 +153,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.SendEventBean(new SupportBean("E1", 2));
                 Assert.AreEqual(1, env.Listener("s0").GetAndResetLastNewData().Length);
                 env.UndeployAll();
-                
-                #endif
+
+#endif
 
                 // test "window"
                 var textWindowAgg =
@@ -213,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 catch (EPException ex) {
                     Assert.AreEqual(
                         "Unexpected exception in statement 's0': Invocation exception when invoking method 'Throwexception' of class '" +
-                        typeof(SupportSingleRowFunction).Name +
+                        nameof(SupportSingleRowFunction) +
                         "' passing parameters [] for statement 's0': com.espertech.esper.common.client.EPException : This is a 'throwexception' generated exception",
                         ex.Message);
                     env.UndeployAll();
@@ -228,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 catch (EPException ex) {
                     Assert.AreEqual(
                         "Unexpected exception in statement 's0': NullPointerException invoking method 'ComputePower3' of class '" +
-                        typeof(SupportSingleRowFunction).Name +
+                        nameof(SupportSingleRowFunction) +
                         "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive Int32 value but received a null value",
                         ex.Message);
                 }

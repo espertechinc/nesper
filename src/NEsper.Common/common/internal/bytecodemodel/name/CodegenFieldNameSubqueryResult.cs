@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameSubqueryResult(int subqueryNumber)
         {
-            this._subqueryNumber = subqueryNumber;
+            _subqueryNumber = subqueryNumber;
         }
 
         public string Name {

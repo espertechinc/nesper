@@ -6,12 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.epl.variable.core;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
@@ -27,12 +32,18 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string runtimeURI,
             EventBeanService eventBeanService,
             ExceptionHandlingService exceptionHandlingService,
-            SchedulingService schedulingService)
+            SchedulingService schedulingService,
+            TimeZoneInfo timeZone,
+            TimeAbacus timeAbacus,
+            VariableManagementService variableManagementService)
         {
             RuntimeUri = runtimeURI;
             EventBeanService = eventBeanService;
             ExceptionHandlingService = exceptionHandlingService;
             SchedulingService = schedulingService;
+            TimeZone = timeZone;
+            TimeAbacus = timeAbacus;
+            VariableManagementService = variableManagementService;
         }
 
         public IReaderWriterLock AgentInstanceLock => null;
@@ -73,5 +84,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public ExceptionHandlingService ExceptionHandlingService { get; }
 
         public object FilterReboolConstant { get; set; }
+
+        public string ContextName => null;
+
+        public string EPLWhenAvailable => null;
+
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory => EventBeanService;
+
+        public string ModuleName => null;
+
+        public bool IsWritesToTables => false;
+
+        public Attribute[] Annotations => null;
+
+        public TimeZoneInfo TimeZone { get; }
+        
+        public TimeAbacus TimeAbacus { get; }
+        
+        public VariableManagementService VariableManagementService { get; }
     }
 } // end of namespace

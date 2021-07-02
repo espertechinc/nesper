@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             this.parameterExpressions = parameterExpressions;
         }
 
-        public EPType ReturnType => EPTypeHelper.NullValue();
+        public EPChainableType ReturnType => EPChainableTypeHelper.NullValue();
 
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey { get; }
 

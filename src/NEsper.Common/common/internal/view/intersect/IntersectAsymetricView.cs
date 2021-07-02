@@ -31,32 +31,34 @@ namespace com.espertech.esper.common.@internal.view.intersect
         ViewDataVisitableContainer,
         IntersectViewMarker
     {
-        internal readonly AgentInstanceContext agentInstanceContext;
-        internal readonly View[] views;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly View[] _views;
 
         public IntersectAsymetricView(
             AgentInstanceViewFactoryChainContext agentInstanceContext,
             IntersectViewFactory factory,
             IList<View> viewList)
         {
-            this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
+            _agentInstanceContext = agentInstanceContext.AgentInstanceContext;
             ViewFactory = factory;
-            views = viewList.ToArray();
+            _views = viewList.ToArray();
 
             for (var i = 0; i < viewList.Count; i++) {
                 var view = new LastPostObserverView(i);
-                views[i].Child = view;
+                _views[i].Child = view;
                 view.Observer = this;
             }
         }
 
-        public View[] ViewContained => views;
+        public View[] ViewContained => _views;
 
         public IntersectViewFactory ViewFactory { get; }
 
+        public View[] RelatedViews => _views;
+
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (var view in views) {
+            foreach (var view in _views) {
                 (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
@@ -65,8 +67,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, ViewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, ViewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
 
             var localState = ViewFactory.AsymetricViewLocalStatePerThread;
 
@@ -77,10 +79,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
             if (oldData != null) {
                 localState.IsDiscardObserverEvents = true; // disable reaction logic in observer
                 try {
-                    foreach (var view in views) {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldData);
+                    foreach (var view in _views) {
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldData);
                         view.Update(null, oldData);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
                 finally {
@@ -100,12 +102,12 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 localState.HasRemovestreamData = false; // changed by observer logic to indicate new data
                 localState.IsRetainObserverEvents = true; // enable retain logic in observer
                 try {
-                    foreach (var view in views) {
+                    foreach (var view in _views) {
                         localState.NewDataChildView = null;
 
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newData, oldData);
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newData, oldData);
                         view.Update(newData, oldData);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                         // first-X asymetric view post no insert stream for events that get dropped, remove these
                         if (localState.NewDataChildView != null) {
@@ -138,11 +140,11 @@ namespace com.espertech.esper.common.@internal.view.intersect
                     localState.IsDiscardObserverEvents = true;
                     var viewOldData = localState.RemovalEvents.ToArray();
                     try {
-                        for (var j = 0; j < views.Length; j++) {
-                            var view = views[j];
-                            agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, viewOldData);
+                        for (var j = 0; j < _views.Length; j++) {
+                            var view = _views[j];
+                            _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, viewOldData);
                             view.Update(null, viewOldData);
-                            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                         }
                     }
                     finally {
@@ -169,15 +171,15 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
                         localState.IsDiscardObserverEvents = true;
                         try {
-                            for (var j = 0; j < views.Length; j++) {
+                            for (var j = 0; j < _views.Length; j++) {
                                 if (i != j) {
-                                    var view = views[j];
-                                    agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                                    var view = _views[j];
+                                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(
                                         ViewFactory,
                                         null,
                                         viewOldData);
                                     view.Update(null, viewOldData);
-                                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                                 }
                             }
                         }
@@ -208,21 +210,21 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             if (newDataPosted != null || oldDataPosted != null) {
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataPosted, oldDataPosted);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataPosted, oldDataPosted);
                 child.Update(newDataPosted, oldDataPosted);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
             localState.OldEvents.Clear();
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public override EventType EventType => ViewFactory.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return views[0].GetEnumerator();
+            return _views[0].GetEnumerator();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
@@ -251,11 +253,11 @@ namespace com.espertech.esper.common.@internal.view.intersect
             // remove old data from all other views
             localState.IsDiscardObserverEvents = true;
             try {
-                for (var i = 0; i < views.Length; i++) {
+                for (var i = 0; i < _views.Length; i++) {
                     if (i != streamId) {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldEvents);
-                        views[i].Update(null, oldEvents);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldEvents);
+                        _views[i].Update(null, oldEvents);
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
             }
@@ -263,14 +265,14 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 localState.IsDiscardObserverEvents = false;
             }
 
-            agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldEvents);
+            _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldEvents);
             child.Update(null, oldEvents);
-            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, views);
+            IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, _views);
         }
         
         public void Transfer(AgentInstanceTransferServices services)

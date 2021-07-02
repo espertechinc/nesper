@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         {
             var method = parent.MakeChild(typeof(OnSplitItemEval), GetType(), classScope);
             method.Block
-                .DeclareVar<OnSplitItemEval>("eval", NewInstance(typeof(OnSplitItemEval)))
+                .DeclareVarNewInstance<OnSplitItemEval>("eval")
                 .SetProperty(
                     Ref("eval"),
                     "WhereClause",
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 .SetProperty(
                     Ref("eval"),
                     "RspFactoryProvider",
-                    NewInstanceInner(resultSetProcessorClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                    NewInstanceNamed(resultSetProcessorClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(
                     Ref("eval"),
                     "PropertyEvaluator",

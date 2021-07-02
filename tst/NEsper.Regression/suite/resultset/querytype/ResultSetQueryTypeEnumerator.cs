@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -40,6 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetQueryTypeRowPerEventHaving());
             execs.Add(new ResultSetQueryTypeRowForAll());
             execs.Add(new ResultSetQueryTypeRowForAllHaving());
+            execs.Add(new ResultSetQueryTypeRowPerGrpNullGroupKey());
             return execs;
         }
 
@@ -67,6 +69,40 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             long volume)
         {
             env.SendEventBean(new SupportMarketDataBean("SYM", 0, volume, null));
+        }
+
+        internal class ResultSetQueryTypeRowPerGrpNullGroupKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@public @buseventtype create schema MyEventWNullType(id string, value int, groupkey null);\n" +
+                             "@name('s0') select sum(value) as thesum from MyEventWNullType group by groupkey;\n" +
+                             "@name('s1') select sum(value) as thesum from MyEventWNullType group by groupkey output snapshot every 5 events;\n" +
+                             "@name('s2') select sum(value) as thesum from MyEventWNullType group by id, groupkey;\n" +
+                             "@name('s3') select sum(value) as thesum from MyEventWNullType group by id, groupkey output snapshot every 5 events;\n";
+                env.CompileDeploy(epl)
+                    .AddListener("s0")
+                    .AddListener("s2");
+
+                SendEventAssert(env, "G1", 10, 10);
+
+                env.Milestone(0);
+
+                SendEventAssert(env, "G1", 11, 21);
+
+                env.UndeployAll();
+            }
+
+            private void SendEventAssert(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int expected)
+            {
+                env.SendEventMap(CollectionUtil.BuildMap("id", id, "value", value), "MyEventWNullType");
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("thesum"));
+                Assert.AreEqual(expected, env.Listener("s2").AssertOneGetNewAndReset().Get("thesum"));
+            }
         }
 
         internal class ResultSetQueryTypePatternNoWindow : RegressionExecution

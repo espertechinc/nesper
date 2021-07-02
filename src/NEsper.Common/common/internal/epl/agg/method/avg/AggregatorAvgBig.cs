@@ -10,6 +10,7 @@ using System;
 using System.Numerics;
 using System.Reflection;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
@@ -98,6 +100,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
+            if (evaluationTypes[0].IsNullType()) {
+                return;
+            }
+            
             method.Block.AssignRef(
                 _sum, Op(_sum, "+", ExprDotMethod(value, "AsBigInteger")));
             method.Block.Increment(_cnt);
@@ -109,6 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
+            if (evaluationTypes[0].IsNullType()) {
+                return;
+            }
+
             method.Block
                 .IfCondition(Relational(_cnt, LE, Constant(1)))
                 .Apply(ClearCode())

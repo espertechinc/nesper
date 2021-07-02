@@ -14,6 +14,7 @@ using System.Xml.Schema;
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -28,22 +29,21 @@ namespace com.espertech.esper.common.@internal.@event.xml
     {
         private static readonly IDictionary<string, Type> TypeMap;
 
-
-        private static readonly XmlSchemaSimpleType _SchemaTypeString =
+        private static readonly XmlSchemaSimpleType SchemaTypeString =
             XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
 
-        private static readonly XmlSchemaSimpleType _SchemaTypeBoolean =
+        private static readonly XmlSchemaSimpleType SchemaTypeBoolean =
             XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
 
-        private static readonly XmlSchemaSimpleType _SchemaTypeInteger =
+        private static readonly XmlSchemaSimpleType SchemaTypeInteger =
             XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Int);
 
-        private static readonly XmlSchemaSimpleType _SchemaTypeDecimal =
+        private static readonly XmlSchemaSimpleType SchemaTypeDecimal =
             XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Decimal);
 
-        private static readonly XmlSchemaSimpleType _SchemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
+        private static readonly XmlSchemaSimpleType SchemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
 
-        private static readonly XmlSchemaSimpleType _SchemaTypeToken =
+        private static readonly XmlSchemaSimpleType SchemaTypeToken =
             XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Token);
 
         static SchemaUtil()
@@ -75,24 +75,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public static XPathResultType ToXPathResultType(XmlSchemaSimpleType simpleType)
         {
-            if (Equals(simpleType, _SchemaTypeString)) {
+            if (Equals(simpleType, SchemaTypeString)) {
                 return XPathResultType.String;
             }
 
-            if (Equals(simpleType, _SchemaTypeBoolean)) {
+            if (Equals(simpleType, SchemaTypeBoolean)) {
                 return XPathResultType.Boolean;
             }
 
-            if (Equals(simpleType, _SchemaTypeInteger) ||
-                Equals(simpleType, _SchemaTypeDecimal)) {
+            if (Equals(simpleType, SchemaTypeInteger) ||
+                Equals(simpleType, SchemaTypeDecimal)) {
                 return XPathResultType.Number;
             }
 
-            if (Equals(simpleType, _SchemaTypeId)) {
+            if (Equals(simpleType, SchemaTypeId)) {
                 return XPathResultType.String;
             }
 
-            if (Equals(simpleType, _SchemaTypeToken)) {
+            if (Equals(simpleType, SchemaTypeToken)) {
                 return XPathResultType.String;
             }
 
@@ -108,13 +108,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// </returns>
         public static Type ToReturnType(SchemaItem item)
         {
-            if (item is SchemaItemAttribute) {
-                var att = (SchemaItemAttribute) item;
+            if (item is SchemaItemAttribute att) {
                 return ToReturnType(att.SimpleType, att.TypeName);
             }
 
-            if (item is SchemaElementSimple) {
-                var simple = (SchemaElementSimple) item;
+            if (item is SchemaElementSimple simple) {
                 var returnType = ToReturnType(simple.SimpleType, simple.TypeName);
                 if (simple.IsArray) {
                     returnType = returnType.MakeArrayType();
@@ -123,8 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return returnType;
             }
 
-            if (item is SchemaElementComplex) {
-                var complex = (SchemaElementComplex) item;
+            if (item is SchemaElementComplex complex) {
                 if (complex.OptionalSimpleType != null) {
                     return ToReturnType(
                         ToXPathResultType(complex.OptionalSimpleType),

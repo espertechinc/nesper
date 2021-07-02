@@ -26,38 +26,38 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLFromClauseMethod
     {
-        private RegressionSession session;
+        private RegressionSession _session;
 
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Dispose();
-            session = null;
+            _session.Dispose();
+            _session = null;
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethod()
         {
-            RegressionRunner.Run(session, EPLFromClauseMethod.Executions());
+            RegressionRunner.Run(_session, EPLFromClauseMethod.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodNStream()
         {
-            RegressionRunner.Run(session, EPLFromClauseMethodNStream.Executions());
+            RegressionRunner.Run(_session, EPLFromClauseMethodNStream.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodOuterNStream()
         {
-            RegressionRunner.Run(session, EPLFromClauseMethodOuterNStream.Executions());
+            RegressionRunner.Run(_session, EPLFromClauseMethodOuterNStream.Executions());
         }
 
         private static void Configure(Configuration configuration)

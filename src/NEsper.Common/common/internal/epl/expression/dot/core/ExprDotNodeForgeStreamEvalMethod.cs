@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.metrics.instrumentation.InstrumentationCode;
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         "qExprStreamUndMethod",
                         Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge))))
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)));
-            if (evaluationType == typeof(void)) {
+            if (evaluationType.IsVoid()) {
                 block.IfCondition(EqualsNull(Ref("@event")))
                     .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", ConstantNull()))
                     .BlockReturnNoValue();
@@ -89,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
                 typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
-                    new EPTypeCodegenSharable(
-                        EPTypeHelper.SingleValue(forge.EventType.UnderlyingType),
+                    new EPChainableTypeCodegenSharable(
+                        EPChainableTypeHelper.SingleValueNonNull(forge.EventType.UnderlyingType),
                         codegenClassScope));
             }
 
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 eventUndType,
                 forge.Evaluators,
                 null);
-            if (evaluationType == typeof(void)) {
+            if (evaluationType.IsVoid()) {
                 block.Expression(invoke)
                     .Apply(Instblock(codegenClassScope, "aExprDotChain"))
                     .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", ConstantNull()))

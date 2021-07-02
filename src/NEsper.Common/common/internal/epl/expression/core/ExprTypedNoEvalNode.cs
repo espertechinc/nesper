@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -26,13 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprEvaluator
     {
-        private readonly string returnTypeName;
+        private readonly string _returnTypeName;
 
         public ExprTypedNoEvalNode(
             string returnTypeName,
             Type returnType)
         {
-            this.returnTypeName = returnTypeName;
+            this._returnTypeName = returnTypeName;
             EvaluationType = returnType;
         }
 
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(returnTypeName);
+            writer.Write(_returnTypeName);
         }
 
         public override bool EqualsNode(

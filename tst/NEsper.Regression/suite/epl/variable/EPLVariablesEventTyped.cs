@@ -32,11 +32,46 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLVariableEventTypedSceneOne());
-            execs.Add(new EPLVariableEventTypedSceneTwo());
-            execs.Add(new EPLVariableConfig());
-            execs.Add(new EPLVariableEventTypedSetProp());
+            WithEventTypedSceneOne(execs);
+            WithEventTypedSceneTwo(execs);
+            WithConfig(execs);
+            WithEventTypedSetProp(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLVariableInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypedSetProp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedSetProp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableConfig());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypedSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypedSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedSceneOne());
             return execs;
         }
 
@@ -53,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                         "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                         typeof(SupportBean_S0).FullName +
                         "' cannot be assigned a value of type '" +
-                        typeof(SupportBean_S1).Name +
+                        nameof(SupportBean_S1) +
                         "'",
                         ex.Message);
                 }
@@ -64,16 +99,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "Failed to validate assignment expression 'vars1_A=arrival': Variable 'vars1_A' of declared event type '" +
                     typeof(SupportBean_S1).FullName +
                     "' underlying type '" +
-                    typeof(SupportBean_S1).Name +
+                    nameof(SupportBean_S1) +
                     "' cannot be assigned a value of type '" +
-                    typeof(SupportBean_S0).Name +
+                    nameof(SupportBean_S0) +
                     "'");
 
                 TryInvalidCompile(
                     env,
                     "on SupportBean_S0 arrival set vars0_A = 1",
                     "Failed to validate assignment expression 'vars0_A=1': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
-                    typeof(SupportBean_S0).Name +
+                    nameof(SupportBean_S0) +
                     "' cannot be assigned a value of type 'Int32'");
             }
         }
@@ -84,10 +119,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             {
                 var path = new RegressionPath();
                 var vars = "@Name('vars') create variable " +
-                           typeof(SupportBean).Name +
+                           nameof(SupportBean) +
                            " varbeannull;\n" +
                            "create variable " +
-                           typeof(SupportBean).Name +
+                           nameof(SupportBean) +
                            " varbean;\n" +
                            "create variable SupportBean_S0 vars0;\n" +
                            "create variable long varobj;\n" +
@@ -95,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy(vars, path);
                 var deploymentId = env.DeploymentId("vars");
 
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
+                var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6"};
                 var stmtSelectText =
                     "@Name('select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
                 env.CompileDeploy(stmtSelectText, path).AddListener("select");
@@ -198,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('create') create variable SupportBean varbean", path);
 
-                var fields = new [] { "varbean.TheString","varbean.IntPrimitive","varbean.GetTheString()" };
+                var fields = new[] {"varbean.TheString", "varbean.IntPrimitive", "varbean.GetTheString()"};
                 env.CompileDeploy(
                     "@Name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.GetTheString() from SupportBean_S0",
                     path);
@@ -230,11 +265,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.SendEventBean(new SupportBean_A("E2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("set").AssertOneGetNewAndReset(),
-                    new [] { "varbean.TheString","varbean.IntPrimitive" },
+                    new[] {"varbean.TheString", "varbean.IntPrimitive"},
                     new object[] {"A", 1});
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("set").Advance(),
-                    new [] { "varbean.TheString","varbean.IntPrimitive" },
+                    new[] {"varbean.TheString", "varbean.IntPrimitive"},
                     new object[] {"A", 1});
 
                 env.Milestone(1);
@@ -292,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var depIdVarbean = env.DeploymentId("v1");
                 var depIdVartype = env.DeploymentId("v2");
 
-                var fields = new [] { "varobject","varbean","varbean.Id","vartype","vartype.Id" };
+                var fields = new[] {"varobject", "varbean", "varbean.Id", "vartype", "vartype.Id"};
                 env.CompileDeploy(
                     "@Name('s0') select varobject, varbean, varbean.Id, vartype, vartype.Id from SupportBean",
                     path);
@@ -323,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new object[] {"abc", a1objectOne, a1objectOne.Id, s0objectOne, s0objectOne.Id});
 
                 // test on-set for Object and EventType
-                var fieldsTop = new [] { "varobject","vartype","varbean" };
+                var fieldsTop = new[] {"varobject", "vartype", "varbean"};
                 env.CompileDeploy(
                     "@Name('set') on SupportBean_S0(P00='X') arrival set varobject=1, vartype=arrival, varbean=null",
                     path);

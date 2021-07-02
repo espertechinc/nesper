@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             TableAndLockProviderUngrouped provider,
             ExprTableEvalStrategyFactory factory)
         {
-            this._provider = provider;
-            this._factory = factory;
+            _provider = provider;
+            _factory = factory;
         }
 
         public abstract object Evaluate(

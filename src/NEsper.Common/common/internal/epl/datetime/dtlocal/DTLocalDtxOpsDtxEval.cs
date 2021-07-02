@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var dtxValue = (DateTimeEx) target;
             var dtx = dtxValue.Clone();
 
-            DTLocalUtil.EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
             return dtx;
         }

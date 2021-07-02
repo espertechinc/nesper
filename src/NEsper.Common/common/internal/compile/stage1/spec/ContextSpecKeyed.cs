@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             method.Block
-                .DeclareVar<ContextControllerDetailKeyed>("detail", NewInstance(typeof(ContextControllerDetailKeyed)))
+                .DeclareVarNewInstance<ContextControllerDetailKeyed>("detail")
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .SetProperty(Ref("detail"), "MultiKeyFromObjectArray", MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(MultiKeyClassRef, method, classScope));
 

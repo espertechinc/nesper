@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategySortedForge : PollResultIndexingStrategyForge
     {
-        private readonly EventType eventType;
-        private readonly string propertyName;
-        private readonly int streamNum;
-        private readonly Type valueType;
+        private readonly EventType _eventType;
+        private readonly string _propertyName;
+        private readonly int _streamNum;
+        private readonly Type _valueType;
 
         public PollResultIndexingStrategySortedForge(
             int streamNum,
@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             string propertyName,
             Type valueType)
         {
-            this.streamNum = streamNum;
-            this.eventType = eventType;
-            this.propertyName = propertyName;
-            this.valueType = valueType;
+            this._streamNum = streamNum;
+            this._eventType = eventType;
+            this._propertyName = propertyName;
+            this._valueType = valueType;
         }
 
         public string ToQueryPlan()
@@ -49,12 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategySorted), GetType(), classScope);
 
-            var propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(propertyName);
-            var propertyType = eventType.GetPropertyType(propertyName);
+            var propertyGetter = ((EventTypeSPI) _eventType).GetGetterSPI(_propertyName);
+            var propertyType = _eventType.GetPropertyType(_propertyName);
             var valueGetter = EventTypeUtility.CodegenGetterWCoerce(
                 propertyGetter,
                 propertyType,
-                valueType,
+                _valueType,
                 method,
                 GetType(),
                 classScope);
@@ -63,10 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 .DeclareVar<PollResultIndexingStrategySorted>(
                     "strat",
                     NewInstance(typeof(PollResultIndexingStrategySorted)))
-                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("strat"), "PropertyName", Constant(propertyName))
+                .SetProperty(Ref("strat"), "StreamNum", Constant(_streamNum))
+                .SetProperty(Ref("strat"), "PropertyName", Constant(_propertyName))
                 .SetProperty(Ref("strat"), "ValueGetter", valueGetter)
-                .SetProperty(Ref("strat"), "ValueType", Constant(valueType))
+                .SetProperty(Ref("strat"), "ValueType", Constant(_valueType))
                 .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

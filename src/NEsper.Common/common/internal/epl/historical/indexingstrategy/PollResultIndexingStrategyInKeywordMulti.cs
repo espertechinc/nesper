@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyInKeywordMulti : PollResultIndexingStrategy
     {
-        private PropertyHashedEventTableFactory[] factories;
+        private PropertyHashedEventTableFactory[] _factories;
 
         public int StreamNum { get; set; }
 
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
             var tables = new EventTable[ValueGetters.Length];
             for (var i = 0; i < ValueGetters.Length; i++) {
-                tables[i] = factories[i].MakeEventTables(agentInstanceContext, null)[0];
+                tables[i] = _factories[i].MakeEventTables(agentInstanceContext, null)[0];
                 tables[i].Add(pollResult.ToArray(), agentInstanceContext);
             }
 
@@ -46,9 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Init()
         {
-            factories = new PropertyHashedEventTableFactory[ValueGetters.Length];
+            _factories = new PropertyHashedEventTableFactory[ValueGetters.Length];
             for (var i = 0; i < PropertyNames.Length; i++) {
-                factories[i] = new PropertyHashedEventTableFactory(
+                _factories[i] = new PropertyHashedEventTableFactory(
                     StreamNum,
                     new[] {PropertyNames[i]},
                     false,

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			Type arrayComponentType)
 			: base(lambda, indexEventType, numParameters)
 		{
-			this._arrayComponentType = arrayComponentType;
+			_arrayComponentType = arrayComponentType;
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return TypeHelper.GetArrayType(_arrayComponentType);
 		}
@@ -89,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			var arrayType = TypeHelper.GetArrayType(_arrayComponentType);
+			//var arrayType = TypeHelper.GetArrayType(_arrayComponentType);
+			var arrayType = ReturnTypeOfMethod();
 			block.DeclareVar(arrayType, "result", NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
 		}
 

@@ -10,31 +10,33 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base
 {
 	public abstract class ExprDotForgeLambdaThreeForm : ExprDotForgeEnumMethodBase
 	{
-		protected abstract EPType InitAndNoParamsReturnType(
+		protected abstract EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType);
 
 		protected abstract ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services);
 
-		protected abstract Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected abstract ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType);
-
+		
 		protected abstract ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod);
 		protected abstract ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod);
 		protected abstract ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod);
@@ -106,6 +108,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				type,
 				goesToNames.Count,
 				SingleParamScalar(enumMethod));
+		}
+
+		public Type ValidateNonNull(Type type)
+		{
+			if (type.IsNullType()) {
+				throw new ExprValidationException("Null-type is not allowed");
+			}
+
+			return type;
 		}
 	}
 } // end of namespace

@@ -25,22 +25,92 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLContainedNamedWindowFilter());
-            execs.Add(new EPLContainedNamedWindowSubquery());
-            execs.Add(new EPLContainedNamedWindowOnTrigger());
-            execs.Add(new EPLContainedSimple());
-            execs.Add(new EPLContainedWhere());
-            execs.Add(new EPLContainedColumnSelect());
-            execs.Add(new EPLContainedPatternSelect());
-            execs.Add(new EPLContainedSubSelect());
-            execs.Add(new EPLContainedUnderlyingSelect());
+            WithNamedWindowFilter(execs);
+            WithNamedWindowSubquery(execs);
+            WithNamedWindowOnTrigger(execs);
+            WithSimple(execs);
+            WithWhere(execs);
+            WithColumnSelect(execs);
+            WithPatternSelect(execs);
+            WithSubSelect(execs);
+            WithUnderlyingSelect(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLContainedInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnderlyingSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedUnderlyingSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedSubSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedPatternSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithColumnSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedColumnSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowOnTrigger(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedNamedWindowOnTrigger());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedNamedWindowSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedNamedWindowFilter());
             return execs;
         }
 
         private static void TryAssertionColumnSelect(RegressionEnvironment env)
         {
-            var fields = new [] { "OrderId","BookId","ReviewId" };
+            var fields = new[] {"OrderId", "BookId", "ReviewId"};
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
             EPAssertionUtil.AssertPropsPerRow(
@@ -64,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "ReviewId" };
+                var fields = new[] {"ReviewId"};
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create window OrderWindowNWF#lastevent as OrderBean", path);
@@ -96,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString","TotalPrice" };
+                var fields = new[] {"TheString", "TotalPrice"};
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create window OrderWindowNWS#lastevent as OrderBean", path);
@@ -130,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString","IntPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive"};
                 var path = new RegressionPath();
 
                 env.CompileDeploy("create window SupportBeanWindow#lastevent as SupportBean", path);
@@ -161,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "ReviewId" };
+                var fields = new[] {"ReviewId"};
 
                 var stmtText =
                     "@Name('s0') select ReviewId from OrderBean[Books][Reviews] bookReviews order by ReviewId asc";
@@ -190,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "ReviewId" };
+                var fields = new[] {"ReviewId"};
 
                 // try where in root
                 var stmtText =
@@ -345,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "OrderId","BookId","ReviewId" };
+                var fields = new[] {"OrderId", "BookId", "ReviewId"};
 
                 var stmtText =
                     "@Name('s0') select OrderDetail.OrderId as OrderId, BookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +

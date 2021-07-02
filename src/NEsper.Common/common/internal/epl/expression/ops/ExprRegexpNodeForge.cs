@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprRegexpNode parent,
             bool isNumericValue)
         {
-            this._parent = parent;
-            this._isNumericValue = isNumericValue;
+            _parent = parent;
+            _isNumericValue = isNumericValue;
         }
 
         public ExprRegexpNode ForgeRenderable {

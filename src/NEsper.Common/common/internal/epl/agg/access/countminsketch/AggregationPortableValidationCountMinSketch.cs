@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.hook.aggmultifunc;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
     public class AggregationPortableValidationCountMinSketch : AggregationPortableValidation
     {
-        private Type[] acceptableValueTypes;
+        private Type[] _acceptableValueTypes;
 
         public AggregationPortableValidationCountMinSketch()
         {
@@ -34,12 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 
         public AggregationPortableValidationCountMinSketch(Type[] acceptableValueTypes)
         {
-            this.acceptableValueTypes = acceptableValueTypes;
+            this._acceptableValueTypes = acceptableValueTypes;
         }
 
         public Type[] AcceptableValueTypes {
-            get => acceptableValueTypes;
-            set => acceptableValueTypes = value;
+            get => _acceptableValueTypes;
+            set => _acceptableValueTypes = value;
         }
 
         public void ValidateIntoTableCompatible(
@@ -57,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 if (aggType == CountMinSketchAggType.ADD) {
                     var clazz = add.AddOrFrequencyEvaluatorReturnType;
                     var foundMatch = false;
-                    foreach (var allowed in acceptableValueTypes) {
+                    foreach (var allowed in _acceptableValueTypes) {
                         if (TypeHelper.IsSubclassOrImplementsInterface(clazz, allowed)) {
                             foundMatch = true;
                         }
@@ -66,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                     if (!foundMatch) {
                         throw new ExprValidationException(
                             "Mismatching parameter return type, expected any of " +
-                            acceptableValueTypes.RenderAny() +
+                            _acceptableValueTypes.RenderAny() +
                             " but received " +
-                            clazz.CleanName());
+                            clazz.TypeSafeName());
                     }
                 }
             }
@@ -81,13 +82,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             var method = parent.MakeChild(
                 typeof(AggregationPortableValidationCountMinSketch),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<AggregationPortableValidationCountMinSketch>(
                     "v",
                     NewInstance(typeof(AggregationPortableValidationCountMinSketch)))
-                .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(acceptableValueTypes))
+                .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(_acceptableValueTypes))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);
         }
@@ -115,14 +116,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 
                 ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, @params, validationContext);
                 var frequencyEval = @params[0];
-                forge = new AgregationMethodCountMinSketchFreqForge(frequencyEval);
+                forge = new AggregationMethodCountMinSketchFreqForge(frequencyEval);
             }
             else {
                 if (@params.Length != 0) {
                     throw new ExprValidationException(GetMessagePrefix(aggMethod.Value) + "requires a no parameter expressions");
                 }
 
-                forge = new AgregationMethodCountMinSketchTopKForge();
+                forge = new AggregationMethodCountMinSketchTopKForge();
             }
 
             return new AggregationMultiFunctionMethodDesc(forge, null, null, null);

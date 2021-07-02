@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.view.expression
     /// </summary>
     public class ExpressionWindowView : ExpressionViewBase
     {
-        private readonly EventBean[] removedEvents = new EventBean[1];
+        private readonly EventBean[] _removedEvents = new EventBean[1];
 
         internal readonly ArrayDeque<ExpressionWindowTimestampEventPair> window =
             new ArrayDeque<ExpressionWindowTimestampEventPair>();
@@ -128,8 +128,8 @@ namespace com.espertech.esper.common.@internal.view.expression
                         var removed = window.RemoveFirst().TheEvent;
                         expired.Add(removed);
                         if (aggregationService != null) {
-                            removedEvents[0] = removed;
-                            aggregationService.ApplyLeave(removedEvents, null, agentInstanceContext);
+                            _removedEvents[0] = removed;
+                            aggregationService.ApplyLeave(_removedEvents, null, agentInstanceContext);
                         }
 
                         expiredCount++;

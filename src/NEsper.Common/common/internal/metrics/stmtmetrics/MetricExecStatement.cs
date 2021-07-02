@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             long interval,
             int statementGroup)
         {
-            this._metricEventRouter = metricEventRouter;
-            this._metricScheduleService = metricScheduleService;
-            this._interval = interval;
-            this._statementGroup = statementGroup;
+            _metricEventRouter = metricEventRouter;
+            _metricScheduleService = metricScheduleService;
+            _interval = interval;
+            _statementGroup = statementGroup;
         }
 
         /// <summary>

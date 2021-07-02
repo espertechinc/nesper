@@ -8,11 +8,13 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -126,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var lhs = ForgeRenderable.ChildNodes[0].Forge;
             var rhs = ForgeRenderable.ChildNodes[1].Forge;
             if (!ForgeRenderable.IsIs) {
-                if (lhs.EvaluationType == null || rhs.EvaluationType == null) {
+                if (lhs.EvaluationType.IsNullTypeSafe() || rhs.EvaluationType.IsNullTypeSafe()) {
                     return ConstantNull();
                 }
 

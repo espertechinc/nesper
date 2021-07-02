@@ -49,15 +49,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 		private const string NAME_TOPK = "topk";
 		private const string NAME_AGENT = "agent";
 
-		private readonly CountMinSketchAggType aggType;
-		private AggregationForgeFactory forgeFactory;
+		private readonly CountMinSketchAggType _aggType;
+		private AggregationForgeFactory _forgeFactory;
 
 		public ExprAggMultiFunctionCountMinSketchNode(
 			bool distinct,
 			CountMinSketchAggType aggType)
 			: base(distinct)
 		{
-			this.aggType = aggType;
+			this._aggType = aggType;
 		}
 
 		public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
@@ -67,18 +67,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			}
 
 			// for declaration, validate the specification and return the state factory
-			if (aggType == CountMinSketchAggType.STATE) {
+			if (_aggType == CountMinSketchAggType.STATE) {
 				if (validationContext.StatementRawInfo.StatementType != StatementType.CREATE_TABLE) {
 					throw new ExprValidationException(MessagePrefix + "can only be used in create-table statements");
 				}
 
 				CountMinSketchSpecForge specification = ValidateSpecification(validationContext);
 				AggregationStateCountMinSketchForge stateFactory = new AggregationStateCountMinSketchForge(this, specification);
-				forgeFactory = new AggregationForgeFactoryAccessCountMinSketchState(this, stateFactory);
-				return forgeFactory;
+				_forgeFactory = new AggregationForgeFactoryAccessCountMinSketchState(this, stateFactory);
+				return _forgeFactory;
 			}
 
-			if (aggType != CountMinSketchAggType.ADD) {
+			if (_aggType != CountMinSketchAggType.ADD) {
 				// other methods are only used with table-access expressions
 				throw new ExprValidationException(MessagePrefix + "requires the use of a table-access expression");
 			}
@@ -91,30 +91,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
 			}
 
-			ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, this.ChildNodes, validationContext);
+			ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
 
 			// obtain evaluator
 			ExprForge addOrFrequencyEvaluator = null;
 			Type addOrFrequencyEvaluatorReturnType = null;
-			if (aggType == CountMinSketchAggType.ADD) {
+			if (_aggType == CountMinSketchAggType.ADD) {
 				addOrFrequencyEvaluator = ChildNodes[0].Forge;
 				addOrFrequencyEvaluatorReturnType = addOrFrequencyEvaluator.EvaluationType;
+				if (addOrFrequencyEvaluatorReturnType.IsNullType()) {
+					throw new ExprValidationException("Invalid null-type parameter");
+				}
 			}
 
-			forgeFactory = new AggregationForgeFactoryAccessCountMinSketchAdd(this, addOrFrequencyEvaluator, addOrFrequencyEvaluatorReturnType);
-			return forgeFactory;
+			_forgeFactory = new AggregationForgeFactoryAccessCountMinSketchAdd(this, addOrFrequencyEvaluator, addOrFrequencyEvaluatorReturnType);
+			return _forgeFactory;
 		}
 
 		public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
-		public override string AggregationFunctionName => aggType.GetFuncName();
+		public override string AggregationFunctionName => _aggType.GetFuncName();
 
 		public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 		{
 			return false;
 		}
 
-		public CountMinSketchAggType AggType => aggType;
+		public CountMinSketchAggType AggType => _aggType;
 
 		public EventType GetEventTypeCollection(
 			StatementRawInfo statementRawInfo,
@@ -189,16 +192,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			CountMinSketchSpecForge spec = new CountMinSketchSpecForge(hashes, null, DEFAULT_AGENT);
 
 			// no parameters
-			if (this.ChildNodes.Length == 0) {
+			if (ChildNodes.Length == 0) {
 				return spec;
 			}
 
 			// check expected parameter type: a json object
-			if (this.ChildNodes.Length > 1 || !(this.ChildNodes[0] is ExprConstantNode)) {
+			if (ChildNodes.Length > 1 || !(ChildNodes[0] is ExprConstantNode)) {
 				throw GetDeclaredWrongParameterExpr();
 			}
 
-			ExprConstantNode constantNode = (ExprConstantNode) this.ChildNodes[0];
+			ExprConstantNode constantNode = (ExprConstantNode) ChildNodes[0];
 			object value = constantNode.ConstantValue;
 			if (!(value is IDictionary<string, object>)) {
 				throw GetDeclaredWrongParameterExpr();
@@ -209,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				new PopulateFieldWValueDescriptor(
 					NAME_EPS_OF_TOTAL_COUNT,
 					typeof(double?),
-					spec.HashesSpec.GetType(),
+					typeof(CountMinSketchSpecHashes),
 					value => {
 						if (value != null) {
 							spec.HashesSpec.EpsOfTotalCount = value.AsDouble();
@@ -219,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				new PopulateFieldWValueDescriptor(
 					NAME_CONFIDENCE,
 					typeof(double?),
-					spec.HashesSpec.GetType(),
+					typeof(CountMinSketchSpecHashes),
 					value => {
 						if (value != null) {
 							spec.HashesSpec.Confidence = value.AsDouble();
@@ -229,7 +232,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				new PopulateFieldWValueDescriptor(
 					NAME_SEED,
 					typeof(int?),
-					spec.HashesSpec.GetType(),
+					typeof(CountMinSketchSpecHashes),
 					value => {
 						if (value != null) {
 							spec.HashesSpec.Seed = value.AsInt32();
@@ -239,7 +242,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				new PopulateFieldWValueDescriptor(
 					NAME_TOPK,
 					typeof(int?),
-					spec.GetType(),
+					typeof(CountMinSketchSpecForge),
 					value => {
 						if (value != null) {
 							spec.TopkSpec = (int?) value;
@@ -249,7 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				new PopulateFieldWValueDescriptor(
 					NAME_AGENT,
 					typeof(string),
-					spec.GetType(),
+					typeof(CountMinSketchSpecForge),
 					value => {
 						if (value != null) {
 							CountMinSketchAgentForge transform;
@@ -283,8 +286,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
 		public override bool IsFilterExpressionAsLastParameter => false;
 
-		public AggregationForgeFactory AggregationForgeFactory => forgeFactory;
+		public AggregationForgeFactory AggregationForgeFactory => _forgeFactory;
 
-		private string MessagePrefix => MSG_NAME + " aggregation function '" + aggType.GetFuncName() + "' ";
+		private string MessagePrefix => MSG_NAME + " aggregation function '" + _aggType.GetFuncName() + "' ";
 	}
 } // end of namespace

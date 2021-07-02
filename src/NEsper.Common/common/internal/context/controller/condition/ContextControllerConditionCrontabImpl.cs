@@ -21,6 +21,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         ContextControllerConditionCrontab
     {
         public const string NAME_AUDITPROVIDER_SCHEDULE = "context-condition crontab";
+        
         private readonly ContextControllerConditionCallback callback;
 
         private readonly IntSeqKey conditionPath;
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                         inProcAgentInstanceContext,
                         ScheduleObjectType.context,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    callback.RangeNotification(conditionPath, this, null, null, null, null);
+                    callback.RangeNotification(conditionPath, this, null, null, null, null, null);
 
                     inProcAgentInstanceContext.InstrumentationProvider.AContextScheduledEval();
                 }

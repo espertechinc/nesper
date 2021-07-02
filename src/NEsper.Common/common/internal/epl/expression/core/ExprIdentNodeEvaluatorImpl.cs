@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.@event.variant;
 
 using System;
 
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -24,14 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprIdentNodeEvaluatorImpl : ExprIdentNodeEvaluator
     {
-        private int _streamNum;
+        private readonly int _streamNum;
         private readonly EventPropertyGetterSPI _propertyGetter;
         private readonly Type _identType;
         private readonly Type _returnType;
         private readonly ExprIdentNode _identNode;
         private readonly EventTypeSPI _eventType;
         private bool _optionalEvent;
-        private bool _audit;
+        private readonly bool _audit;
 
         public ExprIdentNodeEvaluatorImpl(
             int streamNum,
@@ -71,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type GetCodegenReturnType(Type requiredType)
         {
-            if (requiredType == typeof(object)) {
+            if (requiredType.IsNullTypeSafe()) {
                 return typeof(object);
             }
             else if (requiredType == _returnType) {
@@ -107,6 +109,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             //throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
         }
 
+#if TBD_POTENTIALLY_FIXED                
+        private Type GetCodegenReturnType(Type requiredType)
+        {
+            return _returnType == null || requiredType == typeof(object)
+                ? typeof(object)
+                : _returnType;
+        }
+#endif
+        
         public CodegenExpression Codegen(
             Type requiredType,
             CodegenMethodScope parent,

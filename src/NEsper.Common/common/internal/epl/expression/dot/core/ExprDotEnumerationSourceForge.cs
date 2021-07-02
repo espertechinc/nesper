@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotEnumerationSourceForge
     {
         public ExprDotEnumerationSourceForge(
-            EPType returnType,
+            EPChainableType returnType,
             int? streamOfProviderIfApplicable,
             ExprEnumerationForge enumeration)
         {
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprEnumerationForge Enumeration { get; }
 
-        public EPType ReturnType { get; }
+        public EPChainableType ReturnType { get; }
 
         public int? StreamOfProviderIfApplicable { get; }
     }

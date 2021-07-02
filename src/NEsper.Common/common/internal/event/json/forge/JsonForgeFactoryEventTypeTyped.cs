@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
                             "WriteNested",
                             refs.Context,
                             refs.Field,
-                            NewInstanceInner(other.Detail.SerializerClassName)
+                            NewInstanceNamed(other.Detail.SerializerClassName)
                             ));
                 // NewInstanceInner(other.Detail.DeserializerFactoryClassName)));
             }
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
                             "WriteNestedArray",
                             refs.Context,
                             refs.Field,
-                            NewInstanceInner(other.Detail.SerializerClassName)
+                            NewInstanceNamed(other.Detail.SerializerClassName)
                             ));
             }
 

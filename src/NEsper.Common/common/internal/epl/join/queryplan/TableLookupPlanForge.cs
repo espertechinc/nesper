@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     {
         internal readonly int indexedStream;
         internal readonly int lookupStream;
-        protected bool indexedStreamIsVDW;
+        protected bool indexedStreamIsVdw;
         protected EventType[] typesPerStream;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             this.lookupStream = lookupStream;
             this.indexedStream = indexedStream;
-            this.indexedStreamIsVDW = indexedStreamIsVDW;
+            this.indexedStreamIsVdw = indexedStreamIsVDW;
             IndexNum = indexNum;
             this.typesPerStream = typesPerStream;
         }
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 .DeclareVar(TypeOfPlanFactory(), "plan", NewInstance(TypeOfPlanFactory(), @params.ToArray()));
 
             // inject additional information for virtual data windows
-            if (indexedStreamIsVDW) {
+            if (indexedStreamIsVdw) {
                 var keyDesc = KeyDescriptor;
                 var hashes = keyDesc.HashExpressions;
                 var ranges = keyDesc.Ranges.ToArray();

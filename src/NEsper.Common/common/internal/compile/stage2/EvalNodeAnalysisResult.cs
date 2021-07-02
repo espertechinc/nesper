@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     /// </summary>
     public class EvalNodeAnalysisResult
     {
-        private IList<EvalForgeNode> activeNodes = new List<EvalForgeNode>();
+        private readonly IList<EvalForgeNode> activeNodes = new List<EvalForgeNode>();
 
         /// <summary>
         /// Add a node found.
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         public IList<EvalFilterForgeNode> FilterNodes {
             get {
                 IList<EvalFilterForgeNode> filterNodes = new List<EvalFilterForgeNode>();
-                foreach (EvalForgeNode node in activeNodes) {
+                foreach (var node in activeNodes) {
                     if (node is EvalFilterForgeNode) {
                         filterNodes.Add((EvalFilterForgeNode) node);
                     }
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         public IList<EvalMatchUntilForgeNode> RepeatNodes {
             get {
                 IList<EvalMatchUntilForgeNode> filterNodes = new List<EvalMatchUntilForgeNode>();
-                foreach (EvalForgeNode node in activeNodes) {
+                foreach (var node in activeNodes) {
                     if (node is EvalMatchUntilForgeNode) {
                         filterNodes.Add((EvalMatchUntilForgeNode) node);
                     }

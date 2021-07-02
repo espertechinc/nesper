@@ -182,15 +182,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     return new ProxyExprEnumerationEval {
-                        ProcEvaluateGetROCollectionEvents = (
+                        procEvaluateGetRoCollectionEvents = (
                             _,
                             __,
                             ___) => null,
-                        ProcEvaluateGetROCollectionScalar = (
+                        procEvaluateGetRoCollectionScalar = (
                             _,
                             __,
                             ___) => constantResultList,
-                        ProcEvaluateGetEventBean = (
+                        procEvaluateGetEventBean = (
                             _,
                             __,
                             ___) => null

@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -17,6 +19,9 @@ using com.espertech.esper.regressionlib.support.bean;
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -39,63 +44,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithInvalidRepeatedProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidRepeatedProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWildcardMapEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherWildcardMapEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCombinedProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCombinedProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinCommonProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinCommonProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinNoCommonProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinNoCommonProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinInsertInto(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinInsertInto());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleInsertInto(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSingleInsertInto());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingle(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSingle());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSingleOM());
             return execs;
         }
@@ -233,14 +238,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 AssertSimple(env);
 
-                CollectionAssert.AreEquivalent(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
-                        new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
-                        new EventPropertyDescriptor("concat", typeof(string), typeof(char), false, false, true, false, false)
-                    },
-                    env.Statement("s0").EventType.PropertyDescriptors);
-
+                SupportEventPropUtil.AssertPropsEquals(
+                    env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                    new SupportEventPropDesc("MyString", typeof(string)).WithComponentType(typeof(char)).WithIndexed(),
+                    new SupportEventPropDesc("MyInt", typeof(int)),
+                    new SupportEventPropDesc("concat", typeof(string)).WithComponentType(typeof(char)).WithIndexed()
+                );
+                
                 env.UndeployAll();
             }
         }
@@ -297,8 +301,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var eventNameOne = typeof(SupportBeanSimple).Name;
-                var eventNameTwo = typeof(SupportMarketDataBean).Name;
+                var eventNameOne = nameof(SupportBeanSimple);
+                var eventNameTwo = nameof(SupportMarketDataBean);
                 var text = "@Name('s0') select *, MyString||MyString as concat from " +
                            eventNameOne +
                            "#length(5) as eventOne, " +
@@ -329,8 +333,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var eventNameOne = typeof(SupportBean_A).Name;
-                var eventNameTwo = typeof(SupportBean_B).Name;
+                var eventNameOne = nameof(SupportBean_A);
+                var eventNameTwo = nameof(SupportBean_B);
                 var text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                            "from " +
                            eventNameOne +

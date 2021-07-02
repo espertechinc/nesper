@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class WrapperEventBeanUndCopyMethodForge : EventBeanCopyMethodForge
     {
-        private readonly EventBeanCopyMethodForge underlyingCopyMethod;
-        private readonly WrapperEventType wrapperEventType;
+        private readonly EventBeanCopyMethodForge _underlyingCopyMethod;
+        private readonly WrapperEventType _wrapperEventType;
 
         /// <summary>
         ///     Ctor.
@@ -31,8 +31,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             WrapperEventType wrapperEventType,
             EventBeanCopyMethodForge underlyingCopyMethod)
         {
-            this.wrapperEventType = wrapperEventType;
-            this.underlyingCopyMethod = underlyingCopyMethod;
+            this._wrapperEventType = wrapperEventType;
+            this._underlyingCopyMethod = underlyingCopyMethod;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
@@ -41,17 +41,17 @@ namespace com.espertech.esper.common.@internal.@event.core
             return NewInstance<WrapperEventBeanUndCopyMethod>(
                 Cast(
                     typeof(WrapperEventType),
-                    EventTypeUtility.ResolveTypeCodegen(wrapperEventType, EPStatementInitServicesConstants.REF)),
+                    EventTypeUtility.ResolveTypeCodegen(_wrapperEventType, EPStatementInitServicesConstants.REF)),
                 factory,
-                underlyingCopyMethod.MakeCopyMethodClassScoped(classScope));
+                _underlyingCopyMethod.MakeCopyMethodClassScoped(classScope));
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             return new WrapperEventBeanUndCopyMethod(
-                wrapperEventType,
+                _wrapperEventType,
                 eventBeanTypedEventFactory,
-                underlyingCopyMethod.GetCopyMethod(eventBeanTypedEventFactory));
+                _underlyingCopyMethod.GetCopyMethod(eventBeanTypedEventFactory));
         }
     }
 } // end of namespace

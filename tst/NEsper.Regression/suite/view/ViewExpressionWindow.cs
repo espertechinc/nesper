@@ -41,91 +41,91 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithDynamicTimeWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowDynamicTimeWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowVariable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregationWOnDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowAggregationWOnDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowNamedWindowDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregationWGroupwin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowAggregationWGroupwin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregationUngrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowAggregationUngrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrev(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowPrev());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUDFBuiltin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowUDFBuiltin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowTimeWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLengthWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowLengthWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNewestEventOldestEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowNewestEventOldestEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExpressionWindowSceneOne());
             return execs;
         }

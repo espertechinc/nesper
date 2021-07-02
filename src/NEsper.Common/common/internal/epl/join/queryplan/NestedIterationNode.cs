@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// </summary>
     public class NestedIterationNode : QueryPlanNode
     {
-        private readonly QueryPlanNode[] childNodes;
-        private readonly int[] nestingOrder;
+        private readonly QueryPlanNode[] _childNodes;
+        private readonly int[] _nestingOrder;
 
         public NestedIterationNode(
             QueryPlanNode[] childNodes,
             int[] nestingOrder)
         {
-            this.childNodes = childNodes;
-            this.nestingOrder = nestingOrder;
+            this._childNodes = childNodes;
+            this._nestingOrder = nestingOrder;
         }
 
         public override ExecNode MakeExec(
@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             VirtualDWView[] viewExternal,
             ILockable[] tableSecondaryIndexLocks)
         {
-            var execNode = new NestedIterationExecNode(nestingOrder);
-            foreach (var child in childNodes) {
+            var execNode = new NestedIterationExecNode(_nestingOrder);
+            foreach (var child in _childNodes) {
                 var childExec = child.MakeExec(
                     agentInstanceContext,
                     indexesPerStream,

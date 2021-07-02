@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             string windowName,
             string optionalAsName,
             IList<OnTriggerSetAssignment> assignments)
-            : base(windowName, optionalAsName, spec.OnTriggerType.ON_UPDATE, false)
+            : base(windowName, optionalAsName, OnTriggerType.ON_UPDATE, false)
         {
             Assignments = assignments;
         }

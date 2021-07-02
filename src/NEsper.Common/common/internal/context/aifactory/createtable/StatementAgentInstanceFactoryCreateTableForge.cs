@@ -81,12 +81,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 ExprDotName(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.EVENTTYPERESOLVER));
             
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateTable>("saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateTable)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateTable>("saiff")
                 .SetProperty(Ref("saiff"), "TableName", Constant(_tableName))
                 .SetProperty(Ref("saiff"), "PublicEventType", EventTypeUtility.ResolveTypeCodegen(_plan.PublicEventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "EventToPublic", MakeEventToPublic(method, symbols, classScope))
-                .SetProperty(Ref("saiff"), "AggregationRowFactory", NewInstanceInner(aggregationClassNames.RowFactoryTop, Ref("this")))
-                .SetProperty(Ref("saiff"), "AggregationSerde", NewInstanceInner(aggregationClassNames.RowSerdeTop, Ref("this")))
+                .SetProperty(Ref("saiff"), "AggregationRowFactory", NewInstanceNamed(aggregationClassNames.RowFactoryTop, Ref("this")))
+                .SetProperty(Ref("saiff"), "AggregationSerde", NewInstanceNamed(aggregationClassNames.RowSerdeTop, Ref("this")))
                 .SetProperty(Ref("saiff"), "PrimaryKeyGetter", primaryKeyGetter)
                 .SetProperty(Ref("saiff"), "PrimaryKeySerde", _plan.PrimaryKeyMultikeyClasses.GetExprMKSerde(method, classScope))
                 .SetProperty(Ref("saiff"), "PropertyForges", propertyForgeEval)

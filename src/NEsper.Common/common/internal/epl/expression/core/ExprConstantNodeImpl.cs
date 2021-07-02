@@ -10,10 +10,12 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -44,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             _value = value;
             _stringConstantWhenProvided = stringConstantWhenProvided;
             if (value == null) {
-                _clazz = null;
+                _clazz = TypeHelper.NullType;
             }
             else {
                 _clazz = value.GetType().GetPrimitiveType();

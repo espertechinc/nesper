@@ -34,12 +34,12 @@ WithAllTypes(execs);
         }
 public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowAllTypes());
     return execs;
 }public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowInvalid());
     return execs;
 }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -42,8 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericReturnTypeMap(method, false),
-                null)
+                TypeHelper.GetSingleParameterTypeOrObject(method.ReturnType))
         {
             _key = key;
             _method = method;
@@ -70,8 +70,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var underlying = eventBean.Underlying;
             return GetBeanPropExistsInternal(underlying, _key);
         }
-
-        public override Type BeanPropType => TypeHelper.GetGenericReturnTypeMap(_method, false);
 
         public override Type TargetType => _method.DeclaringType;
 
@@ -197,11 +195,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(beanPropType, typeof(KeyedMapMethodPropertyGetter), codegenClassScope)
+            var methodReturnType = method.ReturnType;
+            return codegenMethodScope
+                .MakeChild(beanPropType, typeof(KeyedMapMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
                 .AddParam(typeof(object), "key")
                 .Block
-                .DeclareVar(method.ReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))
+                .DeclareVar(methodReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))
                 .DeclareVar<IDictionary<object, object>>("resultMap",
                     StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
                 .IfRefNullReturnNull("resultMap")
@@ -215,12 +215,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
+            var methodReturnType = method.ReturnType;
             return codegenMethodScope
                 .MakeChild(typeof(bool), typeof(KeyedMapMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
                 .AddParam(typeof(object), "key")
                 .Block
-                .DeclareVar(method.ReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))
+                .DeclareVar(methodReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))
                 .DeclareVar<IDictionary<object, object>>(
                     "resultMap",
                     StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))

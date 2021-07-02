@@ -12,6 +12,7 @@ using System.IO;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -199,8 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                     ChildNodes[1].Forge,
                     methodX,
-                    codegenClassScope,
-                    true);
+                    codegenClassScope);
 
                 methodX.Block
                     .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
@@ -324,15 +324,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
 
             // the row recognition patterns allows "prev(prop, index)", we switch index the first position
-            if (ExprNodeUtilityQuery.IsConstant(ChildNodes[1])) {
-                var first = ChildNodes[0];
-                var second = ChildNodes[1];
+            var indexNode = ChildNodes[0];
+            var valueNode = ChildNodes[1];
+            if (ExprNodeUtilityQuery.IsConstant(valueNode)) {
+                var first = indexNode;
+                var second = valueNode;
                 ChildNodes = new[] {second, first};
             }
 
             // Determine if the index is a constant value or an expression to evaluate
-            if (ChildNodes[0].Forge.ForgeConstantType.IsCompileTimeConstant) {
-                var constantNode = ChildNodes[0];
+            if (indexNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
+                var constantNode = indexNode;
                 var value = constantNode.Forge.ExprEvaluator.Evaluate(null, false, null);
                 if (!value.IsNumber()) {
                     throw new ExprValidationException(
@@ -350,15 +352,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
 
             // Determine stream number
-            if (ChildNodes[1] is ExprIdentNode) {
-                var identNode = (ExprIdentNode) ChildNodes[1];
+            if (valueNode is ExprIdentNode identNode) {
                 StreamNumber = identNode.StreamId;
-                ResultType = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
+                ResultType = identNode.Forge.EvaluationType.GetBoxedType();
             }
-            else if (ChildNodes[1] is ExprStreamUnderlyingNode) {
-                var streamNode = (ExprStreamUnderlyingNode) ChildNodes[1];
+            else if (valueNode is ExprStreamUnderlyingNode) {
+                var streamNode = (ExprStreamUnderlyingNode) valueNode;
                 StreamNumber = streamNode.StreamId;
-                ResultType = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
+                ResultType = valueNode.Forge.EvaluationType.GetBoxedType();
                 _enumerationMethodType = validationContext.StreamTypeService.EventTypes[streamNode.StreamId];
             }
             else {
@@ -457,11 +458,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                 ChildNodes[1].Forge,
                 method,
-                codegenClassScope,
-                true);
+                codegenClassScope);
 
-            method.Block.DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
-                .DeclareVar(ResultType, "result", NewArrayByLength(ResultType.GetElementType(), Ref("size")))
+            var componentType = ResultType.GetElementType();
+            method.Block
+                .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
+                .DeclareVar(ResultType, "result", NewArrayByLength(componentType, Ref("size")))
                 .ForLoopIntSimple("i", Ref("size"))
                 .ExprDotMethod(Ref("events"), "MoveNext")
                 .AssignArrayElement(
@@ -489,8 +491,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                 ChildNodes[1].Forge,
                 method,
-                codegenClassScope,
-                true);
+                codegenClassScope);
 
             method.Block
                 .IfCondition(Not(exprSymbol.GetAddIsNewData(method)))
@@ -541,7 +542,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
             else {
                 var index = ChildNodes[0].Forge;
-                var indexMethod = CodegenLegoMethodExpression.CodegenExpression(index, method, codegenClassScope, true);
+                var indexMethod = CodegenLegoMethodExpression.CodegenExpression(index, method, codegenClassScope);
                 CodegenExpression indexCall = LocalMethod(indexMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
                 method.Block
                     .DeclareVar<object>("indexResult", indexCall)

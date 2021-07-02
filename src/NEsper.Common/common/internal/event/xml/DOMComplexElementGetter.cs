@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class DOMComplexElementGetter : EventPropertyGetterSPI,
         DOMPropertyGetter
     {
-        private readonly FragmentFactorySPI fragmentFactory;
-        private readonly bool isArray;
-        private readonly string propertyName;
+        private readonly FragmentFactorySPI _fragmentFactory;
+        private readonly bool _isArray;
+        private readonly string _propertyName;
 
         /// <summary>
         ///     Ctor.
@@ -39,28 +39,28 @@ namespace com.espertech.esper.common.@internal.@event.xml
             FragmentFactorySPI fragmentFactory,
             bool isArray)
         {
-            this.propertyName = propertyName;
-            this.fragmentFactory = fragmentFactory;
-            this.isArray = isArray;
+            this._propertyName = propertyName;
+            this._fragmentFactory = fragmentFactory;
+            this._isArray = isArray;
         }
 
         public object GetValueAsFragment(XmlNode node)
         {
-            if (!isArray) {
-                return GetValueAsNodeFragment(node, propertyName, fragmentFactory);
+            if (!_isArray) {
+                return GetValueAsNodeFragment(node, _propertyName, _fragmentFactory);
             }
 
-            return GetValueAsNodeFragmentArray(node, propertyName, fragmentFactory);
+            return GetValueAsNodeFragmentArray(node, _propertyName, _fragmentFactory);
         }
 
         public XmlNode GetValueAsNode(XmlNode node)
         {
-            return GetValueAsNode(node, propertyName);
+            return GetValueAsNode(node, _propertyName);
         }
 
         public XmlNode[] GetValueAsNodeArray(XmlNode node)
         {
-            return GetValueAsNodeArray(node, propertyName);
+            return GetValueAsNodeArray(node, _propertyName);
         }
 
         public CodegenExpression GetValueAsNodeCodegen(
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "GetValueAsNode", value, Constant(propertyName));
+            return StaticMethod(GetType(), "GetValueAsNode", value, Constant(_propertyName));
         }
 
         public CodegenExpression GetValueAsNodeArrayCodegen(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "GetValueAsNodeArray", value, Constant(propertyName));
+            return StaticMethod(GetType(), "GetValueAsNodeArray", value, Constant(_propertyName));
         }
 
         public CodegenExpression GetValueAsFragmentCodegen(
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     "the underlying data object is not of type Node");
             }
 
-            if (!isArray) {
+            if (!_isArray) {
                 var node = (XmlNode) obj.Underlying;
                 return GetValueAsNode(node);
             }
@@ -159,11 +159,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (!isArray) {
-                return StaticMethod(GetType(), "GetValueAsNode", underlyingExpression, Constant(propertyName));
+            if (!_isArray) {
+                return StaticMethod(GetType(), "GetValueAsNode", underlyingExpression, Constant(_propertyName));
             }
 
-            return StaticMethod(GetType(), "GetValueAsNodeArray", underlyingExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetValueAsNodeArray", underlyingExpression, Constant(_propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -182,13 +182,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var ff = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
-            if (!isArray) {
+                _fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+            if (!_isArray) {
                 return StaticMethod(
                     GetType(),
                     "GetValueAsNodeFragment",
                     underlyingExpression,
-                    Constant(propertyName),
+                    Constant(_propertyName),
                     ff);
             }
 
@@ -196,7 +196,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 GetType(),
                 "GetValueAsNodeFragmentArray",
                 underlyingExpression,
-                Constant(propertyName),
+                Constant(_propertyName),
                 ff);
         }
 

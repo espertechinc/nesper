@@ -291,6 +291,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "create schema T12 as (StartTSOne long, EndTSXXX long) inherits T2 starttimestamp StartTSOne endtimestamp EndTSXXX",
                     "Event type declares end timestamp as property 'EndTSXXX' however inherited event type 'T2' declares end timestamp as property 'EndTSOne'");
 
+                TryInvalidCompile(
+                    env,
+                    path,
+                    "create schema T12 as (StartTSOne null, EndTSXXX long) starttimestamp StartTSOne endtimestamp EndTSXXX",
+                    "Declared start timestamp property 'StartTSOne' is expected to return a Date, Calendar or long-typed value but returns 'null'");
+                
                 env.UndeployAll();
             }
         }

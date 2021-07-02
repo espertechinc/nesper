@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var nativeCountProperty = CodegenProperty
-				.MakePropertyNode(typeof(int), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakePropertyNode(typeof(int), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride();
 			nativeCountProperty.GetterBlock
 				.BlockReturn(Constant(desc.PropertiesThisType.Count + desc.NumFieldsSupertype));
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryGetNativeEntryMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(string), "name")
 				.AddParam(new CodegenNamedParam(typeof(KeyValuePair<string, object>), "value").WithOutputModifier())
 				.WithOverride();
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var trySetNativeValueMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(string), "name")
 				.AddParam(typeof(object), "value")
 				.WithOverride();
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var nativeEnumerable = CodegenProperty
-				.MakePropertyNode(typeof(IEnumerable<KeyValuePair<string, object>>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakePropertyNode(typeof(IEnumerable<KeyValuePair<string, object>>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride();
 			MakeNativeEnumerable(nativeEnumerable, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(nativeEnumerable, "NativeEnumerable", methods, properties);
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var nativeContainsKeyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(string), "name")
 				.WithOverride();
 			MakeNativeContainsKey(nativeContainsKeyMethod);
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var nativeWriteMethod = CodegenMethod
-				.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(JsonSerializationContext), "context")
 				.WithOverride();
 			MakeNativeWrite(nativeWriteMethod, classScope);
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				// --------------------------------------------------------------------------------
 
 				var addJsonValueMethod = CodegenMethod
-					.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+					.MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 					.AddParam(typeof(string), "name")
 					.AddParam(typeof(object), "value")
 					.WithOverride();
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 				// - JsonValues => IDictionary<string, object>
 				var jsonValuesProperty = CodegenProperty
-					.MakePropertyNode(typeof(IDictionary<string, object>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+					.MakePropertyNode(typeof(IDictionary<string, object>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 					.WithOverride();
 				jsonValuesProperty.GetterBlock.BlockReturn(Ref(DYNAMIC_PROP_FIELD));
 				CodegenStackGenerator.RecursiveBuildStack(jsonValuesProperty, "JsonValues", methods, properties);
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenClassScope classScope)
 		{
 			var toEntry = method
-				.MakeChild(typeof(KeyValuePair<string, object>), this.GetType(), classScope)
+				.MakeChild(typeof(KeyValuePair<string, object>), GetType(), classScope)
 				.AddParam(typeof(string), "name")
 				.AddParam(typeof(object), "value");
 			toEntry.Block.MethodReturn(NewInstance(typeof(KeyValuePair<string, object>), Ref("name"), Ref("value")));

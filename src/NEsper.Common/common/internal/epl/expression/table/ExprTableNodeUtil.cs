@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -22,18 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             string providedName,
             ExprNode[] providedExpr,
             Type[] expectedTypes,
-            string expectedName
-        )
+            string expectedName)
         {
             if (expectedTypes.Length != providedTypes.Length) {
-                string actual = (providedTypes.Length == 0 ? "no" : "" + providedTypes.Length) +
-                                " " +
-                                providedName +
-                                " expressions";
-                string expected = (expectedTypes.Length == 0 ? "no" : "" + expectedTypes.Length) +
-                                  " " +
-                                  expectedName +
-                                  " expressions";
+                var actual = (providedTypes.Length == 0 ? "no" : "" + providedTypes.Length) +
+                             " " +
+                             providedName +
+                             " expressions";
+                var expected = (expectedTypes.Length == 0 ? "no" : "" + expectedTypes.Length) +
+                               " " +
+                               expectedName +
+                               " expressions";
                 throw new ExprValidationException(
                     "Incompatible number of " +
                     providedName +
@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     actual);
             }
 
-            for (int i = 0; i < expectedTypes.Length; i++) {
-                Type actual = providedTypes[i].GetBoxedType();
-                Type expected = expectedTypes[i].GetBoxedType();
-                if (!TypeHelper.IsSubclassOrImplementsInterface(actual, expected)) {
+            for (var i = 0; i < expectedTypes.Length; i++) {
+                var actual = providedTypes[i].GetBoxedType();
+                var expected = expectedTypes[i].GetBoxedType();
+                if (actual.IsNullTypeSafe() || !TypeHelper.IsSubclassOrImplementsInterface(actual, expected)) {
                     throw new ExprValidationException(
                         "Incompatible type returned by a " +
                         providedName +
@@ -59,9 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         " expression '" +
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsList(providedExpr) +
                         "' returns '" +
-                        actual.CleanName() +
+                        actual.TypeSafeName() +
                         "' but the table expects '" +
-                        expected.CleanName() +
+                        expected.TypeSafeName() +
                         "'");
                 }
             }

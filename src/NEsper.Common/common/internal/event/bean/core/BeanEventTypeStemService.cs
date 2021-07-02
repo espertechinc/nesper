@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             PublicClassToTypeNames = publicClassToTypeNames;
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this._defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
-            this._defaultAccessorStyle = defaultAccessorStyle;
+            _defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
+            _defaultAccessorStyle = defaultAccessorStyle;
         }
 
         public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }

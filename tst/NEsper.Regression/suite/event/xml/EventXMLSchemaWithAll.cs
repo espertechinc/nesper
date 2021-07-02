@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
@@ -31,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaWithAllCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaWithAllPreconfig());
             return execs;
         }
@@ -100,14 +102,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             var type = env.CompileDeploy("@Name('s1') select * from " + eventTypeName, path).Statement("s1").EventType;
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("sessionId", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("customerId", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("url", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("method", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                type.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                type.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("sessionId", typeof(XmlNode)).WithFragment(),
+                new SupportEventPropDesc("customerId", typeof(XmlNode)).WithFragment(),
+                new SupportEventPropDesc("url", typeof(string)).WithComponentType(typeof(char)).WithIndexed(false),
+                new SupportEventPropDesc("method", typeof(XmlNode)).WithFragment());
 
             env.UndeployAll();
         }

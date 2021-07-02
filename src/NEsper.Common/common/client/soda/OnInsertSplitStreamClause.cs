@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.client.soda
             foreach (OnInsertSplitStreamItem item in Items)
             {
                 item.InsertInto.ToEPL(writer, formatter, true);
-                item.SelectClause.ToEPL(writer, formatter, true, false);
+                item.SelectClause.ToEPL(writer, formatter, false, false);
                 if (item.PropertySelects != null)
                 {
                     writer.Write(" from ");

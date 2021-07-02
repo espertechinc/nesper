@@ -43,8 +43,12 @@ namespace com.espertech.esper.common.client.soda
         /// Renders the clause.
         /// </summary>
         /// <param name="writer">to write to</param>
-        public void ToEPL(TextWriter writer)
+        /// <param name="formatter"></param>
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
+            formatter.BeginIntoTable(writer, true);
             writer.Write("into table ");
             writer.Write(TableName);
             writer.Write(" ");

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		private readonly ForgeFunction function;
 
 		public ThreeFormScalarFactory(
-			Func<ExprDotEvalParamLambda, EPType> returnType,
+			ThreeFormInitFunction returnType,
 			ObjectArrayEventType eventType,
 			int numParams,
 			ForgeFunction function)
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		protected override EnumForge MakeForgeWithParam(
 			ExprDotEvalParamLambda lambda,
-			EPType typeInfo,
+			EPChainableType typeInfo,
 			StatementCompileTimeServices services)
 		{
 			return function.Invoke(lambda, eventType, numParams, typeInfo, services);
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprDotEvalParamLambda lambda,
 			ObjectArrayEventType eventType,
 			int numParams,
-			EPType typeInfo,
+			EPChainableType typeInfo,
 			StatementCompileTimeServices services);
 	}
 } // end of namespace

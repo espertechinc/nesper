@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         public NestedIterationExecNode(int[] nestedStreams)
         {
             this.nestedStreams = nestedStreams;
-            this.childNodes = new List<ExecNode>();
+            childNodes = new List<ExecNode>();
         }
 
         /// <summary>

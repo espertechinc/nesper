@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -33,9 +35,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
     {
         private readonly string _tableName;
         private ExprForge[] _groupKeyEvaluators;
-#if NOT_USED
-        private ExprTableEvalStrategyFactoryForge strategy;
-#endif
         private TableMetaData _tableMeta;
 
         /// <summary>
@@ -260,6 +259,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (resultType.IsNullType()) {
+                return ConstantNull();
+            }
+        
             if (accessNode.TableAccessNumber == -1) {
                 throw new IllegalStateException("Table expression node has not been assigned");
             }

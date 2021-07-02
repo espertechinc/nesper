@@ -20,9 +20,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanEntryPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly EventPropertyGetterSPI eventBeanEntryGetter;
+        private readonly EventPropertyGetterSPI _eventBeanEntryGetter;
 
-        private readonly int propertyIndex;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -33,14 +33,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int propertyIndex,
             EventPropertyGetterSPI eventBeanEntryGetter)
         {
-            this.propertyIndex = propertyIndex;
-            this.eventBeanEntryGetter = eventBeanEntryGetter;
+            this._propertyIndex = propertyIndex;
+            this._eventBeanEntryGetter = eventBeanEntryGetter;
         }
 
         public object GetObjectArray(object[] array)
         {
             // If the map does not contain the key, this is allowed and represented as null
-            var value = array[propertyIndex];
+            var value = array[_propertyIndex];
 
             if (value == null) {
                 return null;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             // Object within the map
             var theEvent = (EventBean) value;
-            return eventBeanEntryGetter.Get(theEvent);
+            return _eventBeanEntryGetter.Get(theEvent);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetFragment(EventBean obj)
         {
             // If the map does not contain the key, this is allowed and represented as null
-            var value = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[propertyIndex];
+            var value = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[_propertyIndex];
 
             if (value == null) {
                 return null;
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             // Object within the map
             var theEvent = (EventBean) value;
-            return eventBeanEntryGetter.GetFragment(theEvent);
+            return _eventBeanEntryGetter.GetFragment(theEvent);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -141,11 +141,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnNull("value")
                 .DeclareVarWCast(typeof(EventBean), "theEvent", "value")
                 .MethodReturn(
-                    eventBeanEntryGetter.EventBeanGetCodegen(Ref("theEvent"), codegenMethodScope, codegenClassScope));
+                    _eventBeanEntryGetter.EventBeanGetCodegen(Ref("theEvent"), codegenMethodScope, codegenClassScope));
         }
 
         private CodegenMethod GetFragmentCodegen(
@@ -155,11 +155,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnNull("value")
                 .DeclareVarWCast(typeof(EventBean), "theEvent", "value")
                 .MethodReturn(
-                    eventBeanEntryGetter.EventBeanFragmentCodegen(
+                    _eventBeanEntryGetter.EventBeanFragmentCodegen(
                         Ref("theEvent"),
                         codegenMethodScope,
                         codegenClassScope));

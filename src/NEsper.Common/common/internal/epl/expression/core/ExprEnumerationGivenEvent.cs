@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context);
 
-        public EvaluateEventGetROCollectionEventsFunc ProcEvaluateEventGetROCollectionEvents;
-        public EvaluateEventGetROCollectionScalarFunc ProcEvaluateEventGetRoCollectionScalar;
-        public EvaluateEventGetEventBeanFunc ProcEvaluateEventGetEventBean;
+        public EvaluateEventGetROCollectionEventsFunc procEvaluateEventGetRoCollectionEvents;
+        public EvaluateEventGetROCollectionScalarFunc procEvaluateEventGetRoCollectionScalar;
+        public EvaluateEventGetEventBeanFunc procEvaluateEventGetEventBean;
 
         public ProxyExprEnumerationGivenEvent()
         {
@@ -58,30 +58,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EvaluateEventGetROCollectionScalarFunc procEvaluateEventGetROCollectionScalar,
             EvaluateEventGetEventBeanFunc procEvaluateEventGetEventBean)
         {
-            ProcEvaluateEventGetROCollectionEvents = procEvaluateEventGetROCollectionEvents;
-            ProcEvaluateEventGetRoCollectionScalar = procEvaluateEventGetROCollectionScalar;
-            ProcEvaluateEventGetEventBean = procEvaluateEventGetEventBean;
+            procEvaluateEventGetRoCollectionEvents = procEvaluateEventGetROCollectionEvents;
+            procEvaluateEventGetRoCollectionScalar = procEvaluateEventGetROCollectionScalar;
+            this.procEvaluateEventGetEventBean = procEvaluateEventGetEventBean;
         }
 
         public ICollection<EventBean> EvaluateEventGetROCollectionEvents(
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetROCollectionEvents(@event, context).EventBeanCollection;
+            return procEvaluateEventGetRoCollectionEvents(@event, context).EventBeanCollection;
         }
 
         public ICollection<object> EvaluateEventGetROCollectionScalar(
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetRoCollectionScalar(@event, context).ObjectCollection;
+            return procEvaluateEventGetRoCollectionScalar(@event, context).ValueCollection;
         }
 
         public EventBean EvaluateEventGetEventBean(
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetEventBean(@event, context);
+            return procEvaluateEventGetEventBean(@event, context);
         }
     }
 } // end of namespace

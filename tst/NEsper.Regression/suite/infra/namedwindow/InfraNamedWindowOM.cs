@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string[] fields = {"key", "value"};
                 var stmtTextCreate =
                     "@Name('create') create window MyWindow#keepall as select TheString as key, LongBoxed as value from " +
-                    typeof(SupportBean).Name;
+                    nameof(SupportBean);
                 var modelCreate = env.EplToModel(stmtTextCreate);
                 env.CompileDeploy(modelCreate, path).AddListener("create");
                 Assert.AreEqual(

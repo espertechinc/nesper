@@ -10,6 +10,7 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.util
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception e)
         {
             var declaring = field.DeclaringType;
-            var message = $"Failed to obtain field value for field {field.Name} on class {declaring.CleanName()}: {e.Message}";
+            var message = $"Failed to obtain field value for field {field.Name} on class {declaring.TypeSafeName()}: {e.Message}";
             throw new PropertyAccessException(message, e);
         }
 
@@ -44,18 +45,18 @@ namespace com.espertech.esper.common.@internal.@event.util
             object @object,
             InvalidCastException e)
         {
-            var classNameExpected = declared.CleanName();
+            var classNameExpected = declared.TypeSafeName();
             string classNameReceived;
             if (@object != null) {
-                classNameReceived = @object.GetType().CleanName();
+                classNameReceived = @object.GetType().TypeSafeName();
             }
             else {
                 classNameReceived = "null";
             }
 
             if (classNameExpected.Equals(classNameReceived)) {
-                classNameExpected = declared.CleanName();
-                classNameReceived = @object != null ? @object.GetType().CleanName() : "null";
+                classNameExpected = declared.TypeSafeName();
+                classNameReceived = @object != null ? @object.GetType().TypeSafeName() : "null";
             }
 
             var message = $"Mismatched getter instance to event bean type, expected {classNameExpected} but received {classNameReceived}";
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception e)
         {
             var declaring = method.DeclaringType;
-            var message = $"Failed to invoke method {method.Name} on class {declaring.CleanName()}: {e.Message}";
+            var message = $"Failed to invoke method {method.Name} on class {declaring.TypeSafeName()}: {e.Message}";
             throw new PropertyAccessException(message, e);
         }
 
@@ -114,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             TargetException e)
         {
             var declaring = member.DeclaringType;
-            var message = $"Failed to invoke method {member.Name} on class {declaring.CleanName()}: {e.InnerException.Message}";
+            var message = $"Failed to invoke method {member.Name} on class {declaring.TypeSafeName()}: {e.InnerException.Message}";
             throw new PropertyAccessException(message, e);
         }
 
@@ -123,7 +124,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             TargetInvocationException e)
         {
             var declaring = member.DeclaringType;
-            var message = $"Failed to invoke method {member.Name} on class {declaring.CleanName()}: {e.InnerException.Message}";
+            var message = $"Failed to invoke method {member.Name} on class {declaring.TypeSafeName()}: {e.InnerException.Message}";
             throw new PropertyAccessException(message, e);
         }
 
@@ -132,7 +133,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception t)
         {
             var declaring = member.DeclaringType;
-            var message = $"Failed to invoke method {member.Name} on class {declaring.CleanName()}: {t.Message}";
+            var message = $"Failed to invoke method {member.Name} on class {declaring.TypeSafeName()}: {t.Message}";
             throw new PropertyAccessException(message, t);
         }
 
@@ -155,7 +156,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception t)
         {
             var declaring = property.DeclaringType;
-            var message = $"Failed to obtain value for property {property.Name} on class {declaring.CleanName()}: {t.Message}";
+            var message = $"Failed to obtain value for property {property.Name} on class {declaring.TypeSafeName()}: {t.Message}";
             throw new PropertyAccessException(message, t);
         }
 
@@ -164,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception e)
         {
             var declaring = property.DeclaringType;
-            var message = $"Failed to obtain value for property {property.Name} on class {declaring.CleanName()}: {e.Message}";
+            var message = $"Failed to obtain value for property {property.Name} on class {declaring.TypeSafeName()}: {e.Message}";
             throw new PropertyAccessException(message, e);
         }
 
@@ -173,7 +174,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception t)
         {
             var declaring = field.DeclaringType;
-            var message = $"Failed to obtain field value for field {field.Name} on class {declaring.CleanName()}: {t.Message}";
+            var message = $"Failed to obtain field value for field {field.Name} on class {declaring.TypeSafeName()}: {t.Message}";
             throw new PropertyAccessException(message, t);
         }
     }

@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -21,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.@event.util;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -96,9 +99,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var propertyName = prop.Key;
                 var propertyType = prop.Value;
 
+                if (propertyType == null) {
+                    verified.Put(propertyName, TypeHelper.NullType);
+                    continue;
+                }
+                
                 if (propertyType is Type ||
                     propertyType is EventType ||
-                    propertyType == null ||
                     propertyType is TypeBeanOrUnderlying) {
                     verified.Put(propertyName, propertyType);
                     continue;
@@ -287,6 +294,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 return events;
+            }
+
+            if (result is ICollection<object> collection) {
+                var returnValue = collection
+                    .Select(_ => eventBeanTypedEventFactory.AdapterForTypedObject(_, eventType))
+                    .ToArray();
+                return returnValue;
             }
 
             return eventBeanTypedEventFactory.AdapterForTypedObject(result, eventType);
@@ -934,19 +948,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
+            var arrayType = TypeHelper.GetArrayType(underlyingType);
+            return codegenMethodScope
+                .MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
                 .AddParam(typeof(EventBean[]), "wrapper")
                 .Block
                 .IfRefNullReturnNull("wrapper")
-                .DeclareVar(
-                    TypeHelper.GetArrayType(underlyingType),
-                    "array",
-                    NewArrayByLength(underlyingType, ArrayLength(Ref("wrapper"))))
+                .DeclareVar(arrayType, "array", NewArrayByLength(underlyingType, ArrayLength(Ref("wrapper"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("wrapper")))
-                .AssignArrayElement(
-                    "array",
-                    Ref("i"),
-                    Cast(underlyingType, ExprDotName(ArrayAtIndex(Ref("wrapper"), Ref("i")), "Underlying")))
+                .AssignArrayElement("array", Ref("i"), Cast(underlyingType, ExprDotName(ArrayAtIndex(Ref("wrapper"), Ref("i")), "Underlying")))
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }
@@ -971,11 +981,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return new ExprValidationException("The property '" + propName + "' is not provided but required");
             }
 
-            if (setTwoType == null) {
+            if (setTwoType.IsNullTypeSafe()) {
                 return null;
             }
 
-            if (setOneType == null) {
+            if (setOneType.IsNullTypeSafe()) {
                 return new ExprValidationException(
                     "Type by name '" +
                     otherName +
@@ -1086,8 +1096,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         private static ExprValidationException MakeExpectedReceivedException(
-            String otherName,
-            String propName,
+            string otherName,
+            string propName,
             Type boxedThis,
             Type boxedOther)
         {
@@ -1097,9 +1107,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 "' in property '" +
                 propName +
                 "' expected " +
-                boxedThis.CleanName() +
+                boxedThis.TypeSafeName() +
                 " but receives " +
-                boxedOther.CleanName());
+                boxedOther.TypeSafeName());
         }
 
         private static ExprValidationException GetMismatchMessageEventType(

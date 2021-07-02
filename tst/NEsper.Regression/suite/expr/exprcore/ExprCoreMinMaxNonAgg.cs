@@ -59,7 +59,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				builder.WithAssertion(MakeBoxedEvent(10L, 20, 4)).Expect(fields, 20L, 20L, 10L, 4L);
 				builder.WithAssertion(MakeBoxedEvent(-10L, -20, -30)).Expect(fields, -10L, -10L, -20L, -30L);
-
+				builder.WithAssertion(MakeBoxedEvent(null, null, null)).Expect(fields, null, null, null, null);
+				builder.WithAssertion(MakeBoxedEvent(1L, null, (short) 1)).Expect(fields, null, null, null, null);
+				
 				builder.Run(env);
 				env.UndeployAll();
 			}
@@ -77,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.Add(Expressions.Min("LongBoxed", "IntBoxed"), "myMin")
 					.Add(Expressions.Min(Expressions.Property("LongBoxed"), Expressions.Property("IntBoxed"), Expressions.Property("ShortBoxed")), "myMinEx");
 
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name).AddView("length", Expressions.Constant(3)));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(3)));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 				Assert.AreEqual(EPL, model.ToEPL());
 

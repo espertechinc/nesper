@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.@event.bean.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
         {
             var methods = clazz.GetMethods();
             for (var i = 0; i < methods.Length; i++) {
-                if (methods[i].ReturnType == typeof(void)) {
+                if (methods[i].ReturnType.IsVoid()) {
                     continue;
                 }
 
@@ -58,9 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
                 if (parameterTypes.Length == 1) {
                     var parameterType = parameterTypes[0];
-                    if (parameterType != typeof(int) &&
-                        parameterType != typeof(int?) &&
-                        parameterType != typeof(string)) {
+                    if (!parameterType.IsInt32() && (parameterType != typeof(string))) {
                         continue;
                     }
                 }

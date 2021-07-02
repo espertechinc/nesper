@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.dataflow.filtersvcadapter;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -214,6 +215,16 @@ namespace com.espertech.esper.common.@internal.context.util
                 return _agentInstanceScriptContext;
             }
         }
+        
+        public string ContextName => StatementContext.ContextName;
+
+        public string EPLWhenAvailable => StatementContext.EPLWhenAvailable;
+
+        public TimeZoneInfo TimeZone => StatementContext.TimeZone;
+
+        public TimeAbacus TimeAbacus => StatementContext.TimeAbacus;
+
+        public bool IsWritesToTables => StatementContext.IsWritesToTables;
 
         /// <summary>
         ///     Add a stop-callback.

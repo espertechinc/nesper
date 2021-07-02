@@ -9,12 +9,15 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -24,16 +27,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprNewInstanceNode : ExprNodeBase
     {
-        private readonly string _classIdent;
+        private readonly ClassDescriptor _classIdentNoDimensions;
         private readonly int _numArrayDimensions;
         private bool _arrayInitializedByExpr;
 
         [NonSerialized] private ExprForge _forge;
 
-        public ExprNewInstanceNode(string classIdent, int numArrayDimensions)
+        public ExprNewInstanceNode(ClassDescriptor classIdentNoDimensions, int numArrayDimensions)
         {
-            this._classIdent = classIdent;
-            this._numArrayDimensions = numArrayDimensions;
+            _classIdentNoDimensions = classIdentNoDimensions;
+            _numArrayDimensions = numArrayDimensions;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -58,26 +61,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             // Resolve target class
             Type targetClass = null;
-            if (_numArrayDimensions != 0) {
-                targetClass = TypeHelper.GetPrimitiveTypeForName(_classIdent);
+            if (_numArrayDimensions > 0 && _classIdentNoDimensions.TypeParameters.IsEmpty()) {
+                // the "double[]" does become "double[]" and not "Double[]"
+                targetClass = TypeHelper.GetPrimitiveTypeForName(_classIdentNoDimensions.ClassIdentifier);
+            }
+            
+            if (targetClass == null) {
+                targetClass = ImportTypeUtil.ResolveClassIdentifierToType(
+                    _classIdentNoDimensions,
+                    false,
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
             }
 
             if (targetClass == null) {
-                try {
-                    targetClass = validationContext.ImportService
-                        .ResolveClass(_classIdent, false, validationContext.ClassProvidedExtension);
-                }
-                catch (ImportException) {
-                    throw new ExprValidationException("Failed to resolve new-operator class name '" + _classIdent + "'");
-                }
+                throw new ExprValidationException("Failed to resolve type parameter '" + _classIdentNoDimensions.ToEPL() + "'");
             }
-
+            
             // handle non-array
             if (_numArrayDimensions == 0) {
-                InstanceManufacturerFactory manufacturerFactory = InstanceManufacturerFactoryFactory.GetManufacturer(
+                var manufacturerFactory = InstanceManufacturerFactoryFactory.GetManufacturer(
                     targetClass,
                     validationContext.ImportService,
-                    this.ChildNodes);
+                    ChildNodes);
                 _forge = new ExprNewInstanceNodeNonArrayForge(this, targetClass, manufacturerFactory);
                 return null;
             }
@@ -87,12 +93,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (ChildNodes.Length == 1 && ChildNodes[0] is ExprArrayNode) {
                 _arrayInitializedByExpr = true;
             } else {
-                foreach (ExprNode child  in ChildNodes) {
+                foreach (var child  in ChildNodes) {
                     var evalType = child.Forge.EvaluationType;
-                    if (!TypeHelper.IsInt32(evalType)) {
-                        string message = "New-keyword with an array-type result requires an Integer-typed dimension but received type '" +
-                                         evalType.CleanName() +
-                                         "'";
+                    if (!evalType.IsInt32()) {
+                        var message = "New-keyword with an array-type result requires an Integer-typed dimension but received type '" +
+                                      evalType.TypeSafeName() +
+                                      "'";
                         throw new ExprValidationException(message);
                     }
                 }
@@ -109,11 +115,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new IllegalStateException("Num-array-dimensions unexpected at " + _numArrayDimensions);
             }
 
-            ExprArrayNode arrayNode = (ExprArrayNode) ChildNodes[0];
+            var arrayNode = (ExprArrayNode) ChildNodes[0];
 
             // handle 2-dimensional array validation
             if (_numArrayDimensions == 2) {
-                foreach (ExprNode inner in arrayNode.ChildNodes) {
+                foreach (var inner in arrayNode.ChildNodes) {
                     if (!(inner is ExprArrayNode)) {
                         throw new ExprValidationException(
                             "Two-dimensional array element does not allow element expression '" +
@@ -121,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             "'");
                     }
 
-                    ExprArrayNode innerArray = (ExprArrayNode) inner;
+                    var innerArray = (ExprArrayNode) inner;
                     innerArray.OptionalRequiredType = targetClass;
                     innerArray.Validate(validationContext);
                 }
@@ -142,20 +148,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => false;
         }
 
-        public string ClassIdent {
-            get => _classIdent;
+        public ClassDescriptor ClassIdentNoDimensions {
+            get => _classIdentNoDimensions;
         }
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprNewInstanceNode)) {
+            if (!(node is ExprNewInstanceNode other)) {
                 return false;
             }
 
-            ExprNewInstanceNode other = (ExprNewInstanceNode) node;
-            return other._classIdent.Equals(_classIdent) && (other._numArrayDimensions == this._numArrayDimensions);
+            return (other._classIdentNoDimensions.Equals(_classIdentNoDimensions)) && 
+                   (other._numArrayDimensions == _numArrayDimensions);
         }
 
         public override void ToPrecedenceFreeEPL(
@@ -163,15 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNodeRenderableFlags flags)
         {
             writer.Write("new ");
-
-            if (IdentifierUtil.IsGenericOrNestedTypeName(_classIdent)) {
-                writer.Write('`');
-                writer.Write(_classIdent);
-                writer.Write('`');
-            }
-            else {
-                writer.Write(_classIdent);
-            }
+            writer.Write(_classIdentNoDimensions.ToEPL());
 
             if (_numArrayDimensions == 0) {
                 ExprNodeUtilityPrint.ToExpressionStringParams(writer, ChildNodes);
@@ -179,9 +177,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             else {
                 if (_arrayInitializedByExpr) {
                     writer.Write("[] ");
-                    this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.UNARY, flags);
+                    ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.UNARY, flags);
                 } else {
-                    foreach (ExprNode child in this.ChildNodes) {
+                    foreach (var child in ChildNodes) {
                         writer.Write("[");
                         child.ToEPL(writer, ExprPrecedenceEnum.UNARY, flags);
                         writer.Write("]");

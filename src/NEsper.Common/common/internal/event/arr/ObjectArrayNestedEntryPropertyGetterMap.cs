@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayNestedEntryPropertyGetterMap : ObjectArrayNestedEntryPropertyGetterBase
     {
-        private readonly MapEventPropertyGetter mapGetter;
+        private readonly MapEventPropertyGetter _mapGetter;
 
         public ObjectArrayNestedEntryPropertyGetterMap(
             int propertyIndex,
@@ -33,27 +33,27 @@ namespace com.espertech.esper.common.@internal.@event.arr
             MapEventPropertyGetter mapGetter)
             : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
         {
-            this.mapGetter = mapGetter;
+            this._mapGetter = mapGetter;
         }
 
         public override object HandleNestedValue(object value)
         {
             if (!(value is IDictionary<string, object>)) {
                 if (value is EventBean) {
-                    return mapGetter.Get((EventBean) value);
+                    return _mapGetter.Get((EventBean) value);
                 }
 
                 return null;
             }
 
-            return mapGetter.GetMap((IDictionary<string, object>) value);
+            return _mapGetter.GetMap((IDictionary<string, object>) value);
         }
 
         public override object HandleNestedValueFragment(object value)
         {
             if (!(value is IDictionary<string, object>)) {
                 if (value is EventBean) {
-                    return mapGetter.GetFragment((EventBean) value);
+                    return _mapGetter.GetFragment((EventBean) value);
                 }
 
                 return null;
@@ -63,20 +63,20 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBean eventBean = EventBeanTypedEventFactory.AdapterForTypedMap(
                 (IDictionary<string, object>) value,
                 FragmentType);
-            return mapGetter.GetFragment(eventBean);
+            return _mapGetter.GetFragment(eventBean);
         }
 
         public override bool HandleNestedValueExists(object value)
         {
             if (!(value is IDictionary<string, object>)) {
                 if (value is EventBean) {
-                    return mapGetter.IsExistsProperty((EventBean) value);
+                    return _mapGetter.IsExistsProperty((EventBean) value);
                 }
 
                 return false;
             }
 
-            return mapGetter.IsMapExistsProperty((IDictionary<string, object>) value);
+            return _mapGetter.IsMapExistsProperty((IDictionary<string, object>) value);
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     codegenMethodScope,
                     codegenClassScope,
                     typeof(IDictionary<string, object>),
-                    mapGetter,
+                    _mapGetter,
                     CodegenLegoPropertyBeanOrUnd.AccessType.GET,
                     GetType()),
                 refName);
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     codegenMethodScope,
                     codegenClassScope,
                     typeof(IDictionary<object, object>),
-                    mapGetter,
+                    _mapGetter,
                     CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS,
                     GetType()),
                 refName);
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     codegenMethodScope,
                     codegenClassScope,
                     typeof(IDictionary<object, object>),
-                    mapGetter,
+                    _mapGetter,
                     CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT,
                     GetType()),
                 refName);

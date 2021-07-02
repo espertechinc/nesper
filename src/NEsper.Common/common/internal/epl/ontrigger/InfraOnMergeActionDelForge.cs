@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionDel), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionDel), GetType(), classScope);
             method.Block.MethodReturn(
                 NewInstance<InfraOnMergeActionDel>(
                     OptionalFilter == null

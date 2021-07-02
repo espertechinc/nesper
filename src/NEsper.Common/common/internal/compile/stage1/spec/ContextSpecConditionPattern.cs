@@ -6,13 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.epl.pattern.core;
+using com.espertech.esper.common.@internal.@event.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -23,11 +26,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public ContextSpecConditionPattern(
             EvalForgeNode patternRaw,
             bool inclusive,
-            bool immediate)
+            bool immediate,
+            string asName)
         {
             PatternRaw = patternRaw;
             IsInclusive = inclusive;
             IsImmediate = immediate;
+            AsName = asName;
         }
 
         public EvalForgeNode PatternRaw { get; }
@@ -39,6 +44,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public bool IsImmediate { get; }
 
         public PatternContext PatternContext { get; set; }
+        
+        public string AsName { get; set; }
+        
+        public string[] PatternTags { get; set; }
+        
+        public EventType AsNameEventType { get; set; }
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -47,9 +58,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorPattern), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorPattern>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorPattern)))
+                .DeclareVarNewInstance<ContextConditionDescriptorPattern>("condition")
                 .SetProperty(
                     Ref("condition"),
                     "Pattern",
@@ -62,6 +71,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .SetProperty(Ref("condition"), "ArrayEvents", Constant(PatternCompiled.ArrayEventTypes.Keys.ToArray()))
                 .SetProperty(Ref("condition"), "IsInclusive", Constant(IsInclusive))
                 .SetProperty(Ref("condition"), "IsImmediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "AsName", Constant(AsName))
+                .SetProperty(Ref("condition"), "PatternTags", Constant(PatternTags))
+                .SetProperty(Ref("condition"), "AsNameEventType", AsNameEventType == null ? ConstantNull() : EventTypeUtility.ResolveTypeCodegen(AsNameEventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

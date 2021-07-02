@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             return result;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     .Add("RegisterBoolExpr", Ref("node")));
 
             method.Block.MethodReturn(Ref("node"));
-            return method;
+            return LocalMethod(method);
         }
 
         public override void ValueExprToString(
@@ -287,7 +287,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .Append("'");
         }
 
-        public static String ValueExprToString(String expression)
+        public static string ValueExprToString(string expression)
         {
             return "expression '" + expression + "'";
         }

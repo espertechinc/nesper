@@ -99,11 +99,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var countUnassigned = mapAll.CountUnassignedExpressions();
 
             if (countUnassigned != 0) {
-                FilterSpecPlanPathTripletForge node = MakeRemainingNode(mapAll.UnassignedExpressions, args);
+                var node = MakeRemainingNode(mapAll.UnassignedExpressions, args);
                 filterParams.Add(node);
             }
 
-            FilterSpecPlanPathTripletForge[] triplets = filterParams.ToArray();
+            var triplets = filterParams.ToArray();
             return new FilterSpecPlanPathForge(triplets, null);
         }
     }

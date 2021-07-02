@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
@@ -45,91 +46,91 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
         public static IList<RegressionExecution> WithRowForAllStaticMethodDoubleNested(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllStaticMethodDoubleNested());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRowForAllNamedWindowWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllNamedWindowWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectAvgStdGroupByUni(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSelectAvgStdGroupByUni());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectAvgExprStdGroupBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSelectAvgExprStdGroupBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectExprGroupWin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSelectExprGroupWin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectStarStdGroupBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSelectStarStdGroupBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAvgPerSym(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeAvgPerSym());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSumJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSumJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSumOneView(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSumOneView());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRowForAllMinMaxWindowed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllMinMaxWindowed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRowForAllWWindowAgg(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllWWindowAgg());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRowForAllSumMinMax(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllSumMinMax());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRowForAllSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllSimple());
             return execs;
         }

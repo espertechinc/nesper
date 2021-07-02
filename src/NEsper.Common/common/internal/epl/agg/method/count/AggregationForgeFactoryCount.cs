@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
 			Type countedValueType,
 			DataInputOutputSerdeForge distinctValueSerde)
 		{
-			this._parent = parent;
-			this._ignoreNulls = ignoreNulls;
-			this._countedValueType = countedValueType;
-			this._distinctValueSerde = distinctValueSerde;
+			_parent = parent;
+			_ignoreNulls = ignoreNulls;
+			_countedValueType = countedValueType;
+			_distinctValueSerde = distinctValueSerde;
 		}
 
 		public override Type ResultType => typeof(long?);

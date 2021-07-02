@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
@@ -38,12 +39,12 @@ WithSchemaObjectArray(execs);
         }
 public static IList<RegressionExecution> WithSchemaObjectArray(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowSchemaObjectArray());
     return execs;
 }public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowAllTypes());
     return execs;
 }

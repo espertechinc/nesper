@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var r0Type = nodes[0].Forge.EvaluationType;
             var r1Type = nodes[1].Forge.EvaluationType;
-            if (r0Type == null || r1Type == null)
+            if (r0Type.IsNullTypeSafe() || r1Type.IsNullTypeSafe())
             {
                 return CodegenExpressionBuilder.ConstantNull();
             }

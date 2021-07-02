@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _propertyName = propertyName;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(returnExpr);
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
         
         public override void ValueExprToString(StringBuilder @out, int i)

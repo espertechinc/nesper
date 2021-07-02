@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.json.forge;
@@ -90,22 +91,23 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			// we go deep first
 			foreach (var field in fields) {
-				if (field.FieldType.IsGenericCollection()) {
-					var genericType = TypeHelper.GetGenericFieldType(field, true);
-					if (genericType != null &&
-					    !stack.Contains(genericType) &&
-					    IsDeepClassEligibleType(genericType, field.Name, field, annotations, services) &&
-					    genericType != typeof(object)) {
-						stack.Add(genericType);
-						ComputeClassesDeep(genericType, deepClasses, stack, annotations, services);
+				var fieldType = field.FieldType;
+				if (fieldType.IsGenericCollection()) {
+					var parameter = TypeHelper.GetGenericFieldType(field, true);
+					if (parameter != null &&
+					    !stack.Contains(parameter) &&
+					    IsDeepClassEligibleType(parameter, field.Name, field, annotations, services) &&
+					    parameter != typeof(object)) {
+						stack.Add(parameter);
+						ComputeClassesDeep(parameter, deepClasses, stack, annotations, services);
 						stack.RemoveLast();
 					}
 
 					continue;
 				}
 
-				if (field.FieldType.IsArray) {
-					Type arrayType = TypeHelper.GetArrayComponentTypeInnermost(field.FieldType);
+				if (fieldType.IsArray) {
+					var arrayType = TypeHelper.GetArrayComponentTypeInnermost(fieldType);
 					if (!stack.Contains(arrayType) &&
 					    IsDeepClassEligibleType(arrayType, field.Name, field, annotations, services) &&
 					    arrayType != typeof(object)) {
@@ -117,9 +119,9 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					continue;
 				}
 
-				if (!stack.Contains(field.FieldType) && IsDeepClassEligibleType(field.FieldType, field.Name, field, annotations, services)) {
-					stack.Add(field.FieldType);
-					ComputeClassesDeep(field.FieldType, deepClasses, stack, annotations, services);
+				if (!stack.Contains(fieldType) && IsDeepClassEligibleType(fieldType, field.Name, field, annotations, services)) {
+					stack.Add(fieldType);
+					ComputeClassesDeep(fieldType, deepClasses, stack, annotations, services);
 					stack.RemoveLast();
 				}
 			}

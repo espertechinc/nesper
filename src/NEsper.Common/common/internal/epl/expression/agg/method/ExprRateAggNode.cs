@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.rate;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -34,19 +35,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (this.positionalParams.Length == 0) {
+            if (positionalParams.Length == 0) {
                 throw new ExprValidationException(
                     "The rate aggregation function minimally requires a numeric constant or expression as a parameter.");
             }
 
             // handle "ever"
-            ExprNode first = this.positionalParams[0];
+            var first = positionalParams[0];
             if (first.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                string messageX =
+                var messageX =
                     "The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation";
                 long intervalTime;
                 if (first is ExprTimePeriod) {
-                    double secInterval = ((ExprTimePeriod) first).EvaluateAsSeconds(null, true, null);
+                    var secInterval = ((ExprTimePeriod) first).EvaluateAsSeconds(null, true, null);
                     intervalTime =
                         validationContext.ImportService.TimeAbacus.DeltaForSecondsDouble(secInterval);
                 }
@@ -63,19 +64,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 }
 
                 if (optionalFilter == null) {
-                    this.positionalParams = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
+                    positionalParams = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
                 }
                 else {
-                    this.positionalParams = new ExprNode[] {optionalFilter};
+                    positionalParams = new ExprNode[] {optionalFilter};
                 }
 
                 return new AggregationForgeFactoryRate(this, true, intervalTime, validationContext.ImportService.TimeAbacus);
             }
 
-            string message =
-                "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
-            Type boxedParamOne = first.Forge.EvaluationType.GetBoxedType();
-            if (boxedParamOne != typeof(long?)) {
+            var message = "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
+            var boxedParamOne = first.Forge.EvaluationType.GetBoxedType();
+            if (!boxedParamOne.IsInt64()) {
                 throw new ExprValidationException(message);
             }
 
@@ -88,14 +88,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     "The rate aggregation function does not allow the current runtime timestamp as a parameter");
             }
 
-            if (this.positionalParams.Length > 1) {
-                if (!this.positionalParams[1].Forge.EvaluationType.IsNumeric()) {
+            if (positionalParams.Length > 1) {
+                if (!positionalParams[1].Forge.EvaluationType.IsNumeric()) {
                     throw new ExprValidationException(
                         "The rate aggregation function accepts an expression returning a numeric value to accumulate as an optional second parameter");
                 }
             }
 
-            bool hasDataWindows = ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
+            var hasDataWindows = ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
                 first,
                 validationContext.StreamTypeService,
                 validationContext.IsResettingAggregations);

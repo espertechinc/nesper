@@ -44,27 +44,27 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
         public EventBean[] NewDataChildView {
             get => newDataChildView;
-            set { this.newDataChildView = value; }
+            set { newDataChildView = value; }
         }
 
         public bool HasRemovestreamData {
-            set { this.hasRemovestreamData = value; }
+            set { hasRemovestreamData = value; }
             get { return hasRemovestreamData; }
         }
 
         public bool IsRetainObserverEvents {
             get => retainObserverEvents;
-            set { this.retainObserverEvents = value; }
+            set { retainObserverEvents = value; }
         }
 
         public bool IsDiscardObserverEvents {
             get => discardObserverEvents;
-            set { this.discardObserverEvents = value; }
+            set { discardObserverEvents = value; }
         }
 
         public ISet<EventBean> OldEvents {
             get => oldEvents;
-            set { this.oldEvents = value; }
+            set { oldEvents = value; }
         }
     }
 } // end of namespace

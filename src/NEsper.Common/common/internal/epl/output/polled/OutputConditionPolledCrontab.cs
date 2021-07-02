@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -19,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public sealed class OutputConditionPolledCrontab : OutputConditionPolled
     {
-        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly ExprEvaluatorContext _exprEvaluatorContext;
         private readonly OutputConditionPolledCrontabState _state;
 
         public OutputConditionPolledCrontab(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledCrontabState state)
         {
-            this._agentInstanceContext = agentInstanceContext;
-            this._state = state;
+            _exprEvaluatorContext = exprEvaluatorContext;
+            _state = state;
         }
 
         public OutputConditionPolledState State {
@@ -38,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             int newEventsCount,
             int oldEventsCount)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-                log.Debug(
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+                Log.Debug(
                     ".updateOutputCondition, " +
                     "  newEventsCount==" +
                     newEventsCount +
@@ -47,16 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                     oldEventsCount);
             }
 
-            bool output = false;
-            long currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            ImportServiceRuntime importService = _agentInstanceContext.ImportServiceRuntime;
+            var output = false;
+            var currentTime = _exprEvaluatorContext.TimeProvider.Time;
             if (_state.CurrentReferencePoint == null) {
                 _state.CurrentReferencePoint = currentTime;
                 _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
                     _state.ScheduleSpec,
                     currentTime,
-                    importService.TimeZone,
-                    importService.TimeAbacus);
+                    _exprEvaluatorContext.TimeZone,
+                    _exprEvaluatorContext.TimeAbacus);
                 output = true;
             }
 
@@ -64,14 +64,14 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
                     _state.ScheduleSpec,
                     currentTime,
-                    importService.TimeZone,
-                    importService.TimeAbacus);
+                    _exprEvaluatorContext.TimeZone,
+                    _exprEvaluatorContext.TimeAbacus);
                 output = true;
             }
 
             return output;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionPolledCrontab));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputConditionPolledCrontab));
     }
 } // end of namespace

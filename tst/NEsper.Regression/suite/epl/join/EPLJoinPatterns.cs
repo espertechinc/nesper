@@ -31,21 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> With2PatternJoinWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2PatternJoinWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> With2PatternJoinSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2PatternJoinSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternFilterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPatternFilterJoin());
             return execs;
         }

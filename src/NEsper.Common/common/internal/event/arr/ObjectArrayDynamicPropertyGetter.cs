@@ -19,11 +19,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayDynamicPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly string propertyName;
+        private readonly string _propertyName;
 
         public ObjectArrayDynamicPropertyGetter(string propertyName)
         {
-            this.propertyName = propertyName;
+            this._propertyName = propertyName;
         }
 
         public object GetObjectArray(object[] array)
@@ -38,12 +38,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object Get(EventBean eventBean)
         {
-            return GetOADynamicProp(eventBean, propertyName);
+            return GetOADynamicProp(eventBean, _propertyName);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            return IsExistsOADynamicProp(eventBean, propertyName);
+            return IsExistsOADynamicProp(eventBean, _propertyName);
         }
 
         public object GetFragment(EventBean eventBean)
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "GetOADynamicProp", beanExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetOADynamicProp", beanExpression, Constant(_propertyName));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "IsExistsOADynamicProp", beanExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "IsExistsOADynamicProp", beanExpression, Constant(_propertyName));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(

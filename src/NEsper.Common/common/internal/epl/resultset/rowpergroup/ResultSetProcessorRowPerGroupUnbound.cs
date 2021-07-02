@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             "mk",
                             LocalMethod(forge.GenerateGroupKeySingle, REF_EPS, ConstantTrue()))
                         .ExprDotMethod(Ref("groupReps"), "Put", Ref("mk"), Ref("aNewData"))
-                        .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ApplyEnter", REF_EPS, Ref("mk"), MEMBER_AGENTINSTANCECONTEXT);
+                        .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ApplyEnter", REF_EPS, Ref("mk"), MEMBER_EXPREVALCONTEXT);
                 }
             }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         .DeclareVar<object>(
                             "mk",
                             LocalMethod(forge.GenerateGroupKeySingle, REF_EPS, ConstantFalse()))
-                        .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ApplyLeave", REF_EPS, Ref("mk"), MEMBER_AGENTINSTANCECONTEXT);
+                        .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ApplyLeave", REF_EPS, Ref("mk"), MEMBER_EXPREVALCONTEXT);
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             "ApplyEnter",
                             REF_EPS,
                             ArrayAtIndex(Ref("newDataMultiKey"), Ref("i")),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                 }
             }
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             "ApplyLeave",
                             REF_EPS,
                             ArrayAtIndex(Ref("oldDataMultiKey"), Ref("i")),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                 }
             }
 
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             Ref("enumerator"),
                             Ref("this"),
                             MEMBER_AGGREGATIONSVC,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
             }
             else {
                 CodegenMethod getIteratorSorted = GetEnumeratorSortedCodegen(forge, classScope, instance);
@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenInstanceAux instance)
         {
             CodegenMethod shortcutEvalGivenKey =
-                ResultSetProcessorRowPerGroupImpl.ShortcutEvalGivenKeyCodegen(
+                ShortcutEvalGivenKeyCodegen(
                     forge.OptionalHavingNode,
                     classScope,
                     instance);
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         "ApplyEnter",
                         REF_NEWDATA,
                         Ref("groupKey"),
-                        MEMBER_AGENTINSTANCECONTEXT)
+                        MEMBER_EXPREVALCONTEXT)
                     .ExprDotMethod(Ref("groupReps"), "Put", Ref("groupKey"), ArrayAtIndex(REF_NEWDATA, Constant(0)))
                     .DeclareVar<EventBean>(
                         "istream",
@@ -249,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorRowPerGroupImpl.StopMethodCodegenBound(method, instance);
+            StopMethodCodegenBound(method, instance);
             method.Block.ExprDotMethod(Ref("groupReps"), "Destroy");
         }
     }

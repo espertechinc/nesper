@@ -106,6 +106,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 subselectActivations = SubSelectHelperStart.StartSubselects(
                     subselects,
                     agentInstanceContext,
+                    agentInstanceContext,
                     stopCallbacks,
                     isRecoveringResilient);
 

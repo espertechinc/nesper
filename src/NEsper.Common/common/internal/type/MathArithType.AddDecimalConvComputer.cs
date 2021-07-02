@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.type
                 Coercer convOne,
                 Coercer convTwo)
             {
-                this._convOne = convOne;
-                this._convTwo = convTwo;
+                _convOne = convOne;
+                _convTwo = convTwo;
             }
 
             public object Compute(

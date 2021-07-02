@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 			DataInputOutputSerdeForge forge,
 			CodegenClassScope classScope)
 		{
-			this._name = name;
-			this._valueType = valueType;
-			this._forge = forge;
-			this._classScope = classScope;
+			_name = name;
+			_valueType = valueType;
+			_forge = forge;
+			_classScope = classScope;
 		}
 
 		public Type Type()
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 
 			CodegenSharableSerdeName(string methodName)
 			{
-				this.MethodName = methodName;
+				MethodName = methodName;
 			}
 		}
 	}

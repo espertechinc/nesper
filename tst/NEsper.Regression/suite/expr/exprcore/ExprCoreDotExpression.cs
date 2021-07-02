@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -46,84 +47,84 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithToArray(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotToArray());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithCollectionSelectFromGetAndSize(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotCollectionSelectFromGetAndSize());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithNestedPropertyInstanceNW(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotNestedPropertyInstanceNW());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithNestedPropertyInstanceExpr(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotNestedPropertyInstanceExpr());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithArrayPropertySizeAndGetChained(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotArrayPropertySizeAndGetChained());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithArrayPropertySizeAndGet(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotArrayPropertySizeAndGet());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithChainedParameterized(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotChainedParameterized());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithChainedUnparameterized(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotChainedUnparameterized());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMapIndexPropertyRooted(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotMapIndexPropertyRooted());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithExpressionEnumValue(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotExpressionEnumValue());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithObjectEquals(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreDotObjectEquals());
 			return execs;
 		}
@@ -210,16 +211,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var fields = "c0,c1,c2,c3,c4".SplitCsv();
+				var fields = "c0,c1,c2,c3,c4,d5,c6".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean", "sb")
 					.WithExpression(fields[0], "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.GetAssociatedValue()")
 					.WithExpression(fields[1], "SupportEnumTwo.ENUM_VALUE_2.CheckAssociatedValue(IntPrimitive)")
 					.WithExpression(fields[2], "SupportEnumTwo.ENUM_VALUE_3.GetNested().GetValue()")
 					.WithExpression(fields[3], "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'IntPrimitive')")
-					.WithExpression(fields[4], "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'IntPrimitive')");
+					.WithExpression(fields[4], "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'IntPrimitive')")
+					.WithExpression(fields[5], "SupportEnumTwo.ENUM_VALUE_2.getMyStringsAsList()")
+					.WithExpression(fields[6], "SupportEnumTwo.ENUM_VALUE_2.getNested().getMyStringsNestedAsList()");
 
-				builder.WithAssertion(new SupportBean("E1", 100)).Expect(fields, true, false, 300, false, false);
-				builder.WithAssertion(new SupportBean("E1", 200)).Expect(fields, false, true, 300, true, true);
+				builder.WithStatementConsumer(stmt => {
+					Assert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c5"));
+					Assert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c6"));
+				});
+				
+				var strings = Arrays.AsList("2", "0", "0");
+				builder.WithAssertion(new SupportBean("E1", 100)).Expect(fields, true, false, 300, false, false, strings, strings);
+				builder.WithAssertion(new SupportBean("E1", 200)).Expect(fields, false, true, 300, true, true, strings, strings);
 
 				builder.Run(env);
 				env.UndeployAll();

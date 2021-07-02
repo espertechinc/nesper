@@ -19,18 +19,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public abstract class ThreeFormBaseFactory : EnumForgeDescFactory
 	{
-		private readonly Func<ExprDotEvalParamLambda, EPType> _returnType;
+		private readonly ThreeFormInitFunction _returnType;
 
 		protected abstract EnumForge MakeForgeWithParam(
 			ExprDotEvalParamLambda lambda,
-			EPType typeInfo,
+			EPChainableType typeInfo,
 			StatementCompileTimeServices services);
 
 		public abstract EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum);
 
-		public ThreeFormBaseFactory(Func<ExprDotEvalParamLambda, EPType> returnType)
+		public ThreeFormBaseFactory(ThreeFormInitFunction returnType)
 		{
-			this._returnType = returnType;
+			_returnType = returnType;
 		}
 
 		public EnumForgeDesc MakeEnumForgeDesc(
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 
 			ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-			EPType typeInfo = _returnType.Invoke(first);
+			EPChainableType typeInfo = _returnType.Invoke(first);
 			EnumForge forge = MakeForgeWithParam(first, typeInfo, services);
 			return new EnumForgeDesc(typeInfo, forge);
 		}

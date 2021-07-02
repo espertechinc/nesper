@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.util;
@@ -19,20 +20,20 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     /// </summary>
     public class SubselectBufferObserver : BufferObserver
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly EventTable[] eventIndex;
+        private readonly ExprEvaluatorContext _exprEvaluatorContext;
+        private readonly EventTable[] _eventIndex;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="eventIndex">index to update</param>
-        /// <param name="agentInstanceContext">agent instance context</param>
+        /// <param name="exprEvaluatorContext">expression evaluator context</param>
         public SubselectBufferObserver(
             EventTable[] eventIndex,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            this.eventIndex = eventIndex;
-            this.agentInstanceContext = agentInstanceContext;
+            _eventIndex = eventIndex;
+            _exprEvaluatorContext = exprEvaluatorContext;
         }
 
         public void NewData(
@@ -42,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         {
             var newData = newEventBuffer.GetAndFlush();
             var oldData = oldEventBuffer.GetAndFlush();
-            foreach (var table in eventIndex) {
-                table.AddRemove(newData, oldData, agentInstanceContext);
+            foreach (var table in _eventIndex) {
+                table.AddRemove(newData, oldData, _exprEvaluatorContext);
             }
         }
     }

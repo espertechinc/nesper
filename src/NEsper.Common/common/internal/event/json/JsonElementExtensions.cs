@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                JsonValueKind.String => Boolean.Parse(element.GetString()),
+                JsonValueKind.String => bool.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 JsonValueKind.Null => null,
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                JsonValueKind.String => Boolean.Parse(element.GetString()),
+                JsonValueKind.String => bool.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -217,7 +217,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetByte(),
-                JsonValueKind.String => Byte.Parse(element.GetString()),
+                JsonValueKind.String => byte.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetByte(),
-                JsonValueKind.String => Byte.Parse(element.GetString()),
+                JsonValueKind.String => byte.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -236,7 +236,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetInt16(),
-                JsonValueKind.String => Int16.Parse(element.GetString()),
+                JsonValueKind.String => short.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -246,7 +246,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetInt16(),
-                JsonValueKind.String => Int16.Parse(element.GetString()),
+                JsonValueKind.String => short.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetInt32(),
-                JsonValueKind.String => Int32.Parse(element.GetString()),
+                JsonValueKind.String => int.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetInt32(),
-                JsonValueKind.String => Int32.Parse(element.GetString()),
+                JsonValueKind.String => int.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -274,7 +274,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetInt64(),
-                JsonValueKind.String => Int64.Parse(element.GetString()),
+                JsonValueKind.String => long.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetInt64(),
-                JsonValueKind.String => Int64.Parse(element.GetString()),
+                JsonValueKind.String => long.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -293,7 +293,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetSingle(),
-                JsonValueKind.String => Single.Parse(element.GetString()),
+                JsonValueKind.String => float.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetSingle(),
-                JsonValueKind.String => Single.Parse(element.GetString()),
+                JsonValueKind.String => float.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetDouble(),
-                JsonValueKind.String => Double.Parse(element.GetString()),
+                JsonValueKind.String => double.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -322,7 +322,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetDouble(),
-                JsonValueKind.String => Double.Parse(element.GetString()),
+                JsonValueKind.String => double.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -331,7 +331,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetDecimal(),
-                JsonValueKind.String => Decimal.Parse(element.GetString()),
+                JsonValueKind.String => decimal.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -341,7 +341,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetDecimal(),
-                JsonValueKind.String => Decimal.Parse(element.GetString()),
+                JsonValueKind.String => decimal.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }

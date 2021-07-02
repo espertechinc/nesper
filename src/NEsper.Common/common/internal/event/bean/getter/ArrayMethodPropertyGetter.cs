@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, method.ReturnType.GetElementType(), null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, method.ReturnType.GetElementType())
         {
             _index = index;
             _method = method;
@@ -69,8 +69,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var underlying = eventBean.Underlying;
             return GetBeanPropInternalExists(underlying, _index);
         }
-
-        public override Type BeanPropType => _method.ReturnType.GetElementType();
 
         public override Type TargetType => _method.DeclaringType;
 
@@ -177,9 +175,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
+            var returnType = method.ReturnType.GetElementType().GetBoxedType();
+            var declaringType = method.DeclaringType;
             return codegenMethodScope
-                .MakeChild(method.ReturnType.GetElementType().GetBoxedType(), typeof(ArrayMethodPropertyGetter), codegenClassScope)
-                .AddParam(method.DeclaringType, "obj")
+                .MakeChild(returnType, typeof(ArrayMethodPropertyGetter), codegenClassScope)
+                .AddParam(declaringType, "obj")
                 .AddParam(typeof(int), "index")
                 .Block
                 .DeclareVar(method.ReturnType, "array", ExprDotMethod(Ref("obj"), method.Name))
@@ -198,12 +198,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
+            var returnType = method.ReturnType;
+            var declaringType = method.DeclaringType;
             return codegenMethodScope
                 .MakeChild(typeof(bool), typeof(ArrayMethodPropertyGetter), codegenClassScope)
-                .AddParam(method.DeclaringType, "obj")
+                .AddParam(declaringType, "obj")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar(method.ReturnType, "array", ExprDotMethod(Ref("obj"), method.Name))
+                .DeclareVar(returnType, "array", ExprDotMethod(Ref("obj"), method.Name))
                 .IfRefNullReturnFalse("array")
                 .IfConditionReturnConst(
                     Relational(

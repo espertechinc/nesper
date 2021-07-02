@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             object[] decoration)
         {
             IDictionary<string, object> result = new Dictionary<string, object>();
-            result.Put(ViewFieldEnum.CORRELATION__CORRELATION.GetName(), baseStatisticsBean.Correlation);
+            result.Put(ViewFieldEnum.CORRELATION_CORRELATION.GetName(), baseStatisticsBean.Correlation);
             additionalProps?.AddProperties(result, decoration);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
@@ -83,11 +83,11 @@ namespace com.espertech.esper.common.@internal.view.derived
             int streamNum)
         {
             var eventTypeMap = new LinkedHashMap<string, object>();
-            eventTypeMap.Put(ViewFieldEnum.CORRELATION__CORRELATION.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.CORRELATION_CORRELATION.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
                 eventTypeMap,
                 additionalProps,
-                ViewFieldEnum.CORRELATION__CORRELATION);
+                ViewFieldEnum.CORRELATION_CORRELATION);
             return DerivedViewTypeUtil.NewType("correlview", eventTypeMap, viewForgeEnv, streamNum);
         }
     }

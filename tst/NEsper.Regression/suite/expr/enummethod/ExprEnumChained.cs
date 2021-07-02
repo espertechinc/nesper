@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.sales;
 using com.espertech.esper.regressionlib.support.util;
@@ -22,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 "@Name('s0') select Sales.where(x -> x.Cost > 1000).min(y -> y.Buyer.Age) as val from PersonSales";
             env.CompileDeploy(eplFragment).AddListener("s0");
 
-            LambdaAssertionUtil.AssertTypes(
+            SupportEventPropUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 new [] { "val" },
                 new[] { typeof(int?) });

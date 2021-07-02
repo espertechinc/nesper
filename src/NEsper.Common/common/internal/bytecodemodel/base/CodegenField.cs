@@ -20,17 +20,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string clazz,
             string name,
             Type type,
-            Type optionalTypeParam,
             bool isFinal)
         {
             Clazz = clazz;
             Name = name;
             Type = type;
-            OptionalTypeParam = optionalTypeParam;
             IsFinal = isFinal;
         }
-
-        public Type OptionalTypeParam { get; }
 
         public string Clazz { get; }
 
@@ -63,14 +59,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public void MergeClasses(ISet<Type> classes)
         {
             classes.AddToSet(Type);
-            if (OptionalTypeParam != null) {
-                classes.AddToSet(OptionalTypeParam);
-            }
         }
 
         public void Render(StringBuilder builder)
         {
-            builder.Append(Clazz).Append('.').Append(Name);
+            builder
+                .Append(Clazz)
+                .Append('.')
+                .Append(Name);
         }
     }
 } // end of namespace

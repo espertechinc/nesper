@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set myvardummy = 'b'",
-                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression 'myvardummy=\"b\"': Variable 'myvardummy' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression 'myvardummy=\"b\"': Variable 'myvardummy' of declared type System.Int32 cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

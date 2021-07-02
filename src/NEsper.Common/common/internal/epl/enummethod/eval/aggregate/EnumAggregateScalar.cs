@@ -6,7 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -14,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -118,7 +123,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				block.DeclareVar<int>("count", Constant(-1));
 			}
 
-			var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+			var forEach = block
+				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.AssignArrayElement("props", Constant(0), Ref("value"))
 				.AssignArrayElement("props", Constant(1), Ref("next"));
 			if (_numParameters > 2) {
@@ -126,10 +132,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 					.IncrementRef("count")
 					.AssignArrayElement("props", Constant(2), Ref("count"));
 			}
-
-			forEach
-				.AssignRef("value", _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
-				.BlockEnd();
+			
+			
+			if (innerType.IsNullTypeSafe()) {
+				forEach.AssignRef("value", ConstantNull());
+			} else {
+				forEach.AssignRef("value", _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+			}
+			
+			forEach.BlockEnd();
 			
 			block.MethodReturn(Ref("value"));
 			

@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 		    SAIFFInitializeSymbol symbols,
 		    CodegenClassScope classScope)
 	    {
-		    CodegenMethod method = parent.MakeChild(typeof(VariableTriggerWriteArrayElement), this.GetType(), classScope);
+		    CodegenMethod method = parent.MakeChild(typeof(VariableTriggerWriteArrayElement), GetType(), classScope);
 		    method.Block
-			    .DeclareVar<VariableTriggerWriteArrayElement>("desc", NewInstance(typeof(VariableTriggerWriteArrayElement)))
+			    .DeclareVarNewInstance<VariableTriggerWriteArrayElement>("desc")
 			    .SetProperty(Ref("desc"), "VariableName", Constant(variableName))
 			    .SetProperty(
 				    Ref("desc"),
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 			    .SetProperty(
 				    Ref("desc"),
 				    "TypeWidener",
-				    widener == null ? ConstantNull() : TypeWidenerFactory.CodegenWidener(widener, method, this.GetType(), classScope))
+				    widener == null ? ConstantNull() : TypeWidenerFactory.CodegenWidener(widener, method, GetType(), classScope))
 			    .MethodReturn(Ref("desc"));
 		    return LocalMethod(method);
 	    }

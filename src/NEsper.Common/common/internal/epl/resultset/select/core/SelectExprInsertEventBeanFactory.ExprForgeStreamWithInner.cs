@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -24,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprEvaluator,
             ExprNodeRenderable
         {
-            private readonly Type componentReturnType;
+            private readonly Type _componentReturnType;
 
-            private readonly ExprForge inner;
+            private readonly ExprForge _inner;
 
             public ExprForgeStreamWithInner(
                 ExprForge inner,
                 Type componentReturnType)
             {
-                this.inner = inner;
-                this.componentReturnType = componentReturnType;
+                this._inner = inner;
+                this._componentReturnType = componentReturnType;
             }
 
             public object Evaluate(
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                var arrayType = TypeHelper.GetArrayType(componentReturnType);
+                var arrayType = TypeHelper.GetArrayType(_componentReturnType);
                 var methodNode = codegenMethodScope.MakeChild(arrayType, GetType(), codegenClassScope);
 
                 methodNode.Block
@@ -60,20 +61,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         "events",
                         CodegenExpressionBuilder.Cast(
                             typeof(EventBean[]),
-                            inner.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
+                            _inner.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
                     .IfRefNullReturnNull("events")
                     .DeclareVar(
                         arrayType,
                         "values",
                         CodegenExpressionBuilder.NewArrayByLength(
-                            componentReturnType,
+                            _componentReturnType,
                             CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events"))))
                     .ForLoopIntSimple("i", CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events")))
                     .AssignArrayElement(
                         "values",
                         CodegenExpressionBuilder.Ref("i"),
                         CodegenExpressionBuilder.Cast(
-                            componentReturnType,
+                            _componentReturnType,
                             CodegenExpressionBuilder.ExprDotUnderlying(
                                 CodegenExpressionBuilder.ArrayAtIndex(
                                     CodegenExpressionBuilder.Ref("events"),
@@ -83,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }
 
-            public Type EvaluationType => TypeHelper.GetArrayType(componentReturnType);
+            public Type EvaluationType => TypeHelper.GetArrayType(_componentReturnType);
 
             public ExprNodeRenderable ExprForgeRenderable => this;
 

@@ -24,23 +24,23 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public class FilterParamIndexBooleanExpr : FilterParamIndexBase
     {
-        private readonly IDictionary<ExprNodeAdapterBase, EventEvaluator> evaluatorsMap;
+        private readonly IDictionary<ExprNodeAdapterBase, EventEvaluator> _evaluatorsMap;
 
         public FilterParamIndexBooleanExpr(IReaderWriterLock readWriteLock)
             : base(FilterOperator.BOOLEAN_EXPRESSION)
         {
-            evaluatorsMap = new LinkedHashMap<ExprNodeAdapterBase, EventEvaluator>();
+            _evaluatorsMap = new LinkedHashMap<ExprNodeAdapterBase, EventEvaluator>();
             ReadWriteLock = readWriteLock;
         }
 
-        public override bool IsEmpty => evaluatorsMap.IsEmpty();
+        public override bool IsEmpty => _evaluatorsMap.IsEmpty();
 
         public override IReaderWriterLock ReadWriteLock { get; }
 
         public override EventEvaluator Get(object filterConstant)
         {
             var keyValues = (ExprNodeAdapterBase) filterConstant;
-            return evaluatorsMap.Get(keyValues);
+            return _evaluatorsMap.Get(keyValues);
         }
 
         public override void Put(
@@ -48,21 +48,21 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             EventEvaluator evaluator)
         {
             var keys = (ExprNodeAdapterBase) filterConstant;
-            evaluatorsMap.Put(keys, evaluator);
+            _evaluatorsMap.Put(keys, evaluator);
         }
 
         public override void Remove(object filterConstant)
         {
             var keys = (ExprNodeAdapterBase) filterConstant;
-            evaluatorsMap.Remove(keys);
+            _evaluatorsMap.Remove(keys);
         }
 
         public bool RemoveMayNotExist(object filterForValue)
         {
-            return evaluatorsMap.Remove((ExprNodeAdapterBase) filterForValue);
+            return _evaluatorsMap.Remove((ExprNodeAdapterBase) filterForValue);
         }
 
-        public override int CountExpensive => evaluatorsMap.Count;
+        public override int CountExpensive => _evaluatorsMap.Count;
 
         public override void MatchEvent(
             EventBean theEvent,
@@ -78,7 +78,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 if (InstrumentationHelper.ENABLED)
                 {
                     var i = -1;
-                    foreach (KeyValuePair<ExprNodeAdapterBase, EventEvaluator> evals in evaluatorsMap)
+                    foreach (KeyValuePair<ExprNodeAdapterBase, EventEvaluator> evals in _evaluatorsMap)
                     {
                         i++;
                         InstrumentationHelper.Get().QFilterBooleanExpr(i, evals);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 }
                 else
                 {
-                    foreach (KeyValuePair<ExprNodeAdapterBase, EventEvaluator> evals in evaluatorsMap)
+                    foreach (KeyValuePair<ExprNodeAdapterBase, EventEvaluator> evals in _evaluatorsMap)
                     {
                         if (evals.Key.Evaluate(theEvent))
                         {
@@ -112,7 +112,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<int> statementIds,
             ArrayDeque<FilterItem> evaluatorStack)
         {
-            foreach (KeyValuePair<ExprNodeAdapterBase, EventEvaluator> entry in evaluatorsMap) {
+            foreach (KeyValuePair<ExprNodeAdapterBase, EventEvaluator> entry in _evaluatorsMap) {
                 evaluatorStack.Add(new FilterItem(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator, entry));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();

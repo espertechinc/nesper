@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class DOMNestedPropertyGetter : EventPropertyGetterSPI,
         DOMPropertyGetter
     {
-        private readonly DOMPropertyGetter[] domGetterChain;
-        private readonly FragmentFactorySPI fragmentFactory;
+        private readonly DOMPropertyGetter[] _domGetterChain;
+        private readonly FragmentFactorySPI _fragmentFactory;
 
         /// <summary>
         ///     Ctor.
@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             IList<EventPropertyGetter> getterChain,
             FragmentFactorySPI fragmentFactory)
         {
-            domGetterChain = new DOMPropertyGetter[getterChain.Count];
-            this.fragmentFactory = fragmentFactory;
+            _domGetterChain = new DOMPropertyGetter[getterChain.Count];
+            this._fragmentFactory = fragmentFactory;
 
             var count = 0;
             foreach (var getter in getterChain) {
-                domGetterChain[count++] = (DOMPropertyGetter) getter;
+                _domGetterChain[count++] = (DOMPropertyGetter) getter;
             }
         }
 
@@ -52,25 +52,25 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return null;
             }
 
-            return fragmentFactory.GetEvent(result);
+            return _fragmentFactory.GetEvent(result);
         }
 
         public XmlNode[] GetValueAsNodeArray(XmlNode node)
         {
-            for (var i = 0; i < domGetterChain.Length - 1; i++) {
-                node = domGetterChain[i].GetValueAsNode(node);
+            for (var i = 0; i < _domGetterChain.Length - 1; i++) {
+                node = _domGetterChain[i].GetValueAsNode(node);
                 if (node == null) {
                     return null;
                 }
             }
 
-            return domGetterChain[domGetterChain.Length - 1].GetValueAsNodeArray(node);
+            return _domGetterChain[_domGetterChain.Length - 1].GetValueAsNodeArray(node);
         }
 
         public XmlNode GetValueAsNode(XmlNode node)
         {
-            for (var i = 0; i < domGetterChain.Length; i++) {
-                node = domGetterChain[i].GetValueAsNode(node);
+            for (var i = 0; i < _domGetterChain.Length; i++) {
+                node = _domGetterChain[i].GetValueAsNode(node);
                 if (node == null) {
                     return null;
                 }
@@ -139,15 +139,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             var value = (XmlNode) obj.Underlying;
 
-            for (var i = 0; i < domGetterChain.Length - 1; i++) {
-                value = domGetterChain[i].GetValueAsNode(value);
+            for (var i = 0; i < _domGetterChain.Length - 1; i++) {
+                value = _domGetterChain[i].GetValueAsNode(value);
 
                 if (value == null) {
                     return null;
                 }
             }
 
-            return domGetterChain[domGetterChain.Length - 1].GetValueAsFragment(value);
+            return _domGetterChain[_domGetterChain.Length - 1].GetValueAsFragment(value);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var member = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+                _fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")
                 .Block
@@ -232,15 +232,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var block = codegenMethodScope.MakeChild(typeof(XmlNode[]), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")
                 .Block;
-            for (var i = 0; i < domGetterChain.Length - 1; i++) {
+            for (var i = 0; i < _domGetterChain.Length - 1; i++) {
                 block.AssignRef(
                     "node",
-                    domGetterChain[i].GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope));
+                    _domGetterChain[i].GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope));
                 block.IfRefNullReturnNull("node");
             }
 
             return block.MethodReturn(
-                domGetterChain[domGetterChain.Length - 1]
+                _domGetterChain[_domGetterChain.Length - 1]
                     .GetValueAsNodeArrayCodegen(
                         Ref("node"),
                         codegenMethodScope,
@@ -254,10 +254,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var block = codegenMethodScope.MakeChild(typeof(XmlNode), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")
                 .Block;
-            for (var i = 0; i < domGetterChain.Length; i++) {
+            for (var i = 0; i < _domGetterChain.Length; i++) {
                 block.AssignRef(
                     "node",
-                    domGetterChain[i].GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope));
+                    _domGetterChain[i].GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope));
                 block.IfRefNullReturnNull("node");
             }
 
@@ -266,8 +266,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         private bool IsExistsProperty(XmlNode value)
         {
-            for (var i = 0; i < domGetterChain.Length; i++) {
-                value = domGetterChain[i].GetValueAsNode(value);
+            for (var i = 0; i < _domGetterChain.Length; i++) {
+                value = _domGetterChain[i].GetValueAsNode(value);
                 if (value == null) {
                     return false;
                 }
@@ -283,10 +283,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var block = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "value")
                 .Block;
-            for (var i = 0; i < domGetterChain.Length; i++) {
+            for (var i = 0; i < _domGetterChain.Length; i++) {
                 block.AssignRef(
                     "value",
-                    domGetterChain[i].GetValueAsNodeCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+                    _domGetterChain[i].GetValueAsNodeCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
                 block.IfRefNullReturnFalse("value");
             }
 
@@ -300,15 +300,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "value")
                 .Block;
-            for (var i = 0; i < domGetterChain.Length - 1; i++) {
+            for (var i = 0; i < _domGetterChain.Length - 1; i++) {
                 block.AssignRef(
                     "value",
-                    domGetterChain[i].GetValueAsNodeCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+                    _domGetterChain[i].GetValueAsNodeCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
                 block.IfRefNullReturnNull("value");
             }
 
             return block.MethodReturn(
-                domGetterChain[domGetterChain.Length - 1]
+                _domGetterChain[_domGetterChain.Length - 1]
                     .UnderlyingFragmentCodegen(
                         Ref("value"),
                         codegenMethodScope,

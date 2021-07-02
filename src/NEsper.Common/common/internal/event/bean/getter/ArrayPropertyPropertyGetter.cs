@@ -43,8 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                prop.PropertyType.GetElementType(),
-                null)
+                prop.PropertyType.GetElementType())
         {
             _index = index;
             _prop = prop;

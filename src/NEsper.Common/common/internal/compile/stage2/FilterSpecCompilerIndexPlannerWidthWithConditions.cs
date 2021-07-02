@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				var nonValueNodes = GetNonValueChildNodes(orNode);
 				var valueNodes = new List<ExprNode>(Arrays.AsList(orNode.ChildNodes));
 				valueNodes.RemoveAll(nonValueNodes);
-				ExprNode singleValueNode = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(valueNodes);
+				var singleValueNode = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(valueNodes);
 
 				// get all child nodes; last one is confirm if present
 				IList<ExprNode> allChildNodes = new List<ExprNode>(nonValueNodes);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			}
 
 			var pathArray = result.ToArray();
-			ExprNode topLevelConfirmer = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(pathControlConfirm);
+			var topLevelConfirmer = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(pathControlConfirm);
 
 			// determine when the path-negate condition is the same as the root confirm-expression
 			if (topLevelConfirmer != null) {
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			IList<ExprNode> nvPerOr = new List<ExprNode>(permutation.Length);
 			IList<ExprNode> negatingPath = new List<ExprNode>(permutation.Length);
 			for (var orNodeNum = 0; orNodeNum < permutation.Length; orNodeNum++) {
-				int orChildNodeNum = permutation[orNodeNum].AsInt32();
+				var orChildNodeNum = permutation[orNodeNum].AsInt32();
 				var current = orChildNodes[orNodeNum][orChildNodeNum];
 				if (current is OrChildNodeNV) {
 					var nv = (OrChildNodeNV) current;
@@ -223,8 +223,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				FilterSpecPlanPathTripletForge[] triplets,
 				ExprNode negateCondition)
 			{
-				this.Triplets = triplets;
-				this.NegateCondition = negateCondition;
+				Triplets = triplets;
+				NegateCondition = negateCondition;
 			}
 
 			public FilterSpecPlanPathTripletForge[] Triplets { get; }
@@ -240,7 +240,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 		{
 			public OrChildNodeV(ExprNode node)
 			{
-				this.Node = node;
+				Node = node;
 			}
 
 			public ExprNode Node { get; }
@@ -252,8 +252,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				ExprNode node,
 				FilterSpecParaForgeMap map)
 			{
-				this.Node = node;
-				this.Map = map;
+				Node = node;
+				Map = map;
 			}
 
 			public ExprNode Node { get; }
@@ -268,7 +268,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				FilterSpecParaForgeMap map,
 				ExprNode control) : base(node, map)
 			{
-				this.Control = control;
+				Control = control;
 			}
 
 			public ExprNode Control { get; }

@@ -35,49 +35,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithEventType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinEventType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinWhereJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereJoinOrNull(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinWhereJoinOrNull());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereNullEq(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinWhereNullEq());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereNullIs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinWhereNullIs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereNotNullNE(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinWhereNotNullNE());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereNotNullIs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinWhereNotNullIs());
             return execs;
         }

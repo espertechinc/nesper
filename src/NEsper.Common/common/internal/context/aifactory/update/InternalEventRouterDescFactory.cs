@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.assign;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -86,7 +87,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                                 throw new ExprValidationException("Property '" + propertyName + "' is not available for write access");
                             }
 
-                            if (!writableProperty.PropertyType.IsArray) {
+                            var writablePropertyType = writableProperty.PropertyType;
+                            if (writablePropertyType.IsNullTypeSafe() || !writablePropertyType.IsArray) {
                                 throw new ExprValidationException("Property '" + propertyName + "' type is not array");
                             }
 
@@ -95,7 +97,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                                 widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignment.Rhs),
                                     assignment.Rhs.Forge.EvaluationType,
-                                    writableProperty.PropertyType.GetElementType(),
+                                    writablePropertyType.GetElementType(),
                                     propertyName,
                                     false,
                                     null,

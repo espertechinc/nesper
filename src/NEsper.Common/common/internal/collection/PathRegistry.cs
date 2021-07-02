@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public void AddEntry(TK entityKey,
-            String moduleName,
+            string moduleName,
             PathDeploymentEntry<TE> entity)
         {
             CheckModuleNameParameter(moduleName);
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.collection
             return existing == null ? default(TE) : existing.GetWithModule(moduleName);
         }
         
-        public PathDeploymentEntry<TE> GetEntryWithModule(TK entityKey, String moduleName) {
+        public PathDeploymentEntry<TE> GetEntryWithModule(TK entityKey, string moduleName) {
             CheckModuleNameParameter(moduleName);
             return _entities.TryGetValue(entityKey, out var existing)
                 ? existing.GetEntryWithModule(moduleName)
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        public void TraverseWithModule(BiConsumer<String, TE> consumer) {
+        public void TraverseWithModule(BiConsumer<string, TE> consumer) {
             foreach (var entry in _entities) {
                 entry.Value.TraverseWithModule(consumer);
             }

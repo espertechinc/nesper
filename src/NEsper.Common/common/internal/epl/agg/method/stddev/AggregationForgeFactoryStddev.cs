@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
 			Type aggregatedValueType,
 			DataInputOutputSerdeForge distinctSerde)
 		{
-			this._parent = parent;
-			this._aggregatedValueType = aggregatedValueType;
-			this._distinctSerde = distinctSerde;
+			_parent = parent;
+			_aggregatedValueType = aggregatedValueType;
+			_distinctSerde = distinctSerde;
 		}
 
 		public override Type ResultType => typeof(double?);

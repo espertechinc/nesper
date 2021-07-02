@@ -40,56 +40,56 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithInvalidMulticolumn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinInvalidMulticolumn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRightOuterJoinS1RootS1(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinRightOuterJoinS1RootS1());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRightOuterJoinS2RootS2(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinRightOuterJoinS2RootS2());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftOuterJoinRootS0(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftOuterJoinRootS0());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftOuterJoinRootS0Compiled(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftOuterJoinRootS0Compiled());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftOuterJoinRootS0OM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftOuterJoinRootS0OM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftJoin2SidesMulticolumn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftJoin2SidesMulticolumn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMapLeftJoinUnsortedProps(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMapLeftJoinUnsortedProps());
             return execs;
         }

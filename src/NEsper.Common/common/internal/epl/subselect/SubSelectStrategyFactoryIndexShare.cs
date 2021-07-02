@@ -23,36 +23,36 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
     public class SubSelectStrategyFactoryIndexShare : SubSelectStrategyFactory
     {
-        private AggregationServiceFactory aggregationServiceFactory;
-        private ExprEvaluator filterExprEval;
-        private ExprEvaluator groupKeyEval;
+        private AggregationServiceFactory _aggregationServiceFactory;
+        private ExprEvaluator _filterExprEval;
+        private ExprEvaluator _groupKeyEval;
 
-        private NamedWindow namedWindow;
-        private SubordinateQueryPlanDesc queryPlan;
-        private Table table;
+        private NamedWindow _namedWindow;
+        private SubordinateQueryPlanDesc _queryPlan;
+        private Table _table;
 
         public NamedWindow NamedWindow {
-            set => namedWindow = value;
+            set => _namedWindow = value;
         }
 
         public Table Table {
-            set => table = value;
+            set => _table = value;
         }
 
         public SubordinateQueryPlanDesc QueryPlan {
-            set => queryPlan = value;
+            set => _queryPlan = value;
         }
 
         public AggregationServiceFactory AggregationServiceFactory {
-            set => aggregationServiceFactory = value;
+            set => _aggregationServiceFactory = value;
         }
 
         public ExprEvaluator GroupKeyEval {
-            set => groupKeyEval = value;
+            set => _groupKeyEval = value;
         }
 
         public ExprEvaluator FilterExprEval {
-            set => filterExprEval = value;
+            set => _filterExprEval = value;
         }
 
         public void Ready(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
         public SubSelectStrategyRealization Instantiate(
             Viewable viewableRoot,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             IList<AgentInstanceMgmtCallback> stopCallbackList,
             int subqueryNumber,
             bool isRecoveringResilient)
@@ -72,10 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             SubselectAggregationPreprocessorBase subselectAggregationPreprocessor = null;
 
             AggregationService aggregationService = null;
-            if (aggregationServiceFactory != null) {
-                aggregationService = aggregationServiceFactory.MakeService(
-                    agentInstanceContext,
-                    agentInstanceContext.ImportServiceRuntime,
+            if (_aggregationServiceFactory != null) {
+                aggregationService = _aggregationServiceFactory.MakeService(
+                    exprEvaluatorContext,
                     true,
                     subqueryNumber,
                     null);
@@ -86,55 +85,55 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                         ProcStop = services => { aggregationServiceStoppable.Stop(); }
                     });
 
-                if (groupKeyEval == null) {
-                    if (filterExprEval == null) {
+                if (_groupKeyEval == null) {
+                    if (_filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredUngrouped(
                             aggregationService,
-                            filterExprEval,
+                            _filterExprEval,
                             null);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredUngrouped(
                             aggregationService,
-                            filterExprEval,
+                            _filterExprEval,
                             null);
                     }
                 }
                 else {
-                    if (filterExprEval == null) {
+                    if (_filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredGrouped(
                             aggregationService,
-                            filterExprEval,
-                            groupKeyEval);
+                            _filterExprEval,
+                            _groupKeyEval);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredGrouped(
                             aggregationService,
-                            filterExprEval,
-                            groupKeyEval);
+                            _filterExprEval,
+                            _groupKeyEval);
                     }
                 }
             }
 
             SubordTableLookupStrategy subqueryLookup;
-            if (namedWindow != null) {
-                var instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
-                if (queryPlan == null) {
+            if (_namedWindow != null) {
+                var instance = _namedWindow.GetNamedWindowInstance(exprEvaluatorContext);
+                if (_queryPlan == null) {
                     subqueryLookup = new SubordFullTableScanLookupStrategyLocking(
                         instance.RootViewInstance.DataWindowContents,
-                        agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock);
+                        exprEvaluatorContext.AgentInstanceLock);
                 }
                 else {
-                    var indexes = new EventTable[queryPlan.IndexDescs.Length];
+                    var indexes = new EventTable[_queryPlan.IndexDescs.Length];
                     for (var i = 0; i < indexes.Length; i++) {
                         indexes[i] =
                             instance.RootViewInstance.IndexRepository.GetIndexByDesc(
-                                queryPlan.IndexDescs[i].IndexMultiKey);
+                                _queryPlan.IndexDescs[i].IndexMultiKey);
                     }
 
-                    subqueryLookup = queryPlan.LookupStrategyFactory.MakeStrategy(
+                    subqueryLookup = _queryPlan.LookupStrategyFactory.MakeStrategy(
                         indexes,
-                        agentInstanceContext,
+                        exprEvaluatorContext,
                         instance.RootViewInstance.VirtualDataWindow);
                     subqueryLookup = new SubordIndexedTableLookupStrategyLocking(
                         subqueryLookup,
@@ -142,20 +141,20 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 }
             }
             else {
-                var instance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
-                var @lock = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables
+                var instance = _table.GetTableInstance(exprEvaluatorContext.AgentInstanceId);
+                var @lock = exprEvaluatorContext.IsWritesToTables
                     ? instance.TableLevelRWLock.WriteLock
                     : instance.TableLevelRWLock.ReadLock;
-                if (queryPlan == null) {
+                if (_queryPlan == null) {
                     subqueryLookup = new SubordFullTableScanTableLookupStrategy(@lock, instance.IterableTableScan);
                 }
                 else {
-                    var indexes = new EventTable[queryPlan.IndexDescs.Length];
+                    var indexes = new EventTable[_queryPlan.IndexDescs.Length];
                     for (var i = 0; i < indexes.Length; i++) {
-                        indexes[i] = instance.IndexRepository.GetIndexByDesc(queryPlan.IndexDescs[i].IndexMultiKey);
+                        indexes[i] = instance.IndexRepository.GetIndexByDesc(_queryPlan.IndexDescs[i].IndexMultiKey);
                     }
 
-                    subqueryLookup = queryPlan.LookupStrategyFactory.MakeStrategy(indexes, agentInstanceContext, null);
+                    subqueryLookup = _queryPlan.LookupStrategyFactory.MakeStrategy(indexes, exprEvaluatorContext, null);
                     subqueryLookup = new SubordIndexedTableLookupTableStrategy(subqueryLookup, @lock);
                 }
             }
@@ -170,8 +169,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 null);
         }
 
-        public LookupStrategyDesc LookupStrategyDesc => queryPlan == null
+        public LookupStrategyDesc LookupStrategyDesc => _queryPlan == null
             ? LookupStrategyDesc.SCAN
-            : queryPlan.LookupStrategyFactory.LookupStrategyDesc;
+            : _queryPlan.LookupStrategyFactory.LookupStrategyDesc;
     }
 } // end of namespace

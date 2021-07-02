@@ -44,8 +44,8 @@ namespace NEsper.Avro.SelectExprRep
         {
             _selectExprForgeContext = selectExprForgeContext;
             _resultEventTypeAvro = (AvroEventType) resultEventTypeAvro;
-
             _forges = new ExprForge[selectExprForgeContext.ExprForges.Length];
+            
             var typeWidenerCustomizer =
                 selectExprForgeContext.EventTypeAvroHandler.GetTypeWidenerCustomizer(resultEventTypeAvro);
             for (var i = 0; i < _forges.Length; i++) {
@@ -153,7 +153,7 @@ namespace NEsper.Avro.SelectExprRep
                 return new SelectExprProcessorEvalByGetterFragmentAvroArray(
                     eval.StreamNum,
                     eval.Getter,
-                    typeof(ICollection<object>));
+                    typeof(ICollection<GenericRecord>));
             }
 
             if (eval.EvaluationType == typeof(GenericRecord)) {

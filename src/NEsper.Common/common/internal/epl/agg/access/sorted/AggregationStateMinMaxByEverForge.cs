@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class AggregationStateMinMaxByEverForge : AggregationStateFactoryForge
     {
         internal readonly AggregationForgeFactoryAccessSorted factory;
-        private AggregatorAccessSortedMinMaxByEver aggregator;
+        private AggregatorAccessSortedMinMaxByEver _aggregator;
 
         public AggregationStateMinMaxByEverForge(AggregationForgeFactoryAccessSorted factory)
         {
             this.factory = factory;
         }
 
-        public AggregatorAccess Aggregator => aggregator;
+        public AggregatorAccess Aggregator => _aggregator;
 
         public SortedAggregationStateDesc Spec => factory.OptionalSortedStateDesc;
 
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope)
         {
-            aggregator = new AggregatorAccessSortedMinMaxByEver(
+            _aggregator = new AggregatorAccessSortedMinMaxByEver(
                 this,
                 col,
                 ctor,

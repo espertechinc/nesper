@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -28,6 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         private readonly EventType eventType;
         private readonly string indexedProp;
         private readonly DataInputOutputSerdeForge serde;
+        private readonly StateMgmtSetting stateMgmtSettings;
 
         public PropertySortedFactoryFactoryForge(
             int indexedStreamNum,
@@ -36,13 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             string indexedProp,
             EventType eventType,
             CoercionDesc coercionDesc,
-            DataInputOutputSerdeForge serde)
+            DataInputOutputSerdeForge serde,
+            StateMgmtSetting stateMgmtSettings)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             this.indexedProp = indexedProp;
             this.eventType = eventType;
             this.coercionDesc = coercionDesc;
             this.serde = serde;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
 
         public override Type EventTableClass => typeof(PropertySortedEventTable);
@@ -72,6 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
                 classScope);
             @params.Add(getter);
             @params.Add(serde.Codegen(method, classScope, null));
+            @params.Add(stateMgmtSettings.ToExpression());
 
             return @params;
         }

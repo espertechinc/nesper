@@ -20,14 +20,14 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
 	public class ExprStreamUnderlyingNodeEnumerationForge : ExprEnumerationForge {
-	    private readonly string streamName;
-	    private readonly int streamNum;
-	    private readonly EventType eventType;
+	    private readonly string _streamName;
+	    private readonly int _streamNum;
+	    private readonly EventType _eventType;
 
 	    public ExprStreamUnderlyingNodeEnumerationForge(string streamName, int streamNum, EventType eventType) {
-	        this.streamName = streamName;
-	        this.streamNum = streamNum;
-	        this.eventType = eventType;
+	        this._streamName = streamName;
+	        this._streamNum = streamNum;
+	        this._eventType = eventType;
 	    }
 
 	    public Type ComponentTypeCollection => null;
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 	    }
 
 	    public EventType GetEventTypeSingle(StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices) {
-	        return eventType;
+	        return _eventType;
 	    }
 
 	    public CodegenExpression EvaluateGetROCollectionEventsCodegen(CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
@@ -49,18 +49,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 	    }
 
 	    public CodegenExpression EvaluateGetEventBeanCodegen(CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ArrayAtIndex(exprSymbol.GetAddEPS(codegenMethodScope), Constant(streamNum));
+	        return ArrayAtIndex(exprSymbol.GetAddEPS(codegenMethodScope), Constant(_streamNum));
 	    }
 
 
 	    public ExprNodeRenderable EnumForgeRenderable {
 		    get {
 			    return new ProxyExprNodeRenderable() {
-				    ProcToEPL = (
+				    procToEPL = (
 					    writer,
 					    parentPrecedence,
 					    flags) => {
-					    writer.Write(streamName);
+					    writer.Write(_streamName);
 				    },
 			    };
 		    }
@@ -69,18 +69,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 	    public ExprEnumerationEval ExprEvaluatorEnumeration {
 		    get {
 			    return new ProxyExprEnumerationEval() {
-				    ProcEvaluateGetROCollectionEvents = (
+				    procEvaluateGetRoCollectionEvents = (
 					    eventsPerStream,
 					    isNewData,
 					    context) => null,
-				    ProcEvaluateGetROCollectionScalar = (
+				    procEvaluateGetRoCollectionScalar = (
 					    eventsPerStream,
 					    isNewData,
 					    context) => null,
-				    ProcEvaluateGetEventBean = (
+				    procEvaluateGetEventBean = (
 					    eventsPerStream,
 					    isNewData,
-					    context) => eventsPerStream[streamNum],
+					    context) => eventsPerStream[_streamNum],
 			    };
 		    }
 	    }

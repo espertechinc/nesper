@@ -147,6 +147,8 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
+
+            writer.Write(' ');
         }
     }
 }

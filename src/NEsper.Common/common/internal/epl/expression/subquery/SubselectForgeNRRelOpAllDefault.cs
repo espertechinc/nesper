@@ -9,11 +9,13 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -23,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRRelOpAllDefault : SubselectForgeNRRelOpBase
     {
-        private readonly ExprForge filterOrHavingEval;
+        private readonly ExprForge _filterOrHavingEval;
 
         public SubselectForgeNRRelOpAllDefault(
             ExprSubselectNode subselect,
@@ -39,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 resultWhenNoMatchingEvents,
                 computer)
         {
-            this.filterOrHavingEval = filterOrHavingEval;
+            this._filterOrHavingEval = filterOrHavingEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -47,6 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             method.Block
                 .DeclareVar<bool>("hasRows", ConstantFalse())
@@ -57,11 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(NAME_EPS, Constant(0), Ref("subselectEvent"));
-                if (filterOrHavingEval != null) {
+                if (_filterOrHavingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                         @foreach,
-                        filterOrHavingEval.EvaluationType,
-                        filterOrHavingEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
+                        _filterOrHavingEval.EvaluationType,
+                        _filterOrHavingEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
                 }
 
                 @foreach.AssignRef("hasRows", ConstantTrue());

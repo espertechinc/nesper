@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
             }
 
             method.Block
-                .DeclareVar<ClassProvided>("cp", NewInstance(typeof(ClassProvided)))
+                .DeclareVarNewInstance<ClassProvided>("cp")
                 .SetProperty(Ref("cp"), "Assembly", Ref("assembly"))
                 .SetProperty(Ref("cp"), "ClassName", Constant(ClassName))
                 .SetProperty(Ref("cp"), "ModuleName", Constant(ModuleName))

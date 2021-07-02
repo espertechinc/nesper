@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanCopyMethodWithArrayMap : EventBeanCopyMethod
     {
-        private readonly int[] arrayIndexesToCopy;
-        private readonly EventBeanTypedEventFactory eventAdapterService;
-        private readonly ObjectArrayEventType eventType;
-        private readonly int[] mapIndexesToCopy;
+        private readonly int[] _arrayIndexesToCopy;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
+        private readonly ObjectArrayEventType _eventType;
+        private readonly int[] _mapIndexesToCopy;
 
         public ObjectArrayEventBeanCopyMethodWithArrayMap(
             ObjectArrayEventType eventType,
@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int[] mapIndexesToCopy,
             int[] arrayIndexesToCopy)
         {
-            this.eventType = eventType;
-            this.eventAdapterService = eventAdapterService;
-            this.mapIndexesToCopy = mapIndexesToCopy;
-            this.arrayIndexesToCopy = arrayIndexesToCopy;
+            this._eventType = eventType;
+            this._eventAdapterService = eventAdapterService;
+            this._mapIndexesToCopy = mapIndexesToCopy;
+            this._arrayIndexesToCopy = arrayIndexesToCopy;
         }
 
         public EventBean Copy(EventBean theEvent)
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var shallowCopy = new object[props.Length];
             Array.Copy(props, 0, shallowCopy, 0, props.Length);
 
-            foreach (var index in mapIndexesToCopy) {
+            foreach (var index in _mapIndexesToCopy) {
                 var innerMap = (IDictionary<string, object>) shallowCopy[index];
                 if (innerMap != null) {
                     var copy = new Dictionary<string, object>(innerMap);
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 }
             }
 
-            foreach (var index in arrayIndexesToCopy) {
+            foreach (var index in _arrayIndexesToCopy) {
                 var array = shallowCopy[index] as Array;
                 if (array != null && array.Length != 0) {
                     var elementType = array.GetType().GetElementType();
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 }
             }
 
-            return eventAdapterService.AdapterForTypedObjectArray(shallowCopy, eventType);
+            return _eventAdapterService.AdapterForTypedObjectArray(shallowCopy, _eventType);
         }
     }
 } // end of namespace

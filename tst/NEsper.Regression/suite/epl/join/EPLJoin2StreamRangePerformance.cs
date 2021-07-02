@@ -38,35 +38,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithUnidirectionalRelOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerfUnidirectionalRelOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeyAndRangeInverted(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerfKeyAndRangeInverted());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeyAndRange(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerfKeyAndRange());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRelationalOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerfRelationalOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeyAndRangeOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerfKeyAndRangeOuterJoin());
             return execs;
         }

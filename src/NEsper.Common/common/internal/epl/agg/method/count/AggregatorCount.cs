@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -64,12 +66,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             }
 
             var evalType = forges[0].EvaluationType.GetBoxedType();
-            method.Block.DeclareVar(
-                evalType,
-                "value",
-                forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
-            if (evalType.CanBeNull()) {
-                method.Block.IfRefNull("value").BlockReturnNoValue();
+            if (evalType.IsNullTypeSafe()) {
+                method.Block.DeclareVar<object>("value", ConstantNull());
+            }
+            else {
+                method.Block.DeclareVar(
+                    evalType,
+                    "value",
+                    forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
+                if (evalType.CanBeNull()) {
+                    method.Block.IfRefNull("value").BlockReturnNoValue();
+                }
             }
 
             if (distinct != null) {
@@ -123,12 +130,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             }
 
             var evalType = forges[0].EvaluationType.GetBoxedType();
-            method.Block.DeclareVar(
-                evalType,
-                "value",
-                forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
-            if (evalType.CanBeNull()) {
-                method.Block.IfRefNull("value").BlockReturnNoValue();
+            if (evalType.IsNullTypeSafe()) {
+                method.Block.DeclareVar<object>("value", ConstantNull());
+            }
+            else {
+                method.Block.DeclareVar(
+                    evalType,
+                    "value",
+                    forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
+                if (evalType.CanBeNull()) {
+                    method.Block.IfRefNull("value").BlockReturnNoValue();
+                }
             }
 
             if (distinct != null) {

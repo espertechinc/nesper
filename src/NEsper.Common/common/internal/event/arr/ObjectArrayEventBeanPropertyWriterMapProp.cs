@@ -18,21 +18,21 @@ namespace com.espertech.esper.common.@internal.@event.arr
 {
     public class ObjectArrayEventBeanPropertyWriterMapProp : ObjectArrayEventBeanPropertyWriter
     {
-        private readonly string key;
+        private readonly string _key;
 
         public ObjectArrayEventBeanPropertyWriterMapProp(
             int propertyIndex,
             string key)
             : base(propertyIndex)
         {
-            this.key = key;
+            this._key = key;
         }
 
         public override void Write(
             object value,
             object[] array)
         {
-            ObjectArrayWriteMapProp(value, array, index, key);
+            ObjectArrayWriteMapProp(value, array, index, _key);
         }
 
         public override CodegenExpression WriteCodegen(
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 assigned,
                 underlying,
                 Constant(index),
-                Constant(key));
+                Constant(_key));
         }
 
         /// <summary>

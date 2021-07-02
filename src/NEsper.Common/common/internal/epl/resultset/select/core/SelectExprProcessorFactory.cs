@@ -188,6 +188,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             // Determine wildcard processor (select *)
             if (IsWildcardsOnly(args.SelectionList)) {
+                if (args.TypeService.EventTypes.Length == 0) {
+                    throw new ExprValidationException("Wildcard cannot be used when the from-clause is not provided");
+                }
                 // For joins
                 if (args.TypeService.StreamNames.Length > 1 && !(insertIntoTarget is VariantEventType)) {
                     Log.Debug(".getProcessor Using SelectExprJoinWildcardProcessor");

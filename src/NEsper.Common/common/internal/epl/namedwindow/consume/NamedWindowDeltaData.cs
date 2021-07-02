@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             NamedWindowDeltaData deltaOne,
             NamedWindowDeltaData deltaTwo)
         {
-            this.newData = Aggregate(deltaOne.NewData, deltaTwo.NewData);
-            this.oldData = Aggregate(deltaOne.OldData, deltaTwo.OldData);
+            newData = Aggregate(deltaOne.NewData, deltaTwo.NewData);
+            oldData = Aggregate(deltaOne.OldData, deltaTwo.OldData);
         }
 
         /// <summary>

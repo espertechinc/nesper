@@ -34,37 +34,38 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            if (method.ReturnType.IsArray) {
-                var componentType = method.ReturnType.GetElementType();
+            var methodReturnType = method.ReturnType;
+            if (methodReturnType.IsArray) {
+                var componentType = methodReturnType.GetElementType();
                 if (componentType == typeof(EventBean)) {
                     var eventType = RequireEventType(method, optionalEventTypeName, validationContext);
                     return new ExprDotStaticMethodWrapEventBeanArr(eventType);
                 }
 
-                if (componentType == null || componentType.IsBuiltinDataType()) {
-                    return new ExprDotStaticMethodWrapArrayScalar(method.Name, method.ReturnType);
+                if (componentType.IsBuiltinDataType()) {
+                    return new ExprDotStaticMethodWrapArrayScalar(method.Name, methodReturnType);
                 }
 
                 var type = MakeBeanType(method.Name, componentType, validationContext);
                 return new ExprDotStaticMethodWrapArrayEvents(null, type);
             }
 
-            if (method.ReturnType.IsGenericCollection()) {
+            if (methodReturnType.IsGenericCollection()) {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);
                 if (genericType == typeof(EventBean)) {
                     var eventType = RequireEventType(method, optionalEventTypeName, validationContext);
                     return new ExprDotStaticMethodWrapEventBeanColl(eventType);
                 }
 
-                if (genericType == null) {
+                if (genericType.IsBuiltinDataType()) {
                     return new ExprDotStaticMethodWrapCollection(method.Name, genericType);
                 }
             }
 
-            if (method.ReturnType.IsGenericEnumerable()) {
+            if (methodReturnType.IsGenericEnumerable()) {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);
-                if (genericType == null) {
-                    return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType, method.ReturnType);
+                if (genericType.IsBuiltinDataType()) {
+                    return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType, methodReturnType);
                 }
 
                 var type = MakeBeanType(method.Name, genericType, validationContext);

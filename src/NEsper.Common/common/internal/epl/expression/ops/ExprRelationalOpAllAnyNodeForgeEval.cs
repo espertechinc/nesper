@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprRelationalOpAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -55,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var isAll = _forge.ForgeRenderable.IsAll;
-            RelationalOpEnumComputer computer = _forge.Computer;
+            var computer = _forge.Computer;
             var valueLeft = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             var len = _evaluators.Length - 1;
 
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         hasRows = true;
                         var arrayLength = valueRightArray.Length;
                         for (var index = 0; index < arrayLength; index++) {
-                            object item = valueRightArray.GetValue(index);
+                            var item = valueRightArray.GetValue(index);
                             if (item == null) {
                                 if (isAll) {
                                     return null;
@@ -100,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     else if (valueRight is IDictionary<object, object>) {
                         var coll = (IDictionary<object, object>) valueRight;
                         hasRows = true;
-                        foreach (object item in coll.Keys) {
+                        foreach (var item in coll.Keys) {
                             if (!(item.IsNumber())) {
                                 if (isAll && item == null) {
                                     return null;
@@ -127,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     else if (valueRight is ICollection<object>) {
                         var coll = (ICollection<object>) valueRight;
                         hasRows = true;
-                        foreach (object item in coll) {
+                        foreach (var item in coll) {
                             if (!(item.IsNumber())) {
                                 if (isAll && item == null) {
                                     return null;
@@ -265,6 +266,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 typeof(ExprRelationalOpAllAnyNodeForgeEval),
                 codegenClassScope);
 
+            // when null-type value and "all" the result is always null
+            if (isAll) {
+                for (int i = 1; i < forges.Length; i++) {
+                    var refType = forges[i].EvaluationType;
+                    if (refType.IsNullTypeSafe()) {
+                        methodNode.Block.MethodReturn(ConstantNull());
+                        return LocalMethod(methodNode);
+                    }
+                }
+            }
+            
             var block = methodNode.Block
                 .DeclareVar<bool>("hasNonNullRow", ConstantFalse())
                 .DeclareVar(
@@ -273,23 +285,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     forges[0].EvaluateCodegen(valueLeftType, methodNode, exprSymbol, codegenClassScope));
 
             for (var i = 1; i < forges.Length; i++) {
-                var refforge = forges[i];
-                var refname = "r" + i;
-                var reftype = refforge.EvaluationType;
+                var refForge = forges[i];
+                var refName = "r" + i;
+                var refType = refForge.EvaluationType;
+                if (refType.IsNullTypeSafe() && !isAll) {
+                    continue;
+                }
+                
                 block.DeclareVar(
-                    reftype,
-                    refname,
-                    refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
+                    refType,
+                    refName,
+                    refForge.EvaluateCodegen(refType, methodNode, exprSymbol, codegenClassScope));
 
-                if (reftype.IsArray) {
-                    var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                if (refType.IsArray) {
+                    var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refName)));
                     {
-                        var forLoopArray = blockIfNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refname)));
+                        var componentType = refType.GetElementType().GetBoxedType();
+                        var forLoopArray = blockIfNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refName)));
                         {
                             forLoopArray.DeclareVar(
-                                Boxing.GetBoxedType(reftype.GetElementType()),
+                                componentType,
                                 "item",
-                                ArrayAtIndex(Ref(refname), Ref("index")));
+                                ArrayAtIndex(Ref(refName), Ref("index")));
                             var ifItemNull = forLoopArray.IfCondition(EqualsNull(Ref("item")));
                             {
                                 if (isAll) {
@@ -315,13 +332,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                     }
                 }
-                else if (reftype.IsGenericDictionary()) {
-                    var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                else if (refType.IsGenericDictionary()) {
+                    var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refName)));
                     {
                         var forEach = blockIfNotNull.ForEach(
                             typeof(object),
                             "item",
-                            ExprDotName(Ref(refname), "Keys"));
+                            ExprDotName(Ref(refName), "Keys"));
                         {
                             var ifNotNumber = forEach.IfCondition(Not(InstanceOf(Ref("item"), typeof(object))));
                             {
@@ -348,10 +365,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                     }
                 }
-                else if (reftype.IsGenericCollection()) {
-                    var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                else if (refType.IsGenericCollection()) {
+                    var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refName)));
                     {
-                        var forEach = blockIfNotNull.ForEach(typeof(object), "item", Ref(refname));
+                        var forEach = blockIfNotNull.ForEach(typeof(object), "item", Ref(refName));
                         {
                             var ifNotNumber = forEach.IfCondition(Not(InstanceOf(Ref("item"), typeof(object))));
                             {
@@ -379,10 +396,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                 }
                 else if (!TypeHelper.IsSubclassOrImplementsInterface(
-                    Boxing.GetBoxedType(reftype),
+                    refType.GetBoxedType(),
                     typeof(object))) {
-                    if (reftype.CanBeNull()) {
-                        block.IfRefNullReturnNull(refname);
+                    if (refType.CanBeNull()) {
+                        block.IfRefNullReturnNull(refName);
                     }
 
                     block.AssignRef("hasNonNullRow", ConstantTrue());
@@ -391,20 +408,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                 }
                 else {
-                    if (reftype.CanNotBeNull()) {
+                    if (refType.CanNotBeNull()) {
                         block.AssignRef("hasNonNullRow", ConstantTrue());
                         block.IfCondition(
                                 NotOptional(
                                     isAll,
-                                    forge.Computer.Codegen(Ref("valueLeft"), valueLeftType, Ref(refname), reftype)))
+                                    forge.Computer.Codegen(Ref("valueLeft"), valueLeftType, Ref(refName), refType)))
                             .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                     }
                     else {
                         if (isAll) {
-                            block.IfRefNullReturnNull(refname);
+                            block.IfRefNullReturnNull(refName);
                         }
 
-                        var ifRefNotNull = block.IfRefNotNull(refname);
+                        var ifRefNotNull = block.IfRefNotNull(refName);
                         {
                             ifRefNotNull.AssignRef("hasNonNullRow", ConstantTrue());
                             var ifLeftNotNull = ifRefNotNull.IfCondition(NotEqualsNull(Ref("valueLeft")));
@@ -414,7 +431,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                         forge.Computer.Codegen(
                                             Ref("valueLeft"),
                                             valueLeftType,
-                                            Ref(refname),
+                                            Ref(refName),
                                             typeof(object))))
                                 .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                         }

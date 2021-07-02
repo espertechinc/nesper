@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type inputValueType)
             : base(distinct)
         {
-            this.HasFilter = hasFilter;
-            this.InputValueType = inputValueType;
+            HasFilter = hasFilter;
+            InputValueType = inputValueType;
         }
 
         protected abstract void CodegenInlineSetWFilterWInputType(

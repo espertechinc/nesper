@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             var writersExpr = MakeWriters(writers, method, symbols, classScope);
             
             method.Block
-                .DeclareVar<InternalEventRouterDesc>("ire", NewInstance(typeof(InternalEventRouterDesc)))
+                .DeclareVarNewInstance<InternalEventRouterDesc>("ire")
                 .SetProperty(Ref("ire"), "Wideners", MakeWideners(wideners, method, classScope))
                 .SetProperty(Ref("ire"), "EventType", eventTypeExpr)
                 .SetProperty(Ref("ire"), "OptionalWhereClauseEval", optionalWhereClauseExpr)

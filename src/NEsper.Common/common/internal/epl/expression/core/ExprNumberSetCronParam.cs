@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public const string METHOD_HANDLENUMBERSETCRONPARAMNULLVALUE = "HandleNumberSetCronParamNullValue";
 
-        [NonSerialized] private ExprEvaluator evaluator;
+        [NonSerialized] private ExprEvaluator _evaluator;
 
         /// <summary>
         ///     Ctor.
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return new CronParameter(CronOperator, null);
             }
 
-            var value = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var value = _evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (value == null) {
                 HandleNumberSetCronParamNullValue();
                 return new CronParameter(CronOperator, null);
@@ -165,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
 
-            evaluator = forge.ExprEvaluator;
+            _evaluator = forge.ExprEvaluator;
             return null;
         }
 

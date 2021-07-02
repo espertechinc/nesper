@@ -23,6 +23,7 @@ namespace com.espertech.esper.regressionrun.runner
     {
         private const string TEST_CONFIG_FACTORY_CLASS = "CONFIGFACTORY_CLASS";
         private const string SYSTEM_PROPERTY_LOG_CODE = "esper_logcode";
+        private const string SYSTEM_PROPERTY_LOG_PATH = "esper_logcode";
 
         public static Configuration GetConfiguration()
         {
@@ -63,20 +64,8 @@ namespace com.espertech.esper.regressionrun.runner
                 // Compiler
                 config.Compiler.ByteCode.AttachEPL = true;
 
-                if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
-                    try {
-                        Directory.Delete(config.Compiler.Logging.AuditDirectory, true);
-                    }
-                    catch (DirectoryNotFoundException) {
-                    }
-
-                    Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
-                }
-
-                if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
-                {
-                    config.Compiler.Logging.EnableCode = true;
-                }
+                config.Compiler.Logging.AuditDirectory = Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_PATH);
+                config.Compiler.Logging.EnableCode = true;
             }
 
             return config;

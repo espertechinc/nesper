@@ -88,12 +88,12 @@ namespace com.espertech.esper.common.@internal.view.firstevent
 
         public override string ToString()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public EventBean FirstEvent {
-            get => this.firstEvent;
-            set => this.firstEvent = value;
+            get => firstEvent;
+            set => firstEvent = value;
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)

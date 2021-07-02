@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.common.client.util;
+
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
@@ -16,7 +18,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public static class ConstructorHelper
     {
-        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] {typeof(object[])};
+        private static readonly Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] {typeof(object[])};
 
         /// <summary>
         /// Find and invoke constructor matching the argument number and types returning an instance of given class.

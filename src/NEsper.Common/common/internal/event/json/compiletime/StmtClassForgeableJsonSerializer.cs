@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var serializeMethod = CodegenMethod
-				.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(JsonSerializationContext), "context")
 				.AddParam(typeof(object), "underlying");
 			MakeSerialize(serializeMethod, classScope);

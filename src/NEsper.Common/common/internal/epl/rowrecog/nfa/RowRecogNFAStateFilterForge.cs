@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             method.Block.SetProperty(
                 eval,
                 "Expression",
-                ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
+                ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
             if (classScope.IsInstrumented) {
                 method.Block.SetProperty(
                     eval,

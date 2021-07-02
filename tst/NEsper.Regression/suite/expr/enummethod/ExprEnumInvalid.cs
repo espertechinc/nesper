@@ -182,35 +182,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				"Property named 'IntPrimitive' is not valid in any stream");
 			
 			// invalid incompatible params
-			epl = "select Contained.allOf(x => 1) from SupportBean_ST0_Container";
-			SupportMessageAssertUtil.TryInvalidCompile(
-				env,
-				epl,
-				"Failed to validate select-clause expression 'Contained.allOf()': " +
-				"Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 " +
-				"[select Contained.allOf(x => 1) from SupportBean_ST0_Container]");
-
-			// invalid incompatible params
-			epl = "select Contained.allOf(x => 1) from SupportBean_ST0_Container";
-			SupportMessageAssertUtil.TryInvalidCompile(
-				env,
-				epl,
-				"Failed to validate select-clause expression 'Contained.allOf()': " +
-				"Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 " +
-				"[select Contained.allOf(x => 1) from SupportBean_ST0_Container]");
-			
-			// invalid incompatible params
-			epl = "select Contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
-			SupportMessageAssertUtil.TryInvalidCompile(
-				env,
-				epl,
-				"Failed to validate select-clause expression 'Contained.aggregate(0,)': " +
-				"Failed to validate enumeration method 'aggregate' parameter 1: " + 
-				"Failed to validate declared expression body expression 'result||\",\"': " +
-				"Implicit conversion from datatype 'System.Nullable<System.Int32>' to System.String is not allowed " +
-				"[select Contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]");
-
-			// invalid incompatible params
 			epl = "select Contained.average(x => x.Id) from SupportBean_ST0_Container";
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,

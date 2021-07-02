@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         }
 
         public ExprEvaluator Expression {
-            set { this.expression = value; }
+            set { expression = value; }
         }
     }
 } // end of namespace

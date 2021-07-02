@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprCaseNode : ExprNodeBase
     {
-        [NonSerialized] private ExprCaseNodeForge forge;
+        [NonSerialized] private ExprCaseNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
@@ -45,15 +46,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -73,8 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             foreach (var pair in analysis.WhenThenNodeList) {
                 if (!IsCase2) {
-                    var returnType = pair.First.Forge.EvaluationType;
-                    if (returnType != typeof(bool) && returnType != typeof(bool?)) {
+                    if (!pair.First.Forge.EvaluationType.IsBoolean()) {
                         throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
                     }
                 }
@@ -95,16 +95,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     var coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
 
                     // Determine if we need to coerce numbers when one type doesn't match any other type
-                    if (coercionType.IsNumeric()) {
-                        mustCoerce = false;
-                        foreach (var comparedType in comparedTypes) {
-                            if (comparedType != coercionType) {
-                                mustCoerce = true;
+                    if (coercionType != null) {
+                        if (coercionType.IsNumeric()) {
+                            foreach (var comparedType in comparedTypes) {
+                                if (comparedType != coercionType) {
+                                    mustCoerce = true;
+                                    break;
+                                }
                             }
-                        }
 
-                        if (mustCoerce) {
-                            coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionType);
+                            if (mustCoerce) {
+                                coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionType);
+                            }
                         }
                     }
                 }
@@ -117,8 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             IList<Type> childTypes = new List<Type>();
             IList<IDictionary<string, object>> childMapTypes = new List<IDictionary<string, object>>();
             foreach (var pair in analysis.WhenThenNodeList) {
-                if (pair.Second.Forge is ExprTypableReturnForge) {
-                    var typableReturn = (ExprTypableReturnForge) pair.Second.Forge;
+                if (pair.Second.Forge is ExprTypableReturnForge typableReturn) {
                     var rowProps = typableReturn.RowProperties;
                     if (rowProps != null) {
                         childMapTypes.Add(rowProps);
@@ -130,14 +131,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             if (analysis.OptionalElseExprNode != null) {
-                if (analysis.OptionalElseExprNode.Forge is ExprTypableReturnForge) {
-                    var typableReturn = (ExprTypableReturnForge) analysis.OptionalElseExprNode.Forge;
+                if (analysis.OptionalElseExprNode.Forge is ExprTypableReturnForge typableReturn) {
                     var rowProps = typableReturn.RowProperties;
                     if (rowProps != null) {
                         childMapTypes.Add(rowProps);
                     }
                     else {
-                        childTypes.Add(analysis.OptionalElseExprNode.Forge.EvaluationType);
+                        childTypes.Add(typableReturn.EvaluationType);
                     }
                 }
                 else {
@@ -152,8 +152,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 var count = -1;
                 foreach (var pair in analysis.WhenThenNodeList) {
                     count++;
-                    if (pair.Second.Forge.EvaluationType != null &&
-                        pair.Second.Forge.EvaluationType.IsNotGenericDictionary()) {
+                    var forgeEvaluationType = pair.Second.Forge.EvaluationType;
+                    if (forgeEvaluationType != null &&
+                        forgeEvaluationType.IsNotGenericDictionary()) {
                         check = ", check when-condition number " + count;
                         throw new ExprValidationException(message + check);
                     }
@@ -171,14 +172,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             IDictionary<string, object> mapResultType = null;
-            Type resultType = null;
+            Type resultType;
             var isNumericResult = false;
             if (childMapTypes.IsEmpty()) {
                 // Determine common denominator type
                 try {
-                    resultType = TypeHelper
+                    var coercionType = TypeHelper
                         .GetCommonCoercionType(childTypes.ToArray())
                         .GetBoxedType();
+                    if (coercionType.IsNullType()) {
+                        throw new ExprValidationException("Null-type return value is not allowed");
+                    }
+
+                    resultType = coercionType;
                     if (resultType.IsNumeric()) {
                         isNumericResult = true;
                     }
@@ -207,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCaseNodeForge(
+            _forge = new ExprCaseNodeForge(
                 this,
                 resultType,
                 mapResultType,

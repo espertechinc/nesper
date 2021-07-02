@@ -9,6 +9,7 @@
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _yEval = yEval;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -45,10 +46,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                 GetType(),
                 classScope);
             method.Block
-                .DeclareVar<ExprFilterSpecLookupable>(
-                    "lookupable",
-                    LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
+                .DeclareVar<ExprFilterSpecLookupable>("lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue<FilterOperator>(filterOperator.GetName()))
                 .DeclareVar<FilterSpecParamAdvancedIndexQuadTreePointRegion>(
                     "fpai",
                     NewInstance<FilterSpecParamAdvancedIndexQuadTreePointRegion>(Ref("lookupable"), Ref("filterOperator")))
@@ -61,7 +60,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                     "YEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_yEval, GetType(), classScope, method))
                 .MethodReturn(Ref("fpai"));
-            return method;
+            
+            return LocalMethod(method);
         }
 
         public override bool Equals(object obj)

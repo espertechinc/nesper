@@ -117,12 +117,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             if (_namespaceScope.FieldsClassName != null) {
                 method.Block.AssignRef(
                     MEMBERNAME_STATEMENT_FIELDS,
-                    NewInstanceInner(_namespaceScope.FieldsClassName));
+                    NewInstanceNamed(_namespaceScope.FieldsClassName));
             }
 
             method.Block.AssignMember(
                 MEMBERNAME_FACTORY_PROVIDER,
-                NewInstanceInner(_statementAiFactoryClassName, REF_STMTINITSVC, Ref(MEMBERNAME_STATEMENT_FIELDS)));
+                NewInstanceNamed(_statementAiFactoryClassName, REF_STMTINITSVC, Ref(MEMBERNAME_STATEMENT_FIELDS)));
             return method;
         }
 

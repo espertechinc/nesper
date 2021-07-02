@@ -28,13 +28,14 @@ namespace com.espertech.esper.common.@internal.view.union
         LastPostObserver,
         AgentInstanceMgmtCallback,
         DataWindowView,
-        ViewDataVisitableContainer
+        ViewDataVisitableContainer,
+        RelatedView
     {
-        protected internal readonly AgentInstanceContext agentInstanceContext;
+        private readonly AgentInstanceContext agentInstanceContext;
         private readonly EventBean[][] oldEventsPerView;
         private readonly IList<EventBean> removalEvents = new List<EventBean>();
-        protected internal readonly RefCountedSet<EventBean> unionWindow;
-        protected internal readonly View[] views;
+        private readonly RefCountedSet<EventBean> unionWindow;
+        private readonly View[] views;
         private bool isDiscardObserverEvents;
 
         private bool isHasRemovestreamData;
@@ -71,6 +72,8 @@ namespace com.espertech.esper.common.@internal.view.union
 
         public UnionViewFactory ViewFactory { get; }
 
+        public View[] RelatedViews => views;
+        
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {

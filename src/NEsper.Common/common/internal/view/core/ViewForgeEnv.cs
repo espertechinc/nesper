@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -59,5 +60,9 @@ namespace com.espertech.esper.common.@internal.view.core
         public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => args.CompileTimeServices.SerdeEventTypeRegistry;
 
         public SerdeCompileTimeResolver SerdeResolver => args.CompileTimeServices.SerdeResolver;
+        
+        public StateMgmtSettingsProvider StateMgmtSettingsProvider =>  args.CompileTimeServices.StateMgmtSettingsProvider;
+
+        public bool IsSubquery => args.IsSubquery;
     }
 } // end of namespace

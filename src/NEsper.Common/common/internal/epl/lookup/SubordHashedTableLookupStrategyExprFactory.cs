@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             bool isNWOnTrigger,
             int numStreamsOuter)
         {
-            this.ExpressionTexts = expressionTexts;
-            this.Evaluator = evaluator;
-            this.IsNWOnTrigger = isNWOnTrigger;
-            this.NumStreamsOuter = numStreamsOuter;
+            ExpressionTexts = expressionTexts;
+            Evaluator = evaluator;
+            IsNWOnTrigger = isNWOnTrigger;
+            NumStreamsOuter = numStreamsOuter;
         }
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             if (IsNWOnTrigger) {

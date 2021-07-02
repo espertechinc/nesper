@@ -40,17 +40,94 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLVariableUseSimplePreconfigured());
-            execs.Add(new EPLVariableUseSimpleSameModule());
-            execs.Add(new EPLVariableUseSimpleTwoModules());
-            execs.Add(new EPLVariableUseEPRuntime());
-            execs.Add(new EPLVariableUseDotSeparateThread());
-            execs.Add(new EPLVariableUseInvokeMethod());
-            execs.Add(new EPLVariableUseConstantVariable());
-            execs.Add(new EPLVariableUseVariableInFilterBoolean());
-            execs.Add(new EPLVariableUseVariableInFilter());
-            execs.Add(new EPLVariableUseFilterConstantCustomTypePreconfigured());
+            WithSimplePreconfigured(execs);
+            WithSimpleSameModule(execs);
+            WithSimpleTwoModules(execs);
+            WithEPRuntime(execs);
+            WithDotSeparateThread(execs);
+            WithInvokeMethod(execs);
+            WithConstantVariable(execs);
+            WithVariableInFilterBoolean(execs);
+            WithVariableInFilter(execs);
+            WithFilterConstantCustomTypePreconfigured(execs);
+            WithWVarargs(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWVarargs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLVariableUseWVarargs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterConstantCustomTypePreconfigured(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseFilterConstantCustomTypePreconfigured());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariableInFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseVariableInFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariableInFilterBoolean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseVariableInFilterBoolean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConstantVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseConstantVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvokeMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseInvokeMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDotSeparateThread(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseDotSeparateThread());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEPRuntime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseEPRuntime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimpleTwoModules(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseSimpleTwoModules());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimpleSameModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseSimpleSameModule());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimplePreconfigured(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableUseSimplePreconfigured());
             return execs;
         }
 
@@ -637,7 +714,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "create constant variable SupportBean[] var_beans",
-                    "Cannot create variable 'var_beans', type 'SupportBean' cannot be declared as an array type as it is an event type [create constant variable SupportBean[] var_beans]");
+                    "Cannot create variable 'var_beans', type 'SupportBean' cannot be declared as an array type and cannot receive type parameters as it is an event type");
 
                 // test array of primitives
                 env.CompileDeploy("@Name('s0') create variable byte[] myBytesBoxed");
@@ -722,10 +799,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             {
                 var runtimeSPI = (EPVariableServiceSPI) env.Runtime.VariableService;
                 var types = runtimeSPI.VariableTypeAll;
-                Assert.AreEqual(typeof(int?), types.Get(new DeploymentIdNamePair(null, "var1")));
+                Assert.AreEqual(typeof(int), types.Get(new DeploymentIdNamePair(null, "var1")));
                 Assert.AreEqual(typeof(string), types.Get(new DeploymentIdNamePair(null, "var2")));
 
-                Assert.AreEqual(typeof(int?), runtimeSPI.GetVariableType(null, "var1"));
+                Assert.AreEqual(typeof(int), runtimeSPI.GetVariableType(null, "var1"));
                 Assert.AreEqual(typeof(string), runtimeSPI.GetVariableType(null, "var2"));
 
                 var stmtTextSet = "on SupportBean set var1 = IntPrimitive, var2 = TheString";

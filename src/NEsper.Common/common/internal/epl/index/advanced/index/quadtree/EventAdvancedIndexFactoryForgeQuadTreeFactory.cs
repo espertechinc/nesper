@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
     public abstract class EventAdvancedIndexFactoryForgeQuadTreeFactory : EventAdvancedIndexFactory
     {
         public AdvancedIndexConfigContextPartition ConfigureContextPartition(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             EventType eventType,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc,
             EventTableOrganization organization)
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             return AdvancedIndexFactoryProviderQuadTree.ConfigureQuadTree(
                 organization.IndexName,
                 advancedIndexProvisionDesc.ParameterEvaluators,
-                agentInstanceContext);
+                exprEvaluatorContext);
         }
 
         public abstract EventAdvancedIndexFactoryForge Forge { get; }

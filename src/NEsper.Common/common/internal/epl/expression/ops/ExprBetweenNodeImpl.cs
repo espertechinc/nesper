@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -86,47 +87,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Must be either numeric or string
             var forges = ExprNodeUtilityQuery.GetForges(ChildNodes);
-            var typeOne = forges[0].EvaluationType.GetBoxedType();
-            var typeTwo = forges[1].EvaluationType.GetBoxedType();
-            var typeThree = forges[2].EvaluationType.GetBoxedType();
-
-            if (typeOne == null) {
+            var evalForge = forges[0];
+            var evalType = evalForge.EvaluationType.GetBoxedType();
+            if (evalType.IsNullTypeSafe()) {
                 throw new ExprValidationException("Null value not allowed in between-clause");
             }
+            
+            var startForge = forges[1];
+            var startType = startForge.EvaluationType;
+            var endForge = forges[2];
+            var endType = endForge.EvaluationType;
 
             Type compareType;
             var isAlwaysFalse = false;
             ExprBetweenComp computer = null;
-            if (typeTwo == null || typeThree == null) {
+            if (startType.IsNullTypeSafe() || endType.IsNullTypeSafe()) {
                 isAlwaysFalse = true;
             }
             else {
-                if (typeOne != typeof(string) || typeTwo != typeof(string) || typeThree != typeof(string)) {
-                    if (!typeOne.IsNumeric()) {
-                        throw new ExprValidationException(
-                            "Implicit conversion from datatype '" +
-                            typeOne.CleanName() +
-                            "' to numeric is not allowed");
-                    }
+                if (evalType != typeof(string)
+                    || startType != typeof(string)
+                    || endType != typeof(string)) {
 
-                    if (!typeTwo.IsNumeric()) {
-                        throw new ExprValidationException(
-                            "Implicit conversion from datatype '" +
-                            typeTwo.CleanName() +
-                            "' to numeric is not allowed");
-                    }
-
-                    if (!typeThree.IsNumeric()) {
-                        throw new ExprValidationException(
-                            "Implicit conversion from datatype '" +
-                            typeThree.CleanName() +
-                            "' to numeric is not allowed");
-                    }
+                    ExprNodeUtilityValidate.ValidateReturnsNumeric(evalForge);
+                    ExprNodeUtilityValidate.ValidateReturnsNumeric(startForge);
+                    ExprNodeUtilityValidate.ValidateReturnsNumeric(endForge);
                 }
 
-                var intermedType = typeOne.GetCompareToCoercionType(typeTwo);
-                compareType = intermedType.GetCompareToCoercionType(typeThree);
-                computer = MakeComputer(compareType, typeOne, typeTwo, typeThree);
+                var intermedType = evalType.GetCompareToCoercionType(startType);
+                compareType = intermedType.GetCompareToCoercionType(endType);
+                computer = MakeComputer(compareType, evalType, startType, endType);
             }
 
             _forge = new ExprBetweenNodeForge(this, computer, isAlwaysFalse);
@@ -155,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNodeRenderableFlags flags)
         {
             IList<ExprNode> children = ChildNodes;
-            using (IEnumerator<ExprNode> enumerator = children.GetEnumerator()) {
+            using (var enumerator = children.GetEnumerator()) {
                 if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
                     enumerator.Advance().ToEPL(writer, Precedence, flags);
                     if (IsNotBetween) {
@@ -733,9 +723,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     method = block.MethodReturn(ConstantFalse());
                 }
 
-                CodegenExpression valueCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(value, valueType);
-                CodegenExpression lowerCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(lower, lowerType);
-                CodegenExpression higherCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(higher, higherType);
+                var valueCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(value, valueType);
+                var lowerCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(lower, lowerType);
+                var higherCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(higher, higherType);
                 return LocalMethod(method, valueCoerced, lowerCoerced, higherCoerced);
             }
         }

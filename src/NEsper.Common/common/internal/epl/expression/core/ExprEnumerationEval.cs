@@ -36,16 +36,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
     public class ProxyExprEnumerationEval : ExprEnumerationEval
     {
-        public Func<EventBean[], bool, ExprEvaluatorContext, ICollection<EventBean>> ProcEvaluateGetROCollectionEvents;
-        public Func<EventBean[], bool, ExprEvaluatorContext, ICollection<object>> ProcEvaluateGetROCollectionScalar;
-        public Func<EventBean[], bool, ExprEvaluatorContext, EventBean> ProcEvaluateGetEventBean;
+        public Func<EventBean[], bool, ExprEvaluatorContext, ICollection<EventBean>> procEvaluateGetRoCollectionEvents;
+        public Func<EventBean[], bool, ExprEvaluatorContext, ICollection<object>> procEvaluateGetRoCollectionScalar;
+        public Func<EventBean[], bool, ExprEvaluatorContext, EventBean> procEvaluateGetEventBean;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateGetROCollectionEvents(
+            return procEvaluateGetRoCollectionEvents(
                 eventsPerStream,
                 isNewData,
                 context);
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateGetROCollectionScalar(
+            return procEvaluateGetRoCollectionScalar(
                 eventsPerStream,
                 isNewData,
                 context);
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateGetEventBean(
+            return procEvaluateGetEventBean(
                 eventsPerStream,
                 isNewData,
                 context);

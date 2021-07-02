@@ -36,21 +36,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithEnumerationSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoEnumerationSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTypableAndCaseNew(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.MAP));
             execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.OBJECTARRAY));
             execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.JSON));
@@ -59,14 +59,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithTypableNewOperatorDocSample(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTypableNewOperatorDocSample());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTypableSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTypableSubquery());
             return execs;
         }

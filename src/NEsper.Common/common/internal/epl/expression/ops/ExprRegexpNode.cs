@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -58,17 +59,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // check pattern child node
-            var patternChildType = ChildNodes[1].Forge.EvaluationType;
-            if (patternChildType != typeof(string)) {
+            var patternType = ChildNodes[1].Forge.EvaluationType;
+            if (patternType != typeof(string)) {
                 throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
             }
 
             var constantPattern = ChildNodes[1].Forge.ForgeConstantType.IsCompileTimeConstant;
 
             // check eval child node - can be String or numeric
-            var evalChildType = ChildNodes[0].Forge.EvaluationType;
-            var isNumericValue = TypeHelper.IsNumeric(evalChildType);
-            if ((evalChildType != typeof(string)) && (!isNumericValue)) {
+            var evalType = ChildNodes[0].Forge.EvaluationType;
+            var isNumericValue = TypeHelper.IsNumeric(evalType);
+            if ((evalType != typeof(string)) && (!isNumericValue)) {
                 throw new ExprValidationException(
                     "The regexp operator requires a String or numeric type left-hand expression");
             }

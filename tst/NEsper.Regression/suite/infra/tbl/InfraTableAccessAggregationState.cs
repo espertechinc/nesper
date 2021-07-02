@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithNestedMultivalueAccess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNestedMultivalueAccess(false, false));
             execs.Add(new InfraNestedMultivalueAccess(true, false));
             execs.Add(new InfraNestedMultivalueAccess(false, true));
@@ -43,21 +43,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithTableAccessGroupedThreeKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableAccessGroupedThreeKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableAccessGroupedMixed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableAccessGroupedMixed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAccessAggShare(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraAccessAggShare());
             return execs;
         }

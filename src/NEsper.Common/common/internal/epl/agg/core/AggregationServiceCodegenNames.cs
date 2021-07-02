@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceCodegenNames
     {
-        public const string NAME_ENGINEIMPORTSVC = "classpathImportService";
         public const string NAME_ISSUBQUERY = "isSubquery";
         public const string NAME_SUBQUERYNUMBER = "subqueryNumber";
         public const string NAME_GROUPKEY = "groupKey";
@@ -25,7 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public const string NAME_COLUMN = "column";
         public const string NAME_GROUPID = "groupId";
 
-        public static readonly CodegenExpressionRef REF_ENGINEIMPORTSVC = Ref(NAME_ENGINEIMPORTSVC);
         public static readonly CodegenExpressionRef REF_ISSUBQUERY = Ref(NAME_ISSUBQUERY);
         public static readonly CodegenExpressionRef REF_SUBQUERYNUMBER = Ref(NAME_SUBQUERYNUMBER);
         public static readonly CodegenExpressionRef REF_GROUPKEY = Ref(NAME_GROUPKEY);

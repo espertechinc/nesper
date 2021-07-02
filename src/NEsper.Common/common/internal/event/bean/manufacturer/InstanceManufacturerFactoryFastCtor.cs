@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     public class InstanceManufacturerFactoryFastCtor : InstanceManufacturerFactory
     {
-        private readonly ExprForge[] forges;
+        private readonly ExprForge[] _forges;
 
         public InstanceManufacturerFactoryFastCtor(
             Type targetClass,
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             TargetClass = targetClass;
             Ctor = ctor;
-            this.forges = forges;
+            this._forges = forges;
         }
 
         public Type TargetClass { get; }
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public InstanceManufacturer MakeEvaluator()
         {
-            return new InstanceManufacturerFastCtor(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(forges));
+            return new InstanceManufacturerFastCtor(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_forges));
         }
 
         public CodegenExpression Codegen(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 exprSymbol,
                 codegenClassScope,
                 Ctor,
-                forges);
+                _forges);
         }
     }
 } // end of namespace

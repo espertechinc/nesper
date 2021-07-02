@@ -28,14 +28,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithUnderlyingCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowUnderlyingCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleColumn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowSingleColumn());
             return execs;
         }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -148,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
         public override string ToString()
         {
-            return "EvalMatchUntilNode children=" + this.ChildNodes.Count;
+            return "EvalMatchUntilNode children=" + ChildNodes.Count;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -179,6 +180,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                 writer.Write(" until ");
                 ChildNodes[1].ToEPL(writer, Precedence);
             }
+        }
+
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_MATCHUNTIL;
         }
     }
 } // end of namespace

@@ -39,11 +39,12 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				}
 
 				if (type.IsArray) {
-					SerdeProvision componentSerde = DetermineSerdeFromProviders(type.GetElementType(), serdeProviders, additionalInfo);
+					var componentType = type.GetElementType();
+					var componentSerde = DetermineSerdeFromProviders(componentType, serdeProviders, additionalInfo);
 					if (componentSerde != null) {
 						return new SerdeProvisionParameterized(
 							typeof(DIONullableObjectArraySerde),
-							vars => Constant(type.GetElementType()),
+							vars => Constant(componentType),
 							vars => componentSerde.ToForge().Codegen(vars.Method, vars.Scope, vars.OptionalEventTypeResolver));
 					}
 				}
@@ -66,10 +67,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				return null;
 			}
 
-			SerdeProviderContextClass context = new SerdeProviderContextClass(type, additionalInfo);
-			foreach (SerdeProvider provider in serdeProviders) {
+			var context = new SerdeProviderContextClass(type, additionalInfo);
+			foreach (var provider in serdeProviders) {
 				try {
-					SerdeProvision serde = provider.ResolveSerdeForClass(context);
+					var serde = provider.ResolveSerdeForClass(context);
 					if (serde != null) {
 						return serde;
 					}

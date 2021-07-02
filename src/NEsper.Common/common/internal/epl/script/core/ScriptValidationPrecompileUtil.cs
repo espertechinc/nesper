@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 #endif
             
             if (script.ParameterNames.Length != 0) {
-                var parameters = new HashSet<String>();
+                var parameters = new HashSet<string>();
                 foreach (var param in script.ParameterNames) {
                     if (parameters.Contains(param)) {
                         throw new ExprValidationException(

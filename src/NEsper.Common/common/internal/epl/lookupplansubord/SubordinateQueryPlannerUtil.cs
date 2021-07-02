@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.lookup;
@@ -209,7 +210,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                         0,
                         desc.QueryPlanIndexItem,
                         eventType,
-                        true,
                         desc.QueryPlanIndexItem.IsUnique,
                         desc.IndexName,
                         null,

@@ -166,13 +166,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public IList<ExpressionScriptProvided> ScriptExpressions { get; set; }
         
-        public IList<String> ClassProvidedList { get; set; }
+        public IList<string> ClassProvidedList { get; set; }
 
         public CreateDataFlowDesc CreateDataFlowDesc { get; set; }
 
         public CreateExpressionDesc CreateExpressionDesc { get; set; }
         
-        public String CreateClassProvided { get; set; }
+        public string CreateClassProvided { get; set; }
 
         public FireAndForgetSpec FireAndForgetSpec {
             get;

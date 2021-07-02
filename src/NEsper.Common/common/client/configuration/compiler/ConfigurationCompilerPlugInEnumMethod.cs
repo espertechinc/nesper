@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

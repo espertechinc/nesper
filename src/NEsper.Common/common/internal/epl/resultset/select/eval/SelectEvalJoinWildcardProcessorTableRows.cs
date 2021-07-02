@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             TableCompileTimeResolver tableResolver)
         {
             this.types = types;
-            this.innerForge = inner;
+            innerForge = inner;
             tables = new TableMetaData[types.Length];
             for (int i = 0; i < types.Length; i++) {
                 tables[i] = tableResolver.ResolveTableFromEventType(types[i]);
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         TableDeployTimeResolver.MakeTableEventToPublicField(
                             tables[i],
                             codegenClassScope,
-                            this.GetType());
+                            GetType());
                     string refname = "e" + i;
                     methodNode.Block.DeclareVar<EventBean>(refname, ArrayAtIndex(refEPS, Constant(i)))
                         .IfRefNotNull(refname)

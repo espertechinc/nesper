@@ -1368,7 +1368,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 Constant(false),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                     else {
                         method.Block.AssignRef(
@@ -1382,7 +1382,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                 }
 
@@ -1396,7 +1396,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             Constant(true),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     method.Block.AssignRef(
@@ -1410,7 +1410,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
             }
             else {
@@ -1425,7 +1425,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                     else {
                         var select = GetSelectEventsHavingWithOrderByCodegen(classScope, instance);
@@ -1439,7 +1439,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                 }
 
@@ -1453,7 +1453,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     var select = GetSelectEventsHavingWithOrderByCodegen(classScope, instance);
@@ -1467,7 +1467,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
             }
 
@@ -1501,7 +1501,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                     else {
                         method.Block.AssignRef(
@@ -1515,7 +1515,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                 }
 
@@ -1529,7 +1529,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     method.Block.AssignRef(
@@ -1543,7 +1543,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
             }
             else {
@@ -1558,7 +1558,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_OLDDATA,
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                     else {
                         var select = GetSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
@@ -1586,7 +1586,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     var select = GetSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
@@ -1600,7 +1600,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             REF_NEWDATA,
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
             }
 
@@ -1727,7 +1727,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         currentGenerators,
                         keys,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC));
             }
 
@@ -1807,7 +1807,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 if (selectRStream) {
                     block.DeclareVar<object[]>(
                             "sortKeysOld",
@@ -1822,7 +1822,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                 }
             }
 

@@ -612,9 +612,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					new object[] {"c15", typeof(float?[][])},
 					new object[] {"c16", typeof(float[][])},
 				};
+				
+				var eventType = env.Statement("s0").EventType;
 				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
 					namesAndTypes,
-					env.Statement("s0").EventType,
+					eventType,
 					SupportEventTypeAssertionEnum.NAME,
 					SupportEventTypeAssertionEnum.TYPE);
 

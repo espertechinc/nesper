@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
     public class DataFlowSignalManager
     {
-        private IDictionary<int, IList<DataFlowSignalListener>> listenersPerOp =
+        private readonly IDictionary<int, IList<DataFlowSignalListener>> listenersPerOp =
             new Dictionary<int, IList<DataFlowSignalListener>>();
 
         public void ProcessSignal(

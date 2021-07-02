@@ -14,12 +14,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public interface CodegenPropertyScope
     {
-        CodegenProperty MakeChild(
+        CodegenMethod MakeChildMethod(
             string returnType,
             Type generator,
             CodegenScope codegenClassScope);
 
-        CodegenProperty MakeChild(
+        CodegenMethod MakeChildMethod(
+            Type returnType,
+            Type generator,
+            CodegenScope codegenClassScope);
+        
+        CodegenProperty MakeChildProperty(
+            string returnType,
+            Type generator,
+            CodegenScope codegenClassScope);
+
+        CodegenProperty MakeChildProperty(
             Type returnType,
             Type generator,
             CodegenScope codegenClassScope);

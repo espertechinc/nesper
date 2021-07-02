@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public AgentInstanceFilterProxyImpl(Supplier<IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator)
         {
-            this._generator = generator;
+            _generator = generator;
         }
 
         public FilterValueSetParam[][] GetAddendumFilters(

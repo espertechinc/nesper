@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerEvaluatorEnumerableScalarCollection : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEnumerationEval rootLambdaEvaluator;
-        private readonly Type componentType;
+        private readonly ExprEnumerationEval _rootLambdaEvaluator;
+        private readonly Type _componentType;
 
         public InnerEvaluatorEnumerableScalarCollection(
             ExprEnumerationEval rootLambdaEvaluator,
             Type componentType)
         {
-            this.rootLambdaEvaluator = rootLambdaEvaluator;
-            this.componentType = componentType;
+            this._rootLambdaEvaluator = rootLambdaEvaluator;
+            this._componentType = componentType;
         }
 
         public object Evaluate(
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
 
         public EventBean EvaluateGetEventBean(

@@ -108,6 +108,18 @@ namespace com.espertech.esper.common.client.soda
             WriteDelimiter(writer);
         }
 
+
+        public void BeginIntoTable(
+            TextWriter writer,
+            bool topLevel)
+        {
+            if (topLevel) {
+                WriteDelimiter(writer, topLevel);
+            }
+
+            SetDelimiter();
+        }
+
         public void BeginSelect(
             TextWriter writer,
             bool topLevel)

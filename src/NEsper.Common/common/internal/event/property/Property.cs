@@ -51,16 +51,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory);
 
         /// <summary>
-        ///     Returns the property type plus its generic type parameter, if any.
-        /// </summary>
-        /// <param name="eventType">is the event type representing the value</param>
-        /// <param name="beanEventTypeFactory">bean factory</param>
-        /// <returns>type and generic descriptor</returns>
-        GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory);
-
-        /// <summary>
         ///     Returns value getter for the property of an event of the given event type.
         /// </summary>
         /// <param name="eventType">is the type of event to make a getter for</param>

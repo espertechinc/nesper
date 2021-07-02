@@ -23,12 +23,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public CompositeIndexEnterRemoveRange(EventPropertyValueGetter propertyGetter)
         {
-            this._propertyGetter = propertyGetter;
+            _propertyGetter = propertyGetter;
         }
 
         public CompositeIndexEnterRemove Next {
-            get => this._next;
-            set => this._next = value;
+            get => _next;
+            set => _next = value;
         }
 
         public void GetAll(

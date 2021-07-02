@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -33,14 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredPreconfig());
             return execs;
         }
@@ -79,28 +80,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor(
-                        "nested1simple",
-                        typeof(XmlNode),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true),
-                    new EventPropertyDescriptor(
-                        "nested4array",
-                        typeof(XmlNode[]),
-                        typeof(XmlNode),
-                        false,
-                        false,
-                        true,
-                        false,
-                        true)
-                },
-                env.Statement("insert").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("insert").EventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("nested1simple", typeof(XmlNode)).WithFragment(),
+                new SupportEventPropDesc("nested4array", typeof(XmlNode[])).WithComponentType(typeof(XmlNode)).WithIndexed().WithFragment());
 
             var fragmentTypeNested1 = env.Statement("insert").EventType.GetFragmentType("nested1simple");
             Assert.IsFalse(fragmentTypeNested1.IsIndexed);

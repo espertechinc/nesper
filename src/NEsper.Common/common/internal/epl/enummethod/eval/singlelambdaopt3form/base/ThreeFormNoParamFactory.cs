@@ -17,11 +17,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ThreeFormNoParamFactory : EnumForgeDescFactory
 	{
-		private readonly EPType returnType;
+		private readonly EPChainableType returnType;
 		private readonly ForgeFunction function;
 
 		public ThreeFormNoParamFactory(
-			EPType returnType,
+			EPChainableType returnType,
 			ForgeFunction function)
 		{
 			this.returnType = returnType;

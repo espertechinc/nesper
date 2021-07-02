@@ -101,6 +101,7 @@ namespace com.espertech.esper.regressionlib.support.util
             return it.ToArray();
         }
 
+#if DEPRECATED
         public static void AssertTypes(
             EventType type,
             string[] fields,
@@ -117,7 +118,7 @@ namespace com.espertech.esper.regressionlib.support.util
             AssertTypes(type, new string[]{ field }, new []{ clazz });
         }
 
-        public static void AssertTypesAllSame(
+        public static void SupportEventPropUtil.AssertTypesAllSame(
             EventType type,
             string[] fields,
             Type clazz)
@@ -127,6 +128,7 @@ namespace com.espertech.esper.regressionlib.support.util
                 Assert.AreEqual(clazz, type.GetPropertyType(field), "position " + count);
             }
         }
+#endif
 
         public static void AssertSingleAndEmptySupportColl(
             SupportEvalBuilder builder,

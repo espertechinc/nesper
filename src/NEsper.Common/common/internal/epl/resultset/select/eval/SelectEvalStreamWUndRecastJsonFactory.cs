@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 			    ExprForgeCodegenSymbol exprSymbol,
 			    CodegenClassScope codegenClassScope)
 		    {
-			    var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+			    var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
 			    var refEPS = exprSymbol.GetAddEPS(methodNode);
 			    methodNode.Block
 				    .DeclareVar(resultType.UnderlyingType, "und", NewInstance(resultType.UnderlyingType))
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 			    ExprForgeCodegenSymbol exprSymbol,
 			    CodegenClassScope codegenClassScope)
 		    {
-			    var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+			    var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
 			    var refEPS = exprSymbol.GetAddEPS(methodNode);
 			    var block = methodNode.Block
 				    .DeclareVar(

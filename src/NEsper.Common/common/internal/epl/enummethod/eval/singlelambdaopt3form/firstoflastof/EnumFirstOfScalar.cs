@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumFirstOfScalar : ThreeFormScalar
 	{
-		private readonly EPType _columnType;
+		private readonly EPChainableType _columnType;
 
 		public EnumFirstOfScalar(
 			ExprDotEvalParamLambda lambda,
 			ObjectArrayEventType fieldEventType,
 			int numParameters,
-			EPType columnType) : base(lambda, fieldEventType, numParameters)
+			EPChainableType columnType) : base(lambda, fieldEventType, numParameters)
 		{
-			this._columnType = columnType;
+			_columnType = columnType;
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return _columnType.GetCodegenReturnType().GetBoxedType();
 		}
@@ -94,8 +94,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
 				block,
 				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-			block.BlockReturn(Cast(ReturnType(), Ref("next")));
+				InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope));
+			block.BlockReturn(Cast(ReturnTypeOfMethod(), Ref("next")));
 		}
 
 		public override void ReturnResult(CodegenBlock block)

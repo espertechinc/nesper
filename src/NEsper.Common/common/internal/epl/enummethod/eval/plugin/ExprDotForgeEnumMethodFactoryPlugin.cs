@@ -25,6 +25,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
             return new ExprDotForgeEnumMethodPlugin(_forgeFactory);
         }
 
-        public ExprDotForgeEnumMethodFactory EnumMethodFactory => this.Make;
+        public ExprDotForgeEnumMethodFactory EnumMethodFactory => Make;
     }
 } // end of namespace

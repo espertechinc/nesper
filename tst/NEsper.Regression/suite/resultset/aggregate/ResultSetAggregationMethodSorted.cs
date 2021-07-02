@@ -50,98 +50,98 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 		public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedDocSample());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithGrouped(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedGrouped());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMultiCriteria(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedMultiCriteria());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithOrderedDictionaryReference(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedOrderedDictionaryReference());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSubmapEventsBetween(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedSubmapEventsBetween());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithGetContainsCounts(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedGetContainsCounts());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithFirstLastEnumerationAndDot(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedFirstLastEnumerationAndDot());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithFirstLast(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedFirstLast());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithCFHLEnumerationAndDot(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedCFHLEnumerationAndDot());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithCFHL(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedCFHL());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTableIdent(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedTableIdent());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTableAccess(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedTableAccess());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithNonTable(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedNonTable());
 			return execs;
 		}
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(SupportBean[]), "eb");
-				AssertType(env, typeof(IOrderedDictionary<object, object>), "sm");
+				AssertType(env, typeof(IOrderedDictionary<object, ICollection<EventBean>>), "sm");
 				AssertType(env, typeof(SupportBean), "eblastof");
 
 				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 					" from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				AssertType(env, typeof(IOrderedDictionary<object, object>), "nmr");
+				AssertType(env, typeof(IOrderedDictionary<object, ICollection<EventBean>>), "nmr");
 
 				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9

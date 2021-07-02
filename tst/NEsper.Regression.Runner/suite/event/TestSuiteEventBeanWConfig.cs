@@ -125,5 +125,14 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventBeanExplicitOnly());
             session.Dispose();
         }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventBeanSchemaGenericTypeWFields()
+        {
+            RegressionSession session = RegressionRunner.Session();
+            session.Configuration.Common.EventMeta.DefaultAccessorStyle = AccessorStyle.PUBLIC;
+            RegressionRunner.Run(session, EventBeanSchemaGenericTypeWFields.Executions());
+            session.Dispose();
+        }
     }
 } // end of namespace

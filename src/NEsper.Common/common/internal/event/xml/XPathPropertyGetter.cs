@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly BaseXMLEventType _baseXMLEventType;
+        private readonly BaseXMLEventType _baseXmlEventType;
         private readonly XPathExpression _expression;
         private readonly string _expressionText;
         private readonly string _property;
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             _property = propertyName;
             _resultType = resultType;
             _fragmentFactory = fragmentFactory;
-            _baseXMLEventType = baseXMLEventType;
+            _baseXmlEventType = baseXMLEventType;
 
             if (optionalCastToType != null && optionalCastToType.IsArray) {
                 _isCastToArray = true;
@@ -82,10 +83,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             if (optionalCastToType == typeof(XmlNode)) {
-                this._optionalCastToType = null;
+                _optionalCastToType = null;
             }
             else {
-                this._optionalCastToType = optionalCastToType;
+                _optionalCastToType = optionalCastToType;
             }
         }
 
@@ -190,7 +191,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var xpathGetter = codegenClassScope.AddOrGetDefaultFieldSharable(
-                new XPathPropertyGetterCodegenFieldSharable(_baseXMLEventType, this));
+                new XPathPropertyGetterCodegenFieldSharable(_baseXmlEventType, this));
             return ExprDotMethod(xpathGetter, "GetFromUnderlying", Cast(typeof(XmlNode), underlyingExpression));
         }
 
@@ -212,7 +213,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var xpathGetter = codegenClassScope.AddOrGetDefaultFieldSharable(
-                new XPathPropertyGetterCodegenFieldSharable(_baseXMLEventType, this));
+                new XPathPropertyGetterCodegenFieldSharable(_baseXmlEventType, this));
             return ExprDotMethod(xpathGetter, "GetFragmentFromUnderlying", underlyingExpression);
         }
 
@@ -274,7 +275,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                             nodeIterator.MoveNext();
                             switch (resultType) {
                                 case XPathResultType.Any:
-                                    return ((System.Xml.IHasXmlNode) nodeIterator.Current).GetNode();
+                                    return ((IHasXmlNode) nodeIterator.Current).GetNode();
 
                                 case XPathResultType.String:
                                     return nodeIterator.Current.TypedValue;

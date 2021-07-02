@@ -20,22 +20,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationAgentForgePlugin : AggregationAgentForge
     {
-        private readonly AggregationForgeFactoryAccessPlugin parent;
-        private readonly AggregationMultiFunctionAgentModeManaged mode;
-        private readonly ExprForge optionalFilter;
+        private readonly AggregationForgeFactoryAccessPlugin _parent;
+        private readonly AggregationMultiFunctionAgentModeManaged _mode;
+        private readonly ExprForge _optionalFilter;
 
         public AggregationAgentForgePlugin(
             AggregationForgeFactoryAccessPlugin parent,
             AggregationMultiFunctionAgentModeManaged mode,
             ExprForge optionalFilter)
         {
-            this.parent = parent;
-            this.mode = mode;
-            this.optionalFilter = optionalFilter;
+            this._parent = parent;
+            this._mode = mode;
+            this._optionalFilter = optionalFilter;
         }
 
         public ExprForge OptionalFilter {
-            get => optionalFilter;
+            get => _optionalFilter;
         }
 
         public CodegenExpression Make(
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             var injectionStrategy =
-                (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAgentFactory;
+                (InjectionStrategyClassNewInstance) _mode.InjectionStrategyAggregationAgentFactory;
             var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionAgentFactory),

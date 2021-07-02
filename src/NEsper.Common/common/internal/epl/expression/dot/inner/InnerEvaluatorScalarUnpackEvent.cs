@@ -16,11 +16,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerEvaluatorScalarUnpackEvent : ExprDotEvalRootChildInnerEval
     {
-        private ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
 
         public InnerEvaluatorScalarUnpackEvent(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            this._rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object target = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var target = _rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (target is EventBean) {
                 return ((EventBean) target).Underlying;
             }

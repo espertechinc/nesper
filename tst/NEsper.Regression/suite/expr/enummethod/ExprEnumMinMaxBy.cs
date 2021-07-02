@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -25,6 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             var execs = new List<RegressionExecution>();
             execs.Add(new ExprEnumMinMaxByEvents());
             execs.Add(new ExprEnumMinMaxByScalar());
+            execs.Add(new ExprEnumMinMaxByInvalid());
             return execs;
         }
 
@@ -44,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[7], "Contained.maxBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
 
                 builder.WithStatementConsumer(
-                    stmt => AssertTypes(
+                    stmt => SupportEventPropUtil.AssertTypes(
                         stmt.EventType,
                         fields,
                         new[] {
@@ -64,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var beanTwo = SupportBean_ST0_Container.Make2Value("E1,12");
                 builder.WithAssertion(beanTwo).Expect(fields, beanTwo.Contained[0], beanTwo.Contained[0], "E1", 12, 12, 12, 12, 12);
 
-                builder.WithAssertion(SupportBean_ST0_Container.Make2Value(null)).Expect(fields, null, null, null, null, null, null, null, null);
+                builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null, null, null, null, null, null, null);
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, null, null, null, null, null, null, null, null);
 
@@ -88,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[4], "Strvals.minBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
                 builder.WithExpression(fields[5], "Strvals.maxBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
 
-                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(String)));
+                builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(String)));
 
                 builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4")).Expect(fields, "E1", "E5", "E2", "E4", "E2", "E4");
 
@@ -101,6 +103,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithAssertion(SupportCollection.MakeString("E8,E2")).Expect(fields, "E2", "E8", "E8", "E2", "E2", "E8");
 
                 builder.Run(env);
+            }
+        }
+
+        internal class ExprEnumMinMaxByInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
+
+                epl = "select Contained.minBy(x => null) from SupportBean_ST0_Container";
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    epl,
+                    "Failed to validate select-clause expression 'Contained.minBy()': Null-type is not allowed");
             }
         }
     }

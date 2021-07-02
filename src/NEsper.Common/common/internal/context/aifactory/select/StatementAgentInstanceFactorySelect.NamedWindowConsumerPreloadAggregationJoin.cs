@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 JoinPreloadMethod joinPreloadMethod,
                 ResultSetProcessor resultSetProcessor)
             {
-                this._joinPreloadMethod = joinPreloadMethod;
-                this._resultSetProcessor = resultSetProcessor;
+                _joinPreloadMethod = joinPreloadMethod;
+                _resultSetProcessor = resultSetProcessor;
             }
 
             public void ExecutePreload()

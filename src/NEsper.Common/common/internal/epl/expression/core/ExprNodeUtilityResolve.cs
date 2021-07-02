@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // rewrite those evaluator that should return the event itself
             if (CollectionUtil.IsAnySet(allowEventBeanType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanType[i] && parameterTypes[i] == typeof(EventBean)) {
+                    if (allowEventBeanType[i] && CheckMethodEnumerableParameter(method, i, typeof(EventBean))) {
                         childForges[i] = childEvalsEventBeanReturnTypesForges[i];
                     }
                 }
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // rewrite those evaluators that should return the event collection
             if (CollectionUtil.IsAnySet(allowEventBeanCollType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanCollType[i] && (parameterTypes[i] == typeof(ICollection<EventBean>))) {
+                    if (allowEventBeanCollType[i] && CheckMethodEnumerableParameter(method, i, typeof(ICollection<EventBean>))) {
                         childForges[i] = childEvalsEventBeanReturnTypesForges[i];
                     }
                 }
@@ -192,7 +192,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var localInlinedClass = services.ClassProvidedExtension.IsLocalInlinedClass(method.DeclaringType);
-            return new ExprNodeUtilMethodDesc(allConstants, childForges, method, localInlinedClass);
+            return new ExprNodeUtilMethodDesc(allConstants, childForges, method, optionalClass, localInlinedClass);
+        }
+
+        private static bool CheckMethodEnumerableParameter(
+            MethodInfo method,
+            int parameterNumber,
+            Type expected)
+        {
+            var parameters = method.GetParameters();
+            int numParameters = parameters.Length;
+            if (!method.IsVarArgs() || numParameters - 1 >= parameterNumber) {
+                return parameters[parameterNumber].ParameterType == expected;
+            }
+
+            return parameters[numParameters - 1].ParameterType == expected;
         }
     }
 } // end of namespace

@@ -58,8 +58,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.grammar.@internal.generated;
 
-using static com.espertech.esper.common.@internal.util.StringValue; // unescapeBacktick
-using static com.espertech.esper.compiler.@internal.parse.ASTChainableHelper; // processChainable
+using static com.espertech.esper.common.@internal.util.StringValue;
+using static com.espertech.esper.compiler.@internal.parse.ASTChainableHelper;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -844,7 +844,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitConstant(EsperEPL2GrammarParser.ConstantContext ctx)
         {
-            String stringConstant = null;
+            string stringConstant = null;
             if (ctx.stringconstant() != null) {
                 stringConstant = ctx.stringconstant().GetText();
             }
@@ -1350,7 +1350,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 IList<EsperEPL2GrammarParser.NewAssignContext> assigns = ctx.newAssign();
                 foreach (var assign in assigns)
                 {
-                    String property = ASTUtil.GetPropertyName(assign.chainable(), 0);
+                    string property = ASTUtil.GetPropertyName(assign.chainable(), 0);
                     columnNames.Add(property);
                     ExprNode expr;
                     if (assign.expression() != null)
@@ -1368,13 +1368,13 @@ namespace com.espertech.esper.compiler.@internal.parse
                 newNode.AddChildNodes(expressions);
                 _astExprNodeMap.Put(ctx, newNode);
             }
-            if (ctx.NEWKW() != null && ctx.classIdentifier() != null)
+            if (ctx.NEWKW() != null && ctx.classIdentifierNoDimensions() != null)
             {
-                var classIdent = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
+                var classIdentNoDimensions = ASTClassIdentifierHelper.Walk(ctx.classIdentifierNoDimensions());
                 var numArrayDimensions = ctx.LBRACK().Length;
 
                 ExprNode exprNode;
-                ExprNode newNode = new ExprNewInstanceNode(classIdent, numArrayDimensions);
+                ExprNode newNode = new ExprNewInstanceNode(classIdentNoDimensions, numArrayDimensions);
                 if (ASTChainSpecHelper.HasChain(ctx.chainableElements())) {
                     IList<Chainable> chainSpec = ASTChainSpecHelper.GetChainables(ctx.chainableElements(), _astExprNodeMap);
                     ExprDotNode dotNode = new ExprDotNodeImpl(chainSpec, _mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
@@ -2090,13 +2090,13 @@ namespace com.espertech.esper.compiler.@internal.parse
             if (ctx.Parent.RuleIndex == EsperEPL2GrammarParser.RULE_createClassExpr) {
                 return;
             }
-            String clazz = ASTExpressionDeclHelper.WalkClassDecl(_classBodies);
+            string clazz = ASTExpressionDeclHelper.WalkClassDecl(_classBodies);
             _classProvidedList.Add(clazz);
         }
 
         public void ExitCreateClassExpr(EsperEPL2GrammarParser.CreateClassExprContext ctx)
         {
-            String classProvided = ASTExpressionDeclHelper.WalkClassDecl(_classBodies);
+            string classProvided = ASTExpressionDeclHelper.WalkClassDecl(_classBodies);
             StatementSpec.CreateClassProvided = classProvided;
         }
 
@@ -3847,6 +3847,18 @@ namespace com.espertech.esper.compiler.@internal.parse
         public void ExitColumnListKeywordAllowed(EsperEPL2GrammarParser.ColumnListKeywordAllowedContext ctx) {
         }       
 
+        public void EnterTypeParameters(EsperEPL2GrammarParser.TypeParametersContext ctx) {
+        }
+
+        public void ExitTypeParameters(EsperEPL2GrammarParser.TypeParametersContext ctx) {
+        }
+
+        public void EnterClassIdentifierNoDimensions(EsperEPL2GrammarParser.ClassIdentifierNoDimensionsContext ctx) {
+        }
+
+        public void ExitClassIdentifierNoDimensions(EsperEPL2GrammarParser.ClassIdentifierNoDimensionsContext ctx) {
+        }
+        
         /// <summary>
         /// Pushes a statement into the stack, creating a new empty statement to fill in.
         /// The leave node method for lookup statements pops from the stack.

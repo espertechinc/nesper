@@ -37,70 +37,70 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithRStreamOutputSnapshot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamOutputSnapshot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIStreamJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherIStreamJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIStreamInsertIntoRStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherIStreamInsertIntoRStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIStreamOnly(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherIStreamOnly());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamInsertIntoRStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamInsertIntoRStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamInsertInto(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamInsertInto());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamOnly(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamOnly());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamOnlyCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamOnlyCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamOnlyOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherRStreamOnlyOM());
             return execs;
         }

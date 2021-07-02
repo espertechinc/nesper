@@ -38,35 +38,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithExpressionUse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherExpressionUse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithScriptUse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherScriptUse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExprAndScriptLifecycleAndFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherExprAndScriptLifecycleAndFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithParseSpecialAndMixedExprAndScript(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherParseSpecialAndMixedExprAndScript());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalid());
             return execs;
         }

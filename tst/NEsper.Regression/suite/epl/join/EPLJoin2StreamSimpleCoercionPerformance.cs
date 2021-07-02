@@ -28,14 +28,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithBack(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerformanceCoercionBack());
             return execs;
         }
 
         public static IList<RegressionExecution> WithForward(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerformanceCoercionForward());
             return execs;
         }

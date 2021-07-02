@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTime), "dateTime");
 
             CodegenBlock block = methodNode.Block;
-            DTLocalUtil.EvaluateCalOpsDateTimeCodegen(
+            EvaluateCalOpsDateTimeCodegen(
                 block,
                 "dateTime",
                 forge.calendarForges,

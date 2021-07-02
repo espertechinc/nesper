@@ -37,12 +37,12 @@ WithMapType(execs);
         }
 public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowMapType());
     return execs;
 }public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowBeanType());
     return execs;
 }

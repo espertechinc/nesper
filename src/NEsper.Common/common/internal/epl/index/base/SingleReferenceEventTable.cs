@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventTableOrganization organization,
             Atomic<ObjectArrayBackedEventBean> eventReference)
         {
-            this._organization = organization;
-            this._eventReference = eventReference;
+            _organization = organization;
+            _eventReference = eventReference;
         }
 
         public void AddRemove(

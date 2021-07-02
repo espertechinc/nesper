@@ -28,23 +28,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 {
     /// <summary>
     ///     Base expression node that represents an aggregation function such as 'sum' or 'count'.
-    ///     <para />
-    ///     In terms of validation each concrete aggregation node must implement it's own validation.
-    ///     <para />
-    ///     In terms of evaluation this base class will ask the assigned <seealso cref="AggregationResultFuture" /> for the
-    ///     current state,
-    ///     using a column number assigned to the node.
-    ///     <para />
-    ///     Concrete subclasses must supply an aggregation state prototype node that reflects
-    ///     each group's (there may be group-by criteria) current aggregation state.
+    ///     <para>
+    ///         In terms of validation each concrete aggregation node must implement it's own validation.
+    ///     </para>
+    ///     <para>
+    ///         In terms of evaluation this base class will ask the assigned <seealso cref="AggregationResultFuture" />
+    ///         for the current state, using a column number assigned to the node.
+    ///     </para>
+    ///     <para>
+    ///         Concrete subclasses must supply an aggregation state prototype node that reflects
+    ///         each group's (there may be group-by criteria) current aggregation state.
+    ///     </para>
     /// </summary>
     public abstract class ExprAggregateNodeBase : ExprNodeBase,
         ExprEvaluator,
         ExprAggregateNode,
         ExprForgeInstrumentable
     {
-        private AggregationForgeFactory aggregationForgeFactory;
-        internal CodegenFieldName aggregationResultFutureMemberName;
+        private AggregationForgeFactory _aggregationForgeFactory;
+        private CodegenFieldName _aggregationResultFutureMemberName;
 
         internal int column = -1;
 
@@ -53,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         /// </summary>
         internal bool isDistinct;
 
-        internal ExprAggregateLocalGroupByDesc optionalAggregateLocalGroupByDesc;
+        private ExprAggregateLocalGroupByDesc _optionalAggregateLocalGroupByDesc;
         internal ExprNode optionalFilter;
         internal ExprNode[] positionalParams;
 
@@ -89,12 +91,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             ValidatePositionals(validationContext);
-            aggregationForgeFactory = ValidateAggregationChild(validationContext);
+            _aggregationForgeFactory = ValidateAggregationChild(validationContext);
             if (!validationContext.IsAggregationFutureNameAlreadySet) {
-                aggregationResultFutureMemberName = validationContext.MemberNames.AggregationResultFutureRef();
+                _aggregationResultFutureMemberName = validationContext.MemberNames.AggregationResultFutureRef();
             }
             else {
-                if (aggregationResultFutureMemberName == null) {
+                if (_aggregationResultFutureMemberName == null) {
                     throw new ExprValidationException("Aggregation future not set");
                 }
             }
@@ -111,11 +113,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     "The 'group_by' and 'filter' parameter is not allowed in create-table statements");
             }
 
-            optionalAggregateLocalGroupByDesc = paramDesc.OptLocalGroupBy;
+            _optionalAggregateLocalGroupByDesc = paramDesc.OptLocalGroupBy;
             optionalFilter = paramDesc.OptionalFilter;
-            if (optionalAggregateLocalGroupByDesc != null) {
+            if (_optionalAggregateLocalGroupByDesc != null) {
                 ExprNodeUtilityValidate.ValidateNoSpecialsGroupByExpressions(
-                    optionalAggregateLocalGroupByDesc.PartitionExpressions);
+                    _optionalAggregateLocalGroupByDesc.PartitionExpressions);
             }
 
             if (optionalFilter != null) {
@@ -183,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.MINIMUM;
 
-        public ExprAggregateLocalGroupByDesc OptionalLocalGroupBy => optionalAggregateLocalGroupByDesc;
+        public ExprAggregateLocalGroupByDesc OptionalLocalGroupBy => _optionalAggregateLocalGroupByDesc;
 
         public ExprNode OptionalFilter => optionalFilter;
 
@@ -242,21 +244,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         /// <value>prototype aggregation state as a factory for aggregation states per group-by key value</value>
         public AggregationForgeFactory Factory {
             get {
-                if (aggregationForgeFactory == null) {
+                if (_aggregationForgeFactory == null) {
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
-                return aggregationForgeFactory;
+                return _aggregationForgeFactory;
             }
         }
 
         public Type EvaluationType {
             get {
-                if (aggregationForgeFactory == null) {
+                if (_aggregationForgeFactory == null) {
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
-                return aggregationForgeFactory.ResultType;
+                return _aggregationForgeFactory.ResultType;
             }
         }
 
@@ -273,14 +275,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
 
             var childType = child.Forge.EvaluationType;
-            if (!childType.IsNumeric()) {
-                throw new ExprValidationException(
-                    "Implicit conversion from datatype '" +
-                    (childType == null ? "null" : childType.CleanName()) +
-                    "' to numeric is not allowed for aggregation function '" +
-                    AggregationFunctionName +
+            ExprNodeUtilityValidate.ValidateReturnsNumeric(
+                child.Forge,
+                () =>
+                    "Implicit conversion from datatype '" + childType.TypeSafeName() +
+                    "' to numeric is not allowed for aggregation function '" + AggregationFunctionName +
                     "'");
-            }
 
             return childType;
         }
@@ -335,12 +335,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public void ValidateFilter(ExprNode filterEvaluator)
         {
-            if (filterEvaluator.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
+            if (!filterEvaluator.Forge.EvaluationType.IsBoolean()) {
                 throw new ExprValidationException(
                     "Invalid filter expression parameter to the aggregation function '" +
                     AggregationFunctionName +
                     "' is expected to return a boolean value but returns " +
-                    filterEvaluator.Forge.EvaluationType.CleanName());
+                    filterEvaluator.Forge.EvaluationType.TypeSafeName());
             }
         }
 
@@ -350,7 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             var statementFields = Ref(ResultSetProcessorCodegenNames.NAME_STATEMENT_FIELDS);
             var fieldExpression = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                aggregationResultFutureMemberName,
+                _aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
             return fieldExpression;
         }

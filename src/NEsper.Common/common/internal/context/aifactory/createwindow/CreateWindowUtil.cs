@@ -68,6 +68,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     columns,
                     null,
                     services.ImportServiceCompileTime,
+                    services.ClassProvidedExtension, 
                     services.EventTypeCompileTimeResolver);
                 hasProperties = true;
             }

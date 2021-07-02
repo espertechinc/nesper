@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             method.Block.DeclareVar<TableMetadataColumnPlain>(
                 "col",
                 NewInstance(typeof(TableMetadataColumnPlain)));
-            base.MakeSettersInline(Ref("col"), method.Block);
+            MakeSettersInline(Ref("col"), method.Block);
             method.Block
                 .SetProperty(Ref("col"), "IndexPlain", Constant(IndexPlain))
                 .MethodReturn(Ref("col"));

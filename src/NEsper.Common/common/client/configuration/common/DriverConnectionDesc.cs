@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.client.configuration.common
         public DriverConnectionFactoryDesc Merge(Properties propertiesToMerge)
         {
             var newProperties = new Properties();
-            newProperties.PutAll(this.DriverProperties);
+            newProperties.PutAll(DriverProperties);
             newProperties.PutAll(propertiesToMerge);
             return new DriverConnectionFactoryDesc(DriverName, newProperties);
         }

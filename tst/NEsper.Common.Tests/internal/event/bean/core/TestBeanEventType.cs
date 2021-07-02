@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
@@ -191,102 +192,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             CollectionAssert.Contains(properties, "MyInt");
             CollectionAssert.Contains(properties, "MyString");
 
-            CollectionAssert.Contains(
-                eventTypeSimple.PropertyDescriptors,
-                new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false));
-
-            CollectionAssert.Contains(
-                eventTypeSimple.PropertyDescriptors,
-                new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false));
-
+            SupportEventPropUtil.AssertPropsEquals(
+                eventTypeSimple.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("MyInt", typeof(int)),
+                new SupportEventPropDesc("MyString", typeof(string)).WithComponentType(typeof(char)).WithIndexed());
+            
             properties = eventTypeComplex.PropertyNames;
 
             CollectionAssert.AreEquivalent(SupportBeanComplexProps.PROPERTIES, properties);
-            CollectionAssert.AreEquivalent(
-                new[] {
-                    new EventPropertyDescriptor(
-                        "SimpleProperty",
-                        typeof(string),
-                        typeof(char),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "MapProperty",
-                        typeof(IDictionary<string, string>),
-                        typeof(string),
-                        false,
-                        false,
-                        false,
-                        true,
-                        false),
-                    new EventPropertyDescriptor(
-                        "MappedProps",
-                        typeof(Properties),
-                        typeof(string),
-                        false,
-                        false,
-                        false,
-                        true,
-                        false),
-                    new EventPropertyDescriptor(
-                        "Mapped",
-                        typeof(string),
-                        typeof(string),
-                        false,
-                        true,
-                        false,
-                        true,
-                        false),
-                    new EventPropertyDescriptor(
-                        "Indexed", 
-                        typeof(int), 
-                        null,
-                        true,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "IndexedProps",
-                        typeof(int[]),
-                        typeof(int),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "Nested",
-                        typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true),
-                    new EventPropertyDescriptor(
-                        "ArrayProperty",
-                        typeof(int[]),
-                        typeof(int),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "ObjectArray",
-                        typeof(object[]),
-                        typeof(object),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false)
-                },
-                eventTypeComplex.PropertyDescriptors);
+
+            SupportEventPropUtil.AssertPropsEquals(
+                eventTypeComplex.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("SimpleProperty", typeof(string)).WithComponentType(typeof(char)),
+                new SupportEventPropDesc("MapProperty", typeof(IDictionary<string, string>)).WithComponentType(typeof(string)).WithMapped().WithIndexed(false),
+                new SupportEventPropDesc("MappedProps", typeof(Properties)).WithComponentType(typeof(string)).WithMapped().WithIndexed(false),
+                new SupportEventPropDesc("Mapped", typeof(string)).WithComponentType(typeof(char)).WithMappedRequiresKey().WithIndexed(false),
+                new SupportEventPropDesc("Indexed", typeof(int)).WithIndexedRequiresIndex(),
+                new SupportEventPropDesc("IndexedProps", typeof(int[])).WithComponentType(typeof(int)).WithIndexed(),
+                new SupportEventPropDesc("Nested", typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested)).WithFragment(),
+                new SupportEventPropDesc("ArrayProperty", typeof(int[])).WithComponentType(typeof(int)).WithIndexed(),
+                new SupportEventPropDesc("ObjectArray", typeof(object[])).WithComponentType(typeof(object)).WithIndexed()
+            );
 
             properties = eventTypeNested.PropertyNames;
             CollectionAssert.AreEquivalent(SupportBeanCombinedProps.PROPERTIES, properties);

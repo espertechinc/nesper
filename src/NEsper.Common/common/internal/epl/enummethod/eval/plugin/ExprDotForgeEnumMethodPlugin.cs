@@ -14,6 +14,7 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.hook.enummethod;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -209,7 +210,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                     throw new ExprValidationException("Failed to find service method for enumeration-method '" + _mode.MethodName + "': " + ex.Message, ex);
                 }
 
-                if (serviceMethod.ReturnType != typeof(void)) {
+                if (!serviceMethod.ReturnType.IsVoid()) {
                     throw new ExprValidationException(
                         "Failed to validate service method for enumeration-method '" + _mode.MethodName + "', expected void return type");
                 }
@@ -217,17 +218,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 // obtain expected return type
                 var returnType = _mode.ReturnType;
                 Type expectedStateReturnType;
-                if (returnType is ClassEPType) {
-                    expectedStateReturnType = ((ClassEPType) returnType).Clazz;
+                if (returnType is EPChainableTypeClass chainableTypeClass) {
+                    expectedStateReturnType = chainableTypeClass.Clazz;
                 }
-                else if (returnType is EventEPType) {
+                else if (returnType is EPChainableTypeEventSingle) {
                     expectedStateReturnType = typeof(EventBean);
                 }
-                else if (returnType is EventMultiValuedEPType) {
+                else if (returnType is EPChainableTypeEventMulti) {
                     expectedStateReturnType = typeof(FlexCollection);
                 }
-                else if (returnType is ClassMultiValuedEPType) {
-                    expectedStateReturnType = ((ClassMultiValuedEPType) returnType).Component;
+                else if (returnType is EPChainableTypeNull) {
+                    expectedStateReturnType = null;
                 }
                 else {
                     throw new ExprValidationException("Unrecognized return type " + returnType);

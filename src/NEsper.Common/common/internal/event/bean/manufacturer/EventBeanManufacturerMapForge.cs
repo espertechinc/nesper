@@ -25,15 +25,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     /// </summary>
     public class EventBeanManufacturerMapForge : EventBeanManufacturerForge
     {
-        private readonly MapEventType mapEventType;
-        private readonly WriteablePropertyDescriptor[] writables;
+        private readonly MapEventType _mapEventType;
+        private readonly WriteablePropertyDescriptor[] _writables;
 
         public EventBeanManufacturerMapForge(
             MapEventType mapEventType,
             WriteablePropertyDescriptor[] writables)
         {
-            this.mapEventType = mapEventType;
-            this.writables = writables;
+            this._mapEventType = mapEventType;
+            this._writables = writables;
         }
 
         public CodegenExpression Make(
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(mapEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_mapEventType, EPStatementInitServicesConstants.REF));
 
             var makeUndFunc = new CodegenExpressionLambda(codegenBlock)
                 .WithParam<object[]>("properties")
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new EventBeanManufacturerMap(mapEventType, eventBeanTypedEventFactory, writables);
+            return new EventBeanManufacturerMap(_mapEventType, eventBeanTypedEventFactory, _writables);
         }
 
         private void MakeUnderlyingCodegen(
@@ -85,11 +85,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             block.DeclareVar<IDictionary<string, object>>(
                 "values",
                 NewInstance(typeof(HashMap<string, object>)));
-            for (var i = 0; i < writables.Length; i++) {
+            for (var i = 0; i < _writables.Length; i++) {
                 block.ExprDotMethod(
                     Ref("values"),
                     "Put",
-                    Constant(writables[i].PropertyName),
+                    Constant(_writables[i].PropertyName),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }
 

@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         {
             var method = parent.MakeChild(EvalClass, GetType(), classScope);
             method.Block
-                .DeclareVar(EvalClass, "eval", NewInstance(EvalClass))
+                .DeclareVarNewInstance(EvalClass, "eval")
                 .SetProperty(Ref("eval"), "NodeNumNested", Constant(NodeNumNested))
                 .SetProperty(Ref("eval"), "VariableName", Constant(VariableName))
                 .SetProperty(Ref("eval"), "StreamNum", Constant(StreamNum))

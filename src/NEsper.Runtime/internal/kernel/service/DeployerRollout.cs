@@ -131,7 +131,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			for (var i = 0; i < items.Length; i++) {
 				try {
 					// add dependencies
-					AddPathDependencies(deploymentIds[i], moduleProviders[i].ModuleProvider.ModuleDependencies, runtime.ServicesContext);
+					AddPathDependencies(deploymentIds[i], moduleProviders[i].ModuleProvider.GetModuleDependencies(), runtime.ServicesContext);
 
 					// keep statement and deployment
 					deployments[i] = DeploymentInternal.From(
@@ -241,7 +241,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			EPServicesContext services,
 			EPStageService stageService)
 		{
-			var moduleDependencies = moduleProvider.ModuleProvider.ModuleDependencies;
+			var moduleDependencies = moduleProvider.ModuleProvider.GetModuleDependencies();
 			var deploymentIdDependencies = DeployerHelperResolver.ResolveDependencies(rolloutItemNumber, moduleDependencies, services);
 
 			// initialize EPL objects defined by module

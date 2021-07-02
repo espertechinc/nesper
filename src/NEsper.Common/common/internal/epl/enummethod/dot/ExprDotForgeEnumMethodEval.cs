@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.enumEvalNumRequiredEvents = enumEvalNumRequiredEvents;
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
+            var returnType = EPChainableTypeHelper.GetCodegenReturnType(forge.TypeInfo);
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             refEPS,
                             Constant(forge.EnumEvalNumRequiredEvents)))
                     .DeclareVar(
-                        EPTypeHelper.GetCodegenReturnType(forge.TypeInfo),
+                        EPChainableTypeHelper.GetCodegenReturnType(forge.TypeInfo),
                         "result",
                         forge.EnumForge.Codegen(premade, methodNode, codegenClassScope))
                     .Expression(

@@ -172,7 +172,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     optionalTriggeringEvent,
                     optionalTriggeringPattern,
                     optionalTriggeringEventPattern,
-                    optionalPatternForInclusiveEval) => {
+                    optionalPatternForInclusiveEval,
+                    terminationProperties) => {
                     var parentPath = conditionPathArg.RemoveFromEnd();
                     var getterKey = KeyedFactory.GetGetterKey(partitionKey);
                     var removed = keyedSvc.KeyRemove(parentPath, getterKey);
@@ -188,7 +189,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                         conditionPath.RemoveFromEnd(),
                         removed.SubpathOrCPId,
                         this,
-                        optionalTriggeringPattern, 
+                        terminationProperties, 
                         false,
                         null);
                     removed.TerminationCondition.Deactivate();
@@ -207,7 +208,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             if (optionalInitCondAsName != null) {
                 endConditionMatchEventProvider = new ProxyContextControllerEndConditionMatchEventProvider(
                     (map, triggeringEventArg) => ContextControllerKeyedUtil.PopulatePriorMatch(optionalInitCondAsName, map, triggeringEventArg),
-                    (map, triggeringPattern) => { });
+                    (map, triggeringPattern, eventBeanTypedEventFactory) => { });
             }
 
             terminationCondition.Activate(triggeringEvent, endConditionMatchEventProvider, null);

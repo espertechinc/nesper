@@ -53,9 +53,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             method.Block
-                .DeclareVar<ContextControllerDetailHash>(
-                    "detail",
-                    NewInstance(typeof(ContextControllerDetailHash)))
+                .DeclareVarNewInstance<ContextControllerDetailHash>("detail")
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .SetProperty(Ref("detail"), "Granularity", Constant(Granularity))
                 .SetProperty(Ref("detail"), "IsPreallocate", Constant(IsPreallocate))

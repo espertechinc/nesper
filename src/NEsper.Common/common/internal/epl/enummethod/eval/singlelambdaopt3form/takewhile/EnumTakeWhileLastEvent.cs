@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(FlexCollection);
 		}
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+			innerValue = InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope);
 			var blockSingle = block.IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
 				.DeclareVar<EventBean>("item", Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("item"));

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -146,6 +147,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            if (forge.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             CodegenExpression isCachedMember = null;
             CodegenExpression cachedResultMember = null;
             if (forge.IsConstantParameters) {
@@ -165,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             // check cached
             if (forge.IsConstantParameters) {
                 var ifCached = block.IfCondition(isCachedMember);
-                if (returnType == typeof(void)) {
+                if (returnType.IsVoid()) {
                     ifCached.BlockReturnNoValue();
                 }
                 else {
@@ -189,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 forge.StaticMethod,
                 args,
                 codegenClassScope);
-            if (returnType == typeof(void)) {
+            if (returnType.IsVoid()) {
                 tryBlock.Expression(invoke);
                 if (forge.IsConstantParameters) {
                     tryBlock.AssignRef(isCachedMember, ConstantTrue());
@@ -204,7 +209,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     var typeInformation = ConstantNull();
                     if (codegenClassScope.IsInstrumented) {
                         typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
-                            new EPTypeCodegenSharable(new ClassEPType(forge.EvaluationType), codegenClassScope));
+                            new EPChainableTypeCodegenSharable(
+                                EPChainableTypeHelper.SingleValue(forge.EvaluationType),
+                                codegenClassScope));
                     }
 
                     tryBlock.Apply(
@@ -223,18 +230,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         .BlockReturn(Ref("result"));
                 }
                 else {
-                    EPType typeInfo;
+                    EPChainableType typeInfo;
                     if (forge.ResultWrapLambda != null) {
                         typeInfo = forge.ResultWrapLambda.TypeInfo;
                     }
                     else {
-                        typeInfo = new ClassEPType(typeof(object));
+                        typeInfo = new EPChainableTypeClass(typeof(object));
                     }
 
                     var typeInformation = ConstantNull();
                     if (codegenClassScope.IsInstrumented) {
                         typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
-                            new EPTypeCodegenSharable(typeInfo, codegenClassScope));
+                            new EPChainableTypeCodegenSharable(typeInfo, codegenClassScope));
                     }
 
                     tryBlock.Apply(
@@ -275,7 +282,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 args);
 
             // end method
-            if (returnType == typeof(void)) {
+            if (returnType.IsVoid()) {
                 block.MethodEnd();
             }
             else {
@@ -291,6 +298,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            if (forge.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     forge.EvaluationType,
@@ -383,8 +394,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             string optionalStatementName,
             string methodName,
             Type[] parameterTypes,
-            String classOrPropertyName,
-            Object[] args,
+            string classOrPropertyName,
+            object[] args,
             Exception thrown,
             bool rethrow)
         {

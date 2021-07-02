@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateIndex),
-                this.GetType(),
+                GetType(),
                 classScope);
             CodegenExpressionRef saiff = Ref("saiff");
             method.Block

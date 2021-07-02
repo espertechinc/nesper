@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int streamCountIncoming,
 			Type fieldType) : base(streamCountIncoming)
 		{
-			this._fieldType = fieldType;
+			_fieldType = fieldType;
 		}
 
 		public override EnumEval EnumEvaluator => this;

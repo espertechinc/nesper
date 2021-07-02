@@ -269,11 +269,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         public class CreateNWVirtualDWMgmtCallback : AgentInstanceMgmtCallback
         {
             private readonly VirtualDWView _virtualDwView;
-            private readonly String _objectName;
+            private readonly string _objectName;
 
             public CreateNWVirtualDWMgmtCallback(
                 VirtualDWView virtualDWView,
-                String objectName)
+                string objectName)
             {
                 _virtualDwView = virtualDWView;
                 _objectName = objectName;

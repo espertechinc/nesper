@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             return new SAIFFInitializeBuilder(
                     OP_PACKAGE_NAME + ".filter.FilterFactory",
-                    this.GetType(),
+                    GetType(),
                     "filter",
                     parent,
                     symbols,

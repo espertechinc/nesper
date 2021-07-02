@@ -16,11 +16,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotEnumerableEventBeanEval : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEnumerationEval rootLambdaEvaluator;
+        private readonly ExprEnumerationEval _rootLambdaEvaluator;
 
         public InnerDotEnumerableEventBeanEval(ExprEnumerationEval rootLambdaEvaluator)
         {
-            this.rootLambdaEvaluator = rootLambdaEvaluator;
+            this._rootLambdaEvaluator = rootLambdaEvaluator;
         }
 
         public object Evaluate(
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
 
         public EventBean EvaluateGetEventBean(
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
         }
     }
 } // end of namespace

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.core;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
@@ -149,7 +150,8 @@ namespace com.espertech.esper.common.client.dataflow.util
 
             //if (TypeHelper.IsSubclassOrImplementsInterface(result.GetType().GetBoxedType(), typeof(object))) {
             if (result.GetType().GetBoxedType().IsNumeric()) {
-                return (T) SimpleNumberCoercerFactory.GetCoercer(result.GetType(), clazz.GetBoxedType())
+                return (T) SimpleNumberCoercerFactory
+                    .GetCoercer(result.GetType(), clazz.GetBoxedType())
                     .CoerceBoxed(result);
             }
 

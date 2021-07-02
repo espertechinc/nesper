@@ -30,14 +30,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithAmbiguous(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileAutoNameAmbiguous());
             return execs;
         }
 
         public static IList<RegressionExecution> WithResolve(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileAutoNameResolve());
             return execs;
         }

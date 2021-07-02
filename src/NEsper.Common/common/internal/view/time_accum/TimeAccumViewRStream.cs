@@ -34,11 +34,11 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         private readonly TimePeriodProvide _timePeriodProvide;
 
         // Current running parameters
-        private LinkedHashMap<EventBean, long> _currentBatch = new LinkedHashMap<EventBean, long>();
+        private readonly LinkedHashMap<EventBean, long> _currentBatch = new LinkedHashMap<EventBean, long>();
 
         private EventBean _lastEvent;
         private long _callbackScheduledTime;
-        private EPStatementHandleCallbackSchedule _handle;
+        private readonly EPStatementHandleCallbackSchedule _handle;
 
         public ViewFactory ViewFactory => _factory;
 

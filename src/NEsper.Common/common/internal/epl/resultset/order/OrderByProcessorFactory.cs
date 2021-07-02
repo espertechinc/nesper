@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
 {
@@ -15,6 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
     /// </summary>
     public interface OrderByProcessorFactory
     {
-        OrderByProcessor Instantiate(AgentInstanceContext agentInstanceContext);
+        OrderByProcessor Instantiate(ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

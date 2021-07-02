@@ -37,42 +37,42 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithGroupDeliveryMultikeyWArrayTwoField(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherGroupDeliveryMultikeyWArrayTwoField());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupDeliveryMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherGroupDeliveryMultikeyWArraySingleArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupDelivery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherGroupDelivery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDiscreteDelivery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherDiscreteDelivery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubscriberOnly(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSubscriberOnly());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalid());
             return execs;
         }

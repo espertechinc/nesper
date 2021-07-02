@@ -52,9 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(ExprEvalStreamInsertBean), codegenClassScope);
+			var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(ExprEvalStreamInsertBean), codegenClassScope);
 
-			CodegenExpressionRef refEps = exprSymbol.GetAddEPS(methodNode);
+			var refEps = exprSymbol.GetAddEPS(methodNode);
 			methodNode.Block
 				.IfCondition(EqualsNull(refEps))
 				.BlockReturn(ConstantNull())

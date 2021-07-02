@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -20,9 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprMinMaxRowNode : ExprNodeBase
     {
-        private readonly MinMaxTypeEnum minMaxTypeEnum;
+        private readonly MinMaxTypeEnum _minMaxTypeEnum;
 
-        [NonSerialized] private ExprMinMaxRowNodeForge forge;
+        [NonSerialized] private ExprMinMaxRowNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -30,20 +31,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="minMaxTypeEnum">type of compare</param>
         public ExprMinMaxRowNode(MinMaxTypeEnum minMaxTypeEnum)
         {
-            this.minMaxTypeEnum = minMaxTypeEnum;
+            _minMaxTypeEnum = minMaxTypeEnum;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -52,35 +53,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// </summary>
         /// <returns>min/max indicator</returns>
         public MinMaxTypeEnum MinMaxTypeEnum {
-            get => minMaxTypeEnum;
+            get => _minMaxTypeEnum;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length < 2) {
+            if (ChildNodes.Length < 2) {
                 throw new ExprValidationException("MinMax node must have at least 2 parameters");
             }
 
-            foreach (ExprNode child in ChildNodes) {
-                Type childType = child.Forge.EvaluationType;
-                if (!TypeHelper.IsNumeric(childType)) {
-                    throw new ExprValidationException(
-                        "Implicit conversion from datatype '" +
-                        childType.CleanName() +
-                        "' to numeric is not allowed");
-                }
+            foreach (var child in ChildNodes) {
+                ExprNodeUtilityValidate.ValidateReturnsNumeric(child.Forge);
             }
 
             // Determine result type, set up compute function
-            Type childTypeOne = ChildNodes[0].Forge.EvaluationType;
-            Type childTypeTwo = ChildNodes[1].Forge.EvaluationType;
-            Type resultType = TypeHelper.GetArithmaticCoercionType(childTypeOne, childTypeTwo);
+            var childTypeOne = ChildNodes[0].Forge.EvaluationType;
+            var childTypeTwo = ChildNodes[1].Forge.EvaluationType;
+            var resultType = TypeHelper.GetArithmaticCoercionType(childTypeOne, childTypeTwo);
 
-            for (int i = 2; i < this.ChildNodes.Length; i++) {
-                resultType = TypeHelper.GetArithmaticCoercionType(resultType, ChildNodes[i].Forge.EvaluationType);
+            for (var i = 2; i < ChildNodes.Length; i++) {
+                var childTypeMore = ChildNodes[i].Forge.EvaluationType;
+                resultType = TypeHelper.GetArithmaticCoercionType(resultType, childTypeMore);
             }
 
-            forge = new ExprMinMaxRowNodeForge(this, resultType);
+            _forge = new ExprMinMaxRowNodeForge(this, resultType);
 
             return null;
         }
@@ -93,16 +89,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(minMaxTypeEnum.GetExpressionText());
+            writer.Write(_minMaxTypeEnum.GetExpressionText());
             writer.Write('(');
 
-            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(',');
-            this.ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
 
-            for (int i = 2; i < this.ChildNodes.Length; i++) {
+            for (var i = 2; i < ChildNodes.Length; i++) {
                 writer.Write(',');
-                this.ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+                ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             }
 
             writer.Write(')');
@@ -120,9 +116,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return false;
             }
 
-            ExprMinMaxRowNode other = (ExprMinMaxRowNode) node;
+            var other = (ExprMinMaxRowNode) node;
 
-            if (other.minMaxTypeEnum != this.minMaxTypeEnum) {
+            if (other._minMaxTypeEnum != _minMaxTypeEnum) {
                 return false;
             }
 

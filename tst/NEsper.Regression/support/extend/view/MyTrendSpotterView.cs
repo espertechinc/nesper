@@ -20,16 +20,16 @@ namespace com.espertech.esper.regressionlib.support.extend.view
     public class MyTrendSpotterView : ViewSupport
     {
         private const string PROPERTY_NAME = "trendcount";
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
 
-        private readonly MyTrendSpotterViewFactory factory;
-        private double? lastDataPoint;
+        private readonly MyTrendSpotterViewFactory _factory;
+        private double? _lastDataPoint;
 
         // The remove stream must post the same object event reference
-        private EventBean lastInsertStreamEvent;
+        private EventBean _lastInsertStreamEvent;
 
-        private long? trendcount;
+        private long? _trendcount;
 
         /// <summary>
         ///     Constructor requires the name of the field to use in the parent view to compute a trend.
@@ -40,11 +40,11 @@ namespace com.espertech.esper.regressionlib.support.extend.view
             MyTrendSpotterViewFactory factory,
             AgentInstanceContext agentInstanceContext)
         {
-            this.factory = factory;
-            this.agentInstanceContext = agentInstanceContext;
+            this._factory = factory;
+            this._agentInstanceContext = agentInstanceContext;
         }
 
-        public override EventType EventType => factory.EventType;
+        public override EventType EventType => _factory.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -52,8 +52,8 @@ namespace com.espertech.esper.regressionlib.support.extend.view
         {
             // The remove stream most post the same exact object references of events that were posted as the insert stream
             EventBean[] removeStreamToPost;
-            if (lastInsertStreamEvent != null) {
-                removeStreamToPost = new[] {lastInsertStreamEvent};
+            if (_lastInsertStreamEvent != null) {
+                removeStreamToPost = new[] {_lastInsertStreamEvent};
             }
             else {
                 removeStreamToPost = new[] {PopulateMap(null)};
@@ -62,33 +62,33 @@ namespace com.espertech.esper.regressionlib.support.extend.view
             // add data points
             if (newData != null) {
                 foreach (var aNewData in newData) {
-                    eventsPerStream[0] = aNewData;
-                    var dataPoint = factory.Parameter.Evaluate(eventsPerStream, true, null).AsDouble();
+                    _eventsPerStream[0] = aNewData;
+                    var dataPoint = _factory.Parameter.Evaluate(_eventsPerStream, true, null).AsDouble();
 
-                    if (lastDataPoint == null) {
-                        trendcount = 1L;
+                    if (_lastDataPoint == null) {
+                        _trendcount = 1L;
                     }
-                    else if (lastDataPoint < dataPoint) {
-                        trendcount++;
+                    else if (_lastDataPoint < dataPoint) {
+                        _trendcount++;
                     }
-                    else if (lastDataPoint > dataPoint) {
-                        trendcount = 0L;
+                    else if (_lastDataPoint > dataPoint) {
+                        _trendcount = 0L;
                     }
 
-                    lastDataPoint = dataPoint;
+                    _lastDataPoint = dataPoint;
                 }
             }
 
             if (child != null) {
-                var newDataPost = PopulateMap(trendcount);
-                lastInsertStreamEvent = newDataPost;
+                var newDataPost = PopulateMap(_trendcount);
+                _lastInsertStreamEvent = newDataPost;
                 child.Update(new[] {newDataPost}, removeStreamToPost);
             }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            var theEvent = PopulateMap(trendcount);
+            var theEvent = PopulateMap(_trendcount);
             return new SingleEventEnumerator(theEvent);
         }
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.support.extend.view
         {
             IDictionary<string, object> result = new Dictionary<string, object>();
             result.Put(PROPERTY_NAME, trendcount);
-            return agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(result, factory.EventType);
+            return _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(result, _factory.EventType);
         }
     }
 } // end of namespace

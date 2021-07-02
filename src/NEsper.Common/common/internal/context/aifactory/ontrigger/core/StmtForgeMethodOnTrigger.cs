@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
             // create subselect information
             var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, @base, services);
+                false, filterSpecCompileds, namedWindowConsumers, @base, services);
             IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
             additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
@@ -264,8 +264,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             StatementCompileTimeServices services)
         {
             var triggerEventTypeName = patternStreamSpec.OptionalStreamName;
-            var patternType =
-                ViewableActivatorPatternForge.MakeRegisterPatternType(@base, 0, patternStreamSpec, services);
+            var patternType = ViewableActivatorPatternForge.MakeRegisterPatternType(
+                @base.ModuleName, 0, null, patternStreamSpec, services);
             var patternContext = new PatternContext(0, patternStreamSpec.MatchedEventMapMeta, false, -1, false);
             var activator = new ViewableActivatorPatternForge(patternType, patternStreamSpec, patternContext, false);
             return new OnTriggerActivatorDesc(activator, triggerEventTypeName, patternType);

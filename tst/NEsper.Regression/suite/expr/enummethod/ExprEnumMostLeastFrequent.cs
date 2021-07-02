@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -27,6 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			execs.Add(new ExprEnumMostLeastFreqEvents());
 			execs.Add(new ExprEnumMostLeastFreqScalarNoParam());
 			execs.Add(new ExprEnumMostLeastFreqScalar());
+			execs.Add(new ExprEnumMostLeastFrequentInvalid());
 			return execs;
 		}
 
@@ -43,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Contained.mostFrequent( (x, i, s) => P00 + i*2 + s*4)");
 				builder.WithExpression(fields[5], "Contained.leastFrequent( (x, i, s) => P00 + i*2 + s*4)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
 				SupportBean_ST0_Container bean = SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2", "E3,12");
 				builder.WithAssertion(bean).Expect(fields, 12, 11, 12, 12, 28, 28);
@@ -74,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Strvals.mostFrequent()");
 				builder.WithExpression(fields[1], "Strvals.leastFrequent()");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E2,E1,E3,E3,E4,E3")).Expect(fields, "E3", "E4");
 
@@ -101,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Strvals.mostFrequent( (v, i, s) => extractNum(v) + i*10 + s*100)");
 				builder.WithExpression(fields[5], "Strvals.leastFrequent( (v, i, s) => extractNum(v) + i*10 + s*100)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E2,E1,E3,E3,E4,E3")).Expect(fields, 3, 4, 2, 2, 802, 802);
 
@@ -112,6 +114,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null, null, null);
 
 				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumMostLeastFrequentInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+
+				epl = "select Strvals.mostFrequent(v => null) from SupportCollection";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'strvals.mostFrequent()': Null-type is not allowed");
 			}
 		}
 	}

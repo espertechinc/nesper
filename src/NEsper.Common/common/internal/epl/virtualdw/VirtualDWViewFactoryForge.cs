@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.client.hook.vdw;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -35,13 +36,15 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         private IList<ExprNode> _parameters;
         private object[] _parameterValues;
+        private EventType _parentEventType;
+        
         private int _streamNumber;
         private ExprNode[] _validatedParameterExpressions;
         private ViewForgeEnv _viewForgeEnv;
 
         public ISet<string> UniqueKeys => _forge.UniqueKeyPropertyNames;
 
-        public EventType EventType { get; private set; }
+        public EventType EventType => _parentEventType;
 
         public string ViewName => "virtual-data-window";
 
@@ -83,9 +86,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public void Attach(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
-            EventType = parentEventType;
+            _parentEventType = parentEventType;
 
             _validatedParameterExpressions = ViewForgeSupport.Validate(
                 ViewName,

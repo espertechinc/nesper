@@ -18,18 +18,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyInKeywordMultiForge : PollResultIndexingStrategyForge
     {
-        private readonly EventType eventType;
-        private readonly string[] propertyNames;
-        private readonly int streamNum;
+        private readonly EventType _eventType;
+        private readonly string[] _propertyNames;
+        private readonly int _streamNum;
 
         public PollResultIndexingStrategyInKeywordMultiForge(
             int streamNum,
             EventType eventType,
             string[] propertyNames)
         {
-            this.streamNum = streamNum;
-            this.eventType = eventType;
-            this.propertyNames = propertyNames;
+            this._streamNum = streamNum;
+            this._eventType = eventType;
+            this._propertyNames = propertyNames;
         }
 
         public string ToQueryPlan()
@@ -46,10 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
             method.Block.DeclareVar<EventPropertyValueGetter[]>(
                 "getters",
-                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(propertyNames.Length)));
-            for (var i = 0; i < propertyNames.Length; i++) {
-                var getter = ((EventTypeSPI) eventType).GetGetterSPI(propertyNames[i]);
-                var getterType = eventType.GetPropertyType(propertyNames[i]);
+                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(_propertyNames.Length)));
+            for (var i = 0; i < _propertyNames.Length; i++) {
+                var getter = ((EventTypeSPI) _eventType).GetGetterSPI(_propertyNames[i]);
+                var getterType = _eventType.GetPropertyType(_propertyNames[i]);
                 var eval = EventTypeUtility.CodegenGetterWCoerce(
                     getter,
                     getterType,
@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 .DeclareVar<PollResultIndexingStrategyInKeywordMulti>(
                     "strat",
                     NewInstance(typeof(PollResultIndexingStrategyInKeywordMulti)))
-                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))
+                .SetProperty(Ref("strat"), "StreamNum", Constant(_streamNum))
+                .SetProperty(Ref("strat"), "PropertyNames", Constant(_propertyNames))
                 .SetProperty(Ref("strat"), "ValueGetters", Ref("getters"))
                 .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));

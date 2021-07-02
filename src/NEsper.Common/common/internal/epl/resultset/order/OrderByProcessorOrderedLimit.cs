@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_OUTGOINGEVENTS,
                         REF_ORDERCURRENTGENERATORS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }

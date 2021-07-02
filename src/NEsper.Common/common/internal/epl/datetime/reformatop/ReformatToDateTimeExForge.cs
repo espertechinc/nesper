@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public ReformatToDateTimeExForge(TimeAbacus timeAbacus)
         {
-            this._timeAbacus = timeAbacus;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;

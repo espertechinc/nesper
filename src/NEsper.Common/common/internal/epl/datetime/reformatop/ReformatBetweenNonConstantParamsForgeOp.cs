@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluator evalIncludeLow,
             ExprEvaluator evalIncludeHigh)
         {
-            this._forge = forge;
-            this._startEval = startEval;
-            this._endEval = endEval;
-            this._evalIncludeLow = evalIncludeLow;
-            this._evalIncludeHigh = evalIncludeHigh;
+            _forge = forge;
+            _startEval = startEval;
+            _endEval = endEval;
+            _evalIncludeLow = evalIncludeLow;
+            _evalIncludeHigh = evalIncludeHigh;
         }
 
         public object Evaluate(
@@ -370,21 +370,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             if (preset != null) {
-                block.DeclareVar<bool>(variable, Constant(preset));
+                block.DeclareVar<bool?>(variable, Constant(preset));
                 return;
             }
 
             if (forge.EvaluationType == typeof(bool)) {
-                block.DeclareVar<bool>(
+                block.DeclareVar<bool?>(
                     variable,
                     forge.EvaluateCodegen(typeof(bool), codegenMethodScope, exprSymbol, codegenClassScope));
                 return;
             }
 
             var refname = variable + "Obj";
-            block.DeclareVar<bool?>(refname, forge.EvaluateCodegen(typeof(bool?), codegenMethodScope, exprSymbol, codegenClassScope))
+            block
+                .DeclareVar<bool?>(refname, forge.EvaluateCodegen(typeof(bool), codegenMethodScope, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull(refname)
-                .DeclareVar<bool>(variable, Unbox<bool?>(Ref(refname)));
+                .DeclareVar<bool?>(variable, Ref(refname));
         }
 
         private static void CodegenLongCoercion(

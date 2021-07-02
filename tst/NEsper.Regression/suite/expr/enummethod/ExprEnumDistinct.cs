@@ -39,28 +39,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
 		public static IList<RegressionExecution> WithScalarMultikeyWArray(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumDistinctScalarMultikeyWArray());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithEventsMultikeyWArray(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumDistinctEventsMultikeyWArray());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumDistinctScalar());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumDistinctEvents());
 			return execs;
 		}
@@ -132,38 +132,44 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string[] fields = "c0,c1,c2".SplitCsv();
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
 				builder.WithExpression(fields[0], "Contained.distinctOf(x => P00)");
 				builder.WithExpression(fields[1], "Contained.distinctOf( (x, i) => case when i<2 then P00 else -1*P00 end)");
 				builder.WithExpression(fields[2], "Contained.distinctOf( (x, i, s) => case when s<=2 then P00 else 0 end)");
+				builder.WithExpression(fields[3], "Contained.distinctOf(x => null)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,1"))
 					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
 					.Verify("c1", val => AssertST0Id(val, "E1,E2,E3"))
-					.Verify("c2", val => AssertST0Id(val, "E1"));
+					.Verify("c2", val => AssertST0Id(val, "E1"))
+					.Verify("c3", val => AssertST0Id(val, "E1"));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E3,1", "E2,2", "E4,1", "E1,2"))
 					.Verify("c0", val => AssertST0Id(val, "E3,E2"))
 					.Verify("c1", val => AssertST0Id(val, "E3,E2,E4,E1"))
-					.Verify("c2", val => AssertST0Id(val, "E3"));
+					.Verify("c2", val => AssertST0Id(val, "E3"))
+					.Verify("c3", val => AssertST0Id(val, "E3"));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E3,1", "E2,2"))
 					.Verify("c0", val => AssertST0Id(val, "E3,E2"))
 					.Verify("c1", val => AssertST0Id(val, "E3,E2"))
-					.Verify("c2", val => AssertST0Id(val, "E3,E2"));
+					.Verify("c2", val => AssertST0Id(val, "E3,E2"))
+					.Verify("c3", val => AssertST0Id(val, "E3"));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
 					.Verify("c0", val => AssertST0Id(val, null))
 					.Verify("c1", val => AssertST0Id(val, null))
-					.Verify("c2", val => AssertST0Id(val, null));
+					.Verify("c2", val => AssertST0Id(val, null))
+					.Verify("c3", val => AssertST0Id(val, null));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
 					.Verify("c0", val => AssertST0Id(val, ""))
 					.Verify("c1", val => AssertST0Id(val, ""))
-					.Verify("c2", val => AssertST0Id(val, ""));
+					.Verify("c2", val => AssertST0Id(val, ""))
+					.Verify("c3", val => AssertST0Id(val, ""));
 
 				builder.Run(env);
 			}
@@ -173,20 +179,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Strvals.distinctOf()");
 				builder.WithExpression(fields[1], "Strvals.distinctOf(v => extractNum(v))");
 				builder.WithExpression(fields[2], "Strvals.distinctOf((v, i) => case when i<2 then extractNum(v) else 0 end)");
 				builder.WithExpression(fields[3], "Strvals.distinctOf((v, i, s) => case when s<=2 then extractNum(v) else 0 end)");
+				builder.WithExpression(fields[4], "Strvals.distinctOf(v => null)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E2,E2"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E2", "E1"))
 					.Verify("c1", val => AssertValuesArrayScalar(val, "E2", "E1"))
 					.Verify("c2", val => AssertValuesArrayScalar(val, "E2", "E1", "E2"))
-					.Verify("c3", val => AssertValuesArrayScalar(val, "E2"));
+					.Verify("c3", val => AssertValuesArrayScalar(val, "E2"))
+					.Verify("c4", val => AssertValuesArrayScalar(val, "E2"));
 
 				LambdaAssertionUtil.AssertSingleAndEmptySupportColl(builder, fields);
 

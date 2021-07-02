@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             var indexes = new PropertyHashedEventTable[eventTable.Length];

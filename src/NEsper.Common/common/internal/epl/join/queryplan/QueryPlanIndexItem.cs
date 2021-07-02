@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.join.lookup;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             EventPropertyValueGetter[] rangeGetters,
             DataInputOutputSerde[] rangeKeySerdes,
             bool unique,
-            EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
+            EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc,
+            StateMgmtSetting stateMgmtSettings)
         {
             HashProps = hashProps;
             HashPropTypes = hashPropTypes;
@@ -49,6 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             TransformFireAndForget = transformFireAndForget;
             IsUnique = unique;
             AdvancedIndexProvisionDesc = advancedIndexProvisionDesc;
+            StateMgmtSettings = stateMgmtSettings;
         }
 
         public string[] HashProps { get; }
@@ -77,6 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public IList<IndexedPropDesc> BtreePropsAsList => AsList(RangeProps, RangePropTypes);
 
+        public StateMgmtSetting StateMgmtSettings { get; }
+
         public override string ToString()
         {
             return "QueryPlanIndexItem{" +
@@ -95,21 +100,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                    "}";
         }
 
-        public bool EqualsCompareSortedProps(QueryPlanIndexItem other)
-        {
-            if (IsUnique != other.IsUnique) {
-                return false;
-            }
-
-            string[] otherIndexProps = CollectionUtil.CopySortArray(other.HashProps);
-            string[] thisIndexProps = CollectionUtil.CopySortArray(HashProps);
-            string[] otherRangeProps = CollectionUtil.CopySortArray(other.RangeProps);
-            string[] thisRangeProps = CollectionUtil.CopySortArray(RangeProps);
-            bool compared = CollectionUtil.Compare(otherIndexProps, thisIndexProps) &&
-                            CollectionUtil.Compare(otherRangeProps, thisRangeProps);
-            return compared && AdvancedIndexProvisionDesc == null && other.AdvancedIndexProvisionDesc == null;
-        }
-
         private IList<IndexedPropDesc> AsList(
             string[] props,
             Type[] types)
@@ -124,46 +114,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             return list;
-        }
-
-        private static string[] GetNames(IndexedPropDesc[] props)
-        {
-            var names = new string[props.Length];
-            for (var i = 0; i < props.Length; i++) {
-                names[i] = props[i].IndexPropName;
-            }
-
-            return names;
-        }
-
-        private static Type[] GetTypes(IndexedPropDesc[] props)
-        {
-            var types = new Type[props.Length];
-            for (var i = 0; i < props.Length; i++) {
-                types[i] = props[i].CoercionType;
-            }
-
-            return types;
-        }
-
-        private static string[] GetNames(IList<IndexedPropDesc> props)
-        {
-            var names = new string[props.Count];
-            for (var i = 0; i < props.Count; i++) {
-                names[i] = props[i].IndexPropName;
-            }
-
-            return names;
-        }
-
-        private static Type[] GetTypes(IList<IndexedPropDesc> props)
-        {
-            var types = new Type[props.Count];
-            for (var i = 0; i < props.Count; i++) {
-                types[i] = props[i].CoercionType;
-            }
-
-            return types;
         }
 
         public IndexMultiKey ToIndexMultiKey()

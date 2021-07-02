@@ -18,17 +18,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     public class AggSvcGroupByReclaimAgedEvalFuncFactoryVariableForge : AggSvcGroupByReclaimAgedEvalFuncFactoryForge
     {
-        private readonly VariableMetaData variableMetaData;
+        private readonly VariableMetaData _variableMetaData;
 
         public AggSvcGroupByReclaimAgedEvalFuncFactoryVariableForge(VariableMetaData variableMetaData)
         {
-            this.variableMetaData = variableMetaData;
+            this._variableMetaData = variableMetaData;
         }
 
         public CodegenExpressionInstanceField Make(CodegenClassScope classScope)
         {
             CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(
-                variableMetaData,
+                _variableMetaData,
                 EPStatementInitServicesConstants.REF);
             return classScope.AddDefaultFieldUnshared(
                 true,

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		protected readonly ObjectArrayEventType fieldEventType;
 		protected readonly int numParameters;
 
-		public abstract Type ReturnType();
+		public abstract Type ReturnTypeOfMethod();
 
 		public abstract CodegenExpression ReturnIfEmptyOptional();
 
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(fieldEventType, EPStatementInitServicesConstants.REF)));
 
 			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-			CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+			CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(ReturnTypeOfMethod(), GetType(), scope, codegenClassScope)
+				.AddParam(PARAMS);
 			CodegenBlock block = methodNode.Block;
 			bool hasIndex = numParameters >= 2;
 			bool hasSize = numParameters >= 3;
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					typeof(ObjectArrayEventBean),
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters)), resultTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
+				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
 				block.DeclareVar<int>("count", Constant(-1));

@@ -32,6 +32,7 @@ using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
+using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
@@ -47,6 +48,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public StatementContextRuntimeServices(
             IContainer container,
             ContextManagementService contextManagementService,
+            PathRegistry<string, ContextMetaData> contextPathRegistry,
             ContextServiceFactory contextServiceFactory,
             DatabaseConfigServiceRuntime databaseConfigService,
             DataFlowFilterServiceAdapter dataFlowFilterServiceAdapter,
@@ -81,6 +83,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathRegistry<string, NamedWindowMetaData> pathNamedWindowRegistry,
             RowRecogStateRepoFactory rowRecogStateRepoFactory,
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            SchedulingService schedulingService,
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory,
             StatementResourceHolderBuilder statementResourceHolderBuilder,
             TableExprEvaluatorContext tableExprEvaluatorContext,
@@ -132,11 +135,14 @@ namespace com.espertech.esper.common.@internal.context.util
             VariableManagementService = variableManagementService;
             ViewFactoryService = viewFactoryService;
             ViewServicePreviousFactory = viewServicePreviousFactory;
+            ContextPathRegistry = contextPathRegistry;
+            SchedulingService = schedulingService;
         }
 
         public StatementContextRuntimeServices(IContainer container)
         {
             Container = container;
+            ContextPathRegistry = null;
             ContextManagementService = null;
             ContextServiceFactory = null;
             DatabaseConfigService = null;
@@ -172,6 +178,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathNamedWindowRegistry = null;
             RowRecogStateRepoFactory = null;
             ResultSetProcessorHelperFactory = null;
+            SchedulingService = null;
             StatementAgentInstanceLockFactory = null;
             StatementResourceHolderBuilder = null;
             TableExprEvaluatorContext = null;
@@ -181,9 +188,11 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewServicePreviousFactory = null;
         }
 
-        public IContainer Container { get; set; }
+        public IContainer Container { get; }
 
         public ContextManagementService ContextManagementService { get; }
+
+        public PathRegistry<string, ContextMetaData> ContextPathRegistry { get; }
 
         public ContextServiceFactory ContextServiceFactory { get; }
 
@@ -234,6 +243,8 @@ namespace com.espertech.esper.common.@internal.context.util
         public RowRecogStateRepoFactory RowRecogStateRepoFactory { get; }
 
         public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; }
+        
+        public SchedulingService SchedulingService { get; }
 
         public StatementAgentInstanceLockFactory StatementAgentInstanceLockFactory { get; }
 

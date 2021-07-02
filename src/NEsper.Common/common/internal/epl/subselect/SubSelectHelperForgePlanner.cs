@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -46,6 +47,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.statement.helper;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.prior;
@@ -57,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
 	public class SubSelectHelperForgePlanner
 	{
-		private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
+		private static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
 
 		private const string MSG_SUBQUERY_REQUIRES_WINDOW =
 			"Subqueries require one or more views to limit the stream, consider declaring a length or time window (applies to correlated or non-fully-aggregated subqueries)";
@@ -120,8 +122,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			StatementCompileTimeServices services)
 		{
 			var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
-			if (queryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
-				QUERY_PLAN_LOG.Info("For statement '" + statement.StatementNumber + "' subquery " + subselect.SubselectNumber);
+			if (queryPlanLogging && QueryPlanLog.IsInfoEnabled) {
+				QueryPlanLog.Info("For statement '" + statement.StatementNumber + "' subquery " + subselect.SubselectNumber);
 			}
 
 			var annotations = statement.StatementSpec.Annotations;
@@ -258,7 +260,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					ExprNodeOrigin.HAVING,
 					subselectSpec.Raw.HavingClause,
 					validationContext);
-				if (Boxing.GetBoxedType(validatedHavingClause.Forge.EvaluationType) != typeof(bool?)) {
+				if (!validatedHavingClause.Forge.EvaluationType.IsBoolean()) {
 					throw new ExprValidationException("Subselect having-clause expression must return a boolean value");
 				}
 
@@ -443,7 +445,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					false,
 					services.ImportServiceCompileTime,
 					statement.StatementRawInfo,
-					services.SerdeResolver);
+					services.SerdeResolver,
+					services.StateMgmtSettingsProvider);
 				additionalForgeables.AddAll(aggregationServiceForgeDesc.AdditionalForgeables);
 
 				// assign select-clause
@@ -476,7 +479,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			var correlatedSubquery = false;
 			if (filterExpr != null) {
 				filterExpr = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.FILTER, filterExpr, validationContext);
-				if (Boxing.GetBoxedType(filterExpr.Forge.EvaluationType) != typeof(bool?)) {
+				if (!filterExpr.Forge.EvaluationType.IsBoolean()) {
 					throw new ExprValidationException("Subselect filter expression must return a boolean value");
 				}
 
@@ -497,8 +500,15 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				viewResourceDelegateSubselect)[0];
 			if (ViewResourceDelegateDesc.HasPrior(new ViewResourceDelegateDesc[] {viewResourceDelegateDesc})) {
 				if (!viewResourceDelegateDesc.PriorRequests.IsEmpty()) {
+					var unbound = viewForges.IsEmpty();
+					var stateMgmtSettings = unbound
+						? StateMgmtSettingDefault.INSTANCE
+						: services.StateMgmtSettingsProvider.GetView(statement.StatementRawInfo, -1, true, false, AppliesTo.WINDOW_PRIOR);
 					viewForges.Add(
-						new PriorEventViewForge(viewForges.IsEmpty(), viewForges.IsEmpty() ? eventType : viewForges[viewForges.Count - 1].EventType));
+						new PriorEventViewForge(
+							unbound,
+							viewForges.IsEmpty() ? eventType : viewForges[viewForges.Count - 1].EventType,
+							stateMgmtSettings));
 				}
 			}
 
@@ -534,6 +544,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			//
 
 			// handle named window index share first
+			SubSelectFactoryForge forge = null; 
 			if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
 				var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
 				if (namedSpec.FilterExpressions.IsEmpty()) {
@@ -545,8 +556,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
 					if ((!disableIndexShare && namedWindowX.IsEnableIndexShare) || (services.IsFireAndForget)) {
 						ValidateContextAssociation(statement.ContextName, namedWindowX.ContextName, "named window '" + namedWindowX.EventType.Name + "'");
-						if (queryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
-							QUERY_PLAN_LOG.Info("prefering shared index");
+						if (queryPlanLogging && QueryPlanLog.IsInfoEnabled) {
+							QueryPlanLog.Info("prefering shared index");
 						}
 
 						var fullTableScanX = HintEnum.SET_NOINDEX.GetHint(annotations) != null;
@@ -571,18 +582,14 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 							statement,
 							services);
 						additionalForgeables.AddAll(strategyForgeX.AdditionalForgeables);
-						var forgeX = new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForgeX);
-						return new SubSelectFactoryForgeDesc(forgeX, additionalForgeables);
+						forge = new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForgeX);
 					}
 				}
 				else if (services.IsFireAndForget) {
 					throw new ExprValidationException("Subqueries in fire-and-forget queries do not allow filter expressions");
 				}
-			}
-
-			// handle table-subselect
-			if (filterStreamSpec is TableQueryStreamSpec) {
-				var tableSpec = (TableQueryStreamSpec) filterStreamSpec;
+			} else if (filterStreamSpec is TableQueryStreamSpec tableSpec) {
+				// handle table-subselect
 				ValidateContextAssociation(
 					statement.StatementRawInfo.ContextName,
 					tableSpec.Table.OptionalContextName,
@@ -605,59 +612,62 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					statement,
 					services);
 				additionalForgeables.AddAll(strategyForgeX.AdditionalForgeables);
-				var forgeX = new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForgeX);
-				return new SubSelectFactoryForgeDesc(forgeX, additionalForgeables);
+				forge = new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForgeX);
 			}
 
-			// determine unique keys, if any
-			var optionalUniqueProps = StreamJoinAnalysisResultCompileTime.GetUniqueCandidateProperties(viewForges, annotations);
-			NamedWindowMetaData namedWindow = null;
-			ExprNode namedWindowFilterExpr = null;
-			QueryGraphForge namedWindowFilterQueryGraph = null;
-			if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
-				var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
-				namedWindow = namedSpec.NamedWindow;
-				optionalUniqueProps = namedWindow.UniquenessAsSet;
-				if (namedSpec.FilterExpressions != null && !namedSpec.FilterExpressions.IsEmpty()) {
-					var types = new StreamTypeServiceImpl(namedWindow.EventType, namedWindow.EventType.Name, false);
-					namedWindowFilterExpr = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(namedSpec.FilterExpressions);
-					namedWindowFilterQueryGraph = EPLValidationUtil.ValidateFilterGetQueryGraphSafe(
-						namedWindowFilterExpr,
-						types,
-						statement.StatementRawInfo,
-						services);
+			if (forge == null) {
+				// determine unique keys, if any
+				var optionalUniqueProps = StreamJoinAnalysisResultCompileTime.GetUniqueCandidateProperties(viewForges, annotations);
+				NamedWindowMetaData namedWindow = null;
+				ExprNode namedWindowFilterExpr = null;
+				QueryGraphForge namedWindowFilterQueryGraph = null;
+				if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
+					var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
+					namedWindow = namedSpec.NamedWindow;
+					optionalUniqueProps = namedWindow.UniquenessAsSet;
+					if (namedSpec.FilterExpressions != null && !namedSpec.FilterExpressions.IsEmpty()) {
+						var types = new StreamTypeServiceImpl(namedWindow.EventType, namedWindow.EventType.Name, false);
+						namedWindowFilterExpr = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(namedSpec.FilterExpressions);
+						namedWindowFilterQueryGraph = EPLValidationUtil.ValidateFilterGetQueryGraphSafe(
+							namedWindowFilterExpr,
+							types,
+							statement.StatementRawInfo,
+							services);
+					}
 				}
+
+				// handle local stream + named-window-stream
+				var fullTableScan = HintEnum.SET_NOINDEX.GetHint(annotations) != null;
+				var indexDesc = DetermineSubqueryIndexFactory(
+					filterExpr,
+					eventType,
+					outerEventTypes,
+					subselectTypeService,
+					fullTableScan,
+					queryPlanLogging,
+					optionalUniqueProps,
+					statement,
+					subselect,
+					services);
+				additionalForgeables.AddAll(indexDesc.AdditionalForgeables);
+				var indexPair = new Pair<EventTableFactoryFactoryForge, SubordTableLookupStrategyFactoryForge>(indexDesc.TableForge, indexDesc.LookupForge);
+
+				SubSelectStrategyFactoryForge strategyForge = new SubSelectStrategyFactoryLocalViewPreloadedForge(
+					viewForges,
+					viewResourceDelegateDesc,
+					indexPair,
+					filterExpr,
+					correlatedSubquery,
+					aggregationServiceForgeDesc, /* viewResourceDelegateVerified */
+					subqueryNum,
+					groupByNodes,
+					namedWindow,
+					namedWindowFilterExpr,
+					namedWindowFilterQueryGraph,
+					groupByMultikeyPlan == null ? null : groupByMultikeyPlan.ClassRef);
+
+				forge = new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForge);
 			}
-
-			// handle local stream + named-window-stream
-			var fullTableScan = HintEnum.SET_NOINDEX.GetHint(annotations) != null;
-			var indexDesc = DetermineSubqueryIndexFactory(
-				filterExpr,
-				eventType,
-				outerEventTypes,
-				subselectTypeService,
-				fullTableScan,
-				queryPlanLogging,
-				optionalUniqueProps,
-				statement,
-				subselect,
-				services);
-			additionalForgeables.AddAll(indexDesc.AdditionalForgeables);
-			var indexPair = new Pair<EventTableFactoryFactoryForge, SubordTableLookupStrategyFactoryForge>(indexDesc.TableForge, indexDesc.LookupForge);
-
-			SubSelectStrategyFactoryForge strategyForge = new SubSelectStrategyFactoryLocalViewPreloadedForge(
-				viewForges,
-				viewResourceDelegateDesc,
-				indexPair,
-				filterExpr,
-				correlatedSubquery,
-				aggregationServiceForgeDesc, /* viewResourceDelegateVerified */
-				subqueryNum,
-				groupByNodes,
-				namedWindow,
-				namedWindowFilterExpr,
-				namedWindowFilterQueryGraph,
-				groupByMultikeyPlan == null ? null : groupByMultikeyPlan.ClassRef);
 
 			// For subselect in filters, we must validate-subquery again as the first validate was not including the information compiled herein.
 			// This is because filters are validated first so their information is available to stream-type-service and this validation.
@@ -666,7 +676,6 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				subselect.ValidateSubquery(subselect.FilterStreamExprValidationContext);
 			}
 
-			var forge = new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForge);
 			return new SubSelectFactoryForgeDesc(forge, additionalForgeables);
 		}
 
@@ -740,10 +749,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				services);
 
 			var hook = QueryPlanIndexHookUtil.GetHook(statement.StatementSpec.Annotations, services.ImportServiceCompileTime);
-			if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
-				QUERY_PLAN_LOG.Info("local index");
-				QUERY_PLAN_LOG.Info("strategy " + desc.LookupForge.ToQueryPlan());
-				QUERY_PLAN_LOG.Info("table " + desc.TableForge.ToQueryPlan());
+			if (queryPlanLogging && (QueryPlanLog.IsInfoEnabled || hook != null)) {
+				QueryPlanLog.Info("local index");
+				QueryPlanLog.Info("strategy " + desc.LookupForge.ToQueryPlan());
+				QueryPlanLog.Info("table " + desc.TableForge.ToQueryPlan());
 				if (hook != null) {
 					var strategyName = desc.LookupForge.GetType().Name;
 					hook.Subquery(
@@ -794,7 +803,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
 			// No filter expression means full table scan
 			if ((filterExpr == null) || fullTableScan) {
-				var tableForge = new UnindexedEventTableFactoryFactoryForge(0, subqueryNumber, false);
+				var stateMgmtSettings = services.StateMgmtSettingsProvider.GetIndex(statement.StatementRawInfo, AppliesTo.INDEX_UNINDEXED);
+				var tableForge = new UnindexedEventTableFactoryFactoryForge(0, subqueryNumber, false, stateMgmtSettings);
 				var strategy = new SubordFullTableScanLookupStrategyFactoryForge();
 				return new SubqueryIndexForgeDesc(tableForge, strategy, EmptyList<StmtClassForgeableFactory>.Instance);
 			}
@@ -848,6 +858,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(hashCoercionDesc.CoercionTypes, false, statement.StatementRawInfo, services.SerdeResolver);
 				additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
 				hashMultikeyClasses = multiKeyPlan.ClassRef;
+				var stateMgmtSettings = services.StateMgmtSettingsProvider.GetIndex(statement.StatementRawInfo, AppliesTo.INDEX_HASH);
 				eventTableFactory = new PropertyHashedFactoryFactoryForge(
 					0,
 					subqueryNumber,
@@ -856,7 +867,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					viewableEventType,
 					unique,
 					hashCoercionDesc,
-					multiKeyPlan.ClassRef);
+					multiKeyPlan.ClassRef,
+					stateMgmtSettings);
 			}
 			else if (hashKeys.IsEmpty() && rangeKeys.IsEmpty()) {
 				rangeCoercionDesc = new CoercionDesc(false, null);
@@ -866,6 +878,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					hashCoercionDesc = new CoercionDesc(false, propTypes);
 					var serdeForge = services.SerdeResolver.SerdeForIndexHashNonArray(propTypes[0], statement.StatementRawInfo);
 					hashMultikeyClasses = new MultiKeyClassRefWSerde(serdeForge, propTypes);
+					var stateMgmtSettings = services.StateMgmtSettingsProvider.GetIndex(statement.StatementRawInfo, AppliesTo.INDEX_IN);
 					eventTableFactory = new PropertyHashedFactoryFactoryForge(
 						0,
 						subqueryNumber,
@@ -874,7 +887,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 						viewableEventType,
 						unique,
 						hashCoercionDesc,
-						hashMultikeyClasses);
+						hashMultikeyClasses,
+						stateMgmtSettings);
 					inKeywordSingleIdxKeys = joinPropDesc.InKeywordSingleIndex.Expressions;
 				}
 				else if (joinPropDesc.InKeywordMultiIndex != null) {
@@ -885,6 +899,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 						serdes[i] = services.SerdeResolver.SerdeForIndexHashNonArray(hashCoercionDesc.CoercionTypes[i], statement.StatementRawInfo);
 					}
 
+					var stateMgmtSettings = services.StateMgmtSettingsProvider.GetIndex(statement.StatementRawInfo, AppliesTo.INDEX_IN);
 					eventTableFactory = new PropertyHashedArrayFactoryFactoryForge(
 						0,
 						viewableEventType,
@@ -892,19 +907,22 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 						hashCoercionDesc.CoercionTypes,
 						serdes,
 						unique,
-						false);
+						false,
+						stateMgmtSettings);
 					inKeywordMultiIdxKey = joinPropDesc.InKeywordMultiIndex.Expression;
 				}
 				else {
+					var stateMgmtSettings = services.StateMgmtSettingsProvider.GetIndex(statement.StatementRawInfo, AppliesTo.INDEX_UNINDEXED);
 					hashCoercionDesc = new CoercionDesc(false, null);
-					eventTableFactory = new UnindexedEventTableFactoryFactoryForge(0, subqueryNumber, false);
+					eventTableFactory = new UnindexedEventTableFactoryFactoryForge(0, subqueryNumber, false, stateMgmtSettings);
 				}
 			}
 			else if (hashKeys.IsEmpty() && rangeKeys.Count == 1) {
 				var indexedProp = rangeKeys.Keys.First();
 				var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(viewableEventType, rangeKeys, outerEventTypes);
 				var serde = services.SerdeResolver.SerdeForIndexBtree(coercionRangeTypes.CoercionTypes[0], statement.StatementRawInfo);
-				eventTableFactory = new PropertySortedFactoryFactoryForge(0, subqueryNumber, false, indexedProp, viewableEventType, coercionRangeTypes, serde);
+				var stateMgmtSettings = services.StateMgmtSettingsProvider.GetIndex(statement.StatementRawInfo, AppliesTo.INDEX_SORTED);
+				eventTableFactory = new PropertySortedFactoryFactoryForge(0, subqueryNumber, false, indexedProp, viewableEventType, coercionRangeTypes, serde, stateMgmtSettings);
 				hashCoercionDesc = new CoercionDesc(false, null);
 				rangeCoercionDesc = coercionRangeTypes;
 			}

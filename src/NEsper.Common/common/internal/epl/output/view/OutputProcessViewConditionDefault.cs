@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -39,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext,
-            bool isJoin,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
             : base(
                 agentInstanceContext,
                 resultSetProcessor,
@@ -56,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             OptionalDeltaSet =
                 agentInstanceContext.ResultSetProcessorHelperFactory.MakeOutputConditionChangeSet(
                     eventTypes,
-                    agentInstanceContext);
+                    agentInstanceContext,
+                    stateMgmtSettings);
         }
 
         public override int NumChangesetRows => OptionalDeltaSet.NumChangesetRows;
@@ -283,15 +285,11 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             // single stream means no join
             // multiple streams means a join
-            if (streamCount == 1) {
-                return (
-                    doOutput,
-                    forceUpdate) => ContinueOutputProcessingView(doOutput, forceUpdate);
+            if (streamCount <= 1) {
+                return ContinueOutputProcessingView;
             }
 
-            return (
-                doOutput,
-                forceUpdate) => ContinueOutputProcessingJoin(doOutput, forceUpdate);
+            return ContinueOutputProcessingJoin;
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

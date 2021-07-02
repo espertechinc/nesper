@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -54,63 +55,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithInvalidTranspose(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalidTranspose());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposePONOPropertyStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposePONOPropertyStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeEventJoinPONO(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeEventJoinPONO());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeEventJoinMap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeEventJoinMap());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeSingleColumnInsert(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeSingleColumnInsert());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeFunctionToStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeFunctionToStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeFunctionToStreamWithProps(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeFunctionToStreamWithProps());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeMapAndObjectArrayAndOthers(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeMapAndObjectArrayAndOthers());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTransposeCreateSchemaPONO(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeCreateSchemaPONO());
             return execs;
         }
@@ -528,6 +529,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "where e1.Id = e2.Id ",
                     "The 'e2.* as event' syntax is not allowed when inserting into an existing bean event type, use the 'e2 as event' syntax instead");
 
+                TryInvalidCompile(
+                    env,
+                    "select transpose(null) from SupportBean",
+                    "Invalid expression return type '" + TypeHelper.NullType.CleanName() + "' for transpose function");
+                
                 env.UndeployAll();
             }
         }

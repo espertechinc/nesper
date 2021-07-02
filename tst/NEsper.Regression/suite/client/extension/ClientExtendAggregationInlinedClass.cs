@@ -47,6 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			"using com.espertech.esper.common.@internal.epl.expression.core;\n" +
 			"using com.espertech.esper.common.client.hook.forgeinject;\n" +
 			"using com.espertech.esper.common.client.serde;\n" +
+			"using com.espertech.esper.common.client.type;\n" +
 			"using com.espertech.esper.compat.collections;\n" +
 			"using com.espertech.esper.compat.io;\n" +
 			"\n" +

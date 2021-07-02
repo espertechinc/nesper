@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 
@@ -26,6 +27,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         public string[] ArrayEvents { get; set; }
 
         public bool IsImmediate { get; set; }
+        
+        public string AsName { get; set; }
+        
+        public EventType AsNameEventType { get; set; }
+        
+        public string[] PatternTags { get; set; }
 
         public void AddFilterSpecActivatable(IList<FilterSpecActivatable> activatables)
         {

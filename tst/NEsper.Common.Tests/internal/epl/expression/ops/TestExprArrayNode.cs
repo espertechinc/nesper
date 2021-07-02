@@ -61,10 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(0, ((object[]) result).Length);
 
             result = arrayNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
-            Assert.AreEqual(typeof(int[]), result.GetType());
-            Assert.AreEqual(2, ((int[]) result).Length);
-            Assert.AreEqual(2, (int) ((int[]) result)[0]);
-            Assert.AreEqual(3, (int) ((int[]) result)[1]);
+            Assert.AreEqual(typeof(int?[]), result.GetType());
+            Assert.AreEqual(2, ((int?[]) result).Length);
+            Assert.AreEqual(2, ((int?[]) result)[0]);
+            Assert.AreEqual(3, ((int?[]) result)[1]);
 
             result = arrayNodes[2].Forge.ExprEvaluator.Evaluate(null, true, null);
             Assert.That(result, Is.InstanceOf<double?[]>());
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public void TestGetType()
         {
             Assert.AreEqual(typeof(object[]), arrayNodes[0].Forge.EvaluationType);
-            Assert.AreEqual(typeof(int[]), arrayNodes[1].Forge.EvaluationType);
+            Assert.AreEqual(typeof(int?[]), arrayNodes[1].Forge.EvaluationType);
             Assert.AreEqual(typeof(double?[]), arrayNodes[2].Forge.EvaluationType);
             Assert.AreEqual(typeof(object[]), arrayNodes[3].Forge.EvaluationType);
         }

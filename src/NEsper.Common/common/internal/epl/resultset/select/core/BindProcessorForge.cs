@@ -10,12 +10,14 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -82,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     var expr = (SelectClauseExprCompiledSpec) element;
                     var forge = expr.SelectExpression.Forge;
                     expressions.Add(forge);
-                    types.Add(forge.EvaluationType);
+                    types.Add(forge.EvaluationType.TypeNormalized());
                     if (expr.AssignedName != null) {
                         columnNames.Add(expr.AssignedName);
                     }

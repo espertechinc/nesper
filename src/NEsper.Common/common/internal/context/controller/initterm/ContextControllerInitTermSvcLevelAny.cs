@@ -19,16 +19,16 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermSvcLevelAny : ContextControllerInitTermSvc
     {
-        private IDictionary<IntSeqKey, ContextControllerInitTermSvcEntry> endConditions =
+        private IDictionary<IntSeqKey, ContextControllerInitTermSvcEntry> _endConditions =
             new Dictionary<IntSeqKey, ContextControllerInitTermSvcEntry>();
 
-        private IDictionary<IntSeqKey, NestedEntry> mgmt = new Dictionary<IntSeqKey, NestedEntry>();
+        private IDictionary<IntSeqKey, NestedEntry> _mgmt = new Dictionary<IntSeqKey, NestedEntry>();
 
         public void MgmtCreate(
             IntSeqKey controllerPath,
             object[] parentPartitionKeys)
         {
-            var existing = mgmt.PutIfAbsent(controllerPath, new NestedEntry(0, null, parentPartitionKeys));
+            var existing = _mgmt.PutIfAbsent(controllerPath, new NestedEntry(0, null, parentPartitionKeys));
             if (existing != null) {
                 throw new IllegalStateException("Unexpected existing entry for path");
             }
@@ -36,19 +36,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath)
         {
-            var entry = mgmt.Get(controllerPath);
+            var entry = _mgmt.Get(controllerPath);
             return entry == null ? null : entry.parentPartitionKeys;
         }
 
         public ContextControllerConditionNonHA MgmtDelete(IntSeqKey controllerPath)
         {
-            var existing = mgmt.Delete(controllerPath);
+            var existing = _mgmt.Delete(controllerPath);
             return existing == null ? null : existing.startCondition;
         }
 
         public ContextControllerConditionNonHA MgmtUpdClearStartCondition(IntSeqKey controllerPath)
         {
-            var existing = mgmt.Get(controllerPath);
+            var existing = _mgmt.Get(controllerPath);
             ContextControllerConditionNonHA tmp = null;
             if (existing != null) {
                 tmp = existing.startCondition;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             ContextControllerConditionNonHA startCondition)
         {
-            var existing = mgmt.Get(controllerPath);
+            var existing = _mgmt.Get(controllerPath);
             if (existing != null) {
                 existing.startCondition = startCondition;
             }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public int MgmtUpdIncSubpath(IntSeqKey controllerPath)
         {
-            var existing = mgmt.Get(controllerPath);
+            var existing = _mgmt.Get(controllerPath);
             if (existing == null) {
                 throw new IllegalStateException("Unexpected no-entry-found for path");
             }
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         
         public ContextControllerCondition MgmtGetStartCondition(IntSeqKey controllerPath)
         {
-            return mgmt.TryGetValue(controllerPath, out var existing) ? existing.startCondition : null;
+            return _mgmt.TryGetValue(controllerPath, out var existing) ? existing.startCondition : null;
         }
         
         public void EndCreate(
@@ -90,27 +90,27 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerConditionNonHA endCondition,
             ContextControllerInitTermPartitionKey partitionKey)
         {
-            endConditions.Put(
+            _endConditions.Put(
                 endConditionPath,
                 new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
         }
 
         public ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath)
         {
-            return endConditions.Delete(conditionPath);
+            return _endConditions.Delete(conditionPath);
         }
 
         public ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath)
         {
             var entries = new List<ContextControllerInitTermSvcEntry>();
 
-            endConditions
+            _endConditions
                 .Where(entry => controllerPath.IsParentTo(entry.Key))
                 .ToList()
                 .ForEach(
                     entry => {
                         entries.Add(entry.Value);
-                        endConditions.Remove(entry.Key);
+                        _endConditions.Remove(entry.Key);
                     });
 
             return entries;
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId)
         {
-            foreach (var entry in endConditions) {
+            foreach (var entry in _endConditions) {
                 if (controllerPath.IsParentTo(entry.Key)) {
                     partKeyAndCPId.Invoke(entry.Value.PartitionKey, entry.Value.SubpathIdOrCPId);
                 }
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerConditionNonHA, int> partKeyAndCPId)
         {
-            foreach (var entry in endConditions) {
+            foreach (var entry in _endConditions) {
                 if (controllerPath.IsParentTo(entry.Key)) {
                     partKeyAndCPId.Invoke(entry.Value.TerminationCondition, entry.Value.SubpathIdOrCPId);
                 }
@@ -141,8 +141,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public void Destroy()
         {
-            mgmt = null;
-            endConditions = null;
+            _mgmt = null;
+            _endConditions = null;
         }
 
         internal class NestedEntry

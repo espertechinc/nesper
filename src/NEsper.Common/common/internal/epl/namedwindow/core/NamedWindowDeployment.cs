@@ -24,12 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             NamedWindowMetaData metadata,
             EPStatementInitServices services)
         {
-            NamedWindow existing = namedWindows.Get(windowName);
+            var existing = namedWindows.Get(windowName);
             if (existing != null) {
                 throw new IllegalStateException("Named window processor already found for name '" + windowName + "'");
             }
 
-            NamedWindow namedWindow = services.NamedWindowFactoryService.CreateNamedWindow(metadata, services);
+            var namedWindow = services.NamedWindowFactoryService.CreateNamedWindow(metadata, services);
             namedWindows.Put(windowName, namedWindow);
         }
 

@@ -33,28 +33,28 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithrEnginePathNamedWindowUse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompilerEnginePathNamedWindowUse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEnginePathPreconfiguredEventTypeFromPath(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileEnginePathPreconfiguredEventTypeFromPath());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEnginePathInfraWithIndex(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileEnginePathInfraWithIndex());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEnginePathObjectTypes(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileEnginePathObjectTypes());
             return execs;
         }

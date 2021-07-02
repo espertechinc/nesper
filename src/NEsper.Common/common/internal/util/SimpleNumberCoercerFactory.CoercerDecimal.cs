@@ -50,8 +50,7 @@ namespace com.espertech.esper.common.@internal.util
                     return param;
                 }
                 
-                return ((valueType != typeof(decimal)) &&
-                        (valueType != typeof(decimal?)))
+                return valueType.IsDecimal() 
                     ? CodegenExpressionBuilder.ExprDotMethod(param, "AsBoxedDecimal")
                     : param;
 

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using com.espertech.esper.compat.collections;
@@ -683,6 +684,155 @@ namespace com.espertech.esper.compat
                 .Any(result => result);
         }
         
+        public static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null) {
+                return Activator.CreateInstance(t);
+            }
+            else {
+                return null;
+            }
+        }
+
+        public static bool IsType<T>(this Type type)
+        {
+            return IsType(type, typeof(T));
+        }
+
+        public static bool IsType(this Type type, Type myType)
+        {
+            if (type == null)
+                return false;
+            
+            if (type == myType)
+                return true;
+
+            if (myType.IsInterface)
+                return IsImplementsInterface(type, myType);
+            
+            return type.IsSubclassOf(myType);
+        }
+        
+        /// <summary>
+        /// Returns true if the specified type represents the void type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        
+        public static bool IsVoid(this Type type)
+        {
+            return type == typeof(void);
+        }
+        
+        /// <summary>
+        ///     Determines whether the specified type is bool.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified type is bool; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsBoolean(this Type type)
+        {
+            return
+                type == typeof(bool) ||
+                type == typeof(bool?);
+        }
+
+        /// <summary>
+        ///     Returns true if the type represents a character type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsCharacter(this Type type)
+        {
+            return
+                type == typeof(char) ||
+                type == typeof(char?);
+        }
+
+        /// <summary>
+        ///     Returns true if the type represents a floating point numeric type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsFloatingPoint(this Type type)
+        {
+            return
+                type == typeof(float) ||
+                type == typeof(float?) ||
+                type == typeof(double) ||
+                type == typeof(double?) ||
+                type == typeof(decimal) ||
+                type == typeof(decimal?)
+                ;
+        }
+        
+        /// <summary>
+        ///     Returns true if the supplied type is a floating point number.
+        /// </summary>
+        /// <param name="type">to check</param>
+        /// <returns>
+        ///     true if primitive or boxed float or double
+        /// </returns>
+        public static bool IsFloatingPointClass(this Type type)
+        {
+            return
+                type == typeof(float?) ||
+                type == typeof(float) ||
+                type == typeof(double?) ||
+                type == typeof(double);
+        }
+
+
+        public static bool IsNotInt32(this Type type)
+        {
+            return type != typeof(int) &&
+                   type != typeof(int?);
+        }
+
+        public static bool IsInt32(this Type type)
+        {
+            return type == typeof(int) ||
+                   type == typeof(int?);
+        }
+
+        public static bool IsInt64(this Type type)
+        {
+            return type == typeof(long) ||
+                   type == typeof(long?);
+        }
+
+        public static bool IsInt16(this Type type)
+        {
+            return type == typeof(short) ||
+                   type == typeof(short?);
+        }
+
+        public static bool IsDecimal(this Type type)
+        {
+            return type == typeof(decimal) ||
+                   type == typeof(decimal?);
+        }
+
+        public static bool IsDouble(this Type type)
+        {
+            return type == typeof(double) ||
+                   type == typeof(double?);
+        }
+
+        public static bool IsSingle(this Type type)
+        {
+            return type == typeof(float) ||
+                   type == typeof(float?);
+        }
+
+        public static bool IsBigInteger(this Type type)
+        {
+            return type == typeof(BigInteger) ||
+                   type == typeof(BigInteger?);
+        }
+        
+               
         public static string CleanName<T>()
         {
             return CleanName(typeof(T), true);
@@ -734,16 +884,6 @@ namespace com.espertech.esper.compat
         public static string CleanName<T>(bool useFullName)
         {
             return CleanName(typeof(T), useFullName);
-        }
-        
-        public static object GetDefaultValue(Type t)
-        {
-            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null) {
-                return Activator.CreateInstance(t);
-            }
-            else {
-                return null;
-            }
         }
     }
 }

@@ -17,11 +17,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotEnumerableEventCollectionEval : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEnumerationEval rootLambdaEvaluator;
+        private readonly ExprEnumerationEval _rootLambdaEvaluator;
 
         public InnerDotEnumerableEventCollectionEval(ExprEnumerationEval rootLambdaEvaluator)
         {
-            this.rootLambdaEvaluator = rootLambdaEvaluator;
+            this._rootLambdaEvaluator = rootLambdaEvaluator;
         }
 
         public object Evaluate(
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context)
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context)
                 .TransformUpcast<EventBean, object>();
         }
 

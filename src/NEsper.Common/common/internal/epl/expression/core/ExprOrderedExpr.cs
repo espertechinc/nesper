@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprEvaluator
     {
-        [NonSerialized] private ExprEvaluator evaluator;
+        [NonSerialized] private ExprEvaluator _evaluator;
 
         /// <summary>
         ///     Ctor.
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ExprEvaluator ExprEvaluator => this;
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            evaluator = ChildNodes[0].Forge.ExprEvaluator;
+            _evaluator = ChildNodes[0].Forge.ExprEvaluator;
             // always valid
             return null;
         }

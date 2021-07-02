@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprEvaluator
     {
-        private readonly ExprNode inner;
+        private readonly ExprNode _inner;
 
         /// <summary>
         ///     Ctor.
@@ -32,19 +32,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="inner">nested expression node</param>
         public ExprNodeValidated(ExprNode inner)
         {
-            this.inner = inner;
+            this._inner = inner;
         }
 
         public override ExprForge Forge => this;
 
-        public override ExprPrecedenceEnum Precedence => inner.Precedence;
+        public override ExprPrecedenceEnum Precedence => _inner.Precedence;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return inner.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _inner.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ExprEvaluator ExprEvaluator => this;
@@ -55,28 +55,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return inner.Forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return _inner.Forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType => inner.Forge.EvaluationType;
+        public Type EvaluationType => _inner.Forge.EvaluationType;
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public ExprForgeConstantType ForgeConstantType => inner.Forge.ForgeConstantType;
+        public ExprForgeConstantType ForgeConstantType => _inner.Forge.ForgeConstantType;
 
         public override void ToEPL(
             TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            inner.ToEPL(writer, parentPrecedence, flags);
+            _inner.ToEPL(writer, parentPrecedence, flags);
         }
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            inner.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            _inner.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
 
         public override bool EqualsNode(
@@ -84,10 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool ignoreStreamPrefix)
         {
             if (node is ExprNodeValidated nodeValidated) {
-                return inner.EqualsNode(nodeValidated.inner, false);
+                return _inner.EqualsNode(nodeValidated._inner, false);
             }
 
-            return inner.EqualsNode(node, false);
+            return _inner.EqualsNode(node, false);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             if (visitor.IsVisit(this)) {
                 visitor.Visit(this);
-                inner.Accept(visitor);
+                _inner.Accept(visitor);
             }
         }
     }

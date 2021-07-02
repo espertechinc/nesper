@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.context.util
         public InternalEventRouterImpl(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.preprocessors = new ConcurrentDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>>();
-            this.descriptors = new LinkedHashMap<InternalEventRouterDesc, IRDescEntry>();
+            preprocessors = new ConcurrentDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>>();
+            descriptors = new LinkedHashMap<InternalEventRouterDesc, IRDescEntry>();
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public InsertIntoListener InsertIntoListener {
-            set => this.insertIntoListener = value;
+            set => insertIntoListener = value;
         }
 
         public void Route(

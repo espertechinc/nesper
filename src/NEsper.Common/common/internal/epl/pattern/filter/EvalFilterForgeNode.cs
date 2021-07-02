@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -88,8 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         /// </summary>
         /// <value>is the optimized filter</value>
         public FilterSpecCompiled FilterSpec {
-            get => this.filterSpec;
-            set => this.filterSpec = value;
+            get => filterSpec;
+            set => filterSpec = value;
         }
 
         public override string ToString()
@@ -155,6 +156,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             IList<ScheduleHandleCallbackProvider> schedules)
         {
             filters.Add(filterSpec);
+        }
+
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_FILTER;
         }
     }
 } // end of namespace

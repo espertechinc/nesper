@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 
         public EventType EventType {
             set {
-                this.eventType = value;
-                this.viewable = new ViewableDefaultImpl(value);
+                eventType = value;
+                viewable = new ViewableDefaultImpl(value);
             }
         }
 

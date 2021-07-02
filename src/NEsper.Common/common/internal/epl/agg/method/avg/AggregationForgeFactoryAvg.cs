@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 	        this.parent = parent;
 	        this.childType = childType;
 	        this.distinctSerde = distinctSerde;
-	        this.resultType = GetAvgAggregatorType(childType);
+	        resultType = GetAvgAggregatorType(childType);
 	        this.optionalMathContext = optionalMathContext;
 	    }
 

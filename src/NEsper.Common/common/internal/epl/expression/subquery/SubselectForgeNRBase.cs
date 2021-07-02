@@ -8,9 +8,11 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -23,10 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public abstract class SubselectForgeNRBase : SubselectForgeNR
     {
-        private readonly bool resultWhenNoMatchingEvents;
+        private readonly bool _resultWhenNoMatchingEvents;
         internal readonly ExprForge selectEval;
         internal readonly ExprSubselectNode subselect;
-        internal readonly ExprForge valueEval;
+        private readonly ExprForge _valueEval;
 
         public SubselectForgeNRBase(
             ExprSubselectNode subselect,
@@ -35,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool resultWhenNoMatchingEvents)
         {
             this.subselect = subselect;
-            this.valueEval = valueEval;
+            this._valueEval = valueEval;
             this.selectEval = selectEval;
-            this.resultWhenNoMatchingEvents = resultWhenNoMatchingEvents;
+            this._resultWhenNoMatchingEvents = resultWhenNoMatchingEvents;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -45,17 +47,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var leftResultType = valueEval.EvaluationType.GetBoxedType();
+            if (subselect.EvaluationType.IsNullType() || _valueEval.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var leftResultType = _valueEval.EvaluationType.GetBoxedType();
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             method.Block
                 .ApplyTri(
-                    new ReturnIfNoMatch(Constant(resultWhenNoMatchingEvents), Constant(resultWhenNoMatchingEvents)),
+                    new ReturnIfNoMatch(Constant(_resultWhenNoMatchingEvents), Constant(_resultWhenNoMatchingEvents)),
                     method,
                     symbols)
                 .DeclareVar(
                     leftResultType,
                     "leftResult",
-                    valueEval.EvaluateCodegen(valueEval.EvaluationType, parent, symbols, classScope))
+                    _valueEval.EvaluateCodegen(_valueEval.EvaluationType, parent, symbols, classScope))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
             var nrSymbols = new SubselectForgeNRSymbol(leftResultType);

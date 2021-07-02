@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -28,19 +29,19 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     public class RowRecogNFAViewFactoryForge : ViewFactoryForgeBase,
         ScheduleHandleCallbackProvider
     {
-        private readonly RowRecogDescForge rowRecogDescForge;
-        private int scheduleCallbackId = -1;
+        private readonly RowRecogDescForge _rowRecogDescForge;
+        private int _scheduleCallbackId = -1;
 
         public RowRecogNFAViewFactoryForge(RowRecogDescForge rowRecogDescForge)
         {
-            this.rowRecogDescForge = rowRecogDescForge;
+            _rowRecogDescForge = rowRecogDescForge;
             eventType = rowRecogDescForge.RowEventType;
         }
 
         public override string ViewName => "match-recognize";
 
         public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
+            set => _scheduleCallbackId = value;
         }
 
         public override void SetViewParameters(
@@ -51,20 +52,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // no action
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             // no action
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(RowRecogNFAViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "RowRecog";
         }
@@ -75,18 +77,23 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (scheduleCallbackId == -1) {
+            if (_scheduleCallbackId == -1) {
                 throw new IllegalStateException("No schedule callback id");
             }
 
             method.Block
-                .SetProperty(factory, "Desc", rowRecogDescForge.Make(method, symbols, classScope))
-                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "Desc", _rowRecogDescForge.Make(method, symbols, classScope))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(_scheduleCallbackId));
         }
 
         public override void Accept(ViewForgeVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_ROWRECOG;
         }
     }
 } // end of namespace

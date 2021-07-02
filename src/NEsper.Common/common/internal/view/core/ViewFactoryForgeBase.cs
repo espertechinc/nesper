@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -17,6 +19,8 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.statemgmtsettings;
+using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -27,42 +31,78 @@ namespace com.espertech.esper.common.@internal.view.core
     public abstract class ViewFactoryForgeBase : ViewFactoryForge
     {
         internal EventType eventType;
+        internal StateMgmtSetting stateMgmtSettings = StateMgmtSettingDefault.INSTANCE;
 
-        public virtual EventType EventType {
-            get => eventType;
-            set => eventType = value;
-        }
+        public abstract Type TypeOfFactory();
 
-        public CodegenExpression Make(
-            CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
-            CodegenClassScope classScope)
-        {
-            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
-        }
+        public abstract string FactoryMethod();
+
+        public abstract AppliesTo AppliesTo();
+
+        #region AUTO_ABSTRACT
 
         public abstract void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
             int streamNumber);
 
-        public abstract void Attach(
+        public abstract string ViewName { get; }
+
+        public virtual IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            return EmptyList<StmtClassForgeableFactory>.Instance;
+        }
+
+        public virtual IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
+
+        #endregion
+        
+        public abstract void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv);
+            ViewForgeEnv viewForgeEnv,
+            bool grouped);
 
-        public abstract string ViewName { get; }
+        internal abstract void Assign(
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
+
+        public virtual EventType EventType {
+            get => eventType;
+            set => eventType = value;
+        }
+
+        public virtual void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
+        {
+            AttachValidate(parentEventType, streamNumber, viewForgeEnv, grouped);
+            stateMgmtSettings = viewForgeEnv.StateMgmtSettingsProvider.GetView(
+                viewForgeEnv.StatementRawInfo,
+                streamNumber,
+                viewForgeEnv.IsSubquery,
+                grouped,
+                AppliesTo());
+        }
 
         public virtual void Accept(ViewForgeVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        public CodegenExpression Make(
+        public virtual CodegenExpression Make(
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols,
+            CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
+            if (!(symbols is SAIFFInitializeSymbol initializeSymbol)) {
+                throw new ArgumentException("invalid value", nameof(symbols));
+            }
+            
             if (eventType == null) {
                 throw new IllegalStateException("Event type is unassigned");
             }
@@ -73,35 +113,18 @@ namespace com.espertech.esper.common.@internal.view.core
                 .DeclareVar(
                     TypeOfFactory(),
                     factory.Ref,
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                    ExprDotMethodChain(initializeSymbol.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.VIEWFACTORYSERVICE)
-                        .Add(FactoryMethod()))
+                        .Add(FactoryMethod(), stateMgmtSettings.ToExpression()))
                 .SetProperty(
                     factory,
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF));
 
-            Assign(method, factory, symbols, classScope);
+            Assign(method, factory, initializeSymbol, classScope);
 
             method.Block.MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
-
-        public virtual IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
-        {
-            return EmptyList<StmtClassForgeableFactory>.Instance;
-        }
-
-        public virtual IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
-
-        internal abstract Type TypeOfFactory();
-
-        internal abstract string FactoryMethod();
-
-        internal abstract void Assign(
-            CodegenMethod method,
-            CodegenExpressionRef factory,
-            SAIFFInitializeSymbol symbols,
-            CodegenClassScope classScope);
     }
 } // end of namespace

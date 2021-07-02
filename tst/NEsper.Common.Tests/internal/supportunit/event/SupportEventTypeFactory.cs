@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
                 EventTypeIdPair.Unassigned());
             return new MapEventType(metadata, map, null, null, null, null, BEAN_EVENT_TYPE_FACTORY);
         }
-
+        
         private BeanEventType MakeType(Type clazz)
         {
             return new BeanEventType(

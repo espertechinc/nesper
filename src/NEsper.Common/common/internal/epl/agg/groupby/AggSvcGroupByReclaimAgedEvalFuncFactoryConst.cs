@@ -8,22 +8,23 @@
 
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     public class AggSvcGroupByReclaimAgedEvalFuncFactoryConst : AggSvcGroupByReclaimAgedEvalFuncFactory,
         AggSvcGroupByReclaimAgedEvalFunc
     {
-        private readonly double valueDouble;
+        private readonly double _valueDouble;
 
         public AggSvcGroupByReclaimAgedEvalFuncFactoryConst(double valueDouble)
         {
-            this.valueDouble = valueDouble;
+            this._valueDouble = valueDouble;
         }
 
-        public double? LongValue => valueDouble;
+        public double? LongValue => _valueDouble;
 
-        public AggSvcGroupByReclaimAgedEvalFunc Make(AgentInstanceContext agentInstanceContext)
+        public AggSvcGroupByReclaimAgedEvalFunc Make(ExprEvaluatorContext exprEvaluatorContext)
         {
             return this;
         }

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
@@ -22,6 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
     {
         public static ClassProvidedPrecompileResult CompileClassProvided(
             IList<string> classTexts,
+            Consumer<object> compileResultConsumer,
             StatementCompileTimeServices compileTimeServices,
             ClassProvidedPrecompileResult optionalPrior)
         {
@@ -54,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             CompileResponse response;
             try {
                 response = compileTimeServices.CompilerServices.Compile(
-                    new CompileRequest(compilables, compileTimeServices.Services));
+                    new CompileRequest(
+                        compilables,
+                        compileTimeServices.Services,
+                        compileResultConsumer));
             } 
             catch(CompilerServicesCompileException ex) {
                 throw HandleException(ex, "Failed to compile class");

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.collectionType = collectionType;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(componentType, collectionType);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfSingleValue(componentType);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {

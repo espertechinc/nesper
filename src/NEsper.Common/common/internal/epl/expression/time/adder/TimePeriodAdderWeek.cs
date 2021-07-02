@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
         {
         }
 
-        public double Compute(Double value)
+        public double Compute(double value)
         {
             return value * MULTIPLIER;
         }

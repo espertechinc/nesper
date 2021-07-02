@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public static readonly CodegenExpressionRef REF_MATCHINGEVENTS = Ref(NAME_MATCHINGEVENTS);
 
-        private CodegenExpressionRef optionalMatchingEventRef;
+        private CodegenExpressionRef _optionalMatchingEventRef;
 
         public ExprSubselectEvalMatchSymbol()
             : base(false, null)
@@ -34,18 +34,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public CodegenExpressionRef GetAddMatchingEvents(CodegenMethodScope scope)
         {
-            if (optionalMatchingEventRef == null) {
-                optionalMatchingEventRef = REF_MATCHINGEVENTS;
+            if (_optionalMatchingEventRef == null) {
+                _optionalMatchingEventRef = REF_MATCHINGEVENTS;
             }
 
-            scope.AddSymbol(optionalMatchingEventRef);
-            return optionalMatchingEventRef;
+            scope.AddSymbol(_optionalMatchingEventRef);
+            return _optionalMatchingEventRef;
         }
 
         public override void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalMatchingEventRef != null) {
-                symbols.Put(optionalMatchingEventRef.Ref, typeof(FlexCollection));
+            if (_optionalMatchingEventRef != null) {
+                symbols.Put(_optionalMatchingEventRef.Ref, typeof(FlexCollection));
             }
 
             base.Provide(symbols);

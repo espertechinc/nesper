@@ -45,9 +45,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var method = parent.MakeChild(typeof(ContextConditionDescriptorTimePeriod), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorTimePeriod>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorTimePeriod)))
+                .DeclareVarNewInstance<ContextConditionDescriptorTimePeriod>("condition")
                 .DeclareVar<TimePeriodCompute>(
                     "eval",
                     TimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))

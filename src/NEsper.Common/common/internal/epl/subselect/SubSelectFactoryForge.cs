@@ -23,21 +23,21 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
     public class SubSelectFactoryForge
     {
-        private readonly ViewableActivatorForge activator;
-        private readonly SubSelectStrategyFactoryForge strategyFactoryForge;
-        private readonly int subqueryNumber;
+        private readonly ViewableActivatorForge _activator;
+        private readonly SubSelectStrategyFactoryForge _strategyFactoryForge;
+        private readonly int _subqueryNumber;
 
         public SubSelectFactoryForge(
             int subqueryNumber,
             ViewableActivatorForge activator,
             SubSelectStrategyFactoryForge strategyFactoryForge)
         {
-            this.subqueryNumber = subqueryNumber;
-            this.activator = activator;
-            this.strategyFactoryForge = strategyFactoryForge;
+            _subqueryNumber = subqueryNumber;
+            _activator = activator;
+            _strategyFactoryForge = strategyFactoryForge;
         }
 
-        public IList<ViewFactoryForge> ViewForges => strategyFactoryForge.ViewForges;
+        public IList<ViewFactoryForge> ViewForges => _strategyFactoryForge.ViewForges;
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -46,16 +46,16 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         {
             var method = parent.MakeChild(typeof(SubSelectFactory), GetType(), classScope);
             method.Block
-                .DeclareVar<SubSelectFactory>("factory", NewInstance(typeof(SubSelectFactory)))
-                .SetProperty(Ref("factory"), "SubqueryNumber", Constant(subqueryNumber))
-                .SetProperty(Ref("factory"), "Activator", activator.MakeCodegen(method, symbols, classScope))
+                .DeclareVarNewInstance<SubSelectFactory>("factory")
+                .SetProperty(Ref("factory"), "SubqueryNumber", Constant(_subqueryNumber))
+                .SetProperty(Ref("factory"), "Activator", _activator.MakeCodegen(method, symbols, classScope))
                 .SetProperty(
                     Ref("factory"),
                     "StrategyFactory",
-                    strategyFactoryForge.MakeCodegen(method, symbols, classScope))
-                .SetProperty(Ref("factory"), "HasAggregation", Constant(strategyFactoryForge.HasAggregation))
-                .SetProperty(Ref("factory"), "HasPrior", Constant(strategyFactoryForge.HasPrior))
-                .SetProperty(Ref("factory"), "HasPrevious", Constant(strategyFactoryForge.HasPrevious))
+                    _strategyFactoryForge.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("factory"), "HasAggregation", Constant(_strategyFactoryForge.HasAggregation))
+                .SetProperty(Ref("factory"), "HasPrior", Constant(_strategyFactoryForge.HasPrior))
+                .SetProperty(Ref("factory"), "HasPrevious", Constant(_strategyFactoryForge.HasPrevious))
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("factory"))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

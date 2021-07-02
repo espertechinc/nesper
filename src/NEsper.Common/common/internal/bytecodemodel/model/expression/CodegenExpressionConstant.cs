@@ -73,8 +73,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         public static void MergeClassConstant(
-            Object entryValue,
-            Object value)
+            object entryValue,
+            object value)
         {
         }
     }

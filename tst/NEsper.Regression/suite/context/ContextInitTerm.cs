@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
@@ -63,215 +64,249 @@ namespace com.espertech.esper.regressionlib.suite.context
             WithInitTermPrevPrior(execs);
             WithStartEndPatternCorrelated(execs);
             WithInitTermPatternCorrelated(execs);
+            WithStartEndFilterWithPatternCorrelatedWithAsName(execs);
+            WithStartEndPatternWithPatternCorrelatedWithAsName(execs);
+            WithStartEndPatternWithFilterCorrelatedWithAsName(execs);
+            WithInitTermWithTermEvent(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndFilterWithPatternCorrelatedWithAsName(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ContextStartEndFilterWithPatternCorrelatedWithAsName(false));
+            execs.Add(new ContextStartEndFilterWithPatternCorrelatedWithAsName(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndPatternWithPatternCorrelatedWithAsName(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ContextStartEndPatternWithPatternCorrelatedWithAsName());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndPatternWithFilterCorrelatedWithAsName(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ContextStartEndPatternWithFilterCorrelatedWithAsName());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermWithTermEvent(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithTermEvent(false));
+            execs.Add(new ContextInitTermWithTermEvent(true));
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermPatternCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermPatternCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEndPatternCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndPatternCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermPrevPrior(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermPrevPrior());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermAggregationGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermAggregationGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEndStartNowCalMonthScoped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndStartNowCalMonthScoped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermCrontab(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermCrontab());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermOutputOnlyWhenTerminatedThenSet(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermOutputOnlyWhenTerminatedThenSet());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermOutputOnlyWhenSetAndWhenTerminatedSet(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermOutputOnlyWhenSetAndWhenTerminatedSet());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermOutputOnlyWhenTerminatedCondition(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermOutputOnlyWhenTerminatedCondition());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermOutputWhenExprWhenTerminatedCondition(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermOutputWhenExprWhenTerminatedCondition());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermOutputAllEvery2AndTerminated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermOutputAllEvery2AndTerminated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermOutputSnapshotWhenTerminated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermOutputSnapshotWhenTerminated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermTerminateTwoContextSameTime(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermTerminateTwoContextSameTime());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterBooleanOperator(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterBooleanOperator());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterAllOperators(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterAllOperators());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterInitiatedStraightEquals(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterInitiatedStraightEquals());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermPatternInitiatedStraightSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermPatternInitiatedStraightSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermPatternInclusion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermPatternInclusion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermPatternIntervalZeroInitiatedNow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermPatternIntervalZeroInitiatedNow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermScheduleFilterResources(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermScheduleFilterResources());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermPatternAndAfter1Min(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermPatternAndAfter1Min());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterAndPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterAndPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterAndAfter1Min(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterAndAfter1Min());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermFilterInitiatedFilterAllTerminated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermFilterInitiatedFilterAllTerminated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermContextPartitionSelection(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermContextPartitionSelection());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEndEndSameEventAsAnalyzed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndEndSameEventAsAnalyzed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEndAfterZeroInitiatedNow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndAfterZeroInitiatedNow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEndNoTerminationCondition(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndNoTerminationCondition());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInitTermNoTerminationCondition(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextInitTermNoTerminationCondition());
             return execs;
         }
@@ -404,6 +439,184 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time) - minus);
         }
 
+        internal class ContextInitTermWithTermEvent : RegressionExecution
+        {
+            private readonly bool overlapping;
+
+            public ContextInitTermWithTermEvent(bool overlapping)
+            {
+                this.overlapping = overlapping;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                String epl = "@public @buseventtype create schema UserEvent(userId string, alert string);\n" +
+                             "create context UserSessionContext " +
+                             (overlapping ? "initiated" : "start") +
+                             " UserEvent(alert = 'A')\n" +
+                             "  " +
+                             (overlapping ? "terminated" : "end") +
+                             " UserEvent(alert = 'B') as termEvent;\n" +
+                             "@name('s0') context UserSessionContext select *, context.termEvent as term from UserEvent#firstevent\n" +
+                             "  output snapshot when terminated;";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                sendUser(env, "U1", "A");
+                sendUser(env, "U1", null);
+                sendUser(env, "U1", null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.Milestone(0);
+
+                IDictionary<string, object> term = sendUser(env, "U1", "B");
+                Assert.AreSame(term, env.Listener("s0").AssertOneGetNewAndReset().Get("term"));
+
+                env.UndeployAll();
+            }
+
+            private IDictionary<string, object> sendUser(
+                RegressionEnvironment env,
+                String user,
+                String alert)
+            {
+                IDictionary<string, object> data = CollectionUtil.BuildMap("userId", user, "alert", alert);
+                env.SendEventMap(data, "UserEvent");
+                return data;
+            }
+        }
+
+        internal class ContextStartEndPatternWithFilterCorrelatedWithAsName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                String epl = "create context MyContext as start pattern[s0=SupportBean_S0] as starter\n" +
+                             "end SupportBean_S1(Id=starter.s0.Id) as ender;\n" +
+                             "@name('s0') context MyContext select * from SupportBean";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean_S0(10));
+
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.Listener("s0").AssertOneGetNewAndReset();
+
+                env.SendEventBean(new SupportBean_S1(10));
+                env.SendEventBean(new SupportBean("E2", 0));
+                Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class ContextStartEndPatternWithPatternCorrelatedWithAsName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                String epl = "create context MyContext as start pattern[s0=SupportBean_S0] as starter\n" +
+                             "end pattern [s1=SupportBean_S1(Id=starter.s0.Id)] as ender;\n" +
+                             "@name('s0') context MyContext select context.starter as starter, context.starter.s0 as starterS0, context.starter.s0.Id as starterS0id from SupportBean";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SupportBean_S0 starter = new SupportBean_S0(10);
+                env.SendEventBean(starter);
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportBean("E1", 0));
+                EventBean @event = env.Listener("s0").AssertOneGetNewAndReset();
+                IDictionary<string, object> starterMap = (IDictionary<string, object>) @event.Get("starter");
+                Assert.AreEqual(starter, ((EventBean) starterMap.Get("s0")).Underlying);
+                Assert.AreEqual(1, starterMap.Count);
+                Assert.AreEqual(starter, @event.Get("starterS0"));
+                Assert.AreEqual(10, @event.Get("starterS0id"));
+
+                env.SendEventBean(new SupportBean_S1(10));
+                env.SendEventBean(new SupportBean("E2", 0));
+                Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class ContextStartEndFilterWithPatternCorrelatedWithAsName : RegressionExecution
+        {
+            private readonly bool soda;
+
+            public ContextStartEndFilterWithPatternCorrelatedWithAsName(bool soda)
+            {
+                this.soda = soda;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                env.AdvanceTime(0);
+
+                String eplContext = "create context MyContext as start SupportBean_S0 as starter " +
+                                    "end pattern [s1=SupportBean_S1(Id=starter.Id) or timer:interval(30)] as ender";
+                env.CompileDeploy(soda, eplContext, path);
+
+                String eplSelect =
+                    "@name('s0') context MyContext select context.starter as starter, context.ender as ender, context.ender.s1 as enderS1, context.ender.s1.Id as enderS1id from SupportBean_S0 output when terminated";
+                env.CompileDeploy(eplSelect, path).AddListener("s0");
+
+                SupportBean_S0 starterOne = new SupportBean_S0(10);
+                env.SendEventBean(starterOne);
+
+                env.Milestone(0);
+
+                SupportBean_S1 enderOne = new SupportBean_S1(10);
+                env.SendEventBean(enderOne);
+                EventBean eventOne = env.Listener("s0").AssertOneGetNewAndReset();
+                Assert.AreEqual(starterOne, eventOne.Get("starter"));
+                IDictionary<string, object> enderMapOne = (IDictionary<string, object>) eventOne.Get("ender");
+                Assert.AreEqual(enderOne, ((EventBean) enderMapOne.Get("s1")).Underlying);
+                Assert.IsNull(enderMapOne.Get("starter"));
+                Assert.AreEqual(enderOne, eventOne.Get("enderS1"));
+                Assert.AreEqual(10, eventOne.Get("enderS1id"));
+
+                env.AdvanceTime(10000);
+                SupportBean_S0 starterTwo = new SupportBean_S0(20);
+                env.SendEventBean(starterTwo);
+
+                env.Milestone(1);
+
+                env.AdvanceTime(40000);
+
+                EventBean eventTwo = env.Listener("s0").AssertOneGetNewAndReset();
+                Assert.AreEqual(starterTwo, eventTwo.Get("starter"));
+                IDictionary<string, object> enderMapTwo = (IDictionary<string, object>) eventTwo.Get("ender");
+                Assert.IsNull(enderMapTwo.Get("s1"));
+                Assert.IsNull(enderMapTwo.Get("starter"));
+                Assert.IsNull(eventTwo.Get("enderS1"));
+                Assert.IsNull(eventTwo.Get("enderS1id"));
+
+                env.UndeployAll();
+
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    path,
+                    "context MyContext select context.ender.starter from SupportBean_S0",
+                    "Failed to validate select-clause expression 'context.ender.starter': Context property 'ender.starter' is not a known property, known properties are [name, Id, startTime, endTime, starter, ender]");
+
+                String eplInvalidTagProvidedByFilter = "create context MyContext as start SupportBean_S1(Id=0) as starter " +
+                                                       "end pattern [starter=SupportBean_S1(Id=1) or timer:interval(30)] as ender";
+                SupportMessageAssertUtil.TryInvalidCompile(env, eplInvalidTagProvidedByFilter, "Tag 'starter' for event 'SupportBean_S1' is already assigned");
+
+                String eplInvalidTagProvidedByPatternUnnamed = "create context MyContext as start pattern[starter=SupportBean_S1(Id=0)] " +
+                                                               "end pattern [starter=SupportBean_S1(Id=1) or timer:interval(30)] as ender";
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    eplInvalidTagProvidedByPatternUnnamed,
+                    "Tag 'starter' for event 'SupportBean_S1' is already assigned");
+
+                String eplInvalidTagProvidedByPatternNamed = "create context MyContext as start pattern[s1=SupportBean_S1(Id=0)] as starter " +
+                                                             "end pattern [starter=SupportBean_S1(Id=1) or timer:interval(30)] as ender";
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    eplInvalidTagProvidedByPatternNamed,
+                    "Tag 'starter' for event 'SupportBean_S1' is already assigned");
+            }
+        }
+
         internal class ContextStartEndPatternCorrelated : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -498,7 +711,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 Assert.AreEqual(received, env.Listener("s0").IsInvokedAndReset());
             }
         }
-
+        
         internal class ContextInitTermNoTerminationCondition : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -797,7 +1010,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated by SupportBean_S1(Id=S0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.Id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);

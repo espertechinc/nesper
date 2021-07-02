@@ -102,8 +102,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         throw new EPException("Totals not found for key " + key);
                     }
 
-                    total.Num = total.Num + 1;
-                    total.Sum = total.Sum + item.DoublePrimitive;
+                    total.Num += 1;
+                    total.Sum += item.DoublePrimitive;
                 }
             }
 

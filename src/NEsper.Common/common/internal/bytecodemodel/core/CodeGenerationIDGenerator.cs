@@ -15,14 +15,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodeGenerationIDGenerator
     {
-        public static String GenerateClassNameUUID() {
+        public static string GenerateClassNameUUID() {
             return UuidGenerator.Generate().Replace("-", "_");
         }
 
-        public static String GenerateClassNameWithUUID(
+        public static string GenerateClassNameWithUUID(
             Type interfaceClass,
-            String postfix,
-            String uuid)
+            string postfix,
+            string uuid)
         {
             var interfaceName = interfaceClass.Name.Replace('`', '_');
             var builder = new StringBuilder();

@@ -8,12 +8,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         private class ExprDotEvalSumMethodBigInteger : ExprDotEvalSumMethod
         {
-            private long cnt;
-            private BigInteger sum;
+            private long _cnt;
+            private BigInteger _sum;
 
             public ExprDotEvalSumMethodBigInteger()
             {
-                sum = BigInteger.Zero;
+                _sum = BigInteger.Zero;
             }
 
             public void Enter(object @object)
@@ -22,17 +22,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     return;
                 }
 
-                cnt++;
-                sum += @object.AsBigInteger();
+                _cnt++;
+                _sum += @object.AsBigInteger();
             }
 
             public object Value {
                 get {
-                    if (cnt == 0) {
+                    if (_cnt == 0) {
                         return null;
                     }
 
-                    return sum;
+                    return _sum;
                 }
             }
         }

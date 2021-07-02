@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprConcatNodeForge : ExprForgeInstrumentable
     {
-        private ExprConcatNode _parent;
+        private readonly ExprConcatNode _parent;
         private readonly ThreadingProfile _threadingProfile;
 
         public ExprConcatNodeForge(

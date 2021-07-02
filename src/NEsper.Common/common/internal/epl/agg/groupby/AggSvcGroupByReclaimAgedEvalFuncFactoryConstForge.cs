@@ -15,11 +15,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     public class AggSvcGroupByReclaimAgedEvalFuncFactoryConstForge : AggSvcGroupByReclaimAgedEvalFuncFactoryForge
     {
-        private readonly double valueDouble;
+        private readonly double _valueDouble;
 
         public AggSvcGroupByReclaimAgedEvalFuncFactoryConstForge(double valueDouble)
         {
-            this.valueDouble = valueDouble;
+            this._valueDouble = valueDouble;
         }
 
         public CodegenExpressionInstanceField Make(CodegenClassScope classScope)
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             return classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
-                NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryConst>(Constant(valueDouble)));
+                NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryConst>(Constant(_valueDouble)));
         }
     }
 } // end of namespace

@@ -47,84 +47,84 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithDerivedLengthWCorrelation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWCorrelation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWRegressionLinestSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWRegressionLinestSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWRegressionLinestSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWRegressionLinestSceneOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWWeightedAvgSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWWeightedAvgSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWWeightedAvgSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWWeightedAvgSceneOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWUniSceneThree(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWUniSceneThree());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWUniSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWUniSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedLengthWUniSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWUniSceneOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDerivedAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewDerivedAll());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSizeAddProps(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewSizeAddProps());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSizeSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewSizeSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSizeSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewSizeSceneOne());
             return execs;
         }
@@ -199,12 +199,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             double stdevE,
             double varianceE)
         {
-            var count = GetLongValue(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS, values);
-            var sum = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL, values);
-            var avg = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE, values);
-            var stdevpa = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA, values);
-            var stdev = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV, values);
-            var variance = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE, values);
+            var count = GetLongValue(ViewFieldEnum.UNIVARIATE_STATISTICS_DATAPOINTS, values);
+            var sum = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS_TOTAL, values);
+            var avg = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS_AVERAGE, values);
+            var stdevpa = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS_STDDEVPA, values);
+            var stdev = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS_STDDEV, values);
+            var variance = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS_VARIANCE, values);
 
             Assert.AreEqual(count, countE);
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(sum, sumE, 6));

@@ -43,6 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			"using com.espertech.esper.common.client;\n" +
 			"using com.espertech.esper.common.client.hook.aggmultifunc;\n" +
 			"using com.espertech.esper.common.client.hook.forgeinject;\n" +
+			"using com.espertech.esper.common.client.type;\n" +
 			"using com.espertech.esper.common.@internal.epl.expression.core;\n" +
 			"using com.espertech.esper.common.@internal.rettype;\n" +
 			"using com.espertech.esper.common.@internal.epl.agg.core;\n" +
@@ -62,11 +63,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			"        public void AddAggregationFunction(AggregationMultiFunctionDeclarationContext declarationContext) {}\n" +
 			"        public AggregationMultiFunctionHandler ValidateGetHandler(AggregationMultiFunctionValidationContext validationContext) {\n" +
 			"            string name = validationContext.FunctionName;\n" +
-			"            if (name.Equals(\"trieState\")) {\n" +
+			"            if (name == \"trieState\") {\n" +
 			"                return new TrieAggHandlerTrieState();\n" +
-			"            } else if (name.Equals(\"trieEnter\")) {\n" +
+			"            } else if (name == \"trieEnter\") {\n" +
 			"                return new TrieAggHandlerTrieEnter(validationContext.ParameterExpressions);\n" +
-			"            } else if (name.Equals(\"triePrefixMap\")) {\n" +
+			"            } else if (name == \"triePrefixMap\") {\n" +
 			"                return new TrieAggHandlerTriePrefixMap();\n" +
 			"            }\n" +
 			"            throw new ArgumentException(\"Unrecognized name '\" + name + \"' for use with trie\");\n" +
@@ -76,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			"        /// This handler handles the \"trieState\"-type table column\n" +
 			"        /// <summary />\n" +
 			"        public class TrieAggHandlerTrieState : AggregationMultiFunctionHandler {\n" +
-			"            public EPType ReturnType => EPTypeHelper.SingleValue(typeof(SupportTrie<string, object>));\n" +
+			"            public EPChainableType ReturnType => EPChainableTypeHelper.SingleValue(typeof(SupportTrie<string, object>));\n" +
 			"\n" +
 			"            public AggregationMultiFunctionStateKey AggregationStateUniqueKey {\n" +
 			"                get => new InertAggregationMultiFunctionStateKey();\n" +
@@ -118,9 +119,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			"                this.parameters = parameters;\n" +
 			"            }\n" +
 			"\n" +
-			"            public EPType ReturnType {\n" +
+			"            public EPChainableType ReturnType {\n" +
 			"                // We return null unless using \"prefixMap\"\n" +
-			"                get => EPTypeHelper.SingleValue(null);\n" +
+			"                get => EPChainableTypeHelper.SingleValue(null);\n" +
 			"            }\n" +
 			"\n" +
 			"            public AggregationMultiFunctionStateKey AggregationStateUniqueKey {\n" +
@@ -159,8 +160,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			"        /// This handler handles the \"prefixmap\" accessor for use with tables\n" +
 			"        /// </summary>\n" +
 			"        public class TrieAggHandlerTriePrefixMap : AggregationMultiFunctionHandler {\n" +
-			"            public EPType ReturnType {\n" +
-			"                get => EPTypeHelper.SingleValue(typeof(IDictionary<string, object>));\n" +
+			"            public EPChainableType ReturnType {\n" +
+			"                get => EPChainableTypeHelper.SingleValue(typeof(IDictionary<string, object>));\n" +
 			"            }\n" +
 			"\n" +
 			"            public AggregationMultiFunctionStateKey AggregationStateUniqueKey {\n" +

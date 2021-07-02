@@ -31,35 +31,35 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFilterAndSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFilterAndSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnd(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternAnd());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedBy());
             return execs;
         }

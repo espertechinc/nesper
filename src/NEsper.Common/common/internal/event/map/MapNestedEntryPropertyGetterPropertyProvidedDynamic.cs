@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventPropertyGetter nestedGetter)
             : base(propertyMap, fragmentType, eventBeanTypedEventFactory)
         {
-            this._nestedGetter = nestedGetter;
+            _nestedGetter = nestedGetter;
         }
 
         public override bool IsExistsProperty(EventBean eventBean)

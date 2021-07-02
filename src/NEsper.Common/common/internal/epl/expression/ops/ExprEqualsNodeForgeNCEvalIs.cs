@@ -26,9 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this._parent = parent;
-            this._lhs = lhs;
-            this._rhs = rhs;
+            _parent = parent;
+            _lhs = lhs;
+            _rhs = rhs;
         }
 
         public object Evaluate(

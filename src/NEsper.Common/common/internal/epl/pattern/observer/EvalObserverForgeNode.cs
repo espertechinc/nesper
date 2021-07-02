@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -99,6 +100,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             var writer = new StringWriter();
             ToPrecedenceFreeEPL(writer);
             return writer.ToString();
+        }
+
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_OBSERVER;
         }
     }
 } // end of namespace

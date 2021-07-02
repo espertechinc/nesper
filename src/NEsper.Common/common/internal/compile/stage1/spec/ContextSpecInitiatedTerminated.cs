@@ -52,9 +52,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 DistinctExpressions, null, DistinctMultiKey, method, classScope);
 
             method.Block
-                .DeclareVar<ContextControllerDetailInitiatedTerminated>(
-                    "detail",
-                    NewInstance(typeof(ContextControllerDetailInitiatedTerminated)))
+                .DeclareVarNewInstance<ContextControllerDetailInitiatedTerminated>("detail")
                 .SetProperty(Ref("detail"), "StartCondition", StartCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "EndCondition", EndCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "IsOverlapping", Constant(IsOverlapping))

@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             string optionalModuleName,
             EPStatementInitServices services)
         {
-            string deploymentId = ResolveDeploymentId(namedWindowName, visibility, optionalModuleName, services);
-            NamedWindow namedWindow =
+            var deploymentId = ResolveDeploymentId(namedWindowName, visibility, optionalModuleName, services);
+            var namedWindow =
                 services.NamedWindowManagementService.GetNamedWindow(deploymentId, namedWindowName);
             if (namedWindow == null) {
                 throw new EPException("Failed to resolve named window '" + namedWindowName + "'");

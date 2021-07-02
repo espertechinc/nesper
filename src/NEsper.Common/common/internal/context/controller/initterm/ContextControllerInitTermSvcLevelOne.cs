@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermSvcLevelOne : ContextControllerInitTermSvc
     {
-        private static readonly object[] EMPTY_PARENT_PARTITION_KEYS = new object[0];
+        private static readonly object[] EmptyParentPartitionKeys = new object[0];
 
-        private int currentSubpath;
+        private int _currentSubpath;
 
-        private IDictionary<int, ContextControllerInitTermSvcEntry> endConditions =
+        private IDictionary<int, ContextControllerInitTermSvcEntry> _endConditions =
             new Dictionary<int, ContextControllerInitTermSvcEntry>();
 
-        private ContextControllerConditionNonHA startCondition;
+        private ContextControllerConditionNonHA _startCondition;
 
         public void MgmtCreate(
             IntSeqKey controllerPath,
@@ -35,20 +35,20 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath)
         {
-            return EMPTY_PARENT_PARTITION_KEYS;
+            return EmptyParentPartitionKeys;
         }
 
         public ContextControllerConditionNonHA MgmtDelete(IntSeqKey controllerPath)
         {
-            var tmp = startCondition;
-            startCondition = null;
+            var tmp = _startCondition;
+            _startCondition = null;
             return tmp;
         }
 
         public ContextControllerConditionNonHA MgmtUpdClearStartCondition(IntSeqKey controllerPath)
         {
-            var tmp = startCondition;
-            startCondition = null;
+            var tmp = _startCondition;
+            _startCondition = null;
             return tmp;
         }
 
@@ -56,17 +56,17 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             ContextControllerConditionNonHA startCondition)
         {
-            this.startCondition = startCondition;
+            this._startCondition = startCondition;
         }
 
         public int MgmtUpdIncSubpath(IntSeqKey controllerPath)
         {
-            return currentSubpath++;
+            return _currentSubpath++;
         }
         
         public ContextControllerCondition MgmtGetStartCondition(IntSeqKey conditionPath)
         {
-            return startCondition;
+            return _startCondition;
         }
 
         public void EndCreate(
@@ -75,21 +75,21 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerConditionNonHA endCondition,
             ContextControllerInitTermPartitionKey partitionKey)
         {
-            endConditions.Put(
+            _endConditions.Put(
                 ((IntSeqKeyOne) endConditionPath).One,
                 new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
         }
 
         public ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath)
         {
-            return endConditions.Delete(((IntSeqKeyOne) conditionPath).One);
+            return _endConditions.Delete(((IntSeqKeyOne) conditionPath).One);
         }
 
         public ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath)
         {
             IList<ContextControllerInitTermSvcEntry> entries =
-                new List<ContextControllerInitTermSvcEntry>(endConditions.Values);
-            endConditions.Clear();
+                new List<ContextControllerInitTermSvcEntry>(_endConditions.Values);
+            _endConditions.Clear();
             return entries;
         }
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId)
         {
-            foreach (var entry in endConditions) {
+            foreach (var entry in _endConditions) {
                 partKeyAndCPId.Invoke(entry.Value.PartitionKey, entry.Value.SubpathIdOrCPId);
             }
         }
@@ -106,16 +106,16 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerConditionNonHA, int> partKeyAndCPId)
         {
-            foreach (var entry in endConditions) {
+            foreach (var entry in _endConditions) {
                 partKeyAndCPId.Invoke(entry.Value.TerminationCondition, entry.Value.SubpathIdOrCPId);
             }
         }
 
         public void Destroy()
         {
-            currentSubpath = 0;
-            startCondition = null;
-            endConditions = null;
+            _currentSubpath = 0;
+            _startCondition = null;
+            _endConditions = null;
         }
     }
 } // end of namespace

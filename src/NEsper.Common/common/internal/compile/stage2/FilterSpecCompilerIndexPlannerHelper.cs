@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration.compiler;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -89,6 +90,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string expression)
         {
             var numericCoercionType = leftType.GetBoxedType();
+            if (numericCoercionType.IsNullTypeSafe() || rightType.IsNullTypeSafe()) {
+                return null;
+            }
+            
             if (rightType != leftType) {
                 if (rightType.IsNumeric()) {
                     if (!rightType.CanCoerce(leftType)) {
@@ -108,9 +113,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string propertyName)
         {
             var text = "Implicit conversion from datatype '" +
-                       fromType.CleanName() +
+                       fromType.TypeSafeName() +
                        "' to '" +
-                       toType.CleanName() +
+                       toType.TypeSafeName() +
                        "' for property '" +
                        propertyName +
                        "' is not allowed (strict filter type coercion)";

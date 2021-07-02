@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         private readonly CodegenExpressionMember _isSet;
         private readonly CodegenExpressionMember _firstValue;
         private readonly CodegenExpressionInstanceField _serde;
-        private Type _childType;
+        private readonly Type _childType;
 
         public AggregatorFirstEver(
             AggregationForgeFactory factory,

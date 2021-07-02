@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -22,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class SubselectForgeNREqualsAllAnyAggregated : SubselectForgeNREqualsBase
     {
-        private readonly ExprForge havingEval;
+        private readonly ExprForge _havingEval;
 
         public SubselectForgeNREqualsAllAnyAggregated(
             ExprSubselectNode subselect,
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 isNot,
                 coercer)
         {
-            this.havingEval = havingEval;
+            this._havingEval = havingEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -48,27 +49,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (selectEval.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             method.Block.IfNullReturnNull(symbols.GetAddLeftResult(method));
-            if (havingEval != null) {
+            if (_havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
+                    CodegenLegoMethodExpression.CodegenExpression(_havingEval, method, classScope),
                     eps,
                     ConstantTrue(),
                     evalCtx);
                 CodegenLegoBooleanExpression.CodegenReturnValueIfNullOrNotPass(
                     method.Block,
-                    havingEval.EvaluationType,
+                    _havingEval.EvaluationType,
                     having,
                     ConstantNull());
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
                 eps,
                 ConstantTrue(),
                 evalCtx);

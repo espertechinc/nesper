@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             int? constantIndexNumber,
             bool tail)
         {
-            this._streamNumber = streamNumber;
-            this._indexNode = indexNode;
-            this._evalNode = evalNode;
-            this._randomAccessGetter = randomAccessGetter;
-            this._relativeAccessGetter = relativeAccessGetter;
+            _streamNumber = streamNumber;
+            _indexNode = indexNode;
+            _evalNode = evalNode;
+            _randomAccessGetter = randomAccessGetter;
+            _relativeAccessGetter = relativeAccessGetter;
             _isConstantIndex = constantIndex;
-            this._constantIndexNumber = constantIndexNumber;
+            _constantIndexNumber = constantIndexNumber;
             _isTail = tail;
         }
 

@@ -21,9 +21,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
     public class ContextControllerInitTermOverlap : ContextControllerInitTermBase,
         ContextControllerInitTermWDistinct
     {
-        private readonly ContextControllerInitTermDistinctSvc distinctSvc;
-        private readonly LRUCache<object, EventBean> distinctLastTriggerEvents;
-        private readonly EventBean[] eventsPerStreamDistinct;
+        private readonly ContextControllerInitTermDistinctSvc _distinctSvc;
+        private readonly LRUCache<object, EventBean> _distinctLastTriggerEvents;
+        private readonly EventBean[] _eventsPerStreamDistinct;
 
         public ContextControllerInitTermOverlap(
             ContextControllerInitTermFactory factory,
@@ -33,24 +33,24 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         {
             if (factory.InitTermSpec.DistinctEval != null) {
                 if (factory.FactoryEnv.NumNestingLevels == 1) {
-                    distinctSvc = new ContextControllerInitTermDistinctSvcNonNested();
+                    _distinctSvc = new ContextControllerInitTermDistinctSvcNonNested();
                 }
                 else {
-                    distinctSvc = new ContextControllerInitTermDistinctSvcNested();
+                    _distinctSvc = new ContextControllerInitTermDistinctSvcNested();
                 }
 
-                eventsPerStreamDistinct = new EventBean[1];
-                distinctLastTriggerEvents = new LRUCache<object, EventBean>(16);
+                _eventsPerStreamDistinct = new EventBean[1];
+                _distinctLastTriggerEvents = new LRUCache<object, EventBean>(16);
             }
             else {
-                distinctSvc = null;
-                distinctLastTriggerEvents = null;
-                eventsPerStreamDistinct = null;
+                _distinctSvc = null;
+                _distinctLastTriggerEvents = null;
+                _eventsPerStreamDistinct = null;
             }
         }
 
         public LRUCache<object, EventBean> DistinctLastTriggerEvents {
-            get { return distinctLastTriggerEvents; }
+            get { return _distinctLastTriggerEvents; }
         }
 
         public override void Activate(
@@ -86,13 +86,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool terminateChildContexts)
         {
             base.Deactivate(path, terminateChildContexts);
-            distinctSvc?.Clear(path);
+            _distinctSvc?.Clear(path);
         }
 
         public override void Destroy()
         {
             base.Destroy();
-            distinctSvc?.Destroy();
+            _distinctSvc?.Destroy();
         }
 
         public override void RangeNotification(
@@ -101,7 +101,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval)
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties)
         {
             bool endConditionNotification = originCondition.Descriptor != factory.InitTermSpec.StartCondition;
             if (endConditionNotification) {
@@ -110,7 +111,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     originCondition,
                     optionalTriggeringEvent,
                     optionalTriggeringPattern,
-                    optionalTriggeringEventPattern);
+                    optionalTriggeringEventPattern,
+                    terminationProperties);
             }
             else {
                 RangeNotificationStart(
@@ -123,7 +125,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         public ContextControllerInitTermDistinctSvc DistinctSvc {
-            get => distinctSvc;
+            get => _distinctSvc;
         }
 
         private void RangeNotificationStart(
@@ -133,7 +135,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern)
         {
-            if (distinctSvc != null) {
+            if (_distinctSvc != null) {
                 bool added = AddDistinctKey(controllerPath, optionalTriggeringEvent);
                 if (!added) {
                     return;
@@ -159,7 +161,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerConditionNonHA endCondition,
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
-            EventBean optionalTriggeringEventPattern)
+            EventBean optionalTriggeringEventPattern,
+            IDictionary<string, object> terminationProperties)
         {
             if (endCondition.IsRunning) {
                 endCondition.Deactivate();
@@ -170,7 +173,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return;
             }
 
-            if (distinctSvc != null) {
+            if (_distinctSvc != null) {
                 RemoveDistinctKey(conditionPath.RemoveFromEnd(), instance);
             }
 
@@ -178,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 conditionPath.RemoveFromEnd(),
                 instance.SubpathIdOrCPId,
                 this,
-                optionalTriggeringPattern,
+                terminationProperties,
                 false,
                 null);
         }
@@ -192,8 +195,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             object key = GetDistinctKey(optionalTriggeringEvent);
-            distinctLastTriggerEvents.Put(key, optionalTriggeringEvent);
-            return distinctSvc.AddUnlessExists(controllerPath, key);
+            _distinctLastTriggerEvents.Put(key, optionalTriggeringEvent);
+            return _distinctSvc.AddUnlessExists(controllerPath, key);
         }
 
         private void RemoveDistinctKey(
@@ -202,14 +205,14 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         {
             EventBean @event = value.PartitionKey.TriggeringEvent;
             object key = GetDistinctKey(@event);
-            distinctSvc.Remove(controllerPath, key);
+            _distinctSvc.Remove(controllerPath, key);
         }
 
         public object GetDistinctKey(EventBean eventBean)
         {
-            eventsPerStreamDistinct[0] = eventBean;
+            _eventsPerStreamDistinct[0] = eventBean;
             return factory.InitTermSpec.DistinctEval.Evaluate(
-                eventsPerStreamDistinct,
+                _eventsPerStreamDistinct,
                 true,
                 realization.AgentInstanceContextCreate);
         }
@@ -222,7 +225,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return;
             }
 
-            if (distinctSvc == null) {
+            if (_distinctSvc == null) {
                 return;
             }
 
@@ -234,15 +237,15 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public class DistinctFilterFaultHandler : FilterFaultHandler
         {
-            private readonly ContextControllerInitTermWDistinct contextControllerInitTerm;
-            private readonly IntSeqKey controllerPath;
+            private readonly ContextControllerInitTermWDistinct _contextControllerInitTerm;
+            private readonly IntSeqKey _controllerPath;
 
             public DistinctFilterFaultHandler(
                 ContextControllerInitTermWDistinct contextControllerInitTerm,
                 IntSeqKey controllerPath)
             {
-                this.contextControllerInitTerm = contextControllerInitTerm;
-                this.controllerPath = controllerPath;
+                this._contextControllerInitTerm = contextControllerInitTerm;
+                this._controllerPath = controllerPath;
             }
 
             public bool HandleFilterFault(
@@ -258,11 +261,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 // b) App thread processes E1 for CTX, no action
                 // c) Timer thread destroys CP1
                 // d) App thread processes E1 for CP1, filter-faulting and ending up processing E1 into CTX because of this handler
-                var aiCreate = contextControllerInitTerm.Realization.AgentInstanceContextCreate;
+                var aiCreate = _contextControllerInitTerm.Realization.AgentInstanceContextCreate;
                 using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
-                    object key = contextControllerInitTerm.GetDistinctKey(theEvent);
-                    EventBean trigger = contextControllerInitTerm.DistinctLastTriggerEvents.Get(key);
+                    object key = _contextControllerInitTerm.GetDistinctKey(theEvent);
+                    EventBean trigger = _contextControllerInitTerm.DistinctLastTriggerEvents.Get(key);
 
                     // see if we find that context partition
                     if (trigger != null)

@@ -284,11 +284,12 @@ namespace com.espertech.esper.compiler.@internal.util
                             "Module item has both an EPL expression and a statement object model");
                     }
 
+                    var inlinedClassInspection = arguments.Options?.InlinedClassInspection;
                     if (item.Expression != null) {
-                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableEPL(item.Expression), services);
+                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableEPL(item.Expression), inlinedClassInspection, services);
                     }
                     else if (item.Model != null) {
-                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableSODA(item.Model), services);
+                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableSODA(item.Model), inlinedClassInspection, services);
                         item.Model.ToEPL();
                     }
                     else {

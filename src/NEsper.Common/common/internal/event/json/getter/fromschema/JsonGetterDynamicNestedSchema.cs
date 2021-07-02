@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             JsonEventPropertyGetter innerGetter,
             string underlyingClassName)
         {
-            this._propertyName = propertyName;
-            this._innerGetter = innerGetter;
-            this._underlyingClassName = underlyingClassName;
+            _propertyName = propertyName;
+            _innerGetter = innerGetter;
+            _underlyingClassName = underlyingClassName;
         }
 
         public object Get(EventBean eventBean)

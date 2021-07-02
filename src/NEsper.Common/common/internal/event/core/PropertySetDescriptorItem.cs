@@ -19,19 +19,15 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         public PropertySetDescriptorItem(
             EventPropertyDescriptor propertyDescriptor,
-            Type simplePropertyType,
             EventPropertyGetterSPI propertyGetter,
             FragmentEventType fragmentEventType)
         {
             PropertyDescriptor = propertyDescriptor;
-            SimplePropertyType = simplePropertyType;
             PropertyGetter = propertyGetter;
             FragmentEventType = fragmentEventType;
         }
 
         public EventPropertyDescriptor PropertyDescriptor { get; }
-
-        public Type SimplePropertyType { get; }
 
         public EventPropertyGetterSPI PropertyGetter { get; }
 

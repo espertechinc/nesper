@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         public class MinComputerDecimalCoerce : Computer
         {
-            private readonly ExprEvaluator[] childNodes;
+            private readonly ExprEvaluator[] _childNodes;
 
             /// <summary>
             ///     Ctor.
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             /// <param name="childNodes">array of expression nodes</param>
             public MinComputerDecimalCoerce(ExprEvaluator[] childNodes)
             {
-                this.childNodes = childNodes;
+                this._childNodes = childNodes;
             }
 
             public object Execute(
@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var valueChildOne = _childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var valueChildTwo = _childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (valueChildOne == null || valueChildTwo == null) {
                     return null;
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     result = valueChildOne;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++) {
-                    var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                for (var i = 2; i < _childNodes.Length; i++) {
+                    var valueChild = _childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     if (valueChild == null) {
                         return null;
                     }

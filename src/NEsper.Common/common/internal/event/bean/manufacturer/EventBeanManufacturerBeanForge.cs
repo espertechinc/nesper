@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     /// </summary>
     public class EventBeanManufacturerBeanForge : EventBeanManufacturerForge
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(EventBeanManufacturerBeanForge));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EventBeanManufacturerBeanForge));
 
         private readonly ImportService _importService;
         private readonly BeanEventType _beanEventType;

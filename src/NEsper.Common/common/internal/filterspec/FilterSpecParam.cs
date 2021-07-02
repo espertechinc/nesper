@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprFilterSpecLookupable lookupable,
             FilterOperator filterOperator)
         {
-            this.lkupable = lookupable;
+            lkupable = lookupable;
             FilterOperator = filterOperator;
         }
 

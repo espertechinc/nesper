@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var mk = newDataMultiKey[count];
                     repsPerGroup.Put(mk, eventsPerStream);
                     lastSeenKeys.Add(mk);
-                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     processor.AggregationService.ApplyLeave(
                         eventsPerStreamOneStream,
                         oldDataMultiKey[count],
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var mk = newDataMultiKey[count];
                     repsPerGroup.Put(mk, aNewData.Array);
                     lastSeenKeys.Add(mk);
-                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     processor.AggregationService.ApplyLeave(
                         anOldData.Array,
                         oldDataMultiKey[count],
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                     count++;
                 }
             }

@@ -40,45 +40,174 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLVariablesUse()
-        {
-            RegressionRunner.Run(session, EPLVariablesUse.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLVariablesCreate()
-        {
-            RegressionRunner.Run(session, EPLVariablesCreate.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLVariablesDestroy()
-        {
-            RegressionRunner.Run(session, EPLVariablesDestroy.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLVariablesEventTyped()
-        {
-            RegressionRunner.Run(session, EPLVariablesEventTyped.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLVariablesPerf()
         {
             RegressionRunner.Run(session, new EPLVariablesPerf(), true);
         }
+        
+        /// <summary>
+        /// Auto-test(s): EPLVariablesUse
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesUse.Executions());
+        /// </code>
+        /// </summary>
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLVariablesOutputRate()
+        public class TestEPLVariablesUse : AbstractTestBase
         {
-            RegressionRunner.Run(session, EPLVariablesOutputRate.Executions());
+            public TestEPLVariablesUse() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithWVarargs() => RegressionRunner.Run(_session, EPLVariablesUse.WithWVarargs());
+
+            [Test, RunInApplicationDomain]
+            public void WithFilterConstantCustomTypePreconfigured() => RegressionRunner.Run(_session, EPLVariablesUse.WithFilterConstantCustomTypePreconfigured());
+
+            [Test, RunInApplicationDomain]
+            public void WithVariableInFilter() => RegressionRunner.Run(_session, EPLVariablesUse.WithVariableInFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithVariableInFilterBoolean() => RegressionRunner.Run(_session, EPLVariablesUse.WithVariableInFilterBoolean());
+
+            [Test, RunInApplicationDomain]
+            public void WithConstantVariable() => RegressionRunner.Run(_session, EPLVariablesUse.WithConstantVariable());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvokeMethod() => RegressionRunner.Run(_session, EPLVariablesUse.WithInvokeMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithDotSeparateThread() => RegressionRunner.Run(_session, EPLVariablesUse.WithDotSeparateThread());
+
+            [Test, RunInApplicationDomain]
+            public void WithEPRuntime() => RegressionRunner.Run(_session, EPLVariablesUse.WithEPRuntime());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleTwoModules() => RegressionRunner.Run(_session, EPLVariablesUse.WithSimpleTwoModules());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleSameModule() => RegressionRunner.Run(_session, EPLVariablesUse.WithSimpleSameModule());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimplePreconfigured() => RegressionRunner.Run(_session, EPLVariablesUse.WithSimplePreconfigured());
         }
+        
+        /// <summary>
+        /// Auto-test(s): EPLVariablesDestroy
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesDestroy.Executions());
+        /// </code>
+        /// </summary>
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLVariablesInlinedClass()
+        public class TestEPLVariablesDestroy : AbstractTestBase
         {
-            RegressionRunner.Run(session, EPLVariablesInlinedClass.Executions());
+            public TestEPLVariablesDestroy() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithDestroyReCreateChangeType() => RegressionRunner.Run(_session, EPLVariablesDestroy.WithDestroyReCreateChangeType());
+
+            [Test, RunInApplicationDomain]
+            public void WithManageDependency() => RegressionRunner.Run(_session, EPLVariablesDestroy.WithManageDependency());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLVariablesOutputRate
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesOutputRate.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLVariablesOutputRate : AbstractTestBase
+        {
+            public TestEPLVariablesOutputRate() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithTimeAll() => RegressionRunner.Run(_session, EPLVariablesOutputRate.WithTimeAll());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventsAllCompile() => RegressionRunner.Run(_session, EPLVariablesOutputRate.WithEventsAllCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventsAllOM() => RegressionRunner.Run(_session, EPLVariablesOutputRate.WithEventsAllOM());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventsAll() => RegressionRunner.Run(_session, EPLVariablesOutputRate.WithEventsAll());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLVariablesInlinedClass
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesInlinedClass.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLVariablesInlinedClass : AbstractTestBase
+        {
+            public TestEPLVariablesInlinedClass() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithGlobal() => RegressionRunner.Run(_session, EPLVariablesInlinedClass.WithGlobal());
+
+            [Test, RunInApplicationDomain]
+            public void WithLocal() => RegressionRunner.Run(_session, EPLVariablesInlinedClass.WithLocal());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLVariablesEventTyped
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesEventTyped.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLVariablesEventTyped : AbstractTestBase
+        {
+            public TestEPLVariablesEventTyped() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLVariablesEventTyped.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventTypedSetProp() => RegressionRunner.Run(_session, EPLVariablesEventTyped.WithEventTypedSetProp());
+
+            [Test, RunInApplicationDomain]
+            public void WithConfig() => RegressionRunner.Run(_session, EPLVariablesEventTyped.WithConfig());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventTypedSceneTwo() => RegressionRunner.Run(_session, EPLVariablesEventTyped.WithEventTypedSceneTwo());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventTypedSceneOne() => RegressionRunner.Run(_session, EPLVariablesEventTyped.WithEventTypedSceneOne());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLVariablesCreate
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesCreate.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLVariablesCreate : AbstractTestBase
+        {
+            public TestEPLVariablesCreate() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithGenericType() => RegressionRunner.Run(_session, EPLVariablesCreate.WithGenericType());
+
+            [Test, RunInApplicationDomain]
+            public void WithDimensionAndPrimitive() => RegressionRunner.Run(_session, EPLVariablesCreate.WithDimensionAndPrimitive());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLVariablesCreate.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithDeclarationAndSelect() => RegressionRunner.Run(_session, EPLVariablesCreate.WithDeclarationAndSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubscribeAndIterate() => RegressionRunner.Run(_session, EPLVariablesCreate.WithSubscribeAndIterate());
+
+            [Test, RunInApplicationDomain]
+            public void WithCompileStartStop() => RegressionRunner.Run(_session, EPLVariablesCreate.WithCompileStartStop());
+
+            [Test, RunInApplicationDomain]
+            public void WithOM() => RegressionRunner.Run(_session, EPLVariablesCreate.WithOM());
         }
 
         /// <summary>

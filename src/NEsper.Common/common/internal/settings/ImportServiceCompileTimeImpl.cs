@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggfunc;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.access.linear;
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
@@ -146,8 +147,8 @@ namespace com.espertech.esper.common.@internal.settings
 				// Return the capitalized version of the classname, if it is different
 				// than the classname itself.
 				string capClassName = null;
-				if (Char.IsLower(className[0])) {
-					capClassName = Char.ToUpperInvariant(className[0]) + className.Substring(1);
+				if (char.IsLower(className[0])) {
+					capClassName = char.ToUpperInvariant(className[0]) + className.Substring(1);
 					if (capClassName != className) {
 						yield return capClassName;
 					}

@@ -21,10 +21,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayArrayPropertyGetter : ObjectArrayEventPropertyGetterAndIndexed
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EventType fragmentType;
-        private readonly int index;
-        private readonly int propertyIndex;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventType _fragmentType;
+        private readonly int _index;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -39,10 +39,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventType fragmentType)
         {
-            this.propertyIndex = propertyIndex;
-            this.index = index;
-            this.fragmentType = fragmentType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._propertyIndex = propertyIndex;
+            this._index = index;
+            this._fragmentType = fragmentType;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object GetObjectArray(object[] array)
         {
-            return GetObjectArrayInternal(array, index);
+            return GetObjectArrayInternal(array, _index);
         }
 
         public object Get(
@@ -79,8 +79,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var fragmentUnderlying = Get(obj);
             return BaseNestableEventUtil.GetBNFragmentNonPono(
                 fragmentUnderlying,
-                fragmentType,
-                eventBeanTypedEventFactory);
+                _fragmentType,
+                _eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -121,8 +121,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
                 "GetBNArrayValueAtIndexWithNullCheck",
-                ArrayAtIndex(underlyingExpression, Constant(propertyIndex)),
-                Constant(index));
+                ArrayAtIndex(underlyingExpression, Constant(_propertyIndex)),
+                Constant(_index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_fragmentType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
                 "GetBNFragmentNonPono",
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
                 "GetBNArrayValueAtIndexWithNullCheck",
-                ArrayAtIndex(CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex)),
+                ArrayAtIndex(CastUnderlying(typeof(object[]), beanExpression), Constant(_propertyIndex)),
                 key);
         }
 
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             object[] array,
             int index)
         {
-            var value = array[propertyIndex];
+            var value = array[_propertyIndex];
             return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
         }
     }

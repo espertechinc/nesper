@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.schedule;

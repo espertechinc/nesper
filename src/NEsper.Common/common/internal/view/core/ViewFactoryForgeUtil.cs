@@ -59,7 +59,6 @@ namespace com.espertech.esper.common.@internal.view.core
             try {
                 // Clone the view spec list to prevent parameter modification
                 var viewSpecList = new List<ViewSpec>(viewSpecDefinitions);
-                var viewForgeEnv = new ViewForgeEnv(args);
                 var additionalForgeables = new List<StmtClassForgeableFactory>();
 
                 // Inspect views and add merge views if required
@@ -67,9 +66,9 @@ namespace com.espertech.esper.common.@internal.view.core
                 AddMergeViews(viewSpecList);
 
                 // Instantiate factories, not making them aware of each other yet, we now have a chain
+                var viewForgeEnv = new ViewForgeEnv(args);
                 var forgesChain = InstantiateFactories(viewSpecList, args, viewForgeEnv);
 
-                
                 // Determine event type serdes that may be required
                 foreach (ViewFactoryForge forge in forgesChain) {
                     if (forge is DataWindowViewForge) {
@@ -102,7 +101,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 for (var i = 0; i < forgesGrouped.Count; i++) {
                     ViewFactoryForge factoryToAttach = forgesGrouped[i];
                     try {
-                        factoryToAttach.Attach(eventType, args.StreamNum, viewForgeEnv);
+                        factoryToAttach.Attach(eventType, args.StreamNum, viewForgeEnv, false);
                         eventType = factoryToAttach.EventType;
                     }
                     catch (ViewParameterException ex) {
@@ -179,7 +178,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 groupeds.Add(forge);
 
                 try {
-                    forge.Attach(eventType, args.StreamNum, viewForgeEnv);
+                    forge.Attach(eventType, args.StreamNum, viewForgeEnv, true);
                 }
                 catch (ViewParameterException ex) {
                     throw new ViewProcessingException(ex.Message, ex);
@@ -251,7 +250,7 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             foreach (var forge in dataWindows) {
                 try {
-                    forge.Attach(parentEventType, args.StreamNum, viewForgeEnv);
+                    forge.Attach(parentEventType, args.StreamNum, viewForgeEnv, false);
                 }
                 catch (ViewParameterException ex) {
                     throw new ViewProcessingException(ex.Message, ex);
@@ -428,20 +427,24 @@ namespace com.espertech.esper.common.@internal.view.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (forges.IsEmpty()) {
+                return PublicConstValue<ViewFactoryConstants>("EMPTY_ARRAY");
+            }
+            
             var method = parent.MakeChild(typeof(ViewFactory[]), typeof(ViewFactoryForgeUtil), classScope);
             method.Block
                 .DeclareVar<ViewFactory[]>(
                     "factories",
                     NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
 
-            var grouped = !forges.IsEmpty() && forges[0] is GroupByViewFactoryForge;
-            method.Block.DeclareVar<ViewFactoryContext>("ctx", NewInstance(typeof(ViewFactoryContext)))
+            method.Block
+                .DeclareVarNewInstance<ViewFactoryContext>("ctx")
                 .SetProperty(Ref("ctx"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum))
-                .SetProperty(Ref("ctx"), "IsGrouped", Constant(grouped));
+                .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum));
             for (var i = 0; i < forges.Count; i++) {
                 var @ref = "factory_" + i;
-                method.Block.DeclareVar<ViewFactory>(@ref, forges[i].Make(method, symbols, classScope))
+                method.Block
+                    .DeclareVar<ViewFactory>(@ref, forges[i].Make(method, symbols, classScope))
                     .ExprDotMethod(Ref(@ref), "Init", Ref("ctx"), symbols.GetAddInitSvc(method))
                     .AssignArrayElement(Ref("factories"), Constant(i), Ref(@ref));
             }

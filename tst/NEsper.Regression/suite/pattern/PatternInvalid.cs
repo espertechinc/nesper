@@ -39,21 +39,21 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithUseResult(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternUseResult());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStatementException(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternStatementException());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidExpr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternInvalidExpr());
             return execs;
         }
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 AssertMessage(
                     exception,
                     "Failed to resolve pattern guard '" +
-                    typeof(SupportBean).Name +
+                    nameof(SupportBean) +
                     " where timer:interval(100)': Pattern observer function 'interval' cannot be used as a pattern guard [");
 
                 exception = GetStatementExceptionPattern(env, "SupportBean -> timer:interval()");
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 AssertMessage(
                     exception,
                     "Invalid parameter for pattern guard '" +
-                    typeof(SupportBean).Name +
+                    nameof(SupportBean) +
                     " where timer:within()': Timer-within guard requires a single numeric or time period parameter [");
 
                 // class not found
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 exception = GetStatementExceptionPattern(env, "SupportBean where timer:within('s')");
                 AssertMessage(
                     exception,
-                    $"Invalid parameter for pattern guard '{typeof(SupportBean).Name} where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
+                    $"Invalid parameter for pattern guard '{nameof(SupportBean)} where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
 
                 // use-result property is wrong type
                 exception = GetStatementExceptionPattern(
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var @event = typeof(SupportBean_N).Name;
+                var @event = nameof(SupportBean_N);
 
                 TryValid(env, $"na={@event} -> nb={@event}(DoublePrimitive = na.DoublePrimitive)");
                 TryInvalid(env, $"xx={@event} -> nb={@event}(DoublePrimitive = na.DoublePrimitive)");

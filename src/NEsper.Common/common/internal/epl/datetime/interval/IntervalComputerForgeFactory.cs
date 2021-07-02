@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 // has-month and not constant
                 var timePeriodCompute = timePeriod.TimePeriodComputeForge.Evaluator;
                 IntervalDeltaExprForge forge = new ProxyIntervalDeltaExprForge {
-                    ProcMakeEvaluator = () => {
+                    procMakeEvaluator = () => {
                         return new ProxyIntervalDeltaExprEvaluator {
                             ProcEvaluate = (
                                     reference,
@@ -242,7 +242,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         };
                     },
 
-                    ProcCodegen = (
+                    procCodegen = (
                         reference,
                         parent,
                         exprSymbol,
@@ -274,7 +274,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             {
                 var forge = exprNode.Forge;
                 IntervalDeltaExprForge eval = new ProxyIntervalDeltaExprForge {
-                    ProcMakeEvaluator = () => {
+                    procMakeEvaluator = () => {
                         var evaluator = forge.ExprEvaluator;
                         return new ProxyIntervalDeltaExprEvaluator {
                             ProcEvaluate = (
@@ -290,7 +290,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         };
                     },
 
-                    ProcCodegen = (
+                    procCodegen = (
                         reference,
                         codegenMethodScope,
                         exprSymbol,

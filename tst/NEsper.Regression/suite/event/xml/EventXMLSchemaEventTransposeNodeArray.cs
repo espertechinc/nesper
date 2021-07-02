@@ -34,14 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeNodeArrayCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeNodeArrayPreconfig());
             return execs;
         }
@@ -78,19 +78,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             // try array property insert
             env.CompileDeploy("@Name('s0') select nested3.nested4 as narr from " + eventTypeName + "#lastevent", path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor(
-                        "narr",
-                        typeof(XmlNode[]),
-                        typeof(XmlNode),
-                        false,
-                        false,
-                        true,
-                        false,
-                        true)
-                },
-                env.Statement("s0").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("narr", typeof(XmlNode[])).WithComponentType(typeof(XmlNode)).WithIndexed().WithFragment());
+            
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             SupportXML.SendDefaultEvent(env.EventService, "test", eventTypeName);
@@ -108,11 +99,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             // try array index property insert
             env.CompileDeploy($"@Name('ii') select nested3.nested4[1] as narr from {eventTypeName}#lastevent", path);
-            CollectionAssert.AreEquivalent(
-                new[] {
-                    new EventPropertyDescriptor("narr", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                env.Statement("ii").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("ii").EventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("narr", typeof(XmlNode)).WithFragment());
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("ii").EventType);
 
             SupportXML.SendDefaultEvent(env.EventService, "test", eventTypeName);

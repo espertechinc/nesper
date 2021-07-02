@@ -41,70 +41,70 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
         public static IList<RegressionExecution> WithModulo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathModulo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithShortAndByteArithmetic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathShortAndByteArithmetic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBigIntConv(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathBigIntConv());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBigInt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathBigInt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDecimalConv(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathDecimalConv());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDecimal(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathDecimal());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntWNull(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathIntWNull());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFloat(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathFloat());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLong(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathLong());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDouble(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprCoreMathDouble());
             return execs;
         }
@@ -185,13 +185,34 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "IntPrimitive/IntBoxed")
-                    .WithStatementConsumer(stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
-                builder.WithAssertion(MakeEvent(100, 3)).Expect(fields, 100 / 3d);
-                builder.WithAssertion(MakeEvent(100, null)).Expect(fields, new object[] {null});
-                builder.WithAssertion(MakeEvent(100, 0)).Expect(fields, double.PositiveInfinity);
-                builder.WithAssertion(MakeEvent(-5, 0)).Expect(fields, double.NegativeInfinity);
+                var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpression(fields[0], "IntPrimitive/IntBoxed")
+                    .WithExpression(fields[1], "IntPrimitive*IntBoxed")
+                    .WithExpression(fields[2], "IntPrimitive+IntBoxed")
+                    .WithExpression(fields[3], "IntPrimitive-IntBoxed")
+                    .WithExpression(fields[4], "IntBoxed/IntPrimitive")
+                    .WithExpression(fields[5], "IntBoxed*IntPrimitive")
+                    .WithExpression(fields[6], "IntBoxed+IntPrimitive")
+                    .WithExpression(fields[7], "IntBoxed-IntPrimitive")
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(double?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(double?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(int?)));
+
+                builder.WithAssertion(MakeEvent(100, 3)).Expect(fields, 100 / 3d, 300, 103, 97, 3 / 100d, 300, 103, -97);
+                builder.WithAssertion(MakeEvent(100, null)).Expect(fields, null, null, null, null, null, null, null, null);
+                builder.WithAssertion(MakeEvent(100, 0)).Expect(fields, double.PositiveInfinity, 0, 100, 100, 0d, 0, 100, -100);
+                builder.WithAssertion(MakeEvent(-5, 0)).Expect(fields, double.NegativeInfinity, 0, -5, -5, -0d, 0, -5, 5);
+                
                 builder.Run(env);
                 env.UndeployAll();
             }

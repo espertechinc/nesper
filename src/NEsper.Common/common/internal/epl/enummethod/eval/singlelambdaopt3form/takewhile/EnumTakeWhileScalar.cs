@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(FlexCollection);
 		}
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+			innerValue = InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope);
 			EnumTakeWhileHelper.InitBlockSizeOneScalar(numParameters, block, innerValue, InnerExpression.EvaluationType);
 		}
 

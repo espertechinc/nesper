@@ -41,35 +41,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithWithBacktick(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreNewStructWithBacktick());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreNewStructInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithNewWithCase(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreNewStructNewWithCase());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithDefaultColumnsAndSODA(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreNewStructDefaultColumnsAndSODA());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithNewWRepresentation(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreNewStructNewWRepresentation());
 			return execs;
 		}

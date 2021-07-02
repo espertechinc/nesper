@@ -29,15 +29,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         private static readonly ILog Log =
             LogManager.GetLogger(typeof(ContextControllerHashedGetterCRC32SerializedForge));
 
-        private readonly ExprNode[] nodes;
-        private readonly int granularity;
+        private readonly ExprNode[] _nodes;
+        private readonly int _granularity;
 
         public ContextControllerHashedGetterCRC32SerializedForge(
             IList<ExprNode> nodes,
             int granularity)
         {
-            this.nodes = nodes.ToArray();
-            this.granularity = granularity;
+            this._nodes = nodes.ToArray();
+            this._granularity = granularity;
         }
 
         /// <summary>
@@ -86,9 +86,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 StaticMethod(
                     typeof(SerializerFactory),
                     "GetSerializers",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(nodes))));
+                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(_nodes))));
 
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
+            CodegenMethod method = parent.MakeChild(typeof(object), GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
             method.Block
                 .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
@@ -98,11 +98,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethod exprMethod = method
                 .MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-            CodegenExpression[] expressions = new CodegenExpression[nodes.Length];
-            for (int i = 0; i < nodes.Length; i++) {
-                expressions[i] = nodes[i]
+            CodegenExpression[] expressions = new CodegenExpression[_nodes.Length];
+            for (int i = 0; i < _nodes.Length; i++) {
+                expressions[i] = _nodes[i]
                     .Forge.EvaluateCodegen(
-                        nodes[i].Forge.EvaluationType,
+                        _nodes[i].Forge.EvaluationType,
                         exprMethod,
                         exprSymbol,
                         classScope);
@@ -110,14 +110,14 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
             exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 
-            if (nodes.Length == 1) {
+            if (_nodes.Length == 1) {
                 exprMethod.Block.MethodReturn(expressions[0]);
             }
             else {
                 exprMethod.Block.DeclareVar<object[]>(
                     "values",
-                    NewArrayByLength(typeof(object), Constant(nodes.Length)));
-                for (int i = 0; i < nodes.Length; i++) {
+                    NewArrayByLength(typeof(object), Constant(_nodes.Length)));
+                for (int i = 0; i < _nodes.Length; i++) {
                     CodegenExpression result = expressions[i];
                     exprMethod.Block.AssignArrayElement("values", Constant(i), result);
                 }
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                         typeof(ContextControllerHashedGetterCRC32SerializedForge),
                         "SerializeAndCRC32Hash",
                         Ref("values"),
-                        Constant(granularity),
+                        Constant(_granularity),
                         serializers));
 
             return LocalMethod(method, beanExpression);

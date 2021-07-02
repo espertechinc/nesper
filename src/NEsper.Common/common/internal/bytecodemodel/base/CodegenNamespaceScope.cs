@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.context.module;
@@ -76,6 +77,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public bool IsInstrumented { get; }
 
+        public bool HasStatementFields => !_fieldsNamed.IsEmpty();
+
+        public bool HasSubstitution => !SubstitutionParamsByNumber.IsEmpty() || !SubstitutionParamsByName.IsEmpty();
+
         public CodegenExpressionInstanceField AddInstanceFieldUnshared<T>(
             CodegenExpression instance,
             bool isFinal,
@@ -99,15 +104,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return InstanceField(instance, unshared);
         }
 
-#if DEPRECATED
-        public CodegenExpressionField AddFieldUnshared<T>(
-            bool isFinal,
-            CodegenExpression initCtorScoped)
-        {
-            return AddFieldUnshared(isFinal, typeof(T), initCtorScoped);
-        }
-#endif
-
         public CodegenExpressionInstanceField AddDefaultFieldUnshared(
             bool isFinal,
             Type type,
@@ -119,20 +115,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 type,
                 initCtorScoped);
         }
-
-#if DEPRECATED
-        public CodegenExpressionField AddFieldUnshared(
-            bool isFinal,
-            Type type,
-            CodegenExpression initCtorScoped)
-        {
-            if (FieldsClassName == null) {
-                throw new IllegalStateException("No fields class name");
-            }
-
-            return Field(AddFieldUnsharedInternal(isFinal, type, initCtorScoped));
-        }
-#endif
 
         public CodegenExpressionInstanceField AddOrGetInstanceFieldSharable(
             CodegenExpression instance,
@@ -197,7 +179,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 return Field(existing);
             }
 
-            var field = new CodegenField(FieldsClassName, fieldName.Name, type, null, false);
+            var field = new CodegenField(FieldsClassName, fieldName.Name, type, false);
             _fieldsNamed.Put(fieldName, field);
             return Field(field);
         }
@@ -211,7 +193,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             var memberNumber = _currentMemberNumber++;
             var name = CodegenNamespaceScopeNames.AnyField(memberNumber);
-            var member = new CodegenField(FieldsClassName, name, type, null, isFinal);
+            var member = new CodegenField(FieldsClassName, name, type, isFinal);
             _fieldsUnshared.Put(member, initCtorScoped);
             return member;
         }
@@ -252,7 +234,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             if (name == null) {
                 var assigned = ++_currentSubstitutionParamNumber;
                 var fieldName = CodegenNamespaceScopeNames.AnySubstitutionParam(assigned);
-                member = new CodegenField(FieldsClassName, fieldName, type, null, false);
+                member = new CodegenField(FieldsClassName, fieldName, type, false);
                 SubstitutionParamsByNumber.Add(new CodegenSubstitutionParamEntry(member, name, type));
             }
             else {
@@ -260,7 +242,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 if (existing == null) {
                     var assigned = ++_currentSubstitutionParamNumber;
                     var fieldName = CodegenNamespaceScopeNames.AnySubstitutionParam(assigned);
-                    member = new CodegenField(FieldsClassName, fieldName, type, null, false);
+                    member = new CodegenField(FieldsClassName, fieldName, type, false);
                     _substitutionParamsByName.Put(name, new CodegenSubstitutionParamEntry(member, name, type));
                 }
                 else {

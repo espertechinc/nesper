@@ -114,8 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type nestedReturnType,
-            Type nestedComponentType);
+            Type nestedValueType);
 
         EventPropertyGetterSPI GetGetterNestedEventBean(
             string propertyName,

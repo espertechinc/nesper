@@ -26,15 +26,15 @@ namespace com.espertech.esper.common.@internal.@event.core
     public class ProxyEventPropertyGetterIndexedSPI : EventPropertyGetterIndexedSPI
     {
         public Func<CodegenMethodScope, CodegenClassScope, CodegenExpression, CodegenExpression, CodegenExpression>
-            ProcEventBeanGetIndexedCodegen;
+            procEventBeanGetIndexedCodegen;
 
-        public Func<EventBean, int, object> ProcGet;
+        public Func<EventBean, int, object> procGet;
 
         public object Get(
             EventBean eventBean,
             int index)
         {
-            return ProcGet(eventBean, index);
+            return procGet(eventBean, index);
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression beanExpression,
             CodegenExpression key)
         {
-            return ProcEventBeanGetIndexedCodegen.Invoke(
+            return procEventBeanGetIndexedCodegen.Invoke(
                 codegenMethodScope,
                 codegenClassScope,
                 beanExpression,

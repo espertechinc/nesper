@@ -467,9 +467,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCoreAnyAllSomeInvalid : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            SupportMessageAssertUtil.TryInvalidCompile(env, "select IntArr = all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-	                "Failed to validate select-clause expression 'IntArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+	                "Failed to validate select-clause expression 'IntArr=all(1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
 	            SupportMessageAssertUtil.TryInvalidCompile(env, "select IntArr > all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-	                "Failed to validate select-clause expression 'IntArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+	                "Failed to validate select-clause expression 'IntArr>all(1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
 	        }
 	    }
 

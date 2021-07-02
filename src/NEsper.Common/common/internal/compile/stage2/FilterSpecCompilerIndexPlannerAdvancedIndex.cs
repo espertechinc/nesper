@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 resolved = new FilterForEvalContextPropDoubleForge(node.Getter, node.PropertyName);
             }
             else if (indexExpression.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                double d = indexExpression.Forge.ExprEvaluator.Evaluate(null, true, null).AsDouble();
+                var d = indexExpression.Forge.ExprEvaluator.Evaluate(null, true, null).AsDouble();
                 resolved = new FilterForEvalConstantDoubleForge(d);
             }
             else if (indexExpression.Forge.ForgeConstantType.IsConstant) {

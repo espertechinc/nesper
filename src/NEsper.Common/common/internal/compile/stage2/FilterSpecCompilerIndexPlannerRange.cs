@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var filterOptimizableNode = (ExprFilterOptimizableNode) left;
                 lookupable = filterOptimizableNode.FilterLookupable;
             }
-            else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services) &&
+            else if (HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services) &&
                      IsLimitedLookupableExpression(left)) {
                 lookupable = MakeLimitedLookupableForgeMayNull(left, raw, services);
             }
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return null;
             }
 
-            FilterOperator op = FilterOperatorExtensions.ParseRangeOperator(
+            var op = FilterOperatorExtensions.ParseRangeOperator(
                 betweenNode.IsLowEndpointIncluded,
                 betweenNode.IsHighEndpointIncluded,
                 betweenNode.IsNotBetween);
@@ -84,7 +85,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (endpoint is ExprContextPropertyNode) {
                 var node = (ExprContextPropertyNode) endpoint;
-                if (node.Type == typeof(string)) {
+                if (node.ValueType.IsNullTypeSafe()) {
+                    return null;
+                }
+                if (node.ValueType == typeof(string)) {
                     return new FilterForEvalContextPropStringForge(node.Getter, node.PropertyName);
                 }
 
@@ -93,7 +97,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (endpoint.Forge.ForgeConstantType.IsDeployTimeTimeConstant && endpoint is ExprNodeDeployTimeConst) {
                 var node = (ExprNodeDeployTimeConst) endpoint;
-                if (endpoint.Forge.EvaluationType == typeof(string)) {
+                var type = endpoint.Forge.EvaluationType;
+                if (type == typeof(string)) {
                     return new FilterForEvalDeployTimeConstStringForge(node);
                 }
 
@@ -106,10 +111,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // or limited expression
-            if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services) &&
+            if (HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services) &&
                 IsLimitedValueExpression(endpoint)) {
                 var returnType = endpoint.Forge.EvaluationType;
-                MatchedEventConvertorForge convertor = GetMatchEventConvertor(endpoint, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
+                if (returnType.IsNullTypeSafe()) {
+                    return null;
+                }
+                
+                var convertor = GetMatchEventConvertor(endpoint, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
                 if (returnType == typeof(string)) {
                     return new FilterForEvalLimitedExprForge(endpoint, convertor, null);
                 }

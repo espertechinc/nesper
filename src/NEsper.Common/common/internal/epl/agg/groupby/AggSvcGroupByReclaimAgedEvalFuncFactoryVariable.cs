@@ -8,25 +8,26 @@
 
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     public class AggSvcGroupByReclaimAgedEvalFuncFactoryVariable : AggSvcGroupByReclaimAgedEvalFuncFactory
     {
-        private readonly Variable variable;
+        private readonly Variable _variable;
 
         public AggSvcGroupByReclaimAgedEvalFuncFactoryVariable(Variable variable)
         {
-            this.variable = variable;
+            this._variable = variable;
         }
 
-        public AggSvcGroupByReclaimAgedEvalFunc Make(AgentInstanceContext agentInstanceContext)
+        public AggSvcGroupByReclaimAgedEvalFunc Make(ExprEvaluatorContext exprEvaluatorContext)
         {
-            VariableReader reader = agentInstanceContext.VariableManagementService.GetReader(
-                variable.DeploymentId,
-                variable.MetaData.VariableName,
-                agentInstanceContext.AgentInstanceId);
+            VariableReader reader = exprEvaluatorContext.VariableManagementService.GetReader(
+                _variable.DeploymentId,
+                _variable.MetaData.VariableName,
+                exprEvaluatorContext.AgentInstanceId);
             return new AggSvcGroupByReclaimAgedEvalFuncVariable(reader);
         }
     }

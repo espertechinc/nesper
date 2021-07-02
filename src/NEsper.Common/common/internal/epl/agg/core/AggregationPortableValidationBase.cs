@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         protected AggregationPortableValidationBase(bool distinct)
         {
-            this.IsDistinct = distinct;
+            IsDistinct = distinct;
         }
 
         public bool IsDistinct { get; set; }
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public AggregationPortableValidationBase SetDistinct(bool distinct)
         {
-            this.IsDistinct = distinct;
+            IsDistinct = distinct;
             return this;
         }
 
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string aggMethodName,
             ExprNode[] parameters)
         {
-            if (String.Equals(aggMethodName, "reset", StringComparison.InvariantCultureIgnoreCase)) {
+            if (string.Equals(aggMethodName, "reset", StringComparison.InvariantCultureIgnoreCase)) {
                 if (!validationContext.IsAllowTableAggReset) {
                     throw new ExprValidationException(INVALID_TABLE_AGG_RESET);
                 }

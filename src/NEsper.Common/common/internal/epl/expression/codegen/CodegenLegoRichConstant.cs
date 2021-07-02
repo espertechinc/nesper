@@ -18,8 +18,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
     public class CodegenLegoRichConstant
     {
-        public static CodegenExpression ToExpression(SortedSet<int> values)
+        public static CodegenExpression ToExpression(ISet<int> values)
         {
+            if (values.IsEmpty()) {
+                return EnumValue(typeof(EmptySet<int>), "Instance");
+            }
+
             var arr = values.ToArray();
             return NewInstance<SortedSet<int>>(StaticMethod(typeof(CompatExtensions), "AsList", Constant(arr)));
         }

@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
                 // cause any filters, that may concide with the caller's filters, to be ignored
                 agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
-                    Int64.MaxValue;
+                    long.MaxValue;
 
                 if (agentInstanceContext.AgentInstanceId != -1) {
                     agentInstanceContext.AuditProvider.ContextPartition(false, agentInstanceContext);
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.context.util
             MappedEventBean contextBean,
             AgentInstanceFilterProxy proxy)
         {
-            var result = AgentInstanceUtil.Start(
+            var result = Start(
                 services,
                 statementDesc,
                 assignedContextId,
@@ -358,7 +358,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
             internal AgentInstanceFinalizedMgmtCallback(AgentInstanceMgmtCallback[] mgmtCallbackArray)
             {
-                this._mgmtCallbackArray = mgmtCallbackArray;
+                _mgmtCallbackArray = mgmtCallbackArray;
             }
 
             public void Stop(AgentInstanceStopServices services)

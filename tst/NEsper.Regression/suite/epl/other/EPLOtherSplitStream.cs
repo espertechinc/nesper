@@ -48,77 +48,77 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStreamSubqueryMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> With4Split(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStream4Split());
             return execs;
         }
 
         public static IList<RegressionExecution> With3SplitDefaultOutputFirst(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStream3SplitDefaultOutputFirst());
             return execs;
         }
 
         public static IList<RegressionExecution> With3SplitOutputAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStream3SplitOutputAll());
             return execs;
         }
 
         public static IList<RegressionExecution> With2SplitNoDefaultOutputAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStream2SplitNoDefaultOutputAll());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStreamSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> With1SplitDefault(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStream1SplitDefault());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSplitPremptiveNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStreamSplitPremptiveNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFromClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStreamFromClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStreamInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> With2SplitNoDefaultOutputFirst(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSplitStream2SplitNoDefaultOutputFirst());
             return execs;
         }

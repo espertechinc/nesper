@@ -8,9 +8,12 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -25,15 +28,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (forge.EvaluationType != typeof(void)) {
+            requiredType = requiredType.IsNullTypeSafe()
+                ? typeof(object)
+                : requiredType;
+
+            var evalType = forge.EvaluationType;
+            if (!evalType.IsVoid()) {
                 return forge.EvaluateCodegen(requiredType, parentNode, exprSymbol, codegenClassScope);
             }
 
-            CodegenMethod methodNode = parentNode.MakeChild(
+            var methodNode = parentNode.MakeChild(
                 typeof(object),
                 typeof(CodegenLegoMayVoid),
                 codegenClassScope);
-            methodNode.Block.Expression(forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
+            
+            methodNode.Block
+                .Expression(forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(ConstantNull());
             return LocalMethod(methodNode);
         }

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -19,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeStrategyRowUnfilteredUnselectedTable : SubselectForgeStrategyRowPlain
     {
-        private readonly TableMetaData table;
+        private readonly TableMetaData _table;
 
         public SubselectForgeStrategyRowUnfilteredUnselectedTable(
             ExprSubselectRowNode subselect,
@@ -27,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             :
             base(subselect)
         {
-            this.table = table;
+            this._table = table;
         }
 
         public override CodegenExpression EvaluateCodegen(
@@ -35,7 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
+            if (subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(_table, classScope, GetType());
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             method.Block
                 .IfCondition(

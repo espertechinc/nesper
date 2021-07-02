@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     REF_OLDDATA,
                     Constant(false),
                     REF_ISSYNTHESIZE,
-                    MEMBER_AGENTINSTANCECONTEXT);
+                    MEMBER_EXPREVALCONTEXT);
             }
 
             var newEvents = StaticMethod(
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 REF_NEWDATA,
                 Constant(true),
                 REF_ISSYNTHESIZE,
-                MEMBER_AGENTINSTANCECONTEXT);
+                MEMBER_EXPREVALCONTEXT);
 
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     REF_OLDDATA,
                     Constant(false),
                     REF_ISSYNTHESIZE,
-                    MEMBER_AGENTINSTANCECONTEXT);
+                    MEMBER_EXPREVALCONTEXT);
             }
 
             var newEvents = StaticMethod(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 REF_NEWDATA,
                 Constant(true),
                 REF_ISSYNTHESIZE,
-                MEMBER_AGENTINSTANCECONTEXT);
+                MEMBER_EXPREVALCONTEXT);
 
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)

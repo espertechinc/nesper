@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     public class SubordPropInKeywordMultiIndex
     {
         public SubordPropInKeywordMultiIndex(
-            String[] indexedProp,
+            string[] indexedProp,
             Type coercionType,
             ExprNode expression)
         {

@@ -18,30 +18,30 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestResolveMethodStaticOnly()
         {
-            Type declClass = typeof(Math);
-            string methodName = "Max";
-            Type[] args = new Type[] { typeof(int), typeof(int) };
+            var declClass = typeof(Math);
+            var methodName = "Max";
+            var args = new[] { typeof(int), typeof(int) };
             var expected = typeof(Math).GetMethod(methodName, args);
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
 
-            args = new Type[] { typeof(long), typeof(long) };
+            args = new[] { typeof(long), typeof(long) };
             expected = typeof(Math).GetMethod(methodName, args);
-            args = new Type[] { typeof(int), typeof(long) };
+            args = new[] { typeof(int), typeof(long) };
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
 
-            args = new Type[] { typeof(int), typeof(int) };
+            args = new[] { typeof(int), typeof(int) };
             expected = typeof(Math).GetMethod(methodName, args);
-            args = new Type[] { typeof(int?), typeof(int?) };
+            args = new[] { typeof(int?), typeof(int?) };
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
 
-            args = new Type[] { typeof(long), typeof(long) };
+            args = new[] { typeof(long), typeof(long) };
             expected = typeof(Math).GetMethod(methodName, args);
-            args = new Type[] { typeof(int?), typeof(long?) };
+            args = new[] { typeof(int?), typeof(long?) };
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
 
-            args = new Type[] { typeof(float), typeof(float) };
+            args = new[] { typeof(float), typeof(float) };
             expected = typeof(Math).GetMethod(methodName, args);
-            args = new Type[] { typeof(int?), typeof(float?) };
+            args = new[] { typeof(int?), typeof(float?) };
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
 
             declClass = typeof(DateTimeHelper);
@@ -54,10 +54,9 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestResolveMethodStaticAndInstance()
         {
-            bool[] allowEventBeanType = new bool[10];
-            Type declClass = typeof(Math);
-            string methodName = "Max";
-            Type[] args = new Type[] { typeof(int), typeof(int) };
+            var declClass = typeof(Math);
+            var methodName = "Max";
+            var args = new[] { typeof(int), typeof(int) };
             var expected = typeof(Math).GetMethod(methodName, args);
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, true, null, null));
 
@@ -71,9 +70,8 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestResolveMethodNotFound()
         {
-            bool[] allowEventBeanType = new bool[10];
-            Type declClass = typeof(string);
-            string methodName = "trim";
+            var declClass = typeof(string);
+            var methodName = "trim";
             Type[] args = null;
             try
             {
@@ -87,7 +85,7 @@ namespace com.espertech.esper.common.@internal.util
 
             declClass = typeof(Math);
             methodName = "moox";
-            args = new Type[] { typeof(int), typeof(int) };
+            args = new[] { typeof(int), typeof(int) };
             try
             {
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
@@ -99,7 +97,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             methodName = "max";
-            args = new Type[] { typeof(bool), typeof(bool) };
+            args = new[] { typeof(bool), typeof(bool) };
             try
             {
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
@@ -111,7 +109,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             methodName = "max";
-            args = new Type[] { typeof(int), typeof(int), typeof(bool) };
+            args = new[] { typeof(int), typeof(int), typeof(bool) };
             try
             {
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);

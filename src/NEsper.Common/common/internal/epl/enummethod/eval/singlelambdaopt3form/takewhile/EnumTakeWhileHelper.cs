@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			return enumcoll.IsEventBeanCollection
 				? enumcoll.EventBeanCollection.ToArray()
-				: enumcoll.ObjectCollection.UnwrapIntoArray<EventBean>();
+				: enumcoll.ValueCollection.UnwrapIntoArray<EventBean>();
 		}
 
 		/// <summary>

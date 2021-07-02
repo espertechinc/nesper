@@ -33,9 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.componentType = componentType;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(
-            componentType,
-            null);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfSingleValue(
+            componentType);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {

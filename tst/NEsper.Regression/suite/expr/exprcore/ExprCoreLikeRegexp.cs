@@ -42,52 +42,52 @@ WithLikeRegexNumericAndNull(execs);
 		}
 public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeRegexNumericAndNull());
     return execs;
 }public static IList<RegressionExecution> WithRegexStringAndNullCompile(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreRegexStringAndNullCompile());
     return execs;
 }public static IList<RegressionExecution> WithLikeRegexStringAndNullOM(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeRegexStringAndNullOM());
     return execs;
 }public static IList<RegressionExecution> WithLikeRegexEscapedChar(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeRegexEscapedChar());
     return execs;
 }public static IList<RegressionExecution> WithLikeRegexInvalid(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeRegexInvalid());
     return execs;
 }public static IList<RegressionExecution> WithLikeRegexStringAndNull(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeRegexStringAndNull());
     return execs;
 }public static IList<RegressionExecution> WithRegexpWExprs(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreRegexpWExprs());
     return execs;
 }public static IList<RegressionExecution> WithRegexpWConstants(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreRegexpWConstants());
     return execs;
 }public static IList<RegressionExecution> WithLikeWExprs(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeWExprs());
     return execs;
 }public static IList<RegressionExecution> WithLikeWConstants(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreLikeWConstants());
     return execs;
 }

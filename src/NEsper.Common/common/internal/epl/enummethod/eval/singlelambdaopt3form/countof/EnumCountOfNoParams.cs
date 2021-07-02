@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public EnumCountOfNoParams(int numStreams)
 		{
-			this._numStreams = numStreams;
+			_numStreams = numStreams;
 		}
 
 		public EnumEval EnumEvaluator => this;

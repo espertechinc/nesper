@@ -206,7 +206,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     var desc = new EventPropertyDescriptor(
                         property.Name,
                         returnType,
-                        null,
                         false,
                         false,
                         isArray,

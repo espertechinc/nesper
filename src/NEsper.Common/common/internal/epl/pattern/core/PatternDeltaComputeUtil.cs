@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 }
             }
             else {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(parameter.Forge, method, classScope, true);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(parameter.Forge, method, classScope);
                 CodegenExpression events;
                 if (parameter.Forge.ForgeConstantType.IsConstant) {
                     events = ConstantNull();

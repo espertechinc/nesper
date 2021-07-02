@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -27,11 +29,14 @@ namespace com.espertech.esper.common.@internal.@event.property
     /// <summary>
     ///     This class represents a nested property, each nesting level made up of a property instance that
     ///     can be of type indexed, mapped or simple itself.
-    ///     <para />
+    ///     <para>
+    ///     <code>
     ///     The syntax for nested properties is as follows.
-    ///     a.n
-    ///     a[1].n
-    ///     a('1').n
+    ///         a.n
+    ///         a[1].n
+    ///         a('1').n
+    ///     </code>
+    ///     </para>
     /// </summary>
     public class NestedProperty : Property
     {
@@ -108,12 +113,11 @@ namespace com.espertech.esper.common.@internal.@event.property
                 getters.Add(getter);
             }
 
-            var finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, beanEventTypeFactory);
+            var finalPropertyType = lastProperty.GetPropertyType(eventType, beanEventTypeFactory);
             return new NestedPropertyGetter(
                 getters,
                 eventBeanTypedEventFactory,
-                finalPropertyType.GenericType,
-                finalPropertyType.Generic,
+                finalPropertyType,
                 beanEventTypeFactory);
         }
 
@@ -138,174 +142,29 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 if (ii < (propertiesCount - 1)) {
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (result.IsGenericDictionary()) {
+                    if (result.IsGenericDictionary()
+                        || result.IsArray 
+                        || result.IsPrimitive
+                        || result.IsBuiltinDataType()) {
                         return null;
                     }
-
-#if IRRELEVANT
-                    if (result.IsArray || result.IsValueType || result.IsBuiltinDataType()) {
-                        return null;
-                    }
-#endif
 
                     var publicFields = eventType.Stem.IsPublicFields;
                     eventType = beanEventTypeFactory.GetCreateBeanType(result, publicFields);
                 }
             }
 
-            return !boxed ? result : result.GetBoxedType();
-        }
-
-        public GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            GenericPropertyDesc result = null;
-
-            bool publicFields = eventType.Stem.IsPublicFields;
-
-            var properties = Properties;
-            var propertiesCount = properties.Count;
-            for (var ii = 0; ii < propertiesCount; ii++) {
-                var property = properties[ii];
-                result = property.GetPropertyTypeGeneric(eventType, beanEventTypeFactory);
-
-                if (result == null) {
-                    // property not found, return null
-                    return null;
-                }
-
-                if (ii < (propertiesCount - 1)) {
-                    // Map cannot be used to further nest as the type cannot be determined
-                    if (result.GenericType.IsGenericStringDictionary()) {
-                        return null;
-                    }
-
-                    if (result.GenericType.IsArray) {
-                        return null;
-                    }
-
-                    eventType = beanEventTypeFactory.GetCreateBeanType(result.GenericType, publicFields);
-                }
+            if (result == null) {
+                return null;
+            }
+            
+            if (!boxed || !result.IsPrimitive) {
+                return result;
             }
 
-            return result;
+            return result.GetBoxedType();
         }
-
-        public void ToPropertyEPL(TextWriter writer)
-        {
-            var delimiter = "";
-            foreach (var property in Properties) {
-                writer.Write(delimiter);
-                property.ToPropertyEPL(writer);
-                delimiter = ".";
-            }
-        }
-
-        public string[] ToPropertyArray()
-        {
-            IList<string> propertyNames = new List<string>();
-            foreach (var property in Properties) {
-                var nested = property.ToPropertyArray();
-                propertyNames.AddAll(nested);
-            }
-
-            return propertyNames.ToArray();
-        }
-
-        public EventPropertyGetterSPI GetGetterDOM(
-            SchemaElementComplex parentComplexProperty,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType eventType,
-            string propertyExpression)
-        {
-            IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
-
-            var complexElement = parentComplexProperty;
-
-            var properties = Properties;
-            var propertiesCount = properties.Count;
-            for (var ii = 0; ii < propertiesCount; ii++) {
-                var property = properties[ii];
-                var getter = property.GetGetterDOM(
-                    complexElement,
-                    eventBeanTypedEventFactory,
-                    eventType,
-                    propertyExpression);
-                if (getter == null) {
-                    return null;
-                }
-
-                if (ii < (propertiesCount - 1)) {
-                    var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
-                    if (childSchemaItem == null) {
-                        // if the property is not valid, return null
-                        return null;
-                    }
-
-                    if (childSchemaItem is SchemaItemAttribute || childSchemaItem is SchemaElementSimple) {
-                        return null;
-                    }
-
-                    complexElement = (SchemaElementComplex) childSchemaItem;
-
-                    if (complexElement.IsArray) {
-                        if (property is SimpleProperty || property is DynamicSimpleProperty) {
-                            return null;
-                        }
-                    }
-                }
-
-                getters.Add(getter);
-            }
-
-            return new DOMNestedPropertyGetter(
-                getters,
-                new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, eventType, propertyExpression));
-        }
-
-        public SchemaItem GetPropertyTypeSchema(SchemaElementComplex parentComplexProperty)
-        {
-            Property lastProperty = null;
-            var complexElement = parentComplexProperty;
-
-            var properties = Properties;
-            var propertiesCount = properties.Count;
-            for (var ii = 0; ii < propertiesCount; ii++) {
-                var property = properties[ii];
-                lastProperty = property;
-
-                if (ii < (propertiesCount - 1)) {
-                    var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
-                    if (childSchemaItem == null) {
-                        // if the property is not valid, return null
-                        return null;
-                    }
-
-                    if (childSchemaItem is SchemaItemAttribute || childSchemaItem is SchemaElementSimple) {
-                        return null;
-                    }
-
-                    complexElement = (SchemaElementComplex) childSchemaItem;
-                }
-            }
-
-            return lastProperty.GetPropertyTypeSchema(complexElement);
-        }
-
-        public ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty,
-            IDictionary<string, object> nestableTypes,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            throw new UnsupportedOperationException(
-                "Object array nested property getter not implemented as not implicitly nestable");
-        }
-
-        public virtual string PropertyNameAtomic =>
-            throw new UnsupportedOperationException("Nested properties do not provide an atomic property name");
-
+        
         public virtual Type GetPropertyTypeMap(
             IDictionary<string, object> optionalMapPropTypes,
             BeanEventTypeFactory beanEventTypeFactory)
@@ -541,6 +400,120 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             return new MapNestedPropertyGetterMixedType(getters);
         }
+
+        public void ToPropertyEPL(TextWriter writer)
+        {
+            var delimiter = "";
+            foreach (var property in Properties) {
+                writer.Write(delimiter);
+                property.ToPropertyEPL(writer);
+                delimiter = ".";
+            }
+        }
+
+        public string[] ToPropertyArray()
+        {
+            IList<string> propertyNames = new List<string>();
+            foreach (var property in Properties) {
+                var nested = property.ToPropertyArray();
+                propertyNames.AddAll(nested);
+            }
+
+            return propertyNames.ToArray();
+        }
+
+        public EventPropertyGetterSPI GetGetterDOM(
+            SchemaElementComplex parentComplexProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BaseXMLEventType eventType,
+            string propertyExpression)
+        {
+            IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
+
+            var complexElement = parentComplexProperty;
+
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
+                var getter = property.GetGetterDOM(
+                    complexElement,
+                    eventBeanTypedEventFactory,
+                    eventType,
+                    propertyExpression);
+                if (getter == null) {
+                    return null;
+                }
+
+                if (ii < (propertiesCount - 1)) {
+                    var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
+                    if (childSchemaItem == null) {
+                        // if the property is not valid, return null
+                        return null;
+                    }
+
+                    if (childSchemaItem is SchemaItemAttribute || childSchemaItem is SchemaElementSimple) {
+                        return null;
+                    }
+
+                    complexElement = (SchemaElementComplex) childSchemaItem;
+
+                    if (complexElement.IsArray) {
+                        if (property is SimpleProperty || property is DynamicSimpleProperty) {
+                            return null;
+                        }
+                    }
+                }
+
+                getters.Add(getter);
+            }
+
+            return new DOMNestedPropertyGetter(
+                getters,
+                new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, eventType, propertyExpression));
+        }
+
+        public SchemaItem GetPropertyTypeSchema(SchemaElementComplex parentComplexProperty)
+        {
+            Property lastProperty = null;
+            var complexElement = parentComplexProperty;
+
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
+                lastProperty = property;
+
+                if (ii < (propertiesCount - 1)) {
+                    var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
+                    if (childSchemaItem == null) {
+                        // if the property is not valid, return null
+                        return null;
+                    }
+
+                    if (childSchemaItem is SchemaItemAttribute || childSchemaItem is SchemaElementSimple) {
+                        return null;
+                    }
+
+                    complexElement = (SchemaElementComplex) childSchemaItem;
+                }
+            }
+
+            return lastProperty.GetPropertyTypeSchema(complexElement);
+        }
+
+        public ObjectArrayEventPropertyGetter GetGetterObjectArray(
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+        {
+            throw new UnsupportedOperationException(
+                "Object array nested property getter not implemented as not implicitly nestable");
+        }
+
+        public virtual string PropertyNameAtomic =>
+            throw new UnsupportedOperationException("Nested properties do not provide an atomic property name");
 
         public EventPropertyGetterSPI GetterDOM {
             get {

@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -59,10 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .BlockEnd();
             }
             else {
-                if (lhsType == null && rhsType == null) {
+                if (lhsType.IsNullTypeSafe() && rhsType.IsNullTypeSafe()) {
                     methodNode.Block.DeclareVar<bool>("result", ConstantTrue());
                 }
-                else if (lhsType == null) {
+                else if (lhsType.IsNullTypeSafe()) {
                     methodNode.Block
                         .DeclareVar<object>("right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                         .DeclareVar<bool>("result", EqualsNull(Ref("right")));

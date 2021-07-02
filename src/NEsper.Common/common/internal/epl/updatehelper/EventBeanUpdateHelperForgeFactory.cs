@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.assign;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -70,17 +71,19 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 								writableProperty = nameWriteablePair.Second;
 							}
 
+							Type propertyType = writableProperty.PropertyType;
 							ExprNode rhsExpr = straight.Rhs;
 							ExprForge rhsForge = rhsExpr.Forge;
 							EventPropertyWriterSPI writer = eventTypeSPI.GetWriter(propertyName);
-							bool notNullableField = writableProperty.PropertyType.IsPrimitive;
+							bool notNullableField = propertyType.IsPrimitive;
 
 							properties.Add(propertyName);
 							TypeWidenerSPI widener;
 							try {
+								var rhsForgeEvaluationType = rhsForge.EvaluationType;
 								widener = TypeWidenerFactory.GetCheckPropertyAssignType(
 									ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(rhsExpr),
-									rhsForge.EvaluationType,
+									rhsForgeEvaluationType,
 									writableProperty.PropertyType,
 									propertyName,
 									false,
@@ -153,10 +156,14 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 								throw new ExprValidationException("Property '" + arrayPropertyName + "' could not be found");
 							}
 
-							if (propertyType == null || !propertyType.IsArray) {
+							if (propertyType.IsNullTypeSafe() || !propertyType.IsArray) {
 								throw new ExprValidationException("Property '" + arrayPropertyName + "' is not an array");
 							}
 
+							if (evaluationType.IsNullTypeSafe()) {
+								throw new ExprValidationException("Right-hand-side evaluation returns null-typed value for '" + arrayPropertyName + "'");
+							}
+							
 							EventPropertyGetterSPI getter = eventTypeSPI.GetGetterSPI(arrayPropertyName);
 							Type componentType = propertyType.GetElementType();
 							if (!TypeHelper.IsAssignmentCompatible(evaluationType, componentType)) {
@@ -164,9 +171,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 									"Invalid assignment to property '" +
 									arrayPropertyName +
 									"' component type '" +
-									componentType.CleanName() +
+									componentType.TypeSafeName() +
 									"' from expression returning '" +
-									evaluationType.CleanName() +
+									evaluationType.TypeSafeName() +
 									"'");
 							}
 

@@ -17,16 +17,16 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashSvcLevelOne : ContextControllerHashSvc
     {
-        private static readonly object[] EMPTY_PARENT_PARTITION_KEYS = new object[0];
+        private static readonly object[] EmptyParentPartitionKeys = new object[0];
 
-        private ContextControllerFilterEntry[] filterEntries;
-        private readonly IDictionary<int, int> optionalHashes;
-        private int[] subpathOrCPIdsPreallocate;
+        private ContextControllerFilterEntry[] _filterEntries;
+        private readonly IDictionary<int, int> _optionalHashes;
+        private int[] _subpathOrCpIdsPreallocate;
 
         public ContextControllerHashSvcLevelOne(bool preallocate)
         {
             if (!preallocate) {
-                optionalHashes = new Dictionary<int, int>();
+                _optionalHashes = new Dictionary<int, int>();
             }
         }
 
@@ -41,36 +41,36 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             IntSeqKey controllerPath,
             ContextControllerFilterEntry[] filterEntries)
         {
-            this.filterEntries = filterEntries;
+            this._filterEntries = filterEntries;
         }
 
         public int[] MgmtGetSubpathOrCPIdsWhenPreallocate(IntSeqKey path)
         {
-            return subpathOrCPIdsPreallocate;
+            return _subpathOrCpIdsPreallocate;
         }
 
         public void MgmtSetSubpathOrCPIdsWhenPreallocate(
             IntSeqKey path,
             int[] subpathOrCPIds)
         {
-            subpathOrCPIdsPreallocate = subpathOrCPIds;
+            _subpathOrCpIdsPreallocate = subpathOrCPIds;
         }
 
         public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath)
         {
-            return EMPTY_PARENT_PARTITION_KEYS;
+            return EmptyParentPartitionKeys;
         }
 
         public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)
         {
-            return filterEntries;
+            return _filterEntries;
         }
 
         public bool HashHasSeenPartition(
             IntSeqKey controllerPath,
             int value)
         {
-            return optionalHashes.ContainsKey(value);
+            return _optionalHashes.ContainsKey(value);
         }
 
         public void HashAddPartition(
@@ -78,26 +78,26 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             int value,
             int subpathIdOrCPId)
         {
-            optionalHashes.Put(value, subpathIdOrCPId);
+            _optionalHashes.Put(value, subpathIdOrCPId);
         }
 
         public void HashVisit(
             IntSeqKey controllerPath,
             BiConsumer<int, int> hashAndCPId)
         {
-            if (optionalHashes == null) {
-                if (subpathOrCPIdsPreallocate == null) {
+            if (_optionalHashes == null) {
+                if (_subpathOrCpIdsPreallocate == null) {
                     return;
                 }
 
-                for (var i = 0; i < subpathOrCPIdsPreallocate.Length; i++) {
-                    hashAndCPId.Invoke(i, subpathOrCPIdsPreallocate[i]);
+                for (var i = 0; i < _subpathOrCpIdsPreallocate.Length; i++) {
+                    hashAndCPId.Invoke(i, _subpathOrCpIdsPreallocate[i]);
                 }
 
                 return;
             }
 
-            foreach (var entry in optionalHashes) {
+            foreach (var entry in _optionalHashes) {
                 hashAndCPId.Invoke(entry.Key, entry.Value);
             }
         }
@@ -106,15 +106,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             IntSeqKey controllerPath,
             int hash)
         {
-            if (optionalHashes == null) {
-                if (hash >= subpathOrCPIdsPreallocate.Length) {
+            if (_optionalHashes == null) {
+                if (hash >= _subpathOrCpIdsPreallocate.Length) {
                     return -1;
                 }
 
-                return subpathOrCPIdsPreallocate[hash];
+                return _subpathOrCpIdsPreallocate[hash];
             }
 
-            if (optionalHashes.TryGetValue(hash, out var entry)) {
+            if (_optionalHashes.TryGetValue(hash, out var entry)) {
                 return entry;
             }
 
@@ -123,26 +123,26 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public ICollection<int> Deactivate(IntSeqKey controllerPath)
         {
-            if (optionalHashes == null) {
-                IList<int> idsInner = new List<int>(subpathOrCPIdsPreallocate.Length);
-                foreach (var id in subpathOrCPIdsPreallocate) {
+            if (_optionalHashes == null) {
+                IList<int> idsInner = new List<int>(_subpathOrCpIdsPreallocate.Length);
+                foreach (var id in _subpathOrCpIdsPreallocate) {
                     idsInner.Add(id);
                 }
 
                 return idsInner;
             }
 
-            IList<int> ids = new List<int>(optionalHashes.Values);
-            optionalHashes.Clear();
+            IList<int> ids = new List<int>(_optionalHashes.Values);
+            _optionalHashes.Clear();
             return ids;
         }
 
         public void Destroy()
         {
-            optionalHashes?.Clear();
+            _optionalHashes?.Clear();
 
-            subpathOrCPIdsPreallocate = null;
-            filterEntries = null;
+            _subpathOrCpIdsPreallocate = null;
+            _filterEntries = null;
         }
     }
 } // end of namespace

@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="patternText">regex to match</param>
         public StringPatternSetRegex(string patternText)
         {
-            this._patternText = patternText;
-            this._pattern = new Regex(patternText);
+            _patternText = patternText;
+            _pattern = new Regex(patternText);
         }
 
         /// <summary>

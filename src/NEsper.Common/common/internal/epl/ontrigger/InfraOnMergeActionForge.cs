@@ -50,9 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 typeof(IList<InfraOnMergeAction>),
                 typeof(InfraOnMergeActionForge),
                 classScope);
-            method.Block.DeclareVar<IList<InfraOnMergeAction>>(
-                "list",
-                NewInstance<List<InfraOnMergeAction>>(Constant(actions.Count)));
+            method.Block.DeclareVar<IList<InfraOnMergeAction>>("list", NewInstance<List<InfraOnMergeAction>>(Constant(actions.Count)));
             foreach (var item in actions) {
                 method.Block.ExprDotMethod(Ref("list"), "Add", item.Make(method, symbols, classScope));
             }

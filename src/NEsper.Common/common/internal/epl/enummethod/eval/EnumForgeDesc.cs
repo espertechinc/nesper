@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumForgeDesc
     {
         public EnumForgeDesc(
-            EPType type,
+            EPChainableType type,
             EnumForge forge)
         {
             Type = type;
             Forge = forge;
         }
 
-        public EPType Type { get; }
+        public EPChainableType Type { get; }
 
         public EnumForge Forge { get; }
     }

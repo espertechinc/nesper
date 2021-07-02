@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -39,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "LongDate.withMax('month') as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
@@ -77,18 +78,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "DateTimeOffset.withMax('year') as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
-                    new[] {
-                        typeof(DateTimeOffset?), // val0
-                        typeof(DateTimeOffset?), // val1
-                        typeof(DateTimeOffset?), // val2
-                        typeof(DateTimeOffset?), // val3
-                        typeof(DateTimeOffset?), // val4
-                        typeof(DateTimeOffset?), // val5
-                        typeof(DateTimeOffset?)  // val6
-                    });
+                    typeof(DateTimeOffset?));
 
                 string[] expected = {
                     "2002-05-30T09:00:00.999", // val0

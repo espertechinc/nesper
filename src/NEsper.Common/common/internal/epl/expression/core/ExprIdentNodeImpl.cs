@@ -11,6 +11,7 @@ using System.IO;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -85,6 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var propertyType = eventType.GetPropertyType(propertyName);
+            propertyType = propertyType.IsNullTypeSafe() ? null : propertyType;
             _evaluator = new ExprIdentNodeEvaluatorImpl(
                 streamNumber,
                 propertyGetter,
@@ -156,13 +158,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             set => _streamOrPropertyName = value;
         }
 
-        public bool FilterLookupEligible => _evaluator.StreamNum == 0 && !_evaluator.IsContextEvaluated;
+        public bool FilterLookupEligible =>
+            _evaluator.StreamNum == 0 &&
+            !_evaluator.IsContextEvaluated &&
+            !_evaluator.EvaluationType.IsNullTypeSafe();
 
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
-                var serde = _compileTimeServices.SerdeResolver.SerdeForFilter(_evaluator.EvaluationType, _statementRawInfo);
+                var evaluationType = _evaluator.EvaluationType;
+                var serde = _compileTimeServices.SerdeResolver.SerdeForFilter(evaluationType, _statementRawInfo);
                 var eval = new ExprEventEvaluatorForgeFromProp(_evaluator.Getter);
-                return new ExprFilterSpecLookupableForge(_resolvedPropertyName, eval, null, _evaluator.EvaluationType, false, serde);
+                return new ExprFilterSpecLookupableForge(_resolvedPropertyName, eval, null, evaluationType, false, serde);
             }
         }
 
@@ -183,16 +189,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
             }
 
-            var unescapedPropertyName = PropertyParser.UnescapeBacktickForProperty(UnresolvedPropertyName);
             var propertyInfoPair = ExprIdentNodeUtil.GetTypeFromStream(
                 validationContext.StreamTypeService,
-                unescapedPropertyName,
+                UnresolvedPropertyName,
                 _streamOrPropertyName,
                 false,
                 validationContext.TableCompileTimeResolver);
+            
             _resolvedStreamName = propertyInfoPair.Second;
             int streamNum = propertyInfoPair.First.StreamNum;
-            var propertyType = propertyInfoPair.First.PropertyType; // GetBoxedType()
             _resolvedPropertyName = propertyInfoPair.First.PropertyName;
             EventType eventType = propertyInfoPair.First.StreamEventType;
             EventPropertyGetterSPI propertyGetter;
@@ -211,6 +216,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var audit = AuditEnum.PROPERTY.GetAudit(validationContext.Annotations) != null;
+            var propertyTypeUnboxed = eventType.GetPropertyType(propertyInfoPair.First.PropertyName);
+            var propertyType = propertyTypeUnboxed.GetBoxedType();
+
             _evaluator = new ExprIdentNodeEvaluatorImpl(
                 streamNum,
                 propertyGetter,
@@ -312,16 +320,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 return _evaluator.StreamNum;
-            }
-        }
-
-        public Type Type {
-            get {
-                if (_evaluator == null) {
-                    throw new IllegalStateException("Identifier expression has not been validated");
-                }
-
-                return _evaluator.EvaluationType;
             }
         }
 

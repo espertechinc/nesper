@@ -15,7 +15,6 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
-    [TestFixture]
     public class ExprFilterPlanThreeFilterIndexReuse
     {
         public static IList<FilterTestMultiStmtExecution> Executions(bool withStats)

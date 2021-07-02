@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregatorAccessPlugin : AggregatorAccessWFilterBase
     {
-        private readonly AggregationMultiFunctionStateModeManaged mode;
+        private readonly AggregationMultiFunctionStateModeManaged _mode;
 
-        private readonly CodegenExpressionMember state;
+        private readonly CodegenExpressionMember _state;
 
         public AggregatorAccessPlugin(
             int col,
@@ -37,15 +37,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             : base(optionalFilter)
 
         {
-            state = membersColumnized.AddMember(col, typeof(AggregationMultiFunctionState), "state");
-            this.mode = mode;
+            _state = membersColumnized.AddMember(col, typeof(AggregationMultiFunctionState), "state");
+            this._mode = mode;
 
             var injectionStrategy = (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationStateFactory;
             var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionStateFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
-            ctor.Block.AssignRef(state, ExprDotMethod(factoryField, "NewState", ConstantNull()));
+            ctor.Block.AssignRef(_state, ExprDotMethod(factoryField, "NewState", ConstantNull()));
         }
 
         internal override void ApplyEnterFiltered(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenNamedMethods namedMethods)
         {
             method.Block.ExprDotMethod(
-                state,
+                _state,
                 "ApplyEnter",
                 symbols.GetAddEPS(method),
                 symbols.GetAddExprEvalCtx(method));
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenNamedMethods namedMethods)
         {
             method.Block.ExprDotMethod(
-                state,
+                _state,
                 "ApplyLeave",
                 symbols.GetAddEPS(method),
                 symbols.GetAddExprEvalCtx(method));
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(state, "Clear");
+            method.Block.ExprDotMethod(_state, "Clear");
         }
 
         public override void WriteCodegen(
@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (mode.HasHA) {
-                method.Block.Expression(StaticMethod(mode.Serde, "Write", output, RowDotMember(row, state)));
+            if (_mode.HasHA) {
+                method.Block.Expression(StaticMethod(_mode.Serde, "Write", output, RowDotMember(row, _state)));
             }
         }
 
@@ -103,8 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenExpressionRef unitKey,
             CodegenClassScope classScope)
         {
-            if (mode.HasHA) {
-                method.Block.AssignRef(RowDotMember(row, state), StaticMethod(mode.Serde, "Read", input));
+            if (_mode.HasHA) {
+                method.Block.AssignRef(RowDotMember(row, _state), StaticMethod(_mode.Serde, "Read", input));
             }
         }
 

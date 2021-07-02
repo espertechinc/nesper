@@ -47,12 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             ConfigurationRuntimeMatchRecognize matchRecognize =
                 services.RuntimeSettingsService.ConfigurationRuntime.MatchRecognize;
-            this._trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
+            _trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
 
             // build start states
-            this._startStates = new RowRecogNFAState[_desc.StartStates.Length];
+            _startStates = new RowRecogNFAState[_desc.StartStates.Length];
             for (int i = 0; i < _desc.StartStates.Length; i++) {
-                this._startStates[i] = _desc.StatesOrdered[_desc.StartStates[i]];
+                _startStates[i] = _desc.StatesOrdered[_desc.StartStates[i]];
             }
 
             // build all states and state links
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
             }
 
-            this._allStates = _desc.StatesOrdered;
+            _allStates = _desc.StatesOrdered;
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)

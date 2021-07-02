@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.settings;
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenClassScope codegenClassScope)
         {
             if (valueType.GetBoxedType() != typeof(DateTime?)) {
-                throw new IllegalStateException("Expected a DateTime type, but received \"" + valueType.CleanName() + "\"");
+                throw new IllegalStateException("Expected a DateTime type, but received \"" + valueType.TypeSafeName() + "\"");
             }
 
             var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(

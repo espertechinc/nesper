@@ -27,14 +27,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
     public class ProxyIntervalDeltaExprForge : IntervalDeltaExprForge
     {
-        public Func<IntervalDeltaExprEvaluator> ProcMakeEvaluator;
+        public Func<IntervalDeltaExprEvaluator> procMakeEvaluator;
 
         public Func<CodegenExpression, CodegenMethodScope, ExprForgeCodegenSymbol, CodegenClassScope, CodegenExpression>
-            ProcCodegen;
+            procCodegen;
 
         public IntervalDeltaExprEvaluator MakeEvaluator()
         {
-            return ProcMakeEvaluator();
+            return procMakeEvaluator();
         }
 
         public CodegenExpression Codegen(
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ProcCodegen(
+            return procCodegen(
                 reference,
                 codegenMethodScope,
                 exprSymbol,

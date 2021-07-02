@@ -14,6 +14,7 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.etc;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -133,7 +134,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return value;
             }
 
-            
             var typeUnboxed = type.GetUnboxedType();
             if (valueType.GetUnboxedType().IsAssignmentCompatible(typeUnboxed)) {
                 if (forceNumeric &&
@@ -158,13 +158,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 var items = value.UnwrapIntoArray<object>();
-                var coercedArray = Arrays.CreateInstanceChecked(type.GetElementType(), items.Length);
+                var componentType = type.GetElementType();
+                var coercedArray = Arrays.CreateInstanceChecked(componentType, items.Length);
                 for (var i = 0; i < items.Length; i++) {
                     var coercedValue = CoerceProperty(
                         propertyName + " (array element)",
                         type,
                         items[i],
-                        type.GetElementType(),
+                        componentType,
                         exprNodeOrigin,
                         exprValidationContext,
                         false,
@@ -177,9 +178,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             if (!(value is IDictionary<string, object>)) {
                 var detail = "expects an " +
-                             type.CleanName() +
+                             type.TypeSafeName() +
                              " but receives a value of type " +
-                             value.GetType().CleanName();
+                             value.GetType().TypeSafeName();
                 throw new ExprValidationException(
                     GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
             }
@@ -261,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ExprValidationException(
                     message +
                     ", class " +
-                    clazz.CleanName() +
+                    clazz.TypeSafeName() +
                     " does not implement the interface");
             }
 
@@ -350,6 +351,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // use the writeable property descriptor (appropriate setter method) from writing the property
                 var descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
+                    if (descriptor.PropertyType.IsNullType()) {
+                        throw new ArgumentNullException(nameof(descriptor.PropertyType), "Null-type value cannot be assigned to");
+                    }
+
                     var coerceProperty = CoerceProperty(
                         propertyName,
                         applicableClass,
@@ -606,6 +611,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // use the writeable property descriptor (appropriate setter method) from writing the property
                 var descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
+                    if (descriptor.PropertyType.IsNullType()) {
+                        throw new ArgumentNullException(nameof(descriptor.PropertyType), "Null-type value cannot be assigned to");
+                    }
+                    
                     var coerceProperty = CoerceProperty(
                         propertyName,
                         applicableClass,
@@ -666,7 +675,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     continue;
                 }
 
-                // find the field annotated with {@link @GraphOpProperty}
+                // find the field annotated with GraphOpProperty
                 foreach (var annotatedField in annotatedFields) {
                     var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations(
                         typeof(DataFlowOpParameterAttribute),
@@ -712,7 +721,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var msg = "Property '" + propertyName + "'";
             if (includeClassNameInEx) {
-                msg += " of class " + containingType.CleanName();
+                msg += " of class " + containingType.TypeSafeName();
             }
 
             msg += " " + detailText;

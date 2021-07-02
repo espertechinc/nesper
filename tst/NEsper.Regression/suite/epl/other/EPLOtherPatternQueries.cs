@@ -35,42 +35,42 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithPatternWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPatternWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedByAndWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherFollowedByAndWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherAggregation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherWhereCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherWhereOM());
             return execs;
         }

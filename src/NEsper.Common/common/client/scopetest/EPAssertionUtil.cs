@@ -166,9 +166,9 @@ namespace com.espertech.esper.common.client.scopetest
         /// <summary>Compare the objects in the 2-dimension object arrays assuming the exact same order. </summary>
         /// <param name="expected">is the expected values</param>
         /// <param name="actual">is the actual values</param>
-        public static void AssertEqualsExactOrder(
-            object[][] expected,
-            IList<object[]> actual)
+        public static void AssertEqualsExactOrder<T>(
+            T[][] expected,
+            IList<T[]> actual)
         {
             var transpose = ToObjectCollection(actual);
             if (CompareArrayAndCollSize(expected, transpose)) {

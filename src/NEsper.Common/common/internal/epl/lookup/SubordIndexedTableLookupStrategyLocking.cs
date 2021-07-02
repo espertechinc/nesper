@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordTableLookupStrategy inner,
             IReaderWriterLock statementLock)
         {
-            this._inner = inner;
-            this._statementLock = statementLock;
+            _inner = inner;
+            _statementLock = statementLock;
         }
 
         public ICollection<EventBean> Lookup(

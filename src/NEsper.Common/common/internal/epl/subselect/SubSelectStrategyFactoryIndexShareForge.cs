@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
 	public class SubSelectStrategyFactoryIndexShareForge : SubSelectStrategyFactoryForge
 	{
-		private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
+		private static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
 
 		private readonly int _subqueryNumber;
 		private readonly NamedWindowMetaData _namedWindow;
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			_groupKeys = groupKeys;
 			_aggregationServiceForgeDesc = aggregationServiceForgeDesc;
 
-			bool queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
+			var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
 
 			// We only use existing indexes in all cases. This means "create index" is required.
 			SubordinateQueryPlan plan;
@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			}
 
 			if (_queryPlan != null && _queryPlan.IndexDescs != null) {
-				for (int i = 0; i < _queryPlan.IndexDescs.Length; i++) {
-					SubordinateQueryIndexDescForge index = _queryPlan.IndexDescs[i];
+				for (var i = 0; i < _queryPlan.IndexDescs.Length; i++) {
+					var index = _queryPlan.IndexDescs[i];
 
 					if (table != null) {
 						if (table.TableVisibility == NameAccessModifier.PUBLIC) {
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
 			SubordinateQueryPlannerUtil.QueryPlanLogOnSubq(
 				queryPlanLogging,
-				QUERY_PLAN_LOG,
+				QueryPlanLog,
 				_queryPlan,
 				subqueryNumber,
 				statement.StatementRawInfo.Annotations,
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				_groupByMultiKey = null;
 			}
 			else {
-				MultiKeyPlan mkplan = MultiKeyPlanner.PlanMultiKey(groupKeys, false, statement.StatementRawInfo, services.SerdeResolver);
+				var mkplan = MultiKeyPlanner.PlanMultiKey(groupKeys, false, statement.StatementRawInfo, services.SerdeResolver);
 				_additionalForgeables.AddAll(mkplan.MultiKeyForgeables);
 				_groupByMultiKey = mkplan.ClassRef;
 			}
@@ -167,9 +167,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			SAIFFInitializeSymbol symbols,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod method = parent.MakeChild(typeof(SubSelectStrategyFactoryIndexShare), GetType(), classScope);
+			var method = parent.MakeChild(typeof(SubSelectStrategyFactoryIndexShare), GetType(), classScope);
 
-			CodegenExpression groupKeyEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupKeys, null, _groupByMultiKey, method, classScope);
+			var groupKeyEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupKeys, null, _groupByMultiKey, method, classScope);
 
 			var tableExpr = _table == null
 				? ConstantNull()
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				: _queryPlan.Make(method, symbols, classScope);
 			
 			method.Block
-				.DeclareVar<SubSelectStrategyFactoryIndexShare>("s", NewInstance(typeof(SubSelectStrategyFactoryIndexShare)))
+				.DeclareVarNewInstance<SubSelectStrategyFactoryIndexShare>("s")
 				.SetProperty(Ref("s"), "Table", tableExpr)
 				.SetProperty(Ref("s"), "NamedWindow", namedWindowExpr)
 				.SetProperty(Ref("s"), "AggregationServiceFactory", aggregationServiceFactoryExpr)

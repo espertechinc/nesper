@@ -30,18 +30,6 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return unescapedPropertyName.Substring(1, unescapedPropertyName.Length - 2);
             }
 
-            if (!unescapedPropertyName.Contains("`")) {
-                return unescapedPropertyName;
-            }
-
-            // parse and render
-            var property = ParseAndWalkLaxToSimple(unescapedPropertyName);
-            if (property is NestedProperty) {
-                var writer = new StringWriter();
-                property.ToPropertyEPL(writer);
-                return writer.ToString();
-            }
-
             return unescapedPropertyName;
         }
 

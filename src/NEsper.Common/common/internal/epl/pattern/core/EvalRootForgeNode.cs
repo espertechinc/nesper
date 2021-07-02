@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -29,13 +30,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         public EvalRootForgeNode(
             bool attachPatternText,
             EvalForgeNode childNode,
-            Attribute[] annotations)
+            StatementRawInfo statementRawInfo,
+            int streamNum,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider)
             : base(attachPatternText)
         {
             AddChildNode(childNode);
-            bool audit = AuditEnum.PATTERN.GetAudit(annotations) != null ||
-                         AuditEnum.PATTERNINSTANCES.GetAudit(annotations) != null;
-            AssignFactoryNodeIds(audit);
+            var annotations = statementRawInfo.Annotations;
+            var audit =
+                AuditEnum.PATTERN.GetAudit(annotations) != null ||
+                AuditEnum.PATTERNINSTANCES.GetAudit(annotations) != null;
+            AssignFactoryNodeIds(audit, statementRawInfo, streamNum, stateMgmtSettingsProvider);
         }
 
         protected override Type TypeOfFactory()
@@ -46,6 +51,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         protected override string NameOfFactory()
         {
             return "Root";
+        }
+        
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_ROOT;
         }
 
         protected override void InlineCodegen(
@@ -98,16 +108,20 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         // assign factory ids, a short-type number assigned once-per-statement to each pattern node
         // return the count of all ids
-        private void AssignFactoryNodeIds(bool audit)
+        private void AssignFactoryNodeIds(
+            bool audit,
+            StatementRawInfo statementRawInfo,
+            int streamNum,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider)
         {
             short count = 0;
-            FactoryNodeId = count;
+            SetFactoryNodeId(count, statementRawInfo, streamNum, stateMgmtSettingsProvider);
             IsAudit = audit;
 
             IList<EvalForgeNode> factories = CollectFactories();
             foreach (EvalForgeNode factoryNode in factories) {
                 count++;
-                factoryNode.FactoryNodeId = count;
+                factoryNode.SetFactoryNodeId(count, statementRawInfo, streamNum, stateMgmtSettingsProvider);
                 factoryNode.IsAudit = audit;
             }
         }

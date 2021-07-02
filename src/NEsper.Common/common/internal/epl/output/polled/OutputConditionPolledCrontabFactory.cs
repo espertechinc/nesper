@@ -24,18 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ExprEvaluator[] expressions;
+        private readonly ExprEvaluator[] _expressions;
 
         public OutputConditionPolledCrontabFactory(ExprEvaluator[] expressions)
         {
-            this.expressions = expressions;
+            _expressions = expressions;
         }
 
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
             ScheduleSpec scheduleSpec;
             try {
-                var scheduleSpecParameterList = Evaluate(expressions, agentInstanceContext);
+                var scheduleSpecParameterList = Evaluate(_expressions, exprEvaluatorContext);
                 scheduleSpec = ScheduleSpecUtil.ComputeValues(scheduleSpecParameterList);
             }
             catch (ScheduleParameterException e) {
@@ -43,14 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             var state = new OutputConditionPolledCrontabState(scheduleSpec, null, 0);
-            return new OutputConditionPolledCrontab(agentInstanceContext, state);
+            return new OutputConditionPolledCrontab(exprEvaluatorContext, state);
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
-            return new OutputConditionPolledCrontab(agentInstanceContext, (OutputConditionPolledCrontabState) state);
+            return new OutputConditionPolledCrontab(exprEvaluatorContext, (OutputConditionPolledCrontabState) state);
         }
 
         private static object[] Evaluate(

@@ -36,13 +36,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             BeanEventPropertyGetter mapEntryGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             Type returnType,
-            Type nestedComponentType,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                returnType,
-                nestedComponentType)
+                returnType)
         {
             this.propertyMap = propertyMap;
             this.mapEntryGetter = mapEntryGetter;

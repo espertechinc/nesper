@@ -28,16 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotForgeUnpackCollEventBeanTable : ExprDotForge,
         ExprDotEval
     {
-        private readonly EPType typeInfo;
+        private readonly EPChainableType typeInfo;
         private readonly TableMetaData table;
 
         public ExprDotForgeUnpackCollEventBeanTable(
             EventType type,
             TableMetaData table)
         {
-            this.typeInfo = EPTypeHelper.CollectionOfSingleValue(
-                table.PublicEventType.UnderlyingType,
-                null);
+            typeInfo = EPChainableTypeHelper.CollectionOfSingleValue(
+                table.PublicEventType.UnderlyingType);
             this.table = table;
         }
 
@@ -58,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope classScope)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
             var refEPS = symbols.GetAddEPS(parent);
             var refIsNewData = symbols.GetAddIsNewData(parent);
             var refExprEvalCtx = symbols.GetAddExprEvalCtx(parent);
@@ -101,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return underlyings;
         }
 
-        public EPType TypeInfo {
+        public EPChainableType TypeInfo {
             get => typeInfo;
         }
 

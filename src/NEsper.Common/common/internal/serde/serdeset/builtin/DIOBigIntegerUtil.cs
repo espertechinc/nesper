@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			DataOutput stream)
 		{
 			var byteArray = bigInteger.ToByteArray();
-			if (byteArray.Length > Int16.MaxValue) {
+			if (byteArray.Length > short.MaxValue) {
 				throw new ArgumentException("BigInteger byte array is larger than 0x7fff bytes");
 			}
 

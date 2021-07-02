@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.enummethod;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -177,7 +179,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 						}
 
 						var forge = lambda.BodyForge;
-						forEach.DeclareVar(forge.EvaluationType, valueName, forge.EvaluateCodegen(forge.EvaluationType, methodNode, scope, codegenClassScope));
+						var evalType = forge.EvaluationType;
+						if (evalType.IsNullTypeSafe()) {
+							forEach.DeclareVar<object>(valueName, ConstantNull());
+						} else {
+							forEach.DeclareVar(evalType, valueName, forge.EvaluateCodegen(evalType, methodNode, scope, codegenClassScope));
+						}
+
 						paramsNext.Add(Ref(valueName));
 					}
 

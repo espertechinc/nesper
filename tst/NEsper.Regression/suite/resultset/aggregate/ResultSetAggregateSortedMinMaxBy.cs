@@ -37,56 +37,56 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoDataWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateNoDataWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultipleCriteria(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMultipleCriteria());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultipleCriteriaSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMultipleCriteriaSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateNoAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMinByMaxByOverWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMinByMaxByOverWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultipleOverlappingCategories(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMultipleOverlappingCategories());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedSortedMinMax(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateGroupedSortedMinMax());
             return execs;
         }
@@ -217,6 +217,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "@Name('s0') select sorted(TheString desc, IntPrimitive desc) as c0 from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
+                Assert.AreEqual(typeof(SupportBean[]), env.Statement("s0").EventType.GetPropertyType("c0"));
+                
                 env.SendEventBean(new SupportBean("C", 10));
                 AssertExpected(
                     env,

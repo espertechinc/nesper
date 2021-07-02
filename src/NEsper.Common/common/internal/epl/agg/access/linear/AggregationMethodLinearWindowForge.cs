@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             var method = parent.MakeChild(typeof(AggregationMethodLinearWindow), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(AggregationMethodLinearWindow), "strat", NewInstance(typeof(AggregationMethodLinearWindow)))
+                .DeclareVarNewInstance<AggregationMethodLinearWindow>("strat")
                 .SetProperty(Ref("strat"), "ComponentType", Constant(arrayType.GetElementType()))
                 .SetProperty(
                     Ref("strat"),

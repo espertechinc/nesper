@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanWriterSimpleProps : EventBeanWriter
     {
-        private readonly int[] indexes;
+        private readonly int[] _indexes;
 
         /// <summary>
         ///     Ctor.
@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="indexes">indexes of properties to write</param>
         public ObjectArrayEventBeanWriterSimpleProps(int[] indexes)
         {
-            this.indexes = indexes;
+            this._indexes = indexes;
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var arrayEvent = (ObjectArrayBackedEventBean) theEvent;
             var array = arrayEvent.Properties;
 
-            for (var i = 0; i < indexes.Length; i++) {
-                array[indexes[i]] = values[i];
+            for (var i = 0; i < _indexes.Length; i++) {
+                array[_indexes[i]] = values[i];
             }
         }
     }

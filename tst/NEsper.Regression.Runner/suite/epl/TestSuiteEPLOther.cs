@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.suite.epl.other;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.epl;
+using com.espertech.esper.regressionlib.support.events;
 using com.espertech.esper.regressionlib.support.lrreport;
 using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
@@ -156,10 +157,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
             testXMLNoSchemaType.RootElementName = "Myevent";
             configuration.Common.AddEventType("TestXMLNoSchemaType", testXMLNoSchemaType);
 
-            IDictionary<string, object> myConfiguredMape = new Dictionary<string, object>();
-            myConfiguredMape.Put("bean", "SupportBean");
-            myConfiguredMape.Put("beanarray", "SupportBean_S0[]");
-            configuration.Common.AddEventType("MyConfiguredMap", myConfiguredMape);
+            IDictionary<string, object> myConfiguredMap = new Dictionary<string, object>();
+            myConfiguredMap.Put("bean", "SupportBean");
+            myConfiguredMap.Put("beanarray", "SupportBean_S0[]");
+            configuration.Common.AddEventType("MyConfiguredMap", myConfiguredMap);
+            
+            IDictionary<string, object> myParameterizedTypes = new Dictionary<string, object>();
+            foreach (SupportGenericColUtil.PairOfNameAndType pair in SupportGenericColUtil.NAMESANDTYPES) {
+                myParameterizedTypes.Put(pair.Name, pair.TypeClass);
+            }
+            configuration.Common.AddEventType("MyPreconfiguredParameterizeTypeMap", myParameterizedTypes);
 
             configuration.Common.Logging.IsEnableQueryPlan = true;
             configuration.Runtime.Execution.IsPrioritized = true;
@@ -1118,20 +1125,30 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         /// <summary>
-        /// Auto-test(s): EPLOtherNestedClass
+        /// Auto-test(s): EPLOtherFromClauseOptional
         /// <code>
-        /// RegressionRunner.Run(_session, EPLOtherNestedClass.Executions());
+        /// RegressionRunner.Run(_session, EPLOtherFromClauseOptional.Executions());
         /// </code>
         /// </summary>
 
-        public class TestEPLOtherNestedClass : AbstractTestBase
+        public class TestEPLOtherFromClauseOptional : AbstractTestBase
         {
-            public TestEPLOtherNestedClass() : base(Configure)
-            {
-            }
+            public TestEPLOtherFromClauseOptional() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithNestedClassEnum() => RegressionRunner.Run(_session, EPLOtherNestedClass.WithNestedClassEnum());
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLOtherFromClauseOptional.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithFAFContext() => RegressionRunner.Run(_session, EPLOtherFromClauseOptional.WithFAFContext());
+
+            [Test, RunInApplicationDomain]
+            public void WithFAFNoContext() => RegressionRunner.Run(_session, EPLOtherFromClauseOptional.WithFAFNoContext());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoContext() => RegressionRunner.Run(_session, EPLOtherFromClauseOptional.WithNoContext());
+
+            [Test, RunInApplicationDomain]
+            public void WithContext() => RegressionRunner.Run(_session, EPLOtherFromClauseOptional.WithContext());
         }
     }
 } // end of namespace

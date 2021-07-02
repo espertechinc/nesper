@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 int stream,
                 AgentInstanceContext agentInstanceContext)
             {
-                this._joinPreloadMethod = joinPreloadMethod;
-                this._stream = stream;
-                this._agentInstanceContext = agentInstanceContext;
+                _joinPreloadMethod = joinPreloadMethod;
+                _stream = stream;
+                _agentInstanceContext = agentInstanceContext;
             }
 
             public void ExecutePreload()

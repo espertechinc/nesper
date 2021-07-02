@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.Size = size;
+            Size = size;
         }
 
         public AggregationPortableValidationNth()

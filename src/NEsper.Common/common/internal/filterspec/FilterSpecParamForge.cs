@@ -9,6 +9,7 @@
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterOperator FilterOperator => filterOperator;
 
-        public abstract CodegenMethod MakeCodegen(
+        public abstract CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols);

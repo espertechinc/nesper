@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermDistinctSvcNested : ContextControllerInitTermDistinctSvc
     {
-        private readonly IDictionary<IntSeqKey, ISet<object>> distinctContexts =
+        private readonly IDictionary<IntSeqKey, ISet<object>> _distinctContexts =
             new Dictionary<IntSeqKey, ISet<object>>();
 
         public ContextControllerInitTermDistinctSvcNested()
@@ -26,10 +26,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             object key)
         {
-            ISet<object> keys = distinctContexts.Get(controllerPath);
+            ISet<object> keys = _distinctContexts.Get(controllerPath);
             if (keys == null) {
                 keys = new HashSet<object>();
-                distinctContexts.Put(controllerPath, keys);
+                _distinctContexts.Put(controllerPath, keys);
             }
 
             return keys.Add(key);
@@ -39,19 +39,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             object key)
         {
-            ISet<object> keys = distinctContexts.Get(controllerPath);
+            ISet<object> keys = _distinctContexts.Get(controllerPath);
 
             keys?.Remove(key);
         }
 
         public void Clear(IntSeqKey path)
         {
-            distinctContexts.Remove(path);
+            _distinctContexts.Remove(path);
         }
 
         public void Destroy()
         {
-            distinctContexts.Clear();
+            _distinctContexts.Clear();
         }
     }
 } // end of namespace

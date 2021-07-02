@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 		protected CodegenExpressionInstanceField GetReader(CodegenClassScope classScope)
 		{
-			return classScope.AddOrGetDefaultFieldSharable(new AggregationMethodCodegenField(methodDesc.Reader, classScope, this.GetType()));
+			return classScope.AddOrGetDefaultFieldSharable(new AggregationMethodCodegenField(methodDesc.Reader, classScope, GetType()));
 		}
 
 		public EventType EventTypeCollection => methodDesc.EventTypeCollection;
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			ExprForgeCodegenSymbol symbols,
 			CodegenClassScope classScope)
 		{
-			return new InstrumentationBuilderExpr(this.GetType(), this, "ExprTableSubpropAccessor", requiredType, parent, symbols, classScope)
+			return new InstrumentationBuilderExpr(GetType(), this, "ExprTableSubpropAccessor", requiredType, parent, symbols, classScope)
 				.Qparam(Constant(TableName)) // table name
 				.Qparam(Constant(TableColumnName)) // subprop name
 				.Qparam(Constant(aggregationMethodName)) // agg expression

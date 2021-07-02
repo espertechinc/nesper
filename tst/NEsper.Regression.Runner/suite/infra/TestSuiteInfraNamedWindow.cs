@@ -435,6 +435,9 @@ namespace com.espertech.esper.regressionrun.suite.infra
             }
 
             [Test, RunInApplicationDomain]
+            public void WithNamedWindowTimeToLiveDelete() => RegressionRunner.Run(_session, InfraNamedWindowViews.WithNamedWindowTimeToLiveDelete());
+
+            [Test, RunInApplicationDomain]
             public void WithOnInsertPremptiveTwoWindow() => RegressionRunner.Run(_session, InfraNamedWindowViews.WithOnInsertPremptiveTwoWindow());
 
             [Test, RunInApplicationDomain]

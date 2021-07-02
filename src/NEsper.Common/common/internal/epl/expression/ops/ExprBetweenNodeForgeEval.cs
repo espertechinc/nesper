@@ -70,12 +70,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var isNot = forge.ForgeRenderable.IsNotBetween;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?),
+                typeof(bool),
                 typeof(ExprBetweenNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block;
 
-            var valueType = value.EvaluationType.GetBoxedType();
+            var valueType = value.EvaluationType; //.GetBoxedType();
             block.DeclareVar(
                 valueType,
                 "value",
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNullReturnFalse("value");
             }
 
-            var lowerType = lower.EvaluationType.GetBoxedType();
+            var lowerType = lower.EvaluationType; //.GetBoxedType();
             block.DeclareVar(
                 lowerType,
                 "lower",
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNull("lower").BlockReturn(Constant(isNot));
             }
 
-            var higherType = higher.EvaluationType.GetBoxedType();
+            var higherType = higher.EvaluationType; //.GetBoxedType();
             block.DeclareVar(
                 higherType,
                 "higher",

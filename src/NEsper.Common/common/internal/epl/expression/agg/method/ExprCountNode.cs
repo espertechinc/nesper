@@ -13,6 +13,9 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 using System;
 
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.util;
+
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {
     /// <summary>
@@ -20,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     /// </summary>
     public class ExprCountNode : ExprAggregateNodeBase
     {
-        private bool hasFilter;
+        private bool _hasFilter;
 
         /// <summary>
         /// Ctor.
@@ -48,8 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 childType = positionalParams[0].Forge.EvaluationType;
                 ignoreNulls = true;
             }
-            else if (positionalParams.Length == 2) {
-                hasFilter = true;
+            else {
+                _hasFilter = true;
                 if (!(positionalParams[0] is ExprWildcard)) {
                     childType = positionalParams[0].Forge.EvaluationType;
                     ignoreNulls = true;
@@ -58,11 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     ValidateNotDistinct();
                 }
 
-                base.ValidateFilter(positionalParams[1]);
+                ValidateFilter(positionalParams[1]);
                 optionalFilter = positionalParams[1];
             }
 
-            var distinctValueSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            var serdeType = childType.IsNullType() ? null : childType;
+            var distinctValueSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(serdeType, validationContext.StatementRawInfo) : null;
             return new AggregationForgeFactoryCount(this, ignoreNulls, childType, distinctValueSerde);
         }
 
@@ -71,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         }
 
         public bool HasFilter {
-            get => hasFilter;
+            get => _hasFilter;
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
@@ -89,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         private void ValidateNotDistinct()
         {
-            if (base.IsDistinct) {
+            if (IsDistinct) {
                 throw new ExprValidationException("Invalid use of the 'distinct' keyword with count and wildcard");
             }
         }

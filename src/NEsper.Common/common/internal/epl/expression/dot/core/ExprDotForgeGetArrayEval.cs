@@ -9,11 +9,13 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
@@ -22,18 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotForgeGetArrayEval : ExprDotEval
     {
-        private readonly ExprDotForgeGetArray forge;
-        private readonly ExprEvaluator indexExpression;
+        private readonly ExprDotForgeGetArray _forge;
+        private readonly ExprEvaluator _indexExpression;
 
         public ExprDotForgeGetArrayEval(
             ExprDotForgeGetArray forge,
             ExprEvaluator indexExpression)
         {
-            this.forge = forge;
-            this.indexExpression = indexExpression;
+            _forge = forge;
+            _indexExpression = indexExpression;
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => _forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -46,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            var index = indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var index = _indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (index == null) {
                 return null;
             }
@@ -62,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return array.GetValue(indexNum);
         }
 
-        public ExprDotForge DotForge => forge;
+        public ExprDotForge DotForge => _forge;
 
         public static CodegenExpression Codegen(
             ExprDotForgeGetArray forge,
@@ -72,7 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(forge.TypeInfo.GetNormalizedClass(), typeof(ExprDotForgeGetArrayEval), codegenClassScope)
+            var returnType = forge.TypeInfo.GetNormalizedClass();
+            if (returnType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var methodNode = codegenMethodScope
+                .MakeChild(returnType, typeof(ExprDotForgeGetArrayEval), codegenClassScope)
                 .AddParam(innerType, "target");
 
             var block = methodNode.Block;

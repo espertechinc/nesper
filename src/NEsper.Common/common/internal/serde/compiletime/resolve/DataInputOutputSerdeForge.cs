@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
     /// </summary>
     public interface DataInputOutputSerdeForge
     {
-        String ForgeClassName();
+        string ForgeClassName();
 
         CodegenExpression Codegen(
             CodegenMethod method,

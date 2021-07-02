@@ -204,7 +204,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                         var param = @params[i];
                         // if boolean-expression then match only if this is the last parameter,
                         // all others considered are higher order and sort ahead
-                        if (param.FilterOperator.Equals(FilterOperator.BOOLEAN_EXPRESSION))
+                        if (param.FilterOperator == FilterOperator.BOOLEAN_EXPRESSION)
                         {
                             bool found = booleanIndex.RemoveMayNotExist(param.FilterForValue);
                             if (found)

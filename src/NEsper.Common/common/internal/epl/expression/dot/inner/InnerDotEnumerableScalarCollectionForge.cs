@@ -82,10 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             get => null;
         }
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(
-                componentType,
-                typeof(ICollection<>).MakeGenericType(componentType));
+        public EPChainableType TypeInfo {
+            get => EPChainableTypeHelper.CollectionOfSingleValue(componentType);
         }
     }
 } // end of namespace

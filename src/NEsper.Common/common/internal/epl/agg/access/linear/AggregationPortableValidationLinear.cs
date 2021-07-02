@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
             ExprValidationContext validationContext,
-            String aggMethodName,
+            string aggMethodName,
             ExprNode[] @params)
         {
             aggMethodName = aggMethodName.ToLowerInvariant();
@@ -115,9 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             if (childNodes.Length == 0 || (childNodes.Length == 1 && childNodes[0] is ExprWildcard)) {
                 var componentType = ContainedEventType.UnderlyingType;
-                var forge = new AggregationMethodLinearWindowForge(
-                    TypeHelper.GetArrayType(componentType),
-                    null);
+                var arrayType = TypeHelper.GetArrayType(componentType);
+                var forge = new AggregationMethodLinearWindowForge(arrayType, null);
                 return new AggregationMultiFunctionMethodDesc(forge, ContainedEventType, null, null);
             }
 
@@ -128,7 +128,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 var localValidationContext = new ExprValidationContext(streams, validationContext);
                 paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, paramNode, localValidationContext);
                 var paramNodeType = paramNode.Forge.EvaluationType.GetBoxedType();
-                var forge = new AggregationMethodLinearWindowForge(TypeHelper.GetArrayType(paramNodeType), paramNode);
+                if (paramNodeType.IsNullTypeSafe()) {
+                    throw new ExprValidationException("Null-type value expression is not allowed");
+                }
+
+                var arrayType = TypeHelper.GetArrayType(paramNodeType);
+                var forge = new AggregationMethodLinearWindowForge(arrayType, paramNode);
                 return new AggregationMultiFunctionMethodDesc(forge, null, paramNodeType, null);
             }
 
@@ -169,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 int? constant = null;
                 var indexEvalNode = childNodes[1];
                 var indexEvalType = indexEvalNode.Forge.EvaluationType;
-                if (indexEvalType != typeof(int?) && indexEvalType != typeof(int)) {
+                if (indexEvalType.IsNotInt32()) {
                     throw new ExprValidationException(GetErrorPrefix(methodType) + " requires a constant index expression that returns an integer value");
                 }
 
@@ -193,7 +198,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             throw new ExprValidationException("Invalid number of parameters");
         }
 
-        private static String GetErrorPrefix(AggregationAccessorLinearType stateType)
+        private static string GetErrorPrefix(AggregationAccessorLinearType stateType)
         {
             return ExprAggMultiFunctionUtil.GetErrorPrefix(stateType.ToString().ToLowerInvariant());
         }

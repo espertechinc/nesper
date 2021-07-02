@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.@event.arr;
 
@@ -18,51 +19,51 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public class OutputConditionPolledExpression : OutputConditionPolled
     {
-        private readonly OutputConditionPolledExpressionFactory factory;
-        private readonly OutputConditionPolledExpressionState state;
-        private readonly AgentInstanceContext agentInstanceContext;
+        private readonly OutputConditionPolledExpressionFactory _factory;
+        private readonly OutputConditionPolledExpressionState _state;
+        private readonly ExprEvaluatorContext _exprEvaluatorContext;
 
-        private ObjectArrayEventBean builtinProperties;
-        private EventBean[] eventsPerStream = new EventBean[1];
+        private readonly ObjectArrayEventBean _builtinProperties;
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
 
         public OutputConditionPolledExpression(
             OutputConditionPolledExpressionFactory factory,
             OutputConditionPolledExpressionState state,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ObjectArrayEventBean builtinProperties)
         {
-            this.factory = factory;
-            this.state = state;
-            this.builtinProperties = builtinProperties;
-            this.agentInstanceContext = agentInstanceContext;
+            _factory = factory;
+            _state = state;
+            _builtinProperties = builtinProperties;
+            _exprEvaluatorContext = exprEvaluatorContext;
         }
 
         public OutputConditionPolledState State {
-            get => state;
+            get => _state;
         }
 
         public bool UpdateOutputCondition(
             int newEventsCount,
             int oldEventsCount)
         {
-            state.TotalNewEventsCount = state.TotalNewEventsCount + newEventsCount;
-            state.TotalOldEventsCount = state.TotalOldEventsCount + oldEventsCount;
-            state.TotalNewEventsSum = state.TotalNewEventsSum + newEventsCount;
-            state.TotalOldEventsSum = state.TotalOldEventsCount + oldEventsCount;
+            _state.TotalNewEventsCount = _state.TotalNewEventsCount + newEventsCount;
+            _state.TotalOldEventsCount = _state.TotalOldEventsCount + oldEventsCount;
+            _state.TotalNewEventsSum = _state.TotalNewEventsSum + newEventsCount;
+            _state.TotalOldEventsSum = _state.TotalOldEventsCount + oldEventsCount;
 
             bool isOutput = Evaluate();
             if (isOutput) {
                 ResetBuiltinProperties();
 
                 // execute assignments
-                if (factory.VariableReadWritePackage != null) {
-                    if (builtinProperties != null) {
+                if (_factory.VariableReadWritePackage != null) {
+                    if (_builtinProperties != null) {
                         PopulateBuiltinProperties();
-                        eventsPerStream[0] = builtinProperties;
+                        _eventsPerStream[0] = _builtinProperties;
                     }
 
                     try {
-                        factory.VariableReadWritePackage.WriteVariables(eventsPerStream, null, agentInstanceContext);
+                        _factory.VariableReadWritePackage.WriteVariables(_eventsPerStream, null, _exprEvaluatorContext);
                     }
                     finally {
                     }
@@ -75,23 +76,23 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         private void PopulateBuiltinProperties()
         {
             OutputConditionExpressionTypeUtil.Populate(
-                builtinProperties.Properties,
-                state.TotalNewEventsCount,
-                state.TotalOldEventsCount,
-                state.TotalNewEventsSum,
-                state.TotalOldEventsSum,
-                state.LastOutputTimestamp);
+                _builtinProperties.Properties,
+                _state.TotalNewEventsCount,
+                _state.TotalOldEventsCount,
+                _state.TotalNewEventsSum,
+                _state.TotalOldEventsSum,
+                _state.LastOutputTimestamp);
         }
 
         private bool Evaluate()
         {
-            if (builtinProperties != null) {
+            if (_builtinProperties != null) {
                 PopulateBuiltinProperties();
-                eventsPerStream[0] = builtinProperties;
+                _eventsPerStream[0] = _builtinProperties;
             }
 
             bool result = false;
-            var output = factory.WhenExpression.Evaluate(eventsPerStream, true, agentInstanceContext);
+            var output = _factory.WhenExpression.Evaluate(_eventsPerStream, true, _exprEvaluatorContext);
             if ((output != null) && true.Equals(output)) {
                 result = true;
             }
@@ -101,10 +102,10 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         private void ResetBuiltinProperties()
         {
-            if (builtinProperties != null) {
-                state.TotalNewEventsCount = 0;
-                state.TotalOldEventsCount = 0;
-                state.LastOutputTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
+            if (_builtinProperties != null) {
+                _state.TotalNewEventsCount = 0;
+                _state.TotalOldEventsCount = 0;
+                _state.LastOutputTimestamp = _exprEvaluatorContext.TimeProvider.Time;
             }
         }
     }

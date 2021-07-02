@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Deploy-Grammar">
+	<ItemGroup>
+		<Antlr4 Include="EsperEPL2Grammar.g4">
+			<Generator>MSBuild:Compile</Generator>
+			<TargetLanguage>CSharp</TargetLanguage>
+			<CustomToolNamespace>com.espertech.esper.compiler.@internal.generated</CustomToolNamespace>
+			<Abstract>True</Abstract>
+			<ForceAtn>False</ForceAtn>
+			<Listener>True</Listener>
+			<Visitor>True</Visitor>
+		</Antlr4>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<AntlrVersion>4.9.2</AntlrVersion>
+		<Antlr4ToolLocation>D:\src\antlr\antlr-$(AntlrVersion)-complete.jar</Antlr4ToolLocation>
+		<Antlr4JavaInstallation>$(JAVA_HOME)</Antlr4JavaInstallation>
+		<Antlr4JavaExecutable>&quot;java.exe&quot;</Antlr4JavaExecutable>
+		<IntermediateOutputPath>$(MSBuildProjectDirectory)</IntermediateOutputPath>
+		<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+		<TargetDir>$(MSBuildProjectDirectory)\..\src\NEsper.Grammar\internal\generated</TargetDir>
+		<Antlr4AbstractGrammar>EsperEPL2Grammar.g4</Antlr4AbstractGrammar>
+		<AntlrTargetNamespace>com.espertech.esper.grammar.@internal.generated</AntlrTargetNamespace>
+	</PropertyGroup>
+
+	<Target Name="Build-Grammar">
+		<Message Text="Testing: %(Antlr4.CustomToolNamespace)" />
+		<Exec
+			Command="$(Antlr4JavaExecutable) -jar $(Antlr4ToolLocation) -Dlanguage=CSharp -visitor -listener -long-messages -package $(AntlrTargetNamespace) $(MSBuildProjectDirectory)\EsperEPL2Grammar.g4"
+			WorkingDirectory="$(MSBuildProjectDirectory)"
+			/>
+	</Target>
+
+	<UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+	  <ParameterGroup>
+			<InputFilename ParameterType="System.String" Required="true" />
+			<OutputFilename ParameterType="System.String" Required="true" />
+			<MatchExpression ParameterType="System.String" Required="true" />
+			<ReplacementText ParameterType="System.String" Required="true" />
+	  </ParameterGroup>
+	  <Task>
+			<Reference Include="System.Core" />
+			<Using Namespace="System" />
+			<Using Namespace="System.IO" />
+			<Using Namespace="System.Text.RegularExpressions" />
+			<Code Type="Fragment" Language="cs">
+			  <![CDATA[
+					File.WriteAllText(
+						OutputFilename,
+						Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
+						);
+				  ]]>
+			</Code>
+	  </Task>
+	</UsingTask>
+
+	<Target Name="Info">
+		<Message Text="MSBuildToolsPath: $(MSBuildToolsPath)" />
+	</Target>
+
+	<Target Name="Deploy-Grammar" DependsOnTargets="Build-Grammar">
+		<ItemGroup>
+			<SourceFiles Include="$(MSBuildProjectDirectory)\*.cs" />
+		</ItemGroup>
+
+		<ItemGroup>
+			<TokenFiles Include="$(MSBuildProjectDirectory)\*.tokens" />
+		</ItemGroup>
+
+		<Message Text="Copying NEsper Generated Grammar Files: @(SourceFiles, ' ')" />
+
+		<Copy SourceFiles="@(SourceFiles)"
+			  DestinationFolder="$(TargetDir)"
+			  SkipUnchangedFiles="True" />
+
+		<Delete Files="@(SourceFiles)" />
+		<Delete Files="@(TokenFiles)" />
+	</Target>
+
+	<Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+		<PropertyGroup>
+			<ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+		</PropertyGroup>
+		<Error Condition="!Exists('..\packages\Antlr4.CodeGenerator.4.6.1\build\Antlr4.CodeGenerator.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4.CodeGenerator.4.6.1\build\Antlr4.CodeGenerator.props'))" />
+		<Error Condition="!Exists('..\packages\Antlr4.CodeGenerator.4.6.1\build\Antlr4.CodeGenerator.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4.CodeGenerator.4.6.1\build\Antlr4.CodeGenerator.targets'))" />
+	</Target>
+</Project>

@@ -21,14 +21,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsNodeForgeCoercion : ExprEqualsNodeForge
     {
+        private readonly Type _lhsTypeClass;
+        private readonly Type _rhsTypeClass;
+        
         public ExprEqualsNodeForgeCoercion(
             ExprEqualsNodeImpl parent,
             Coercer coercerLhs,
-            Coercer coercerRhs)
+            Coercer coercerRhs,
+            Type lhsTypeClass,
+            Type rhsTypeClass)
             : base(parent)
         {
             CoercerLHS = coercerLhs;
             CoercerRHS = coercerRhs;
+            _lhsTypeClass = lhsTypeClass;
+            _rhsTypeClass = rhsTypeClass;
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -36,6 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public Coercer CoercerLHS { get; }
 
         public Coercer CoercerRHS { get; }
+
+        public Type LHSTypeClass => _lhsTypeClass;
+
+        public Type RHSTypeClass => _rhsTypeClass;
 
         public override ExprEvaluator ExprEvaluator {
             get {

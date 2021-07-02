@@ -71,9 +71,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // start
             var threadWrite = new Thread(writeRunnable.Run);
-            threadWrite.Name = typeof(InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd).Name + "-write";
+            threadWrite.Name = nameof(InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd) + "-write";
             var threadRead = new Thread(readRunnable.Run);
-            threadRead.Name = typeof(InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd).Name + "-read";
+            threadRead.Name = nameof(InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd) + "-read";
             threadWrite.Start();
             threadRead.Start();
 

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 			byte[] unitKey,
 			EventBeanCollatedWriter writer)
 		{
-			WriteInternal(mk.Keys, output);
+			WriteInternal(mk?.Keys, output);
 		}
 
 		public override MultiKeyArrayObject ReadValue(

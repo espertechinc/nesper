@@ -51,7 +51,6 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                         0,
                         entry.Value.OptionalQueryPlanIndexItem,
                         rootView.EventType,
-                        true,
                         entry.Key.IsUnique,
                         entry.Value.OptionalIndexName,
                         null,

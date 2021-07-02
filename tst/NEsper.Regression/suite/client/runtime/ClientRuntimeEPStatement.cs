@@ -33,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithAlreadyDestroyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeEPStatementAlreadyDestroyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithListenerWReplay(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeEPStatementListenerWReplay());
             return execs;
         }

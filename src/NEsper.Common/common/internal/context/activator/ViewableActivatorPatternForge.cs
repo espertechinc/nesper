@@ -81,15 +81,16 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public static MapEventType MakeRegisterPatternType(
-            StatementBaseInfo @base,
+            string moduleName,
             int stream,
+            ICollection<string> onlyIncludeTheseTags,
             PatternStreamSpecCompiled patternStreamSpec,
             StatementCompileTimeServices services)
         {
             var patternEventTypeName = services.EventTypeNameGeneratorStatement.GetPatternTypeName(stream);
             var metadata = new EventTypeMetadata(
                 patternEventTypeName,
-                @base.ModuleName,
+                moduleName,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
                 NameAccessModifier.PRIVATE,
@@ -98,11 +99,15 @@ namespace com.espertech.esper.common.@internal.context.activator
                 EventTypeIdPair.Unassigned());
             IDictionary<string, object> propertyTypes = new LinkedHashMap<string, object>();
             foreach (var entry in patternStreamSpec.TaggedEventTypes) {
-                propertyTypes.Put(entry.Key, entry.Value.First);
+                if (onlyIncludeTheseTags == null || onlyIncludeTheseTags.Contains(entry.Key)) {
+                    propertyTypes.Put(entry.Key, entry.Value.First);
+                }
             }
 
             foreach (var entry in patternStreamSpec.ArrayEventTypes) {
-                propertyTypes.Put(entry.Key, new[] {entry.Value.First});
+                if (onlyIncludeTheseTags == null || onlyIncludeTheseTags.Contains(entry.Key)) {
+                    propertyTypes.Put(entry.Key, new[] {entry.Value.First});
+                }
             }
 
             var patternType = BaseNestableEventUtil.MakeMapTypeCompileTime(

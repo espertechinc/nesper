@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var typeInformation = ConstantNull();
             if (classScope.IsInstrumented) {
                 typeInformation = classScope.AddOrGetDefaultFieldSharable(
-                    new EPTypeCodegenSharable(new ClassEPType(variableType), classScope));
+                    new EPChainableTypeCodegenSharable(new EPChainableTypeClass(variableType), classScope));
             }
 
             var block = methodNode.Block
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 forge.ChainForge,
                 forge.ResultWrapLambda);
 
-            if (forge.EvaluationType != typeof(void)) {
+            if (forge.EvaluationType.IsVoid()) {
                 block.DeclareVar(forge.EvaluationType, "returned", chain)
                     .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"))
                     .MethodReturn(Ref("returned"));

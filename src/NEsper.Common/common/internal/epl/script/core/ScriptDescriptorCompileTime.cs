@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     typeof(EPStatementInitServices),
                     EPStatementInitServicesConstants.REF.Ref);
             method.Block
-                .DeclareVar<ScriptDescriptorRuntime>("sd", NewInstance(typeof(ScriptDescriptorRuntime)))
+                .DeclareVarNewInstance<ScriptDescriptorRuntime>("sd")
                 .SetProperty(Ref("sd"), "OptionalDialect", Constant(OptionalDialect))
                 .SetProperty(Ref("sd"), "ScriptName", Constant(ScriptName))
                 .SetProperty(Ref("sd"), "Expression", Constant(Expression))

@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+
 // Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -12,6 +12,8 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
@@ -29,6 +31,7 @@ using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.@event.propertyparser;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -137,9 +140,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					validationContext.StatementRawInfo,
 					validationContext.StatementCompileTimeService);
 
-				EPType typeInfoX;
+				EPChainableType typeInfoX;
 				if (enumSrc.ReturnType == null) {
-					typeInfoX = EPTypeHelper.SingleValue(rootNode.Forge.EvaluationType); // not a collection type, treat as scalar
+					var type = rootNode.Forge.EvaluationType;
+					var typeClassOrNull = type.IsNullTypeSafe() ? null : type;
+					typeInfoX = EPChainableTypeHelper.SingleValue(typeClassOrNull);    // not a collection type, treat as scalar
 				}
 				else {
 					typeInfoX = enumSrc.ReturnType;
@@ -265,40 +270,46 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					return null;
 				}
 
-				// Attempt to resolve as event-underlying object instance method
 				var eventType = validationContext.StreamTypeService.EventTypes[prefixedStreamNumber];
-				var type = eventType.UnderlyingType;
 
 				IList<Chainable> remainderChain = new List<Chainable>(_chainSpec);
 				remainderChain.RemoveAt(0);
 
-				ExprValidationException methodEx = null;
+				// Attempt to resolve as event-underlying object instance method (but not on tables)
 				ExprDotForge[] underlyingMethodChain = null;
-				try {
-					var typeInfoX = EPTypeHelper.SingleValue(type);
-					if (validationContext.TableCompileTimeResolver.ResolveTableFromEventType(eventType) != null) {
-						typeInfoX = new ClassEPType(typeof(object[]));
+				ExprValidationException underlyingMethodChainEx = null;
+
+				if (eventType.Metadata.TypeClass != EventTypeTypeClass.TABLE_PUBLIC &&
+				    eventType.Metadata.TypeClass != EventTypeTypeClass.TABLE_INTERNAL) {
+					var type = eventType.UnderlyingType;
+
+					try {
+						var typeInfoX = new EPChainableTypeClass(type);
+						if (validationContext.TableCompileTimeResolver.ResolveTableFromEventType(eventType) != null) {
+							typeInfoX = new EPChainableTypeClass(typeof(object[]));
+						}
+
+						underlyingMethodChain = ExprDotNodeUtility.GetChainEvaluators(
+								prefixedStreamNumber,
+								typeInfoX,
+								remainderChain,
+								validationContext,
+								false,
+								new ExprDotNodeFilterAnalyzerInputStream(prefixedStreamNumber))
+							.ChainWithUnpack;
 					}
-
-					underlyingMethodChain = ExprDotNodeUtility.GetChainEvaluators(
-							prefixedStreamNumber,
-							typeInfoX,
-							remainderChain,
-							validationContext,
-							false,
-							new ExprDotNodeFilterAnalyzerInputStream(prefixedStreamNumber))
-						.ChainWithUnpack;
-				}
-				catch (ExprValidationException ex) {
-					methodEx = ex;
-					// expected - may not be able to find the methods on the underlying
+					catch (ExprValidationException ex) {
+						underlyingMethodChainEx = ex;
+						// expected - may not be able to find the methods on the underlying
+					}
 				}
 
+				// Attempt to resolve as eventbean-method
 				ExprDotForge[] eventTypeMethodChain = null;
-				ExprValidationException enumDatetimeEx = null;
+				ExprValidationException eventTypeMethodChainEx = null;
 				FilterExprAnalyzerAffector filterExprAnalyzerAffector = null;
 				try {
-					var typeInfoX = EPTypeHelper.SingleEvent(eventType);
+					var typeInfoX = EPChainableTypeHelper.SingleEvent(eventType);
 					var chain = ExprDotNodeUtility.GetChainEvaluators(
 						prefixedStreamNumber,
 						typeInfoX,
@@ -310,7 +321,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					filterExprAnalyzerAffector = chain.FilterAnalyzerDesc;
 				}
 				catch (ExprValidationException ex) {
-					enumDatetimeEx = ex;
+					eventTypeMethodChainEx = ex;
 					// expected - may not be able to find the methods on the underlying
 				}
 
@@ -327,24 +338,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					return null;
 				}
 				else {
-					var remainerName = remainderChain[0].GetRootNameOrEmptyString();
-					if (ExprDotNodeUtility.IsDatetimeOrEnumMethod(remainerName, validationContext.ImportService)) {
-						prefixedStreamNumException = enumDatetimeEx;
+					var remainderName = remainderChain[0].GetRootNameOrEmptyString();
+					if (ExprDotNodeUtility.IsDatetimeOrEnumMethod(remainderName, validationContext.ImportService)) {
+						prefixedStreamNumException = eventTypeMethodChainEx;
 					}
 					else {
-						prefixedStreamNumException = new ExprValidationException(
-							"Failed to solve '" +
-							remainerName +
-							"' to either an date-time or enumeration method, an event property or a method on the event underlying object: " +
-							methodEx.Message,
-							methodEx);
+						var message = $"Failed to solve '{remainderName}' to either an date-time or enumeration method, an event property or a method on the event underlying object";
+						if (underlyingMethodChainEx != null) {
+							message += $": {underlyingMethodChainEx.Message}";
+						}
+						prefixedStreamNumException = new ExprValidationException(message, underlyingMethodChainEx);
 					}
 				}
 			}
 
 			// There no root node, in this case the classname or property name is provided as part of the chain.
 			// Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.DoIt(...)"
-			//
 			IList<Chainable> modifiedChain = new List<Chainable>(_chainSpec);
 			var firstItem = modifiedChain.DeleteAt(0);
 			var firstItemName = firstItem.GetRootNameOrEmptyString();
@@ -383,20 +392,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					throw new ExprValidationException("Method invocation on context-specific variable is not supported");
 				}
 
-				EPType typeInfoX;
+				EPChainableType typeInfoX;
 				ExprDotStaticMethodWrap wrap;
-				if (variable.Type.IsArray) {
-					typeInfoX = EPTypeHelper.CollectionOfSingleValue(
-						variable.Type.GetElementType(),
-						variable.Type);
-					wrap = new ExprDotStaticMethodWrapArrayScalar(variable.VariableName, variable.Type);
+				var variableType = variable.Type;
+				if (variableType.IsArray) {
+					typeInfoX = EPChainableTypeHelper.CollectionOfSingleValue(
+						variableType.GetElementType());
+					wrap = new ExprDotStaticMethodWrapArrayScalar(variable.VariableName, variableType);
 				}
 				else if (variable.EventType != null) {
-					typeInfoX = EPTypeHelper.SingleEvent(variable.EventType);
+					typeInfoX = EPChainableTypeHelper.SingleEvent(variable.EventType);
 					wrap = null;
 				}
 				else {
-					typeInfoX = EPTypeHelper.SingleValue(variable.Type);
+					typeInfoX = EPChainableTypeHelper.SingleValueNonNull(variableType);
 					wrap = null;
 				}
 
@@ -418,20 +427,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				validationContext.ClassProvidedExtension,
 				false);
 			if (enumconstantDesc != null && modifiedChain[0] is ChainableCall) {
-
 				// try resolve method
 				var methodSpec = (ChainableCall) modifiedChain[0];
 				var enumvalue = firstItemName;
 				ExprNodeUtilResolveExceptionHandler handler = new ProxyExprNodeUtilResolveExceptionHandler() {
-					ProcHandle = (ex) => {
-						return new ExprValidationException(
-							"Failed to resolve method '" + methodSpec.Name + "' on enumeration value '" + enumvalue + "': " + ex.Message);
-					},
+					ProcHandle = (ex) => new ExprValidationException(
+						"Failed to resolve method '" + methodSpec.Name + "' on enumeration value '" + enumvalue + "': " + ex.Message),
 				};
 				var wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1 ? null : validationContext.StreamTypeService.EventTypes[0];
+				var enumTypeClass = enumconstantDesc.Value.GetType();
 				var methodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-					enumconstantDesc.Value.GetType().Name,
-					enumconstantDesc.Value.GetType(),
+					enumTypeClass.Name,
+					enumTypeClass,
 					methodSpec.Name,
 					methodSpec.Parameters,
 					wildcardType != null,
@@ -448,7 +455,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					modifiedChain,
 					null,
 					validationContext);
-				var typeInfoX = optionalLambdaWrapX != null ? optionalLambdaWrapX.TypeInfo : EPTypeHelper.SingleValue(methodDesc.ReflectionMethod.ReturnType);
+				
+				var returnClass = methodDesc.ReflectionMethod.ReturnType;
+				var typeInfoX = optionalLambdaWrapX != null ? optionalLambdaWrapX.TypeInfo : EPChainableTypeHelper.SingleValue(returnClass);
 
 				var evalsX = ExprDotNodeUtility.GetChainEvaluators(
 					null,
@@ -507,7 +516,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 			// this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
 			var optionalLambdaWrap = ExprDotStaticMethodWrapFactory.Make(method.ReflectionMethod, modifiedChain, null, validationContext);
-			var typeInfo = optionalLambdaWrap != null ? optionalLambdaWrap.TypeInfo : EPTypeHelper.SingleValue(method.ReflectionMethod.ReturnType);
+			var returnType = method.ReflectionMethod.ReturnType;
+			var typeInfo = optionalLambdaWrap != null ? optionalLambdaWrap.TypeInfo : EPChainableTypeHelper.SingleValue(returnType);
 
 			var evals = ExprDotNodeUtility.GetChainEvaluators(
 				null,
@@ -547,7 +557,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			var streamId = propertyInfoPair.First.StreamNum;
 			var streamType = (EventTypeSPI) streamTypeService.EventTypes[streamId];
 			ExprEnumerationForge enumerationForge = null;
-			EPType inputType;
+			EPChainableType inputType;
 			ExprForge rootNodeForge = null;
 			EventPropertyGetterSPI getter;
 			var rootIsEventBean = false;
@@ -565,7 +575,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						validationContext.IsDisablePropertyExpressionEventCollCache);
 					enumerationForge = propertyEval.Enumeration;
 					inputType = propertyEval.ReturnType;
-					rootNodeForge = new PropertyDotNonLambdaForge(streamId, getter, propertyInfoPair.First.PropertyType.GetBoxedType());
+					var propertyType = propertyInfoPair.First.PropertyType;
+					var propertyTypeBoxed = BoxedAndCheckNull(propertyType, propertyName);
+					rootNodeForge = new PropertyDotNonLambdaForge(streamId, getter, propertyTypeBoxed);
 				}
 				else {
 					// first-chainable is an array, use array-of-fragments or array-of-type
@@ -575,15 +587,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					var fragmentEventType = streamType.GetFragmentType(propertyName);
 					if (fragmentEventType != null && fragmentEventType.IsIndexed) {
 						// handle array-of-fragment by including the array operation in the root
-						inputType = EPTypeHelper.SingleEvent(fragmentEventType.FragmentType);
+						inputType = EPChainableTypeHelper.SingleEvent(fragmentEventType.FragmentType);
 						chain = chain.SubList(1, chain.Count); // we remove the array operation from the chain as its handled by the forge
 						rootNodeForge = new PropertyDotNonLambdaFragmentIndexedForge(streamId, getter, indexExpression, propertyName);
 						rootIsEventBean = true;
 					}
 					else if (propertyType.IsArray) {
 						// handle array-of-type by simple property and array operation as part of chain
-						inputType = EPTypeHelper.SingleValue(propertyType);
-						rootNodeForge = new PropertyDotNonLambdaForge(streamId, getter, propertyInfoPair.First.PropertyType.GetBoxedType());
+						inputType = EPChainableTypeHelper.SingleValueNonNull(propertyType);
+						var propertyTypeBoxed = propertyInfoPair.First.PropertyType.GetBoxedType();
+						rootNodeForge = new PropertyDotNonLambdaForge(streamId, getter, propertyTypeBoxed);
 					}
 					else {
 						throw new ExprValidationException("Invalid array operation for property '" + propertyName + "'");
@@ -602,14 +615,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				}
 
 				var paramEval = call.Parameters[0].Forge;
-				inputType = EPTypeHelper.SingleValue(desc.PropertyComponentType);
+				inputType = new EPChainableTypeClass(desc.PropertyComponentType);
 				if (desc.IsMapped) {
 					if (paramEval.EvaluationType != typeof(string)) {
 						throw new ExprValidationException(
 							"Parameter expression to mapped property '" +
 							propertyName +
 							"' is expected to return a string-type value but returns " +
-							paramEval.EvaluationType.CleanName());
+							paramEval.EvaluationType.TypeSafeName());
 					}
 
 					var mappedGetter = ((EventTypeSPI) propertyInfoPair.First.StreamEventType).GetGetterMappedSPI(propertyName);
@@ -626,7 +639,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 							"Parameter expression to mapped property '" +
 							propertyName +
 							"' is expected to return a Integer-type value but returns " +
-							paramEval.EvaluationType.CleanName());
+							paramEval.EvaluationType.TypeSafeName());
 					}
 
 					var indexedGetter = ((EventTypeSPI) propertyInfoPair.First.StreamEventType).GetGetterIndexedSPI(propertyName);
@@ -645,7 +658,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				evals = ExprDotNodeUtility.GetChainEvaluators(streamId, inputType, chain, validationContext, myself._isDuckTyping, filterAnalyzerInputProp);
 			}
 			catch (ExprValidationException) {
-				if (inputType is EventEPType || inputType is EventMultiValuedEPType) {
+				if (inputType is EPChainableTypeEventSingle || inputType is EPChainableTypeEventMulti) {
 					throw;
 				}
 
@@ -656,16 +669,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				}
 
 				rootIsEventBean = true;
-				EPType fragmentTypeInfo;
+				EPChainableType fragmentTypeInfo;
 				if (!fragment.IsIndexed) {
 					if (chain[0] is ChainableArray) {
 						throw new ExprValidationException("Cannot perform array operation as property '" + propertyName + "' does not return an array");
 					}
 
-					fragmentTypeInfo = EPTypeHelper.SingleEvent(fragment.FragmentType);
+					fragmentTypeInfo = EPChainableTypeHelper.SingleEvent(fragment.FragmentType);
 				}
 				else {
-					fragmentTypeInfo = EPTypeHelper.ArrayOfEvents(fragment.FragmentType);
+					fragmentTypeInfo = EPChainableTypeHelper.ArrayOfEvents(fragment.FragmentType);
 				}
 
 				inputType = fragmentTypeInfo;
@@ -694,6 +707,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				evals.ChainWithUnpack,
 				!rootIsEventBean);
 			return new PropertyInfoPairDesc(forge);
+		}
+
+		private static Type BoxedAndCheckNull(
+			Type propertyType,
+			string propertyName)
+		{
+			if (propertyType.IsNullTypeSafe()) {
+				throw new ExprValidationException("Property '" + propertyName + "' returns a null-type value");
+			}
+
+			return propertyType.GetBoxedType();
 		}
 
 		private Pair<ExprDotNodeAggregationMethodRootNode, IList<Chainable>> HandleAggregationMethod(ExprValidationContext validationContext)
@@ -846,7 +870,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						"Parameter expression to mapped property '" +
 						propertyDesc.PropertyName +
 						"' is expected to return a string-type value but returns " +
-						parameterForge.EvaluationType.CleanName());
+						parameterForge.EvaluationType.TypeSafeName());
 				}
 
 				mappedGetter = ((EventTypeSPI) propertyInfoPair.First.StreamEventType).GetGetterMappedSPI(propertyInfoPair.First.PropertyName);
@@ -860,7 +884,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						"Parameter expression to indexed property '" +
 						propertyDesc.PropertyName +
 						"' is expected to return a Integer-type value but returns " +
-						parameterForge.EvaluationType.CleanName());
+						parameterForge.EvaluationType.TypeSafeName());
 				}
 
 				indexedGetter = ((EventTypeSPI) propertyInfoPair.First.StreamEventType).GetGetterIndexedSPI(propertyInfoPair.First.PropertyName);

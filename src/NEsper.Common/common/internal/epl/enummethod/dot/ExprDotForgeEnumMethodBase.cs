@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private EnumMethodDesc _enumMethodDesc;
         private string _enumMethodUsedName;
         private int _streamCountIncoming;
-        private EPType _typeInfo;
+        private EPChainableType _typeInfo;
 
         public EnumForge EnumForge { get; set; }
         public int EnumEvalNumRequiredEvents { get; set; }
@@ -61,13 +62,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             int? streamOfProviderIfApplicable,
             EnumMethodDesc enumMethodDesc,
             string enumMethodUsedName,
-            EPType typeInfo,
+            EPChainableType typeInfo,
             IList<ExprNode> parameters,
             ExprValidationContext validationContext)
         {
-            var eventTypeColl = typeInfo.GetEventTypeMultiValued();
-            var eventTypeBean = typeInfo.GetEventTypeSingleValued();
-            var collectionComponentType = typeInfo.GetClassMultiValued();
+            var eventTypeColl = EPChainableTypeHelper.GetEventTypeMultiValued(typeInfo);
+            var eventTypeBean = EPChainableTypeEventSingle.FromInputOrNull(typeInfo);
+            var collectionComponentType = EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(typeInfo);
 
             _enumMethodDesc = enumMethodDesc;
             _enumMethodUsedName = enumMethodUsedName;
@@ -231,7 +232,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             Type collectionComponentType,
             ExprValidationContext validationContext);
 
-        public EPType TypeInfo => _typeInfo;
+        public EPChainableType TypeInfo => _typeInfo;
 
         private ExprDotEvalParam GetBodyAndParameter(
             EnumForgeDescFactory forgeDescFactory,

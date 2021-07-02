@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[1], "Contained.where((x, i) => x.P00 = 9 and i >= 1)");
 				builder.WithExpression(fields[2], "Contained.where((x, i, s) => x.P00 = 9 and i >= 1 and s > 2)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"))
 					.Verify("c0", val => AssertST0Id(val, "E2"))
@@ -91,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[1], "Strvals.where((x, i) => x not like '%1%' and i >= 1)");
 				builder.WithExpression(fields[2], "Strvals.where((x, i, s) => x not like '%1%' and i >= 1 and s >= 3)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E2", "E3"))
@@ -125,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				var builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Boolvals.where(x => x)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<bool>)));
 
 				builder.WithAssertion(SupportCollection.MakeBoolean("true,true,false"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, true, true));

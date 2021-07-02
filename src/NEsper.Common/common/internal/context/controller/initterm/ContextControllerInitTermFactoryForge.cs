@@ -8,6 +8,8 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -16,6 +18,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -24,14 +27,16 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermFactoryForge : ContextControllerForgeBase
     {
-        private readonly ContextSpecInitiatedTerminated detail;
+        private readonly ContextSpecInitiatedTerminated _detail;
+        private StateMgmtSetting _distinctStateMgmtSettings;
+        private StateMgmtSetting _ctxStateMgmtSettings;
 
         public ContextControllerInitTermFactoryForge(
             ContextControllerFactoryEnv ctx,
             ContextSpecInitiatedTerminated detail)
             : base(ctx)
         {
-            this.detail = detail;
+            this._detail = detail;
         }
 
         public override void ValidateGetContextProps(
@@ -43,9 +48,16 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             props.Put(ContextPropertyEventType.PROP_CTX_STARTTIME, typeof(long?));
             props.Put(ContextPropertyEventType.PROP_CTX_ENDTIME, typeof(long?));
 
-            LinkedHashSet<string> allTags = new LinkedHashSet<string>();
-            ContextPropertyEventType.AddEndpointTypes(detail.StartCondition, props, allTags);
-            ContextPropertyEventType.AddEndpointTypes(detail.EndCondition, props, allTags);
+            var allTags = new LinkedHashSet<string>();
+            ContextPropertyEventType.AddEndpointTypes(_detail.StartCondition, props, allTags);
+            ContextPropertyEventType.AddEndpointTypes(_detail.EndCondition, props, allTags);
+            
+            _distinctStateMgmtSettings = StateMgmtSettingDefault.INSTANCE;
+            if (_detail.DistinctExpressions != null && _detail.DistinctExpressions.Length > 0) {
+                _distinctStateMgmtSettings = services.StateMgmtSettingsProvider.GetContext(statementRawInfo, contextName, AppliesTo.CONTEXT_INITTERM_DISTINCT);
+            }
+            _ctxStateMgmtSettings = services.StateMgmtSettingsProvider.GetContext(statementRawInfo, contextName, AppliesTo.CONTEXT_INITTERM);
+
         }
 
         public override CodegenMethod MakeCodegen(
@@ -53,17 +65,17 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(ContextControllerInitTermFactory),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<ContextControllerInitTermFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
-                        .Add("InitTermFactory"))
-                .SetProperty(Ref("factory"), "InitTermSpec", detail.MakeCodegen(method, symbols, classScope))
+                        .Add("InitTermFactory", _distinctStateMgmtSettings.ToExpression(), _ctxStateMgmtSettings.ToExpression()))
+                .SetProperty(Ref("factory"), "InitTermSpec", _detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;
         }

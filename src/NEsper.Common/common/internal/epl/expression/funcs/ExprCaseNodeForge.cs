@@ -37,6 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNode optionalCompareExprNode,
             ExprNode optionalElseExprNode)
         {
+            if (resultType == null) {
+                throw new ArgumentNullException(nameof(resultType));
+            }
+            
             ForgeRenderable = parent;
             EvaluationType = resultType;
             this.mapResultType = mapResultType;

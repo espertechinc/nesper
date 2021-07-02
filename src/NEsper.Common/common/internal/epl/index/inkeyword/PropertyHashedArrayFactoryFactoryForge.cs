@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -24,13 +25,14 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 {
     public class PropertyHashedArrayFactoryFactoryForge : EventTableFactoryFactoryForge
     {
-        private readonly int streamNum;
-        private readonly EventType eventType;
-        private readonly string[] propertyNames;
-        private readonly Type[] propertyTypes;
-        private readonly DataInputOutputSerdeForge[] serdes;
-        private readonly bool unique;
-        private readonly bool isFireAndForget;
+        private readonly int _streamNum;
+        private readonly EventType _eventType;
+        private readonly string[] _propertyNames;
+        private readonly Type[] _propertyTypes;
+        private readonly DataInputOutputSerdeForge[] _serdes;
+        private readonly bool _unique;
+        private readonly bool _isFireAndForget;
+        private readonly StateMgmtSetting _stateMgmtSettings;
 
         public PropertyHashedArrayFactoryFactoryForge(
             int streamNum,
@@ -39,15 +41,17 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             Type[] propertyTypes,
             DataInputOutputSerdeForge[] serdes,
             bool unique,
-            bool isFireAndForget)
+            bool isFireAndForget,
+            StateMgmtSetting stateMgmtSettings)
         {
-            this.streamNum = streamNum;
-            this.eventType = eventType;
-            this.propertyNames = propertyNames;
-            this.unique = unique;
-            this.isFireAndForget = isFireAndForget;
-            this.propertyTypes = propertyTypes;
-            this.serdes = serdes;
+            _streamNum = streamNum;
+            _eventType = eventType;
+            _propertyNames = propertyNames;
+            _unique = unique;
+            _isFireAndForget = isFireAndForget;
+            _propertyTypes = propertyTypes;
+            _serdes = serdes;
+            _stateMgmtSettings = stateMgmtSettings;
         }
 
         public Type EventTableClass {
@@ -59,46 +63,47 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(PropertyHashedArrayFactoryFactory),
-                this.GetType(),
+                GetType(),
                 classScope);
 
             method.Block.DeclareVar<EventPropertyValueGetter[]>(
                 "getters",
-                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(propertyNames.Length)));
-            for (int i = 0; i < propertyNames.Length; i++) {
-                EventPropertyGetterSPI getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(propertyNames[i]);
-                CodegenExpression getter = EventTypeUtility.CodegenGetterWCoerce(
+                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(_propertyNames.Length)));
+            for (var i = 0; i < _propertyNames.Length; i++) {
+                var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(_propertyNames[i]);
+                var getter = EventTypeUtility.CodegenGetterWCoerce(
                     getterSPI,
-                    propertyTypes[i],
-                    propertyTypes[i],
+                    _propertyTypes[i],
+                    _propertyTypes[i],
                     method,
-                    this.GetType(),
+                    GetType(),
                     classScope);
                 method.Block.AssignArrayElement(Ref("getters"), Constant(i), getter);
             }
 
             method.Block.MethodReturn(
                 NewInstance<PropertyHashedArrayFactoryFactory>(
-                    Constant(streamNum),
-                    Constant(propertyNames),
-                    Constant(propertyTypes),
-                    DataInputOutputSerdeForgeExtensions.CodegenArray(serdes, method, classScope, null),
-                    Constant(unique),
+                    Constant(_streamNum),
+                    Constant(_propertyNames),
+                    Constant(_propertyTypes),
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(_serdes, method, classScope, null),
+                    Constant(_unique),
                     Ref("getters"),
-                    Constant(isFireAndForget)));
+                    Constant(_isFireAndForget),
+                    _stateMgmtSettings.ToExpression()));
             return LocalMethod(method);
         }
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name +
-                   (unique ? " unique" : " non-unique") +
+            return GetType().Name +
+                   (_unique ? " unique" : " non-unique") +
                    " streamNum=" +
-                   streamNum +
+                   _streamNum +
                    " propertyNames=" +
-                   CompatExtensions.RenderAny(propertyNames);
+                   CompatExtensions.RenderAny(_propertyNames);
         }
     }
 } // end of namespace

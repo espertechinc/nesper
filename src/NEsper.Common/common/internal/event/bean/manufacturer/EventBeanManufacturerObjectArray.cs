@@ -17,10 +17,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     /// </summary>
     public class EventBeanManufacturerObjectArray : EventBeanManufacturer
     {
-        private readonly EventBeanTypedEventFactory eventAdapterService;
-        private readonly ObjectArrayEventType eventType;
-        private readonly int[] indexPerWritable;
-        private readonly bool oneToOne;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
+        private readonly ObjectArrayEventType _eventType;
+        private readonly int[] _indexPerWritable;
+        private readonly bool _oneToOne;
 
         public EventBeanManufacturerObjectArray(
             ObjectArrayEventType eventType,
@@ -28,16 +28,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             int[] indexPerWritable,
             bool oneToOne)
         {
-            this.eventType = eventType;
-            this.eventAdapterService = eventAdapterService;
-            this.indexPerWritable = indexPerWritable;
-            this.oneToOne = oneToOne;
+            this._eventType = eventType;
+            this._eventAdapterService = eventAdapterService;
+            this._indexPerWritable = indexPerWritable;
+            this._oneToOne = oneToOne;
         }
 
         public EventBean Make(object[] properties)
         {
             var cols = MakeUnderlying(properties);
-            return eventAdapterService.AdapterForTypedObjectArray(cols, eventType);
+            return _eventAdapterService.AdapterForTypedObjectArray(cols, _eventType);
         }
 
         object EventBeanManufacturer.MakeUnderlying(object[] properties)
@@ -47,13 +47,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public object[] MakeUnderlying(object[] properties)
         {
-            if (oneToOne) {
+            if (_oneToOne) {
                 return properties;
             }
 
-            var cols = new object[eventType.PropertyNames.Length];
+            var cols = new object[_eventType.PropertyNames.Length];
             for (var i = 0; i < properties.Length; i++) {
-                var indexToWrite = indexPerWritable[i];
+                var indexToWrite = _indexPerWritable[i];
                 cols[indexToWrite] = properties[i];
             }
 

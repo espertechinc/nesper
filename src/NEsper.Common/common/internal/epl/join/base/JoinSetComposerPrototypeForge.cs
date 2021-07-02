@@ -51,10 +51,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(Implementation(), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(Implementation(), GetType(), classScope);
 
             method.Block
-                .DeclareVar(Implementation(), "impl", NewInstance(Implementation()))
+                .DeclareVarNewInstance(Implementation(), "impl")
                 .SetProperty(
                     Ref("impl"),
                     "StreamTypes",
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
                         postJoinEvaluator.Forge,
                         method,
-                        this.GetType(),
+                        GetType(),
                         classScope));
             }
 

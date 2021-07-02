@@ -47,6 +47,7 @@ namespace com.espertech.esper.regressionlib.support.json
 			return eventType.UnderlyingType;
 		}
 
+#if DEPRECATED
 		public static Type GetNestedUnderlyingType(
 			JsonEventType eventType,
 			string propertyName)
@@ -62,6 +63,7 @@ namespace com.espertech.esper.regressionlib.support.json
 
 			return innerType.UnderlyingType;
 		}
+#endif
 
 		public static void AssertJsonWrite(
 			string jsonExpected,

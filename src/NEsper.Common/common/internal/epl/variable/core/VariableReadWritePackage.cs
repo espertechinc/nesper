@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -69,14 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 		/// </summary>
 		/// <param name="eventsPerStream">events per stream</param>
 		/// <param name="valuesWritten">null or an empty map to populate with written values</param>
-		/// <param name="agentInstanceContext">expression evaluation context</param>
+		/// <param name="exprEvaluatorContext">expression evaluation context</param>
 		public void WriteVariables(
 			EventBean[] eventsPerStream,
 			IDictionary<string, object> valuesWritten,
-			AgentInstanceContext agentInstanceContext)
+			ExprEvaluatorContext exprEvaluatorContext)
 		{
 			ISet<string> variablesBeansCopied = null;
-			var variableService = agentInstanceContext.VariableManagementService;
+			var variableService = exprEvaluatorContext.VariableManagementService;
 			if (!_copyMethods.IsEmpty()) {
 				variablesBeansCopied = new HashSet<string>();
 			}
@@ -92,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 					foreach (var assignment in _assignments) {
 						var variable = _variables[count];
 						var variableMetaData = variable.MetaData;
-						var agentInstanceId = variableMetaData.OptionalContextName == null ? DEFAULT_AGENT_INSTANCE_ID : agentInstanceContext.AgentInstanceId;
+						var agentInstanceId = variableMetaData.OptionalContextName == null ? DEFAULT_AGENT_INSTANCE_ID : exprEvaluatorContext.AgentInstanceId;
 						var variableNumber = variable.VariableNumber;
 						var writeBase = _writers[count];
 						object written;
@@ -101,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 							var writeDesc = (VariableTriggerWriteDesc) writeBase;
 							var reader = variableService.GetReader(_variables[count].DeploymentId, variableMetaData.VariableName, agentInstanceId);
 							var current = (EventBean) reader.Value;
-							var value = assignment.Evaluator.Evaluate(eventsPerStream, true, agentInstanceContext);
+							var value = assignment.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 							written = value;
 							if (current != null) {
 								var copy = variablesBeansCopied.Add(writeDesc.VariableName);
@@ -117,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 						}
 						else if (writeBase is VariableTriggerWriteArrayElement) {
 							var writeDesc = (VariableTriggerWriteArrayElement) writeBase;
-							var index = (int?) writeDesc.IndexExpression.Evaluate(eventsPerStream, true, agentInstanceContext);
+							var index = (int?) writeDesc.IndexExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 							var reader = variableService.GetReader(_variables[count].DeploymentId, variableMetaData.VariableName, agentInstanceId);
 							var arrayValue = (Array) reader.Value;
 							written = arrayValue;
@@ -125,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 								if (arrayValue != null) {
 									var len = arrayValue.Length;
 									if (index < len) {
-										var value = assignment.Evaluator.Evaluate(eventsPerStream, true, agentInstanceContext);
+										var value = assignment.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 										if (writeDesc.TypeWidener != null) {
 											value = writeDesc.TypeWidener.Widen(value);
 										}
@@ -147,18 +149,18 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 							var writeDesc = (VariableTriggerWriteCurly) writeBase;
 							var reader = variableService.GetReader(_variables[count].DeploymentId, variableMetaData.VariableName, agentInstanceId);
 							var value = reader.Value;
-							writeDesc.Expression.Evaluate(eventsPerStream, true, agentInstanceContext);
+							writeDesc.Expression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 							variableService.Write(variableNumber, agentInstanceId, value);
 							written = value;
 						}
 						else if (variableMetaData.EventType != null) {
-							var value = assignment.Evaluator.Evaluate(eventsPerStream, true, agentInstanceContext);
-							var eventBean = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObject(value, variableMetaData.EventType);
+							var value = assignment.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+							var eventBean = exprEvaluatorContext.EventBeanTypedEventFactory.AdapterForTypedObject(value, variableMetaData.EventType);
 							variableService.Write(variableNumber, agentInstanceId, eventBean);
 							written = value;
 						}
 						else {
-							var value = assignment.Evaluator.Evaluate(eventsPerStream, true, agentInstanceContext);
+							var value = assignment.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 							if ((value != null) && (_mustCoerce[count])) {
 								value = TypeHelper.CoerceBoxed(value, variableMetaData.Type);
 							}

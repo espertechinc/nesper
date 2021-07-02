@@ -43,49 +43,49 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static IList<RegressionExecution> WithNamedWindowSilentDeleteOnDeleteMany(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNamedWindowSilentDeleteOnDeleteMany());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowSilentDeleteOnDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNamedWindowSilentDeleteOnDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCoercionKeyAndRangeMultiPropIndexes(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCoercionKeyAndRangeMultiPropIndexes());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCoercionRangeMultiPropIndexes(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCoercionRangeMultiPropIndexes());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCoercionKeyMultiPropIndexes(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCoercionKeyMultiPropIndexes());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaggeredNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraStaggeredNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraFirstUnique());
             return execs;
         }

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
         {
             var method = parent.MakeChild(typeof(CountMinSketchSpec), GetType(), classScope);
             method.Block
-                .DeclareVar<CountMinSketchSpec>("spec", NewInstance<CountMinSketchSpec>())
+                .DeclareVarNewInstance<CountMinSketchSpec>("spec")
                 .SetProperty(Ref("spec"), "HashesSpec", HashesSpec.CodegenMake(method, classScope))
                 .SetProperty(Ref("spec"), "TopkSpec", Constant(TopkSpec))
                 .SetProperty(Ref("spec"), "Agent", Agent.CodegenMake(method, classScope))

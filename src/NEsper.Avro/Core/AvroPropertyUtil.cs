@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
@@ -38,7 +39,7 @@ namespace NEsper.Avro.Core
                 return typeof(object);
             }
 
-            Schema typeSchema = desc.Field.Schema;
+            var typeSchema = desc.Field.Schema;
             if (desc.IsAccessedByIndex) {
                 if (desc.Field.Schema is ArraySchema arraySchema) {
                     typeSchema = arraySchema.ItemSchema;
@@ -109,7 +110,7 @@ namespace NEsper.Avro.Core
                 }
 
                 if (prop is MappedProperty mappedProp) {
-                    Field field = avroSchema.GetField(mappedProp.PropertyNameAtomic);
+                    var field = avroSchema.GetField(mappedProp.PropertyNameAtomic);
                     if (field == null || field.Schema.Tag != Schema.Type.Map) {
                         return null;
                     }
@@ -156,7 +157,7 @@ namespace NEsper.Avro.Core
             }
 
             var propTop = PropertyParser.ParseAndWalkLaxToSimple(propertyTop);
-            Field fieldTop = avroSchema.GetField(propTop.PropertyNameAtomic);
+            var fieldTop = avroSchema.GetField(propTop.PropertyNameAtomic);
 
             // field is known and is a record
             if (fieldTop != null && fieldTop.Schema.Tag == Schema.Type.Record && propTop is SimpleProperty) {
@@ -218,7 +219,7 @@ namespace NEsper.Avro.Core
             AvroEventTypeFragmentTypeCache fragmentTypeCache)
         {
             if (property is SimpleProperty) {
-                Field fieldNested = fieldSchema.GetField(property.PropertyNameAtomic);
+                var fieldNested = fieldSchema.GetField(property.PropertyNameAtomic);
                 if (fieldNested == null) {
                     return null;
                 }
@@ -257,7 +258,7 @@ namespace NEsper.Avro.Core
             }
 
             if (property is MappedProperty mappedProperty) {
-                Field fieldNested = fieldSchema.GetField(mappedProperty.PropertyNameAtomic);
+                var fieldNested = fieldSchema.GetField(mappedProperty.PropertyNameAtomic);
                 if (fieldNested == null || fieldNested.Schema.Tag != Schema.Type.Map) {
                     return null;
                 }
@@ -292,13 +293,19 @@ namespace NEsper.Avro.Core
                         return null;
                     }
 
-                    Field fieldNested = currentSchema.GetField(levelProperty.PropertyNameAtomic);
+                    var fieldNested = currentSchema.GetField(levelProperty.PropertyNameAtomic);
                     if (fieldNested == null) {
                         return null;
                     }
 
                     currentSchema = fieldNested.Schema;
                     path[count] = fieldNested;
+
+                    var type = AvroTypeUtil.PropertyType(currentSchema);
+                    if (type.IsNullType()) {
+                        return null;
+                    }
+
                     types[count] = AvroTypeUtil.PropertyType(currentSchema);
                     count++;
                 }
@@ -321,7 +328,7 @@ namespace NEsper.Avro.Core
                 }
 
                 if (levelProperty is SimpleProperty) {
-                    Field fieldNested = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
+                    var fieldNested = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
                     if (fieldNested == null) {
                         return null;
                     }
@@ -365,7 +372,7 @@ namespace NEsper.Avro.Core
                     currentSchemaX = fieldIndexed.Schema.AsArraySchema().ItemSchema;
                 }
                 else if (levelProperty is MappedProperty mapped) {
-                    Field fieldMapped = currentSchemaX.GetField(mapped.PropertyNameAtomic);
+                    var fieldMapped = currentSchemaX.GetField(mapped.PropertyNameAtomic);
                     if (fieldMapped == null || fieldMapped.Schema.Tag != Schema.Type.Map) {
                         return null;
                     }
@@ -378,7 +385,7 @@ namespace NEsper.Avro.Core
                         return null;
                     }
 
-                    Field fieldDynamic = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
+                    var fieldDynamic = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
                     getters[countX] = new AvroEventBeanGetterSimpleDynamic(levelProperty.PropertyNameAtomic);
                     if (fieldDynamic.Schema.Tag == Schema.Type.Record) {
                         currentSchemaX = fieldDynamic.Schema;

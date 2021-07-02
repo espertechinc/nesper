@@ -24,8 +24,10 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.resultset.handthru;
 using com.espertech.esper.common.@internal.epl.resultset.order;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.epl.resultset.@select.eval;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.view.core;
@@ -63,10 +65,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		    CodegenNamespaceScope namespaceScope,
 		    StatementRawInfo statementRawInfo)
 	    {
-	        this._className = className;
-	        this._spec = spec;
-	        this._namespaceScope = namespaceScope;
-	        this._statementRawInfo = statementRawInfo;
+	        _className = className;
+	        _spec = spec;
+	        _namespaceScope = namespaceScope;
+	        _statementRawInfo = statementRawInfo;
 	    }
 
 	    public CodegenClass Forge(bool includeDebugSymbols, bool fireAndForget) {
@@ -106,25 +108,15 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
 	            // add event type
 	            providerExplicitMembers.Add(new CodegenTypedParam(typeof(EventType), MEMBERNAME_RESULTEVENTTYPE));
-	            
 	            providerCtor.Block.AssignMember(
 		            MEMBERNAME_RESULTEVENTTYPE,
 		            EventTypeUtility.ResolveTypeCodegen(_spec.ResultEventType, EPStatementInitServicesConstants.REF));
-
-	            MakeResultSetProcessorFactory(
-		            classScope,
-		            innerClasses,
-		            providerExplicitMembers,
-		            providerCtor,
-		            _className);
-
-	            MakeResultSetProcessor(
-		            classScope,
-		            innerClasses,
-		            providerExplicitMembers, 
-		            providerCtor,
-		            _className,
-		            _spec);
+	            
+	            providerExplicitMembers.Add(new CodegenTypedParam(typeof(ResultSetProcessorFactory), "rspFactory"));
+	            if (_spec.ResultSetProcessorType != ResultSetProcessorType.HANDTHROUGH) {
+		            MakeResultSetProcessorFactory(classScope, innerClasses, providerCtor, _className);
+		            MakeResultSetProcessor(classScope, innerClasses, providerExplicitMembers, providerCtor, _className, _spec);
+	            }
 
 	            OrderByProcessorCompiler.MakeOrderByProcessors(
 		            _spec.OrderByProcessorFactoryForge,
@@ -135,20 +127,24 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		            _className,
 		            MEMBERNAME_ORDERBYFACTORY);
 
-	            providerExplicitMembers.Add(
-		            new CodegenTypedParam(typeof(AggregationServiceFactory), MEMBERNAME_AGGREGATIONSVCFACTORY));
-	            var aggregationClassNames = new AggregationClassNames();
-	            var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
-		            _spec.IsJoin,
-		            _spec.AggregationServiceForgeDesc.AggregationServiceFactoryForge,
-		            providerCtor,
-		            classScope,
-		            _className,
-		            aggregationClassNames);
-	            providerCtor.Block.AssignMember(
-		            MEMBERNAME_AGGREGATIONSVCFACTORY,
-		            LocalMethod(aggResult.InitMethod, EPStatementInitServicesConstants.REF));
-	            innerClasses.AddAll(aggResult.InnerClasses);
+	            var aggregationForge = _spec.AggregationServiceForgeDesc.AggregationServiceFactoryForge;
+	            var aggregationNull = aggregationForge == AggregationServiceNullFactory.INSTANCE;
+	            if (!aggregationNull) {
+		            providerExplicitMembers.Add(
+			            new CodegenTypedParam(typeof(AggregationServiceFactory), MEMBERNAME_AGGREGATIONSVCFACTORY));
+		            var aggregationClassNames = new AggregationClassNames();
+		            var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
+			            _spec.IsJoin,
+			            aggregationForge,
+			            providerCtor,
+			            classScope,
+			            _className,
+			            aggregationClassNames);
+		            providerCtor.Block.AssignMember(
+			            MEMBERNAME_AGGREGATIONSVCFACTORY,
+			            LocalMethod(aggResult.InitMethod, EPStatementInitServicesConstants.REF));
+		            innerClasses.AddAll(aggResult.InnerClasses);
+	            }
 
 	            MakeSelectExprProcessors(
 		            classScope,
@@ -159,10 +155,20 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		            _spec.IsRollup,
 		            _spec.SelectExprProcessorForges);
 
+	            if (_spec.ResultSetProcessorType == ResultSetProcessorType.HANDTHROUGH) {
+		            var handThrough = (ResultSetProcessorHandThroughFactoryForge) _spec.ResultSetProcessorFactoryForge;
+		            providerCtor.Block.AssignMember(
+			            MEMBERNAME_RESULTSETPROCESSORFACTORY,
+			            NewInstance<ResultSetProcessorHandThroughFactory>(
+				            Ref("selectExprProcessor"),
+				            Ref("resultEventType"),
+				            Constant(handThrough.IsSelectRStream)));
+	            }
+
 	            // make provider methods
 	            var propResultSetProcessorFactoryMethod = CodegenProperty.MakePropertyNode(
 		            typeof(ResultSetProcessorFactory),
-		            this.GetType(),
+		            GetType(),
 		            CodegenSymbolProviderEmpty.INSTANCE,
 		            classScope);
 	            propResultSetProcessorFactoryMethod
@@ -171,25 +177,25 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
 	            var propAggregationServiceFactoryMethod = CodegenProperty.MakePropertyNode(
 		            typeof(AggregationServiceFactory),
-		            this.GetType(),
+		            GetType(),
 		            CodegenSymbolProviderEmpty.INSTANCE,
 		            classScope);
 	            propAggregationServiceFactoryMethod
 		            .GetterBlock
-		            .BlockReturn(Ref(MEMBERNAME_AGGREGATIONSVCFACTORY));
+		            .BlockReturn(aggregationNull ? PublicConstValue<AggregationServiceNullFactory>("INSTANCE") : Ref(MEMBERNAME_AGGREGATIONSVCFACTORY));
 
 	            var propOrderByProcessorFactoryMethod = CodegenProperty.MakePropertyNode(
 		            typeof(OrderByProcessorFactory),
-		            this.GetType(),
+		            GetType(),
 		            CodegenSymbolProviderEmpty.INSTANCE,
 		            classScope);
 	            propOrderByProcessorFactoryMethod
 		            .GetterBlock
-		            .BlockReturn(Ref(MEMBERNAME_ORDERBYFACTORY));
+		            .BlockReturn(_spec.OrderByProcessorFactoryForge == null ? ConstantNull() : Ref(MEMBERNAME_ORDERBYFACTORY));
 
 	            var propResultSetProcessorTypeMethod = CodegenProperty.MakePropertyNode(
 		            typeof(ResultSetProcessorType),
-		            this.GetType(),
+		            GetType(),
 		            CodegenSymbolProviderEmpty.INSTANCE,
 		            classScope);
 	            propResultSetProcessorTypeMethod
@@ -198,7 +204,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
 	            var propResultEventTypeMethod = CodegenProperty.MakePropertyNode(
 		            typeof(EventType),
-		            this.GetType(),
+		            GetType(),
 		            CodegenSymbolProviderEmpty.INSTANCE,
 		            classScope);
 	            propResultEventTypeMethod
@@ -253,7 +259,6 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	    private static void MakeResultSetProcessorFactory(
 		    CodegenClassScope classScope,
 		    IList<CodegenInnerClass> innerClasses, 
-		    IList<CodegenTypedParam> providerExplicitMembers,
 		    CodegenCtor providerCtor, 
 		    string providerClassName) 
 	    {
@@ -261,12 +266,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		        .MakeMethod(typeof(ResultSetProcessor), typeof(StmtClassForgeableRSPFactoryProvider), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 		        .AddParam(typeof(OrderByProcessor), NAME_ORDERBYPROCESSOR)
 		        .AddParam(typeof(AggregationService), NAME_AGGREGATIONSVC)
-		        .AddParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
-	        instantiateMethod.Block.MethodReturn(CodegenExpressionBuilder.NewInstanceInner(
-		        CLASSNAME_RESULTSETPROCESSOR, Ref("o"),
-		        MEMBER_ORDERBYPROCESSOR,
-		        MEMBER_AGGREGATIONSVC,
-		        MEMBER_AGENTINSTANCECONTEXT));
+		        .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+	        instantiateMethod.Block.MethodReturn(
+		        NewInstanceNamed(
+			        CLASSNAME_RESULTSETPROCESSOR,
+			        Ref("o"),
+			        MEMBER_ORDERBYPROCESSOR,
+			        MEMBER_AGGREGATIONSVC,
+			        MEMBER_EXPREVALCONTEXT));
 	        
 	        var properties = new CodegenClassProperties();
 	        var methods = new CodegenClassMethods();
@@ -284,10 +291,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		        properties);
 	        innerClasses.Add(innerClass);
 
-	        providerExplicitMembers.Add(new CodegenTypedParam(typeof(ResultSetProcessorFactory), "rspFactory"));
 	        providerCtor.Block.AssignMember(
 		        MEMBERNAME_RESULTSETPROCESSORFACTORY,
-		        NewInstanceInner(CLASSNAME_RESULTSETPROCESSORFACTORY, Ref("this")));
+		        NewInstanceNamed(CLASSNAME_RESULTSETPROCESSORFACTORY, Ref("this")));
 	    }
 
 	    private static void MakeResultSetProcessor(
@@ -302,7 +308,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	        ctorParams.Add(new CodegenTypedParam(classNameParent, "o"));
 	        ctorParams.Add(new CodegenTypedParam(typeof(OrderByProcessor), "orderByProcessor"));
 	        ctorParams.Add(new CodegenTypedParam(typeof(AggregationService), "aggregationService"));
-	        ctorParams.Add(new CodegenTypedParam(typeof(AgentInstanceContext), "agentInstanceContext"));
+	        ctorParams.Add(new CodegenTypedParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT));
 
 	        // make ctor code
 	        var serviceCtor = new CodegenCtor(typeof(StmtClassForgeableRSPFactoryProvider), classScope, ctorParams);
@@ -410,11 +416,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	            forge.ProcessOutputLimitedJoinCodegen(classScope, processOutputLimitedJoinMethod, instance);
 	        }
 
-	        // Set-Agent-Instance is supported for fire-and-forget queries only
-	        var setAgentInstanceContextMethod = CodegenMethod
+	        // Set-Expr-Evaluator is supported for fire-and-forget queries only
+	        var setExprEvaluatorContextMethod = CodegenMethod
 		        .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-		        .AddParam(typeof(AgentInstanceContext), "context");
-	        setAgentInstanceContextMethod.Block.AssignRef(NAME_AGENTINSTANCECONTEXT, Ref("context"));
+		        .AddParam(typeof(ExprEvaluatorContext), "context");
+	        setExprEvaluatorContextMethod.Block.AssignRef(NAME_EXPREVALCONTEXT, Ref("context"));
 
 	        // Apply-view
 	        var applyViewResultMethod = CodegenMethod
@@ -504,7 +510,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	        CodegenStackGenerator.RecursiveBuildStack(stopMethod, "Stop", innerMethods, innerProperties);
 	        CodegenStackGenerator.RecursiveBuildStack(processOutputLimitedJoinMethod, "ProcessOutputLimitedJoin", innerMethods, innerProperties);
 	        CodegenStackGenerator.RecursiveBuildStack(processOutputLimitedViewMethod, "ProcessOutputLimitedView", innerMethods, innerProperties);
-	        CodegenStackGenerator.RecursiveBuildStack(setAgentInstanceContextMethod, "SetAgentInstanceContext", innerMethods, innerProperties);
+	        CodegenStackGenerator.RecursiveBuildStack(setExprEvaluatorContextMethod, "SetExprEvaluatorContext", innerMethods, innerProperties);
 	        CodegenStackGenerator.RecursiveBuildStack(applyViewResultMethod, "ApplyViewResult", innerMethods, innerProperties);
 	        CodegenStackGenerator.RecursiveBuildStack(applyJoinResultMethod, "ApplyJoinResult", innerMethods, innerProperties);
 	        CodegenStackGenerator.RecursiveBuildStack(processOutputLimitedLastAllNonBufferedViewMethod, "ProcessOutputLimitedLastAllNonBufferedView", innerMethods, innerProperties);
@@ -604,11 +610,25 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		    if (!rollup) {
 			    var name = "SelectExprProcessorImpl";
 			    explicitMembers.Add(new CodegenTypedParam(typeof(SelectExprProcessor), "selectExprProcessor"));
-			    outerClassCtor.Block.AssignRef(
-				    "selectExprProcessor",
-				    CodegenExpressionBuilder.NewInstanceInner(name, Ref("this"), EPStatementInitServicesConstants.REF));
-			    var innerClass = MakeSelectExprProcessor(name, classNameParent, classScope, forges[0]);
-			    innerClasses.Add(innerClass);
+			    var shortcut = false;
+
+			    if (forges[0] is ListenerOnlySelectExprProcessorForge forge) {
+				    shortcut = forge.SyntheticProcessorForge is SelectEvalWildcardNonJoin;
+			    }
+			    
+			    if (shortcut) {
+				    outerClassCtor.Block.AssignRef(
+					    "selectExprProcessor",
+					    NewInstance<SelectEvalWildcardNonJoinImpl>(ExprDotName(EPStatementInitServicesConstants.REF, EPStatementInitServicesConstants.STATEMENTRESULTSERVICE)));
+			    }
+			    else {
+				    outerClassCtor.Block.AssignRef(
+					    "selectExprProcessor",
+					    NewInstanceNamed(name, Ref("this"), EPStatementInitServicesConstants.REF));
+				    var innerClass = MakeSelectExprProcessor(name, classNameParent, classScope, forges[0]);
+				    innerClasses.Add(innerClass);
+			    }
+
 			    return;
 		    }
 
@@ -626,7 +646,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 			    outerClassCtor.Block.AssignArrayElement(
 				    "selectExprProcessorArray",
 				    Constant(i),
-				    CodegenExpressionBuilder.NewInstanceInner("SelectExprProcessorImpl" + i, Ref("this"), EPStatementInitServicesConstants.REF));
+				    NewInstanceNamed("SelectExprProcessorImpl" + i, Ref("this"), EPStatementInitServicesConstants.REF));
 		    }
 	    }
 
@@ -658,17 +678,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
 	        var processMethod = CodegenMethod
 		        .MakeMethod(typeof(EventBean), typeof(StmtClassForgeableRSPFactoryProvider), symbolProvider, classScope)
-		        .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS)
+		        .AddParam(typeof(EventBean[]), NAME_EPS)
 		        .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
 		        .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
-		        .AddParam(typeof(ExprEvaluatorContext), ExprForgeCodegenNames.NAME_EXPREVALCONTEXT);
+		        .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 
 	        processMethod.Block.Apply(
 		        InstrumentationCode.Instblock(
 			        classScope,
 			        "qSelectClause",
 			        REF_EPS,
-			        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+			        ExprForgeCodegenNames.REF_ISNEWDATA,
 			        REF_ISSYNTHESIZE,
 			        REF_EXPREVALCONTEXT));
 	        var performMethod = forge.ProcessCodegen(
@@ -685,7 +705,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 			        InstrumentationCode.Instblock(
 				        classScope,
 				        "aSelectClause",
-				        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+				        ExprForgeCodegenNames.REF_ISNEWDATA,
 				        Ref("@out"),
 				        ConstantNull()))
 		        .MethodReturn(Ref("@out"));

@@ -15,9 +15,11 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.prior;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
@@ -105,6 +107,19 @@ namespace com.espertech.esper.common.@internal.view.core
             get => null;
             set { }
         }
+        
+        public string ContextName => AgentInstanceContext.ContextName;
+
+        public string EPLWhenAvailable => AgentInstanceContext.EPLWhenAvailable;
+
+        public TimeZoneInfo TimeZone => AgentInstanceContext.TimeZone;
+
+        public TimeAbacus TimeAbacus => AgentInstanceContext.TimeAbacus;
+
+        public VariableManagementService VariableManagementService => AgentInstanceContext.VariableManagementService;
+        public string ModuleName => AgentInstanceContext.ModuleName;
+
+        public bool IsWritesToTables => AgentInstanceContext.IsWritesToTables;
 
         public static AgentInstanceViewFactoryChainContext Create(
             ViewFactory[] viewFactoryChain,

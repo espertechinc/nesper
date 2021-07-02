@@ -16,11 +16,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
     /// </summary>
     public class VariantPropResolutionStrategyAny : VariantPropResolutionStrategy
     {
-        private readonly VariantEventType variantEventType;
+        private readonly VariantEventType _variantEventType;
 
         public VariantPropResolutionStrategyAny(VariantEventType variantEventType)
         {
-            this.variantEventType = variantEventType;
+            this._variantEventType = variantEventType;
         }
 
         public VariantPropertyDesc ResolveProperty(
@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
             EventType[] variants)
         {
             // property numbers should start at zero since the serve as array index
-            var propertyGetterCache = variantEventType.VariantPropertyGetterCache;
+            var propertyGetterCache = _variantEventType.VariantPropertyGetterCache;
             propertyGetterCache.AddGetters(propertyName);
-            EventPropertyGetterSPI getter = new VariantEventPropertyGetterAny(variantEventType, propertyName);
+            EventPropertyGetterSPI getter = new VariantEventPropertyGetterAny(_variantEventType, propertyName);
             return new VariantPropertyDesc(typeof(object), getter, true);
         }
     }

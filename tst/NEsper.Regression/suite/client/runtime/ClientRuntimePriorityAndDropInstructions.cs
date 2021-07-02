@@ -34,42 +34,42 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithAddRemoveStmts(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeAddRemoveStmts());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPriority(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimePriority());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowDrop(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeNamedWindowDrop());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowPriority(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeNamedWindowPriority());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSchedulingDrop(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSchedulingDrop());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSchedulingPriority(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSchedulingPriority());
             return execs;
         }

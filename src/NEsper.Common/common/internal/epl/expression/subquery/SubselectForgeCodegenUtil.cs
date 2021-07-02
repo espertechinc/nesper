@@ -38,15 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public class ReturnIfNoMatch : TriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>
         {
-            private readonly CodegenExpression valueIfNull;
-            private readonly CodegenExpression valueIfEmpty;
+            private readonly CodegenExpression _valueIfNull;
+            private readonly CodegenExpression _valueIfEmpty;
 
             public ReturnIfNoMatch(
                 CodegenExpression valueIfNull,
                 CodegenExpression valueIfEmpty)
             {
-                this.valueIfNull = valueIfNull;
-                this.valueIfEmpty = valueIfEmpty;
+                this._valueIfNull = valueIfNull;
+                this._valueIfEmpty = valueIfEmpty;
             }
 
             public void Accept(
@@ -56,9 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             {
                 CodegenExpression matching = symbols.GetAddMatchingEvents(method);
                 block.IfCondition(EqualsNull(matching))
-                    .BlockReturn(valueIfNull)
+                    .BlockReturn(_valueIfNull)
                     .IfCondition(ExprDotMethod(matching, "IsEmpty"))
-                    .BlockReturn(valueIfEmpty);
+                    .BlockReturn(_valueIfEmpty);
             }
         }
     }

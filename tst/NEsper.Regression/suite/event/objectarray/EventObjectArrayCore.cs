@@ -6,18 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
@@ -87,29 +91,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 Assert.AreEqual(EventTypeApplicationType.OBJECTARR, type.Metadata.ApplicationType);
                 Assert.AreEqual("MyObjectArrayEvent", type.Metadata.Name);
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("MyInt", typeof(int?), null, false, false, false, false, false),
-                        new EventPropertyDescriptor(
-                            "MyString",
-                            typeof(string),
-                            typeof(char),
-                            false,
-                            false,
-                            true,
-                            false,
-                            false),
-                        new EventPropertyDescriptor(
-                            "beanA",
-                            typeof(SupportBeanComplexProps),
-                            null,
-                            false,
-                            false,
-                            false,
-                            false,
-                            true)
-                    },
-                    type.PropertyDescriptors);
+                SupportEventPropUtil.AssertPropsEquals(
+                    type.PropertyDescriptors.ToArray(),
+                    new SupportEventPropDesc("myInt", typeof(int?)),
+                    new SupportEventPropDesc("myString", typeof(string)),
+                    new SupportEventPropDesc("beanA", typeof(SupportBeanComplexProps)).WithFragment());
             }
         }
 

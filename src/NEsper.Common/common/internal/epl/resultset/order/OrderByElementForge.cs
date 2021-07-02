@@ -12,8 +12,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 {
     public class OrderByElementForge
     {
-        private ExprNode exprNode;
-        private bool isDescending;
+        private readonly ExprNode exprNode;
+        private readonly bool isDescending;
 
         public OrderByElementForge(
             ExprNode exprNode,

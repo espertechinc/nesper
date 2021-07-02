@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             ExprNode[] parameters,
             ExprValidationContext validationContext)
         {
-            this._aggregationMethodName = aggregationMethodName;
-            this._parameters = parameters;
-            this._validationContext = validationContext;
+            _aggregationMethodName = aggregationMethodName;
+            _parameters = parameters;
+            _validationContext = validationContext;
         }
 
         /// <summary>

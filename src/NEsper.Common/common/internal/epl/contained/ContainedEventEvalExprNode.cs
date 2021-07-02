@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             EPStatementInitServices initServices)
         {
             this.evaluator = evaluator;
-            this.eventBeanFactory = EventTypeUtility.GetFactoryForType(
+            eventBeanFactory = EventTypeUtility.GetFactoryForType(
                 eventType,
                 initServices.EventBeanTypedEventFactory,
                 initServices.EventTypeAvroHandler);

@@ -17,16 +17,16 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 {
     public class MergeView : ViewSupport
     {
-        private readonly GroupByView groupByView;
-        private readonly ICollection<View> parentViews;
+        private readonly GroupByView _groupByView;
+        private readonly ICollection<View> _parentViews;
 
         public MergeView(
             GroupByView groupByView,
             EventType eventType)
         {
-            this.groupByView = groupByView;
+            this._groupByView = groupByView;
             EventType = eventType;
-            parentViews = new List<View>(4);
+            _parentViews = new List<View>(4);
         }
 
         public override EventType EventType { get; }
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             EventBean[] newData,
             EventBean[] oldData)
         {
-            groupByView.Child.Update(newData, oldData);
+            _groupByView.Child.Update(newData, oldData);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             // The merge data view has multiple parent views which are AddPropertyValueView
             ArrayDeque<IEnumerable<EventBean>> iterables = new ArrayDeque<IEnumerable<EventBean>>();
 
-            foreach (var dataView in parentViews) {
+            foreach (var dataView in _parentViews) {
                 iterables.Add(dataView);
             }
 
@@ -52,12 +52,12 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public void RemoveParentView(View parentView)
         {
-            parentViews.Remove(parentView);
+            _parentViews.Remove(parentView);
         }
 
         public void AddParentView(View parentView)
         {
-            parentViews.Add(parentView);
+            _parentViews.Add(parentView);
         }
     }
 } // end of namespace

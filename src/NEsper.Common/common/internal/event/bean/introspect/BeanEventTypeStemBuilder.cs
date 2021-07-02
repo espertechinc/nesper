@@ -13,6 +13,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.core;
@@ -71,7 +72,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             foreach (var desc in properties) {
                 var propertyName = desc.PropertyName;
                 Type underlyingType = null;
-                Type componentType = null;
                 bool isRequiresIndex = false;
                 bool isRequiresMapkey = false;
                 bool isIndexed = false;
@@ -107,87 +107,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
                     isSimple = true;
                     isFragment = underlyingType.IsFragmentableType();
-
-#if false
-                    if (TypeHelper.IsImplementsInterface(type, typeof(IDictionary<object, object>))) {
-                        isMapped = true;
-                        // We do not yet allow to fragment maps entries.
-                        // Class genericType = TypeHelper.getGenericReturnTypeMap(desc.getReadMethod(), desc.getAccessorField());
-                        isFragment = false;
-
-                        if (desc.ReadMethod != null) {
-                            componentType = TypeHelper.GetGenericReturnTypeMap(desc.ReadMethod, false);
-                        }
-                        else if (desc.AccessorProp != null) {
-                            componentType = TypeHelper.GetGenericPropertyTypeMap(desc.AccessorProp, false);
-                        }
-                        else if (desc.AccessorField != null) {
-                            componentType = TypeHelper.GetGenericFieldTypeMap(desc.AccessorField, false);
-                        }
-                        else {
-                            componentType = typeof(object);
-                        }
-                    }
-                    else if (type.IsArray) {
-                        isIndexed = true;
-                        isFragment = type.GetElementType().IsFragmentableType();
-                        componentType = type.GetElementType();
-                    }
-                    else if (type.IsGenericEnumerable()) {
-                        isIndexed = true;
-                        var genericType = TypeHelper.GetGenericReturnType(
-                            desc.ReadMethod,
-                            desc.AccessorField,
-                            desc.AccessorProp,
-                            true);
-                        isFragment = genericType.IsFragmentableType();
-                        if (genericType != null) {
-                            componentType = genericType;
-                        }
-                        else {
-                            componentType = typeof(object);
-                        }
-                    }
-                    else {
-                        isMapped = false;
-                        isFragment = type.IsFragmentableType();
-                    }
-#endif
-
                     simpleProperties.Put(propertyName, new PropertyInfo(underlyingType, getter, desc));
                 }
 
                 // MAPPED
 
                 if (desc.PropertyType.IsMapped()) {
-                    // Local function: CheckComponentType
-                    void CheckComponentType()
-                    {
-                        if (underlyingType.IsGenericDictionary()) {
-                            componentType = underlyingType.GetDictionaryValueType();
-                        }
-                    }
-
-
                     underlyingType = desc.ReturnType;
-                    componentType = typeof(object);
 
                     if (desc.ReadMethod != null) {
                         isRequiresMapkey = desc.ReadMethod.GetParameters().Length > 0;
                         if (isRequiresMapkey) {
-                            componentType = desc.ReadMethod.GetParameters()[0].ParameterType;
-                        }
-                        else {
-                            CheckComponentType();
+                            //componentType = desc.ReadMethod.GetParameters()[0].ParameterType;
                         }
                     }
                     else if (desc.AccessorProp != null) {
                         isRequiresMapkey = false; // not required, you can "get" the property
-                        CheckComponentType();
                     }
                     else if (desc.AccessorField != null) {
                         isRequiresMapkey = false; // not required, you can "get" the property
-                        CheckComponentType();
                     }
                     else {
                         throw new IllegalStateException($"invalid property descriptor: {desc}");
@@ -207,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     {
                         if (underlyingType.IsArray) {
                             isFragment = underlyingType.GetElementType().IsFragmentableType();
-                            componentType = underlyingType.GetElementType();
+                            //componentType = underlyingType.GetElementType();
                         }
                         else if (underlyingType.IsGenericEnumerable()) {
                             var genericType = TypeHelper.GetGenericReturnType(
@@ -216,11 +154,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                                 desc.AccessorProp,
                                 true);
                             isFragment = genericType.IsFragmentableType();
-                            componentType = genericType != null ? genericType : typeof(object);
+                            //componentType = genericType != null ? genericType : typeof(object);
                         }
                         else {
                             isFragment = false;
-                            componentType = typeof(object);
+                            //componentType = typeof(object);
                         }
                     }
 
@@ -318,7 +256,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 var descriptor = new EventPropertyDescriptor(
                     desc.PropertyName,
                     underlyingType,
-                    componentType,
                     isRequiresIndex,
                     isRequiresMapkey,
                     isIndexed,
@@ -372,7 +309,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             var interfaces = clazz.GetInterfaces();
             superclasses.AddAll(interfaces);
 
-            // Build super types, ignoring platformtypes
+            // Build super types, ignoring platform types
             IList<Type> superTypes = new List<Type>();
             foreach (var superclass in superclasses) {
                 if (superclass.Namespace != "System") {

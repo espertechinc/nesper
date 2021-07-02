@@ -43,35 +43,35 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
         public static IList<RegressionExecution> WithJsonEventType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderJsonEventType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEnquote(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderEnquote());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEmptyMap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderEmptyMap());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMapAndNestedArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderMapAndNestedArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRenderSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderRenderSimple());
             return execs;
         }

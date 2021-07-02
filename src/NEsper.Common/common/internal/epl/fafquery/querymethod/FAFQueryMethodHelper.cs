@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     {
         protected internal static void ValidateFAFQuery(StatementSpecCompiled statementSpec)
         {
-            for (int i = 0; i < statementSpec.StreamSpecs.Length; i++) {
-                StreamSpecCompiled streamSpec = statementSpec.StreamSpecs[i];
+            for (var i = 0; i < statementSpec.StreamSpecs.Length; i++) {
+                var streamSpec = statementSpec.StreamSpecs[i];
                 if (!(streamSpec is NamedWindowConsumerStreamSpec || streamSpec is TableQueryStreamSpec)) {
                     throw new ExprValidationException(
                         "On-demand queries require tables or named windows and do not allow event streams or patterns");

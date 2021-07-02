@@ -12,6 +12,7 @@ using System.Threading;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -54,28 +55,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
         public static IList<RegressionExecution> WithExpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetExpression());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetArrayInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayBoxed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetArrayBoxed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayAtIndex(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetArrayAtIndex(false));
             execs.Add(new EPLVariableOnSetArrayAtIndex(true));
             return execs;
@@ -83,91 +84,91 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
         public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetSubqueryMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRuntimeOrderMultiple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetRuntimeOrderMultiple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAssignmentOrderDup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetAssignmentOrderDup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAssignmentOrderNoDup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetAssignmentOrderNoDup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWDeploy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetWDeploy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWithFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetWithFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithObjectModel(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetObjectModel());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSimpleSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetSimpleSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLVariableOnSetSimple());
             return execs;
         }
@@ -324,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var eplCreate = "@Name('vars') @public create variable double[primitive] doublearray = new double[3];\n" +
                                 "@public create variable String[] stringarray = new String[] {'a', 'b', 'c'};\n";
                 env.CompileDeploy(eplCreate, path);
-                var epl = "on SupportBean set doublearray[IntPrimitive] = 1, stringarray[IntPrimitive] = 'x'";
+                var epl = "on SupportBean set (doublearray[IntPrimitive])=1, (stringarray[IntPrimitive])=\"x\"";
                 env.CompileDeploy(soda, epl, path);
                 AssertVariables(env, new double[3], "a,b,c".SplitCsv());
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -489,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy(model, path).AddListener("set");
                 Assert.AreEqual(stmtTextSet, model.ToEPL());
                 var typeSet = env.Statement("set").EventType;
-                Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1OM"));
+                Assert.AreEqual(typeof(double), typeSet.GetPropertyType("var1OM"));
                 Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2OM"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                 var fieldsVar = new string[] {"var1OM", "var2OM"};
@@ -580,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var stmtTextSet = "@Name('set') on SupportBean set var1C=IntPrimitive, var2C=IntBoxed";
                 env.EplToModelCompileDeploy(stmtTextSet).AddListener("set");
                 var typeSet = env.Statement("set").EventType;
-                Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1C"));
+                Assert.AreEqual(typeof(double), typeSet.GetPropertyType("var1C"));
                 Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2C"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                 var fieldsVar = new string[] {"var1C", "var2C"};
@@ -681,7 +682,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("set"), fieldsVar, new object[][] {new object[] {"begin", true, "value"}});
                 var typeSet = env.Statement("set").EventType;
                 Assert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_1"));
-                Assert.AreEqual(typeof(bool?), typeSet.GetPropertyType("papi_2"));
+                Assert.AreEqual(typeof(bool), typeSet.GetPropertyType("papi_2"));
                 Assert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_3"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                 Array.Sort(typeSet.PropertyNames);
@@ -757,11 +758,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var3IS = 'abc'",
-                    "Failed to validate assignment expression 'var3IS=\"abc\"': Variable 'var3IS' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String");
+                    "Failed to validate assignment expression 'var3IS=\"abc\"': Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.String");
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var3IS = DoublePrimitive",
-                    "Failed to validate assignment expression 'var3IS=DoublePrimitive': Variable 'var3IS' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.Nullable<System.Double>");
+                    "Failed to validate assignment expression 'var3IS=DoublePrimitive': Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.Nullable<System.Double>");
                 TryInvalidCompile(env, "on SupportBean set var2IS = 'false'", "skip");
                 TryInvalidCompile(env, "on SupportBean set var3IS = 1.1", "skip");
                 TryInvalidCompile(env, "on SupportBean set var3IS = 22222222222222", "skip");

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set { eventType = value; }
         }
 
         private string GetViewParamMessage()
@@ -46,12 +46,12 @@ namespace com.espertech.esper.common.@internal.view.firsttime
         }
 
         public TimePeriodCompute TimePeriodCompute {
-            set { this.timePeriodCompute = value; }
+            set { timePeriodCompute = value; }
         }
 
         public int ScheduleCallbackId {
             get => scheduleCallbackId;
-            set { this.scheduleCallbackId = value; }
+            set { scheduleCallbackId = value; }
         }
 
         public string ViewName {

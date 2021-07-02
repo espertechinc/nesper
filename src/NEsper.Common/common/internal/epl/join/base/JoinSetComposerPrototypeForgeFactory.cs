@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -163,6 +164,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             IList<StmtClassForgeableFactory> multikeyForgeables = PlanMultikeys(
                 indexSpecs, statementRawInfo, compileTimeServices);
             additionalForgeables.AddAll(multikeyForgeables);
+            
+            // plan objectsettings
+            PlanStateMgmtSettings(indexSpecs, statementRawInfo, compileTimeServices);
 
             QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(
                 spec.Annotations,
@@ -229,6 +233,23 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                 }
             }
             return multiKeyForgeables;
+        }
+
+        private static void PlanStateMgmtSettings(
+            QueryPlanIndexForge[] indexSpecs,
+            StatementRawInfo raw,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            foreach (QueryPlanIndexForge spec in indexSpecs) {
+                if (spec == null) {
+                    continue;
+                }
+
+                foreach (var entry in spec.Items) {
+                    var forge = entry.Value;
+                    forge.PlanStateMgmtSettings(raw, compileTimeServices);
+                }
+            }
         }
 
         private static JoinSetComposerPrototypeHistorical2StreamDesc MakeComposerHistorical2Stream(

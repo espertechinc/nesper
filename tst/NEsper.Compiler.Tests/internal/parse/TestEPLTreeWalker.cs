@@ -154,7 +154,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			string type,
 			bool isArray)
 		{
-			var clazz = ClassIdentifierWArray.ParseSODA(element.Type);
+			var clazz = ClassDescriptor.ParseTypeText(element.Type);
 			Assert.AreEqual(name, element.Name);
 			Assert.AreEqual(type, clazz.ClassIdentifier);
 			Assert.AreEqual(isArray, clazz.ArrayDimensions > 0);

@@ -22,11 +22,11 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// </summary>
     public class SizeView : ViewSupport
     {
-        private readonly StatViewAdditionalPropsEval additionalProps;
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly EventType eventType;
-        private readonly SizeViewFactory sizeViewFactory;
-        private EventBean lastSizeEvent;
+        private readonly StatViewAdditionalPropsEval _additionalProps;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly EventType _eventType;
+        private readonly SizeViewFactory _sizeViewFactory;
+        private EventBean _lastSizeEvent;
         protected internal object[] lastValuesEventNew;
         protected internal long size;
 
@@ -36,32 +36,32 @@ namespace com.espertech.esper.common.@internal.view.derived
             EventType eventType,
             StatViewAdditionalPropsEval additionalProps)
         {
-            this.sizeViewFactory = sizeViewFactory;
-            this.agentInstanceContext = agentInstanceContext;
-            this.eventType = eventType;
-            this.additionalProps = additionalProps;
+            this._sizeViewFactory = sizeViewFactory;
+            this._agentInstanceContext = agentInstanceContext;
+            this._eventType = eventType;
+            this._additionalProps = additionalProps;
         }
 
-        public override EventType EventType => eventType;
+        public override EventType EventType => _eventType;
 
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, sizeViewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(sizeViewFactory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _sizeViewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_sizeViewFactory, newData, oldData);
 
             var priorSize = size;
 
             // If we have child views, keep a reference to the old values, so we can update them as old data event.
             EventBean oldDataMap = null;
-            if (lastSizeEvent == null) {
+            if (_lastSizeEvent == null) {
                 if (child != null) {
                     IDictionary<string, object> postOldData = new Dictionary<string, object>();
-                    postOldData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), priorSize);
+                    postOldData.Put(ViewFieldEnum.SIZE_VIEW_SIZE.GetName(), priorSize);
                     AddProperties(postOldData);
                     oldDataMap =
-                        agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(postOldData, eventType);
+                        _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(postOldData, _eventType);
                 }
             }
 
@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             if (newData != null) {
                 size += newData.Length;
 
-                if (additionalProps != null && newData.Length != 0) {
-                    var additionalEvals = additionalProps.AdditionalEvals;
+                if (_additionalProps != null && newData.Length != 0) {
+                    var additionalEvals = _additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                             .Evaluate(
                                 new[] {newData[newData.Length - 1]},
                                 true,
-                                agentInstanceContext);
+                                _agentInstanceContext);
                     }
                 }
             }
@@ -92,14 +92,14 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If there are child views, fireStatementStopped update method
             if (child != null && priorSize != size) {
                 IDictionary<string, object> postNewData = new Dictionary<string, object>();
-                postNewData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), size);
+                postNewData.Put(ViewFieldEnum.SIZE_VIEW_SIZE.GetName(), size);
                 AddProperties(postNewData);
                 EventBean newEvent =
-                    agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(postNewData, eventType);
+                    _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(postNewData, _eventType);
 
                 EventBean[] oldEvents;
-                if (lastSizeEvent != null) {
-                    oldEvents = new[] {lastSizeEvent};
+                if (_lastSizeEvent != null) {
+                    oldEvents = new[] {_lastSizeEvent};
                 }
                 else {
                     oldEvents = new[] {oldDataMap};
@@ -107,22 +107,22 @@ namespace com.espertech.esper.common.@internal.view.derived
 
                 EventBean[] newEvents = {newEvent};
 
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(sizeViewFactory, newEvents, oldEvents);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_sizeViewFactory, newEvents, oldEvents);
                 child.Update(newEvents, oldEvents);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
-                lastSizeEvent = newEvent;
+                _lastSizeEvent = newEvent;
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
             var current = new Dictionary<string, object>();
-            current.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), size);
+            current.Put(ViewFieldEnum.SIZE_VIEW_SIZE.GetName(), size);
             AddProperties(current);
-            var eventBean = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(current, eventType);
+            var eventBean = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(current, _eventType);
             if (eventBean != null) {
                 yield return eventBean;
             }
@@ -139,17 +139,17 @@ namespace com.espertech.esper.common.@internal.view.derived
             int streamNum)
         {
             var schemaMap = new LinkedHashMap<string, object>();
-            schemaMap.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), typeof(long));
+            schemaMap.Put(ViewFieldEnum.SIZE_VIEW_SIZE.GetName(), typeof(long));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
                 schemaMap,
                 additionalProps,
-                ViewFieldEnum.SIZE_VIEW__SIZE);
+                ViewFieldEnum.SIZE_VIEW_SIZE);
             return DerivedViewTypeUtil.NewType("sizeview", schemaMap, env, streamNum);
         }
 
         private void AddProperties(IDictionary<string, object> newDataMap)
         {
-            additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
+            _additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
         }
     }
 } // end of namespace

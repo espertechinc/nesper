@@ -41,10 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
-            return vdw.GetSubordinateLookupStrategy(this, agentInstanceContext);
+            return vdw.GetSubordinateLookupStrategy(this, exprEvaluatorContext);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(LookupStrategyType.VDW);

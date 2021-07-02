@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             IEnumerable<EventBean> iterable)
         {
             this.joinExpr = joinExpr;
-            this.eventsPerStream = new EventBean[2];
-            this.iterableEvents = iterable;
+            eventsPerStream = new EventBean[2];
+            iterableEvents = iterable;
         }
 
         public EventBean[] Lookup(
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
     }
 } // end of namespace

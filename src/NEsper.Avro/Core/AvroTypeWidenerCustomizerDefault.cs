@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -28,7 +29,11 @@ namespace NEsper.Avro.Core
             string writeablePropertyName,
             string statementName)
         {
-            if (columnType != null && columnType.IsArray) {
+            if (columnType.IsNullTypeSafe() || writeablePropertyType.IsNullTypeSafe()) {
+                return null;
+            }
+            
+            if (columnType.IsArray) {
                 if (!writeablePropertyType.IsArray && writeablePropertyType.IsGenericCollection()) {
                     return TypeWidenerFactory.GetArrayToCollectionCoercer(columnType.GetElementType());
                 }

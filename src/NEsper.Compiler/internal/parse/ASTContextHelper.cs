@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
@@ -257,7 +258,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                     inclusive = true;
                 }
 
-                return new ContextSpecConditionPattern(evalNode, inclusive, immediate);
+                var streamName = ctx.keywordAllowedIdent() == null ? null : ctx.keywordAllowedIdent().GetText();
+                return new ContextSpecConditionPattern(evalNode, inclusive, immediate, streamName);
             }
 
             if (ctx.createContextFilter() != null)

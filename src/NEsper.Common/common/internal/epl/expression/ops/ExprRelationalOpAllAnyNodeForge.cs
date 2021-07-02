@@ -30,9 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             RelationalOpEnumComputer computer,
             bool hasCollectionOrArray)
         {
-            this._parent = parent;
-            this._computer = computer;
-            this._hasCollectionOrArray = hasCollectionOrArray;
+            _parent = parent;
+            _computer = computer;
+            _hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEvaluator ExprEvaluator {

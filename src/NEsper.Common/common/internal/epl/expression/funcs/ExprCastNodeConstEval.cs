@@ -13,15 +13,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCastNodeConstEval : ExprEvaluator
     {
-        private readonly ExprCastNode parent;
-        private readonly object theConstant;
+        private readonly ExprCastNode _parent;
+        private readonly object _theConstant;
 
         public ExprCastNodeConstEval(
             ExprCastNode parent,
             object theConstant)
         {
-            this.parent = parent;
-            this.theConstant = theConstant;
+            this._parent = parent;
+            this._theConstant = theConstant;
         }
 
         public object Evaluate(
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return theConstant;
+            return _theConstant;
         }
     }
 } // end of namespace

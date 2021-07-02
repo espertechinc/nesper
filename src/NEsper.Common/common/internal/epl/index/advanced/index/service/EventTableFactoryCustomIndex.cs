@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.lookup;
 
@@ -17,9 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 {
     public class EventTableFactoryCustomIndex : EventTableFactory
     {
-        internal readonly EventType eventType;
-        internal readonly EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc;
-        internal readonly EventTableOrganization organization;
+        private readonly EventType eventType;
+        private readonly EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc;
+        private readonly EventTableOrganization organization;
 
         public EventTableFactoryCustomIndex(
             string indexName,
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         {
             this.eventType = eventType;
             this.advancedIndexProvisionDesc = advancedIndexProvisionDesc;
-            this.organization = new EventTableOrganization(
+            organization = new EventTableOrganization(
                 indexName,
                 unique,
                 false,
@@ -44,11 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         }
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
             AdvancedIndexConfigContextPartition configCP = advancedIndexProvisionDesc.Factory.ConfigureContextPartition(
-                agentInstanceContext,
+                exprEvaluatorContext,
                 eventType,
                 advancedIndexProvisionDesc,
                 organization);
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name +
+            return GetType().Name +
                    " streamNum=" +
                    organization.StreamNum +
                    " indexName=" +

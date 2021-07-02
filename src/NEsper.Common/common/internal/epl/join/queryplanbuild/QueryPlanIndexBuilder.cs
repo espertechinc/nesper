@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.epl.join.hint;
@@ -354,7 +355,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                             continue;
                         }
 
-                        var coercionType = keys[0].Forge.EvaluationType; // for in-comparison the same type is required
+                        var coercionType = keys[0].Forge.EvaluationType.TypeNormalized(); // for in-comparison the same type is required
                         inKeywordSingleIdxProp = new SubordPropInKeywordSingleIndex(key, coercionType, keys);
                     }
 
@@ -363,7 +364,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         QueryGraphValuePairInKWMultiIdx multi = inkwMultis[0];
                         inKeywordMultiIdxProp = new SubordPropInKeywordMultiIndex(
                             ExprNodeUtilityQuery.GetIdentResolvedPropertyNames(multi.Indexed),
-                            multi.Indexed[0].Forge.EvaluationType,
+                            multi.Indexed[0].Forge.EvaluationType.TypeNormalized(),
                             multi.Key.KeyExpr);
                     }
 

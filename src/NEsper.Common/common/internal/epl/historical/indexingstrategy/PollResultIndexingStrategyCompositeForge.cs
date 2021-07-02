@@ -21,13 +21,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyCompositeForge : PollResultIndexingStrategyForge
     {
-        private readonly EventType eventType;
-        private readonly Type[] optHashCoercedTypes;
-        private readonly string[] optHashPropertyNames;
-        private readonly MultiKeyClassRef optHashMultiKeyClasses;
-        private readonly string[] rangeProps;
-        private readonly Type[] rangeTypes;
-        private readonly int streamNum;
+        private readonly EventType _eventType;
+        private readonly Type[] _optHashCoercedTypes;
+        private readonly string[] _optHashPropertyNames;
+        private readonly MultiKeyClassRef _optHashMultiKeyClasses;
+        private readonly string[] _rangeProps;
+        private readonly Type[] _rangeTypes;
+        private readonly int _streamNum;
 
         public PollResultIndexingStrategyCompositeForge(
             int streamNum,
@@ -38,13 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             string[] rangeProps,
             Type[] rangeTypes)
         {
-            this.streamNum = streamNum;
-            this.eventType = eventType;
-            this.optHashPropertyNames = optHashPropertyNames;
-            this.optHashCoercedTypes = optHashCoercedTypes;
-            this.optHashMultiKeyClasses = optHashMultiKeyClasses;
-            this.rangeProps = rangeProps;
-            this.rangeTypes = rangeTypes;
+            this._streamNum = streamNum;
+            this._eventType = eventType;
+            this._optHashPropertyNames = optHashPropertyNames;
+            this._optHashCoercedTypes = optHashCoercedTypes;
+            this._optHashMultiKeyClasses = optHashMultiKeyClasses;
+            this._rangeProps = rangeProps;
+            this._rangeTypes = rangeTypes;
         }
 
         public string ToQueryPlan()
@@ -60,29 +60,29 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyComposite), GetType(), classScope);
 
             var hashGetter = ConstantNull();
-            if (optHashPropertyNames != null) {
-                var propertyGetters = EventTypeUtility.GetGetters(eventType, optHashPropertyNames);
-                var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, optHashPropertyNames);
+            if (_optHashPropertyNames != null) {
+                var propertyGetters = EventTypeUtility.GetGetters(_eventType, _optHashPropertyNames);
+                var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, _optHashPropertyNames);
                 hashGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
-                    eventType,
+                    _eventType,
                     propertyGetters,
                     propertyTypes,
-                    optHashCoercedTypes,
-                    optHashMultiKeyClasses,
+                    _optHashCoercedTypes,
+                    _optHashMultiKeyClasses,
                     method,
                     classScope);
             }
 
             method.Block.DeclareVar<EventPropertyValueGetter[]>(
                 "rangeGetters",
-                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(rangeProps.Length)));
-            for (var i = 0; i < rangeProps.Length; i++) {
-                var propertyType = eventType.GetPropertyType(rangeProps[i]);
-                var getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(rangeProps[i]);
+                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(_rangeProps.Length)));
+            for (var i = 0; i < _rangeProps.Length; i++) {
+                var propertyType = _eventType.GetPropertyType(_rangeProps[i]);
+                var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(_rangeProps[i]);
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
                     getterSPI,
                     propertyType,
-                    rangeTypes[i],
+                    _rangeTypes[i],
                     method,
                     GetType(),
                     classScope);
@@ -93,12 +93,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 .DeclareVar<PollResultIndexingStrategyComposite>(
                     "strat",
                     NewInstance(typeof(PollResultIndexingStrategyComposite)))
-                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("strat"), "OptionalKeyedProps", Constant(optHashPropertyNames))
-                .SetProperty(Ref("strat"), "OptKeyCoercedTypes", Constant(optHashCoercedTypes))
+                .SetProperty(Ref("strat"), "StreamNum", Constant(_streamNum))
+                .SetProperty(Ref("strat"), "OptionalKeyedProps", Constant(_optHashPropertyNames))
+                .SetProperty(Ref("strat"), "OptKeyCoercedTypes", Constant(_optHashCoercedTypes))
                 .SetProperty(Ref("strat"), "HashGetter", hashGetter)
-                .SetProperty(Ref("strat"), "RangeProps", Constant(rangeProps))
-                .SetProperty(Ref("strat"), "OptRangeCoercedTypes", Constant(rangeTypes))
+                .SetProperty(Ref("strat"), "RangeProps", Constant(_rangeProps))
+                .SetProperty(Ref("strat"), "OptRangeCoercedTypes", Constant(_rangeTypes))
                 .SetProperty(Ref("strat"), "RangeGetters", Ref("rangeGetters"))
                 .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));

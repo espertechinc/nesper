@@ -78,8 +78,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
-            if (contextPartitionSelector is ContextPartitionSelectorCategory) {
-                var category = (ContextPartitionSelectorCategory) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorCategory category) {
                 if (category.Labels == null || category.Labels.IsEmpty()) {
                     return;
                 }
@@ -104,8 +103,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 return;
             }
 
-            if (contextPartitionSelector is ContextPartitionSelectorFiltered) {
-                var filter = (ContextPartitionSelectorFiltered) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorFiltered filter) {
                 var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 if (ids != null) {
                     var count = -1;
@@ -141,8 +139,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 return;
             }
 
-            if (contextPartitionSelector is ContextPartitionSelectorById) {
-                var byId = (ContextPartitionSelectorById) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorById byId) {
                 var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 foreach (var id in ids) {
                     if (byId.ContextPartitionIds.Contains(id)) {

@@ -183,8 +183,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			Assert.IsNotNull(eventType.GetGetter("MyInt"));
 			Assert.IsTrue(eventType.IsProperty("MyInt"));
 			Assert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
-			Assert.AreEqual(
-				new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
+			SupportEventPropUtil.AssertPropEquals(
+				new SupportEventPropDesc("MyString", typeof(string))
+					.WithIndexed()
+					.WithComponentType(typeof(char)),
 				eventType.GetPropertyDescriptor("MyString"));
 		}
 

@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         {
             MaxAgeSec = maxAgeSec;
             PurgeIntervalSec = purgeIntervalSec;
-            this._agentInstanceContext = agentInstanceContext;
-            this._scheduleSlot = scheduleSlot;
+            _agentInstanceContext = agentInstanceContext;
+            _scheduleSlot = scheduleSlot;
 
             if (cacheReferenceType == CacheReferenceType.HARD) {
                 _cache = new Dictionary<object, Item>()

@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			execs.Add(new ExprEnumAverageEvents());
 			execs.Add(new ExprEnumAverageScalar());
 			execs.Add(new ExprEnumAverageScalarMore());
-			execs.Add(new ExprEnumInvalid());
+			execs.Add(new ExprEnumAverageInvalid());
 			return execs;
 		}
 
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+				var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_Container");
 				builder.WithExpression(fields[0], "Beans.average(x => IntBoxed)");
 				builder.WithExpression(fields[1], "Beans.average(x => DoubleBoxed)");
@@ -45,27 +45,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[5], "Beans.average( (x, i) => DecimalBoxed + i*10)");
 				builder.WithExpression(fields[6], "Beans.average( (x, i, s) => IntBoxed + i*10 + s*100)");
 				builder.WithExpression(fields[7], "Beans.average( (x, i, s) => DecimalBoxed + i*10 + s*100)");
+				builder.WithExpression(fields[8], "Beans.average( (x, i, s) => case when i = 1 then null else 2 end)");
 
 				builder.WithStatementConsumer(
-					stmt => AssertTypes(
+					stmt => SupportEventPropUtil.AssertTypes(
 						stmt.EventType,
 						fields,
 						new[] {
 							typeof(double?), typeof(double?), typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?), typeof(double?),
-							typeof(decimal?)
+							typeof(decimal?), typeof(double?)
 						}));
 
 				builder.WithAssertion(new SupportBean_Container(null))
-					.Expect(fields, null, null, null, null, null, null, null, null);
+					.Expect(fields, null, null, null, null, null, null, null, null, null);
 
 				builder.WithAssertion(new SupportBean_Container(EmptyList<SupportBean>.Instance))
-					.Expect(fields, null, null, null, null, null, null, null, null);
+					.Expect(fields, null, null, null, null, null, null, null, null, null);
 
 				var listOne = new List<SupportBean>() {
 					Make(2, 3d, 4L, 5)
 				};
 				builder.WithAssertion(new SupportBean_Container(listOne))
-					.Expect(fields, 2d, 3d, 4d, 5.0m, 2d, 5.0m, 102d, 105.0m);
+					.Expect(fields, 2d, 3d, 4d, 5.0m, 2d, 5.0m, 102d, 105.0m, 2.0d);
 
 				var listTwo = new List<SupportBean>() {
 					Make(2, 3d, 4L, 5),
@@ -81,7 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 						(2 + 14) / 2d,
 						(5m + 20m) / 2m,
 						(202 + 214) / 2d,
-						(205m + 220m) / 2m);
+						(205m + 220m) / 2m,
+						2.0d);
 
 				builder.Run(env);
 			}
@@ -96,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Intvals.average()");
 				builder.WithExpression(fields[1], "Bdvals.average()");
 
-				builder.WithStatementConsumer(stmt => AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(double?), typeof(decimal?)}));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(double?), typeof(decimal?)}));
 
 				builder.WithAssertion(SupportCollection.MakeNumeric("1,2,3")).Expect(fields, 2d, 2m);
 
@@ -112,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Strvals.average(v => extractNum(v))");
 				builder.WithExpression(fields[1], "Strvals.average(v => extractDecimal(v))");
@@ -120,12 +122,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[3], "Strvals.average( (v, i) => extractDecimal(v) + i*10)");
 				builder.WithExpression(fields[4], "Strvals.average( (v, i, s) => extractNum(v) + i*10 + s*100)");
 				builder.WithExpression(fields[5], "Strvals.average( (v, i, s) => extractDecimal(v) + i*10 + s*100)");
+				builder.WithExpression(fields[6], "Strvals.average( (v, i, s) => case when i = 1 then null else 2 end)");
 
 				builder.WithStatementConsumer(
-					stmt => AssertTypes(
+					stmt => SupportEventPropUtil.AssertTypes(
 						stmt.EventType,
 						fields,
-						new[] {typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?)}));
+						new[] {typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?), typeof(double?)}));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Expect(
@@ -135,20 +138,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 						(2 + 11 + 25 + 34) / 4d,
 						(2 + 11 + 25 + 34) / 4m,
 						(402 + 411 + 425 + 434) / 4d,
-						(402 + 411 + 425 + 434) / 4m);
+						(402 + 411 + 425 + 434) / 4m,
+						2.0d);
 
 				builder.WithAssertion(SupportCollection.MakeString("E1"))
-					.Expect(fields, 1d, 1m, 1d, 1m, 101d, 101m);
+					.Expect(fields, 1d, 1m, 1d, 1m, 101d, 101m, 2.0d);
 
-				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null, null, null);
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null, null, null, null);
 
-				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null, null, null);
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null, null, null, null);
 
 				builder.Run(env);
 			}
 		}
 
-		internal class ExprEnumInvalid : RegressionExecution
+		internal class ExprEnumAverageInvalid : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
@@ -167,6 +171,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"Failed to validate select-clause expression 'Beans.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
 					typeof(SupportBean).CleanName() +
 					"'");
+				
+				epl = "select Strvals.average(v => null) from SupportCollection";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'Strvals.average()': Failed to validate enumeration method 'average', expected a non-null result for expression parameter 0 but received a null-typed expression");
 			}
 		}
 

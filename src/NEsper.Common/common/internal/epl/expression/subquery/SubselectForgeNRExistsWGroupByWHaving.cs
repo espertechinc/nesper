@@ -22,16 +22,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsWGroupByWHaving : SubselectForgeNR
     {
-        private readonly ExprForge havingEval;
+        private readonly ExprForge _havingEval;
 
-        private readonly ExprSubselectNode subselect;
+        private readonly ExprSubselectNode _subselect;
 
         public SubselectForgeNRExistsWGroupByWHaving(
             ExprSubselectNode subselect,
             ExprForge havingEval)
         {
-            this.subselect = subselect;
-            this.havingEval = havingEval;
+            this._subselect = subselect;
+            this._havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+                new CodegenFieldNameSubqueryAgg(_subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
@@ -67,8 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ConstantNull());
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     forEach,
-                    havingEval.EvaluationType,
-                    havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                    _havingEval.EvaluationType,
+                    _havingEval.EvaluateCodegen(_havingEval.EvaluationType, method, symbols, classScope));
                 forEach.BlockReturn(ConstantTrue());
             }
             method.Block.MethodReturn(ConstantFalse());

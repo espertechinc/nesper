@@ -61,6 +61,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             var subselectActivations = SubSelectHelperStart.StartSubselects(
                 subselects,
                 agentInstanceContext,
+                agentInstanceContext,
                 stopCallbacks,
                 isRecoveringResilient);
 

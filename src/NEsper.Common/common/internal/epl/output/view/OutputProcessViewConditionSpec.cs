@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.output.condition;
@@ -46,5 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public EventType ResultEventType { get; set; }
 
         public EventType[] EventTypes { get; set; }
+        
+        public StateMgmtSetting ChangeSetStateMgmtSettings { get; set; }
     }
 } // end of namespace

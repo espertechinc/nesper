@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.lookupplan;
@@ -21,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     public class CoercionUtil
     {
-        private static readonly Type[] NULL_ARRAY = new Type[0];
+        private static readonly Type[] NullArray = new Type[0];
 
         public static CoercionDesc GetCoercionTypesRange(
             EventType[] typesPerStream,
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             IList<QueryGraphValueEntryRangeForge> rangeEntries)
         {
             if (rangeEntries.IsEmpty()) {
-                return new CoercionDesc(false, NULL_ARRAY);
+                return new CoercionDesc(false, NullArray);
             }
 
             var coercionTypes = new Type[rangeEntries.Count];
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 }
 
                 if (coercionType == null) {
-                    coercionTypes[i] = valuePropType;
+                    coercionTypes[i] = valuePropType.TypeNormalized();
                 }
                 else {
                     mustCoerce = true;
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             string[] indexProps)
         {
             if (indexProps.Length == 0 && keyProps.Count == 0) {
-                return new CoercionDesc(false, NULL_ARRAY);
+                return new CoercionDesc(false, NullArray);
             }
 
             if (indexProps.Length != keyProps.Count) {
@@ -114,31 +115,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return new CoercionDesc(mustCoerce, coercionTypes);
         }
 
-        public static Type GetCoercionTypeRange(
-            EventType indexedType,
-            string indexedProp,
-            SubordPropRangeKeyForge rangeKey)
-        {
-            var desc = rangeKey.RangeInfo;
-            if (desc.Type.IsRange()) {
-                var rangeIn = (QueryGraphValueEntryRangeInForge) desc;
-                return GetCoercionTypeRangeIn(
-                    indexedType.GetPropertyType(indexedProp),
-                    rangeIn.ExprStart,
-                    rangeIn.ExprEnd);
-            }
-
-            var relOp = (QueryGraphValueEntryRangeRelOpForge) desc;
-            return GetCoercionType(indexedType.GetPropertyType(indexedProp), relOp.Expression.Forge.EvaluationType);
-        }
-
         public static CoercionDesc GetCoercionTypesRange(
             EventType viewableEventType,
             IDictionary<string, SubordPropRangeKeyForge> rangeProps,
             EventType[] typesPerStream)
         {
             if (rangeProps.IsEmpty()) {
-                return new CoercionDesc(false, NULL_ARRAY);
+                return new CoercionDesc(false, NullArray);
             }
 
             var coercionTypes = new Type[rangeProps.Count];
@@ -161,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 }
 
                 if (coercionType == null) {
-                    coercionTypes[count++] = valuePropType;
+                    coercionTypes[count++] = valuePropType.TypeNormalized();
                 }
                 else {
                     mustCoerce = true;
@@ -191,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             IList<SubordPropHashKeyForge> hashKeys)
         {
             if (indexProps.Length == 0 && hashKeys.Count == 0) {
-                return new CoercionDesc(false, NULL_ARRAY);
+                return new CoercionDesc(false, NullArray);
             }
 
             if (indexProps.Length != hashKeys.Count) {

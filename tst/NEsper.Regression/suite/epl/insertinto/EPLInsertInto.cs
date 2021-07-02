@@ -19,6 +19,7 @@ using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -59,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             WithChain(execs);
             WithMultiBeanToMulti(execs);
             WithSingleBeanToMulti(execs);
-            WithProvidePartitialCols(execs);
+            WithProvidePartialCols(execs);
             WithRStreamOMToStmt(execs);
             WithNamedColsOMToStmt(execs);
             WithNamedColsEPLToOMStmt(execs);
@@ -78,168 +79,168 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithEventRepresentationsSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoEventRepresentationsSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTypeMismatchInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTypeMismatchInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnnamedJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoUnnamedJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnnamedWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoUnnamedWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnnamedSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoUnnamedSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsJoinWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsJoinWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsStateless(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsStateless());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsEPLToOMStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsEPLToOMStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedColsOMToStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedColsOMToStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStreamOMToStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoRStreamOMToStmt());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithProvidePartitialCols(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithProvidePartialCols(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoProvidePartitialCols());
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoProvidePartialCols());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleBeanToMulti(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoSingleBeanToMulti());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiBeanToMulti(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoMultiBeanToMulti());
             return execs;
         }
 
         public static IList<RegressionExecution> WithChain(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoChain());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNullType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNullType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoPlusPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInsertIntoPlusPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertFromPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInsertFromPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaggeredWithWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoStaggeredWithWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWithOutputLimitAndSort(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoWithOutputLimitAndSort());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoJoinWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAssertionWildcardRecast(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoAssertionWildcardRecast());
             return execs;
         }
@@ -1191,7 +1192,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        internal class EPLInsertIntoProvidePartitialCols : RegressionExecution
+        internal class EPLInsertIntoProvidePartialCols : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -1397,15 +1398,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var path = new RegressionPath();
                 var stmtOneTxt = "@Name('s1') insert into InZoneTwo select null as dummy from SupportBean";
                 env.CompileDeploy(stmtOneTxt, path);
-                Assert.IsTrue(env.Statement("s1").EventType.IsProperty("dummy"));
+                AssertNullTypeForDummyField(env.Statement("s1").EventType);
 
                 var stmtTwoTxt = "@Name('s2') select dummy from InZoneTwo";
                 env.CompileDeploy(stmtTwoTxt, path).AddListener("s2");
+                AssertNullTypeForDummyField(env.Statement("s2").EventType);
 
                 env.SendEventBean(new SupportBean());
                 Assert.IsNull(env.Listener("s2").AssertOneGetNewAndReset().Get("dummy"));
 
                 env.UndeployAll();
+            }
+
+            private void AssertNullTypeForDummyField(EventType eventType)
+            {
+                String fieldName = "dummy";
+                Assert.IsTrue(eventType.IsProperty(fieldName));
+                Assert.IsNull(eventType.GetPropertyType(fieldName));
+                EventPropertyDescriptor desc = eventType.GetPropertyDescriptor(fieldName);
+                SupportEventPropUtil.AssertPropEquals(new SupportEventPropDesc(fieldName, TypeHelper.NullType), desc);
             }
         }
 

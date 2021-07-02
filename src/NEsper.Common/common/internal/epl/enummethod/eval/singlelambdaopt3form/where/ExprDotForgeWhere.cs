@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ExprDotForgeWhere : ExprDotForgeLambdaThreeForm
 	{
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
@@ -28,22 +28,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			throw new IllegalStateException();
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => {
 				if (inputEventType != null) {
-					return EPTypeHelper.CollectionOfEvents(inputEventType);
+					return EPChainableTypeHelper.CollectionOfEvents(inputEventType);
 				}
 
-				return EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+				return EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
 			};
 		}
 

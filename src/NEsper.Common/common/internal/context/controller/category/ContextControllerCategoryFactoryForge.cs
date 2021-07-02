@@ -8,6 +8,8 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -26,6 +28,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
     public class ContextControllerCategoryFactoryForge : ContextControllerForgeBase
     {
         private readonly ContextSpecCategory detail;
+        private StateMgmtSetting stateMgmtSettings;
 
         public ContextControllerCategoryFactoryForge(
             ContextControllerFactoryEnv ctx,
@@ -49,6 +52,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             }
 
             props.Put(ContextPropertyEventType.PROP_CTX_LABEL, typeof(string));
+            stateMgmtSettings = services.StateMgmtSettingsProvider.GetContext(statementRawInfo, contextName, AppliesTo.CONTEXT_CATEGORY);
         }
 
         public override CodegenMethod MakeCodegen(
@@ -65,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
-                        .Add("CategoryFactory"))
+                        .Add("CategoryFactory", stateMgmtSettings.ToExpression()))
                 .SetProperty(
                     Ref("factory"),
                     "ContextName",

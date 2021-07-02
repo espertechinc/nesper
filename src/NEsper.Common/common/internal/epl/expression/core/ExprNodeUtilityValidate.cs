@@ -34,6 +34,8 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.epl.expression.assign;
 using com.espertech.esper.common.@internal.epl.expression.chain;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.@event.propertyparser.PropertyParserNoDep;
 
@@ -42,6 +44,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public class ExprNodeUtilityValidate
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static Type ValidateLHSTypeAnyAllSomeIn(Type type)
+        {
+            // collections, array or map not supported
+            string message = "Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords";
+            if (type.IsNullTypeSafe()) {
+                throw new ExprValidationException(message);
+            }
+
+            var typeClass = type;
+            if (typeClass.IsArray ||
+                typeClass.IsGenericCollection() ||
+                typeClass.IsGenericDictionary()) {
+                throw new ExprValidationException(message);
+            }
+            return typeClass;
+        }
+
+        public static Type ValidateReturnsNumeric(ExprForge forge)
+        {
+            var type = forge.EvaluationType;
+            var name = type.IsNullTypeSafe() ? "null" : type.TypeSafeName();
+            ValidateReturnsNumeric(forge, () => $"Implicit conversion from datatype '{name}' to numeric is not allowed");
+            return type;
+        }
+
+        public static void ValidateReturnsNumeric(
+            ExprForge forge,
+            Supplier<string> msg)
+        {
+            var type = forge.EvaluationType;
+            if (!type.IsNumeric()) {
+                throw new ExprValidationException(msg.Invoke());
+            }
+        }
 
         public static void ValidatePlainExpression(
             ExprNodeOrigin origin,
@@ -164,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static ExprValidationException MakeValidationExWExpression(
             ExprNodeOrigin origin,
-            String text,
+            string text,
             ExprValidationException ex)
         {
             return new ExprValidationException(
@@ -189,11 +226,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     found = true;
                     break;
                 }
-
-                if ((returnType == expectedType.GetBoxedType()) ||
-                    (expectedType.IsAssignableFrom(returnType))) {
-                    found = true;
-                    break;
+                
+                var expectedBoxedTypeMayNull = expectedType.GetBoxedType();
+                if (returnType.IsNullTypeSafe()) {
+                    if (expectedBoxedTypeMayNull == null) {
+                        found = true;
+                        break;
+                    }
+                } else {
+                    if ((returnType == expectedType.GetBoxedType()) ||
+                        (expectedType.IsAssignableFrom(returnType))) {
+                        found = true;
+                        break;
+                    }
                 }
             }
 
@@ -531,7 +576,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             // absolutely cannot be resolved
-            throw propertyException;
+            // throw propertyException;
+            exprNode = default;
+            return false;
         }
 
         private static Pair<bool, ExprNode> ResolveAsStreamName(
@@ -587,7 +634,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 var variableNameWSubprop = variableNode.VariableNameWithSubProp;
                 var variableName = variableNameWSubprop;
-                String subPropertyName = null;
+                string subPropertyName = null;
                 var indexOfDot = variableNameWSubprop.IndexOf('.');
                 if (indexOfDot != -1) {
                     subPropertyName = variableNameWSubprop.Substring(indexOfDot + 1);
@@ -636,7 +683,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        private static Pair<String, ExprNode> CheckGetAssignmentToProp(ExprNode node)
+        private static Pair<string, ExprNode> CheckGetAssignmentToProp(ExprNode node)
         {
             if (node is ExprEqualsNode equals) {
                 if (equals.ChildNodes[0] is ExprIdentNode identNode) {

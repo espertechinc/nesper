@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EventBean[] newData,
             EventBean[] oldData)
         {
-            StatementResultService statementResultService = tailView.AgentInstanceContext.StatementResultService;
+            var statementResultService = tailView.AgentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 

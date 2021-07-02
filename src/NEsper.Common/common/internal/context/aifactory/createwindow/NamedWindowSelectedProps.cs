@@ -17,9 +17,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
     /// </summary>
     public class NamedWindowSelectedProps
     {
-        private Type selectExpressionType;
-        private string assignedName;
-        private EventType fragmentType;
+        private readonly Type selectExpressionType;
+        private readonly string assignedName;
+        private readonly EventType fragmentType;
 
         /// <summary>
         /// Ctor.

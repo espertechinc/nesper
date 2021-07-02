@@ -36,18 +36,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             string providerClassName,
             string memberOrderByFactory)
         {
-            providerExplicitMembers.Add(new CodegenTypedParam(typeof(OrderByProcessorFactory), memberOrderByFactory));
             if (forge == null) {
-                providerCtor.Block.AssignRef(memberOrderByFactory, ConstantNull());
                 return;
             }
 
+            providerExplicitMembers.Add(new CodegenTypedParam(typeof(OrderByProcessorFactory), memberOrderByFactory));
             MakeFactory(forge, classScope, innerClasses, providerClassName);
             MakeService(forge, classScope, innerClasses, providerClassName);
 
             providerCtor.Block.AssignRef(
                 memberOrderByFactory,
-                NewInstanceInner(CLASSNAME_ORDERBYPROCESSORFACTORY, Ref("this")));
+                NewInstanceNamed(CLASSNAME_ORDERBYPROCESSORFACTORY, Ref("this")));
         }
 
         private static void MakeFactory(
@@ -62,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     typeof(OrderByProcessorCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(AgentInstanceContext), MEMBER_AGENTINSTANCECONTEXT.Ref);
+                .AddParam(typeof(ExprEvaluatorContext), MEMBER_EXPREVALCONTEXT.Ref);
             forge.InstantiateCodegen(instantiateMethod, classScope);
             
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));

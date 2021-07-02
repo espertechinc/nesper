@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         [SetUp]
         public void SetUp()
         {
-            // Prepare regualar test service
+            // Prepare regular test service
             var eventTypes = new EventType[]{
                 supportEventTypeFactory.CreateBeanType(typeof(SupportBean)),
                 supportEventTypeFactory.CreateBeanType(typeof(SupportBean)),

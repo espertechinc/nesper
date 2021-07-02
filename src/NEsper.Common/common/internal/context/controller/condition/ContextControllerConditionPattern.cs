@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         private readonly object[] partitionKeys;
         private readonly ContextConditionDescriptorPattern pattern;
 
-        protected EvalRootState patternStopCallback;
+        private EvalRootState patternStopCallback;
 
         public ContextControllerConditionPattern(
             IntSeqKey conditionPath,
@@ -74,7 +74,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             }
 
             if (optionalTriggeringPattern != null) {
-                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(matchedEventMap, optionalTriggeringPattern);
+                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(
+                    matchedEventMap,
+                    optionalTriggeringPattern,
+                    agentInstanceContext.EventBeanTypedEventFactory);
             }
             
             // capture any callbacks that may occur right after start
@@ -129,13 +132,23 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 }
             }
 
-            callback.RangeNotification(
-                conditionPath,
-                this,
-                null,
-                matchEvent,
-                optionalTriggeringEvent,
-                matchEventInclusive);
+            
+            if (pattern.AsName != null) {
+                // make sure the termination event does not contain the full match-event data which contains prior state
+                var termEvent = new LinkedHashMap<string, object>();
+                foreach (var tag in pattern.PatternTags) {
+                    if (!matchEvent.TryGetValue(tag, out var value)) {
+                        termEvent[tag] = value;
+                    }
+                }
+                var compositeEvent = controller.Realization.AgentInstanceContextCreate.EventBeanTypedEventFactory.AdapterForTypedMap(
+                    termEvent, pattern.AsNameEventType);
+                var data = new HashMap<string, object>();
+                data.Put(pattern.AsName, compositeEvent);
+                matchEvent = data;
+            }
+
+            callback.RangeNotification(conditionPath, this, null, matchEvent, optionalTriggeringEvent, matchEventInclusive, matchEvent);
         }
 
         public void Transfer(AgentInstanceTransferServices xfer)

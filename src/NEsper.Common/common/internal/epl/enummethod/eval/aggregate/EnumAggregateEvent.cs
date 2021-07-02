@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -129,8 +131,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 					.AssignArrayElement("props", Constant(1), Ref("count"));
 			}
 
-			var innerCodegen = _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
-			
+			var innerCodegen = innerType.IsNullTypeSafe() ? ConstantNull() : _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
+
 			forEach
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))
 				.AssignRef("value", innerCodegen)

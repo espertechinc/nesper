@@ -22,15 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotScalarUnpackEventForge : ExprDotEvalRootChildInnerForge
     {
-        private ExprForge rootForge;
+        private readonly ExprForge _rootForge;
 
         public InnerDotScalarUnpackEventForge(ExprForge rootForge)
         {
-            this.rootForge = rootForge;
+            this._rootForge = rootForge;
         }
 
         public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotScalarUnpackEventEval(rootForge.ExprEvaluator);
+            get => new InnerDotScalarUnpackEventEval(_rootForge.ExprEvaluator);
         }
 
         public CodegenExpression CodegenEvaluate(
@@ -77,12 +77,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             get => null;
         }
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.SingleValue(rootForge.EvaluationType);
+        public EPChainableType TypeInfo {
+            get => EPChainableTypeHelper.SingleValueNonNull(_rootForge.EvaluationType);
         }
 
         public ExprForge RootForge {
-            get => rootForge;
+            get => _rootForge;
         }
     }
 } // end of namespace

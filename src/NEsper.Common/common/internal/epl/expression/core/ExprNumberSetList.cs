@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private const string METHOD_HANDLEEXPRNUMBERSETLISTADD = "HandleExprNumberSetListAdd";
         private const string METHOD_HANDLEEXPRNUMBERSETLISTEMPTY = "HandleExprNumberSetListEmpty";
 
-        [NonSerialized] private ExprEvaluator[] evaluators;
+        [NonSerialized] private ExprEvaluator[] _evaluators;
 
         public override ExprForge Forge => this;
 
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<NumberSetParameter> parameters = new List<NumberSetParameter>();
-            foreach (var child in evaluators) {
+            foreach (var child in _evaluators) {
                 var value = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 HandleExprNumberSetListAdd(value, parameters);
             }
@@ -143,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // all nodes must either be int, frequency or range
-            evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes);
+            _evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes);
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var type = ChildNodes[i].Forge.EvaluationType;
                 if (type == typeof(FrequencyParameter) || type == typeof(RangeParameter)) {

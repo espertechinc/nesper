@@ -26,11 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeListener
     {
-        public static readonly string BEAN_TYPENAME = typeof(RoutedBeanEvent).Name;
-        public static readonly string MAP_TYPENAME = typeof(ClientRuntimeListener).Name + "_MAP";
-        public static readonly string OA_TYPENAME = typeof(ClientRuntimeListener).Name + "_OA";
-        public static readonly string XML_TYPENAME = typeof(ClientRuntimeListener).Name + "_XML";
-        public static readonly string AVRO_TYPENAME = typeof(ClientRuntimeListener).Name + "_AVRO";
+        public static readonly string BEAN_TYPENAME = nameof(RoutedBeanEvent);
+        public static readonly string MAP_TYPENAME = nameof(ClientRuntimeListener) + "_MAP";
+        public static readonly string OA_TYPENAME = nameof(ClientRuntimeListener) + "_OA";
+        public static readonly string XML_TYPENAME = nameof(ClientRuntimeListener) + "_XML";
+        public static readonly string AVRO_TYPENAME = nameof(ClientRuntimeListener) + "_AVRO";
 
         public static IList<RegressionExecution> Executions()
         {
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeListenerRoute());
             return execs;
         }

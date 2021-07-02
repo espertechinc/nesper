@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
@@ -17,31 +18,31 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 {
     public class PropertyHashedFactoryFactory : EventTableFactoryFactoryBase
     {
-        private readonly string[] indexProps;
-        private readonly Type[] indexTypes;
-        private readonly bool unique;
-        private readonly EventPropertyValueGetter valueGetter;
-        private readonly MultiKeyFromObjectArray transformFireAndForget;
-        private readonly DataInputOutputSerde keySerde;
+        private readonly string[] _indexProps;
+        private readonly bool _unique;
+        private readonly EventPropertyValueGetter _valueGetter;
+        private readonly MultiKeyFromObjectArray _transformFireAndForget;
+        private readonly DataInputOutputSerde _keySerde;
+        private readonly StateMgmtSetting _stateMgmtSettings;
 
         public PropertyHashedFactoryFactory(
             int indexedStreamNum,
             int? subqueryNum,
             bool isFireAndForget,
-            String[] indexProps,
-            Type[] indexTypes,
+            string[] indexProps,
             bool unique,
             EventPropertyValueGetter valueGetter,
             MultiKeyFromObjectArray transformFireAndForget,
-            DataInputOutputSerde keySerde)
+            DataInputOutputSerde keySerde,
+            StateMgmtSetting stateMgmtSettings)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
-            this.indexProps = indexProps;
-            this.indexTypes = indexTypes;
-            this.unique = unique;
-            this.valueGetter = valueGetter;
-            this.transformFireAndForget = transformFireAndForget;
-            this.keySerde = keySerde;
+            _indexProps = indexProps;
+            _unique = unique;
+            _valueGetter = valueGetter;
+            _transformFireAndForget = transformFireAndForget;
+            _keySerde = keySerde;
+            _stateMgmtSettings = stateMgmtSettings;
         }
 
         public override EventTableFactory Create(
@@ -51,16 +52,15 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return eventTableFactoryContext.EventTableIndexService.CreateHashedOnly(
                 indexedStreamNum,
                 eventType,
-                indexProps,
-                indexTypes,
-                transformFireAndForget,
-                keySerde,
-                unique,
+                _indexProps,
+                _transformFireAndForget,
+                _keySerde,
+                _unique,
                 null,
-                valueGetter,
+                _valueGetter,
                 null,
                 isFireAndForget,
-                eventTableFactoryContext);
+                _stateMgmtSettings);
         }
     }
 } // end of namespace

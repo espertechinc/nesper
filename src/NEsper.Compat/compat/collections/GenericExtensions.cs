@@ -17,6 +17,8 @@ namespace com.espertech.esper.compat.collections
     {
         public static bool IsNullable(this Type t)
         {
+            if (t == null)
+                return false;
             return Nullable.GetUnderlyingType(t) != null;
         }
 
@@ -135,6 +137,8 @@ namespace com.espertech.esper.compat.collections
         
         public static bool IsGenericDictionary(this Type t)
         {
+            if (t == null)
+                return false;
             var dictType = FindGenericInterface(t, typeof(IDictionary<,>));
             return (dictType != null);
         }
@@ -149,6 +153,8 @@ namespace com.espertech.esper.compat.collections
 
         public static bool IsGenericStringDictionary(this Type t)
         {
+            if (t == null)
+                return false;
             if (t.IsValueType || (t == typeof(object)))
                 return false;
 
@@ -168,6 +174,8 @@ namespace com.espertech.esper.compat.collections
 
         public static bool IsGenericObjectDictionary(this Type t)
         {
+            if (t == null)
+                return false;
             if (t.IsValueType || (t == typeof(object)))
                 return false;
 
@@ -181,16 +189,22 @@ namespace com.espertech.esper.compat.collections
         
         public static bool IsGenericSet(this Type t)
         {
+            if (t == null)
+                return false;
             return FindGenericInterface(t, typeof (ISet<>)) != null;
         }
 
         public static bool IsGenericCollection(this Type t)
         {
+            if (t == null)
+                return false;
             return FindGenericInterface(t, typeof (ICollection<>)) != null;
         }
 
         public static bool IsGenericList(this Type t)
         {
+            if (t == null)
+                return false;
             return FindGenericInterface(t, typeof(IList<>)) != null;
         }
 
@@ -206,11 +220,15 @@ namespace com.espertech.esper.compat.collections
         
         public static bool IsGenericEnumerable(this Type t)
         {
+            if (t == null)
+                return false;
             return FindGenericInterface(t, typeof(IEnumerable<>)) != null;
         }
 
         public static bool IsGenericEnumerator(this Type t)
         {
+            if (t == null)
+                return false;
             return FindGenericInterface(t, typeof(IEnumerator<>)) != null;
         }
 
@@ -332,8 +350,17 @@ namespace com.espertech.esper.compat.collections
 
                 return accessor;
             }
-
         }
+        
+        public static Type GetEnumerableItemType(this Type t)
+        {
+            if (t == null)
+                return null;
+            if (t.IsGenericEnumerable())
+                return FindGenericEnumerationInterface(t).GetGenericArguments()[0];
+            return null;
+        }
+
         
         
         public static bool IsMappedType(Type type)
@@ -382,7 +409,7 @@ namespace com.espertech.esper.compat.collections
             if (type.IsGenericList())
                 return type.GetCollectionItemType();
             if (type.IsGenericEnumerable())
-                return type.GetCollectionItemType();
+                return type.GetEnumerableItemType();
             if (type.IsImplementsInterface(typeof(System.Collections.IEnumerable)))
                 return typeof(object);
 
@@ -391,6 +418,8 @@ namespace com.espertech.esper.compat.collections
 
         public static bool IsGenericKeyValuePair(this Type t)
         {
+            if (t == null)
+                return false;
             return (t.IsGenericType) &&
                    (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>).GetGenericTypeDefinition());
         }

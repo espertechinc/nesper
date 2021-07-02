@@ -17,16 +17,17 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.regressionlib.support.extend.pattern
 {
     public class MyCountToPatternGuardForge : GuardForge
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private MatchedEventConvertorForge convertor;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private ExprNode numCountToExpr;
+        private MatchedEventConvertorForge _convertor;
+        private ExprNode _numCountToExpr;
 
         public void SetGuardParameters(
             IList<ExprNode> guardParameters,
@@ -39,12 +40,12 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
             }
 
             var paramType = guardParameters[0].Forge.EvaluationType;
-            if (paramType != typeof(int?) && paramType != typeof(int)) {
+            if (!paramType.IsInt32()) {
                 throw new GuardParameterException(message);
             }
 
-            numCountToExpr = guardParameters[0];
-            this.convertor = convertor;
+            _numCountToExpr = guardParameters[0];
+            _convertor = convertor;
         }
 
         public void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules)
@@ -63,8 +64,8 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
                 parent,
                 symbols,
                 classScope);
-            return builder.Exprnode("numCountToExpr", numCountToExpr)
-                .Expression("convertor", convertor.MakeAnonymous(builder.Method(), classScope))
+            return builder.Exprnode("numCountToExpr", _numCountToExpr)
+                .Expression("convertor", _convertor.MakeAnonymous(builder.Method(), classScope))
                 .Build();
         }
     }

@@ -25,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             DotMethodFP footprint,
             IList<ExprNode> parameters,
             EnumMethodEnum enumMethod,
-            String enumMethodUsedName,
+            string enumMethodUsedName,
             EventType inputEventType,
             Type collectionComponentType,
             ExprValidationContext validationContext) 
         {
-            EPType type;
+            EPChainableType type;
             if (inputEventType != null) {
-                type = EPTypeHelper.CollectionOfEvents(inputEventType);
+                type = EPChainableTypeHelper.CollectionOfEvents(inputEventType);
             } else {
-                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                type = EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
             }
             return new EnumForgeDescFactoryTake(enumMethod, type, inputEventType == null);
         }
@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private class EnumForgeDescFactoryTake : EnumForgeDescFactory
         {
             private readonly EnumMethodEnum _enumMethod;
-            private readonly EPType _type;
+            private readonly EPChainableType _type;
             private readonly bool _isScalar;
 
             public EnumForgeDescFactoryTake(
                 EnumMethodEnum enumMethod,
-                EPType type,
+                EPChainableType type,
                 bool isScalar)
             {
                 _enumMethod = enumMethod;

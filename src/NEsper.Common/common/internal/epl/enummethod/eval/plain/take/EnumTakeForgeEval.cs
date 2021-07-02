@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
                 else {
                     return FlexCollection.OfObject(
-                        enumcoll.ObjectCollection.First());
+                        enumcoll.ValueCollection.First());
                 }
             }
 
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             return FlexCollection.Of(
-                enumcoll.ObjectCollection
+                enumcoll.ValueCollection
                     .Take(size)
                     .ToList());
         }

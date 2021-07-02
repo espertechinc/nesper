@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.hook.datetimemethod;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.plugin
 		{
 			if (mode == null) {
 				if (inputType == firstParameter) {
-					throw new ExprValidationException("Plugin datetime method does not provide a forge for input type " + inputType.CleanName());
+					throw new ExprValidationException("Plugin datetime method does not provide a forge for input type " + inputType.TypeSafeName());
 				}
 
 				return;
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.plugin
 			}
 
 			var callStatic = StaticMethod(staticMethod.Clazz, staticMethod.MethodName, @params);
-			if (returnedClass == typeof(void)) {
+			if (returnedClass.IsVoid()) {
 				method.Block.Expression(callStatic);
 			}
 			else {

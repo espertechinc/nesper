@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			deserializeMethod
 				.Block
-				.DeclareVar(_underlyingClassName, "value", NewInstanceInner(_underlyingClassName))
+				.DeclareVar(_underlyingClassName, "value", NewInstanceNamed(_underlyingClassName))
 				.DeclareVar<JsonElement.ObjectEnumerator>("propertyEnumerator", ExprDotMethod(elementRef, "EnumerateObject"));
 
 			var propertyNameRef = Ref("propertyName");

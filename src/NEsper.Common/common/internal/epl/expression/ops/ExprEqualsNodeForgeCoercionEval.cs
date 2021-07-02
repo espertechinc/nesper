@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, context);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, context);
         }
 
         private bool? EvaluateInternal(
@@ -117,14 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            block.DeclareVar(
-                forge.CoercerLHS.ReturnType,
-                "left",
-                forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType));
-            block.DeclareVar(
-                forge.CoercerRHS.ReturnType,
-                "right",
-                forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType));
+            block.DeclareVar(forge.CoercerLHS.ReturnType, "left", forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType));
+            block.DeclareVar(forge.CoercerRHS.ReturnType, "right", forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType));
 
             //var compare = StaticMethod(typeof(DebugExtensions), "DebugEquals", Ref("left"), Ref("right"));
             

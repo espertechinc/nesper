@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public abstract class ThreeFormEventPlain : EnumForgeBasePlain
 	{
-		public abstract Type ReturnType();
+		public abstract Type ReturnTypeOfMethod();
 
 		public abstract CodegenExpression ReturnIfEmptyOptional();
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			var scope = new ExprForgeCodegenSymbol(false, null);
-			var returnType = ReturnType();
+			var returnType = ReturnTypeOfMethod();
 			var methodNode = codegenMethodScope
 				.MakeChildWithScope(returnType, GetType(), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);

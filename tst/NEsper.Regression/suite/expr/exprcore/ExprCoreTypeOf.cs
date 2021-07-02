@@ -47,27 +47,27 @@ WithVariantStream(execs);
 		}
 public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreTypeOfVariantStream());
     return execs;
 }public static IList<RegressionExecution> WithDynamicProps(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreTypeOfDynamicProps());
     return execs;
 }public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreTypeOfInvalid());
     return execs;
 }public static IList<RegressionExecution> WithNamedUnnamedPONO(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreTypeOfNamedUnnamedPONO());
     return execs;
 }public static IList<RegressionExecution> WithFragment(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new ExprCoreTypeOfFragment());
     return execs;
 }
@@ -128,9 +128,9 @@ public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecu
 				var builder = new SupportEvalBuilder("ISupportA", "A")
 					.WithExpressions(fields, "typeof(A)");
 
-				builder.WithAssertion(new ISupportAImpl(null, null)).Expect(fields, typeof(ISupportAImpl).Name);
+				builder.WithAssertion(new ISupportAImpl(null, null)).Expect(fields, nameof(ISupportAImpl));
 
-				builder.WithAssertion(new ISupportABCImpl(null, null, null, null)).Expect(fields, typeof(ISupportABCImpl).Name);
+				builder.WithAssertion(new ISupportABCImpl(null, null, null, null)).Expect(fields, nameof(ISupportABCImpl));
 
 				builder.Run(env);
 				env.UndeployAll();

@@ -17,23 +17,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 {
     public class ResultSetProcessorSimpleOutputAllHelperImpl : ResultSetProcessorSimpleOutputAllHelper
     {
-        private readonly Deque<MultiKeyArrayOfKeys<EventBean>> eventsNewJoin = new ArrayDeque<MultiKeyArrayOfKeys<EventBean>>(2);
+        private readonly Deque<MultiKeyArrayOfKeys<EventBean>> _eventsNewJoin = new ArrayDeque<MultiKeyArrayOfKeys<EventBean>>(2);
 
-        private readonly Deque<EventBean> eventsNewView = new ArrayDeque<EventBean>(2);
-        private readonly Deque<MultiKeyArrayOfKeys<EventBean>> eventsOldJoin = new ArrayDeque<MultiKeyArrayOfKeys<EventBean>>(2);
-        private readonly Deque<EventBean> eventsOldView = new ArrayDeque<EventBean>(2);
-        private readonly ResultSetProcessorSimple processor;
+        private readonly Deque<EventBean> _eventsNewView = new ArrayDeque<EventBean>(2);
+        private readonly Deque<MultiKeyArrayOfKeys<EventBean>> _eventsOldJoin = new ArrayDeque<MultiKeyArrayOfKeys<EventBean>>(2);
+        private readonly Deque<EventBean> _eventsOldView = new ArrayDeque<EventBean>(2);
+        private readonly ResultSetProcessorSimple _processor;
 
         public ResultSetProcessorSimpleOutputAllHelperImpl(ResultSetProcessorSimple processor)
         {
-            this.processor = processor;
+            _processor = processor;
         }
 
         public void ProcessView(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            if (!processor.HasHavingClause) {
+            if (!_processor.HasHavingClause) {
                 AddToView(newData, oldData);
                 return;
             }
@@ -43,15 +43,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 foreach (var theEvent in newData) {
                     eventsPerStream[0] = theEvent;
 
-                    var passesHaving = processor.EvaluateHavingClause(
+                    var passesHaving = _processor.EvaluateHavingClause(
                         eventsPerStream,
                         true,
-                        processor.GetAgentInstanceContext());
+                        _processor.ExprEvaluatorContext);
                     if (!passesHaving) {
                         continue;
                     }
 
-                    eventsNewView.Add(theEvent);
+                    _eventsNewView.Add(theEvent);
                 }
             }
 
@@ -59,15 +59,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 foreach (var theEvent in oldData) {
                     eventsPerStream[0] = theEvent;
 
-                    var passesHaving = processor.EvaluateHavingClause(
+                    var passesHaving = _processor.EvaluateHavingClause(
                         eventsPerStream,
                         false,
-                        processor.GetAgentInstanceContext());
+                        _processor.ExprEvaluatorContext);
                     if (!passesHaving) {
                         continue;
                     }
 
-                    eventsOldView.Add(theEvent);
+                    _eventsOldView.Add(theEvent);
                 }
             }
         }
@@ -76,59 +76,59 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
-            if (!processor.HasHavingClause) {
+            if (!_processor.HasHavingClause) {
                 AddToJoin(newEvents, oldEvents);
                 return;
             }
 
             if (newEvents != null && newEvents.Count > 0) {
                 foreach (var theEvent in newEvents) {
-                    var passesHaving = processor.EvaluateHavingClause(
+                    var passesHaving = _processor.EvaluateHavingClause(
                         theEvent.Array,
                         true,
-                        processor.GetAgentInstanceContext());
+                        _processor.ExprEvaluatorContext);
                     if (!passesHaving) {
                         continue;
                     }
 
-                    eventsNewJoin.Add(theEvent);
+                    _eventsNewJoin.Add(theEvent);
                 }
             }
 
             if (oldEvents != null && oldEvents.Count > 0) {
                 foreach (var theEvent in oldEvents) {
-                    var passesHaving = processor.EvaluateHavingClause(
+                    var passesHaving = _processor.EvaluateHavingClause(
                         theEvent.Array,
                         false,
-                        processor.GetAgentInstanceContext());
+                        _processor.ExprEvaluatorContext);
                     if (!passesHaving) {
                         continue;
                     }
 
-                    eventsOldJoin.Add(theEvent);
+                    _eventsOldJoin.Add(theEvent);
                 }
             }
         }
 
         public UniformPair<EventBean[]> OutputView(bool isSynthesize)
         {
-            var pair = processor.ProcessViewResult(
-                EventBeanUtility.ToArrayNullIfEmpty(eventsNewView),
-                EventBeanUtility.ToArrayNullIfEmpty(eventsOldView),
+            var pair = _processor.ProcessViewResult(
+                EventBeanUtility.ToArrayNullIfEmpty(_eventsNewView),
+                EventBeanUtility.ToArrayNullIfEmpty(_eventsOldView),
                 isSynthesize);
-            eventsNewView.Clear();
-            eventsOldView.Clear();
+            _eventsNewView.Clear();
+            _eventsOldView.Clear();
             return pair;
         }
 
         public UniformPair<EventBean[]> OutputJoin(bool isSynthesize)
         {
-            var pair = processor.ProcessJoinResult(
-                EventBeanUtility.ToLinkedHashSetNullIfEmpty(eventsNewJoin),
-                EventBeanUtility.ToLinkedHashSetNullIfEmpty(eventsOldJoin),
+            var pair = _processor.ProcessJoinResult(
+                EventBeanUtility.ToLinkedHashSetNullIfEmpty(_eventsNewJoin),
+                EventBeanUtility.ToLinkedHashSetNullIfEmpty(_eventsOldJoin),
                 isSynthesize);
-            eventsNewJoin.Clear();
-            eventsOldJoin.Clear();
+            _eventsNewJoin.Clear();
+            _eventsOldJoin.Clear();
             return pair;
         }
 
@@ -141,16 +141,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             EventBean[] newData,
             EventBean[] oldData)
         {
-            EventBeanUtility.AddToCollection(newData, eventsNewView);
-            EventBeanUtility.AddToCollection(oldData, eventsOldView);
+            EventBeanUtility.AddToCollection(newData, _eventsNewView);
+            EventBeanUtility.AddToCollection(oldData, _eventsOldView);
         }
 
         private void AddToJoin(
             ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
-            EventBeanUtility.AddToCollection(newEvents, eventsNewJoin);
-            EventBeanUtility.AddToCollection(oldEvents, eventsOldJoin);
+            EventBeanUtility.AddToCollection(newEvents, _eventsNewJoin);
+            EventBeanUtility.AddToCollection(oldEvents, _eventsOldJoin);
         }
     }
 } // end of namespace

@@ -24,12 +24,12 @@ namespace com.espertech.esper.common.@internal.@event.core
     public class ProxyEventPropertyValueGetterForge : EventPropertyValueGetterForge
     {
         public Func<CodegenExpression, CodegenMethodScope, CodegenClassScope, CodegenExpression>
-            ProcEventBeanGetCodegen;
+            procEventBeanGetCodegen;
 
         public ProxyEventPropertyValueGetterForge(
             Func<CodegenExpression, CodegenMethodScope, CodegenClassScope, CodegenExpression> procEventBeanGetCodegen)
         {
-            ProcEventBeanGetCodegen = procEventBeanGetCodegen;
+            this.procEventBeanGetCodegen = procEventBeanGetCodegen;
         }
 
         public ProxyEventPropertyValueGetterForge()
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ProcEventBeanGetCodegen(beanExpression, codegenMethodScope, codegenClassScope);
+            return procEventBeanGetCodegen(beanExpression, codegenMethodScope, codegenClassScope);
         }
     }
 } // end of namespace

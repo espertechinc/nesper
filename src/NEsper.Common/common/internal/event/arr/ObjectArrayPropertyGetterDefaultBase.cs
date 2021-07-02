@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
     {
         internal readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
         internal readonly EventType fragmentEventType;
-        private readonly int propertyIndex;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -35,19 +35,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.propertyIndex = propertyIndex;
+            this._propertyIndex = propertyIndex;
             this.fragmentEventType = fragmentEventType;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public object GetObjectArray(object[] array)
         {
-            return array[propertyIndex];
+            return array[_propertyIndex];
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
-            return array.Length > propertyIndex;
+            return array.Length > _propertyIndex;
         }
 
         public object Get(EventBean obj)
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

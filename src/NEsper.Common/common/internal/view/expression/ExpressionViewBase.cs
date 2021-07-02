@@ -90,7 +90,6 @@ namespace com.espertech.esper.common.@internal.view.expression
             if (factory.AggregationServiceFactory != null) {
                 aggregationService = factory.AggregationServiceFactory.MakeService(
                     agentInstanceContext.AgentInstanceContext,
-                    agentInstanceContext.ImportService,
                     false,
                     null,
                     null);

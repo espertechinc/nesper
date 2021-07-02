@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             QueryGraphValueEntryRange[] rangeKeyPairs,
             PropertyCompositeEventTable index)
         {
-            this._eventType = eventType;
-            this._index = index;
+            _eventType = eventType;
+            _index = index;
             _chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(false, lookupStream, hashKeys, rangeKeyPairs);
         }
 

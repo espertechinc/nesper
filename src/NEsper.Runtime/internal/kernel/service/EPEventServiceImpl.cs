@@ -956,7 +956,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				_services.RuntimeURI,
 				_services.EventBeanService,
 				_services.ExceptionHandlingService,
-				_services.SchedulingService);
+				_services.SchedulingService,
+				_services.ImportServiceRuntime.TimeZone,
+				_services.ImportServiceRuntime.TimeAbacus,
+				_services.VariableManagementService);
 		}
 
 		private void ProcessSchedule(long time)

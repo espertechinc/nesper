@@ -90,23 +90,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 assignScopedPackageInitMethod);
         }
 
-#if DEPRECATED
-        public CodegenExpressionField AddFieldUnshared<T>(
-            bool isFinal,
-            CodegenExpression assignScopedPackageInitMethod)
-        {
-            return AddFieldUnshared(isFinal, typeof(T), assignScopedPackageInitMethod);
-        }
-
-        public CodegenExpressionField AddFieldUnshared(
-            bool isFinal,
-            Type type,
-            CodegenExpression assignScopedPackageInitMethod)
-        {
-            return NamespaceScope.AddFieldUnshared(isFinal, type, assignScopedPackageInitMethod);
-        }
-#endif
-
         public CodegenExpressionInstanceField AddOrGetInstanceFieldSharable(
             CodegenExpression instance,
             CodegenFieldSharable sharable)
@@ -120,22 +103,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return NamespaceScope.AddOrGetInstanceFieldSharable(
                 InstanceRef, sharable);
         }
-
-#if DEPRECATED
-        public CodegenExpressionField AddOrGetFieldSharable(CodegenFieldSharable sharable)
-        {
-            return NamespaceScope.AddOrGetFieldSharable(sharable);
-        }
-#endif
-
-#if DEPRECATED
-        public CodegenExpressionField AddOrGetFieldWellKnown(
-            CodegenFieldName fieldName,
-            Type type)
-        {
-            return NamespaceScope.AddOrGetFieldWellKnown(fieldName, type);
-        }
-#endif
 
         public void AddInnerClass(CodegenInnerClass innerClass)
         {

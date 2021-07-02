@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -20,19 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprCoalesceNode : ExprNodeBase
     {
-        [NonSerialized] private ExprCoalesceNodeForge forge;
+        [NonSerialized] private ExprCoalesceNodeForge _forge;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -65,15 +66,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var isNumericCoercion = new bool[ChildNodes.Length];
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var node = ChildNodes[i];
-                if (node.Forge.EvaluationType.GetBoxedType() != resultType &&
-                    node.Forge.EvaluationType != null &&
-                    resultType != null) {
+                var forgeEvaluationType = node.Forge.EvaluationType;
+                var forgeEvaluationTypeBoxed = forgeEvaluationType.GetBoxedType();
+                if (resultType != null &&
+                    forgeEvaluationTypeBoxed.IsNotNullTypeSafe() &&
+                    forgeEvaluationTypeBoxed != resultType) {
                     if (!resultType.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            resultType.CleanName() +
+                            resultType.TypeSafeName() +
                             "' to " +
-                            node.Forge.EvaluationType.CleanName() +
+                            forgeEvaluationType.TypeSafeName() +
                             " is not allowed");
                     }
 
@@ -81,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCoalesceNodeForge(this, resultType, isNumericCoercion);
+            _forge = new ExprCoalesceNodeForge(this, resultType, isNumericCoercion);
             return null;
         }
 

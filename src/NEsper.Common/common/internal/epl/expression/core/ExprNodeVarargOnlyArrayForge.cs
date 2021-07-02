@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -23,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     internal class ExprNodeVarargOnlyArrayForge : ExprForge,
         ExprNodeRenderable
     {
-        private readonly ExprForge[] forges;
+        private readonly ExprForge[] _forges;
         internal readonly Coercer[] optionalCoercers;
         internal readonly Type varargClass;
 
@@ -32,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Type varargClass,
             Coercer[] optionalCoercers)
         {
-            this.forges = forges;
+            this._forges = forges;
             this.varargClass = varargClass;
             this.optionalCoercers = optionalCoercers;
         }
@@ -40,10 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprEvaluator ExprEvaluator {
             get {
                 if (optionalCoercers == null) {
-                    return new ExprNodeVarargOnlyArrayEvalNoCoerce(this, GetEvaluatorsNoCompile(forges));
+                    return new ExprNodeVarargOnlyArrayEvalNoCoerce(this, GetEvaluatorsNoCompile(_forges));
                 }
 
-                return new ExprNodeVarargOnlyArrayForgeWithCoerce(this, GetEvaluatorsNoCompile(forges));
+                return new ExprNodeVarargOnlyArrayForgeWithCoerce(this, GetEvaluatorsNoCompile(_forges));
             }
         }
 
@@ -60,15 +61,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(arrayType, "array", NewArrayByLength(varargClass, Constant(forges.Length)));
-            for (var i = 0; i < forges.Length; i++) {
-                var expression = forges[i].EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope);
+                .DeclareVar(arrayType, "array", NewArrayByLength(varargClass, Constant(_forges.Length)));
+            for (var i = 0; i < _forges.Length; i++) {
+                var expression = _forges[i].EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope);
                 CodegenExpression assignment;
                 if (optionalCoercers == null || optionalCoercers[i] == null) {
                     assignment = expression;
                 }
                 else {
-                    var evalType = forges[i].EvaluationType;
+                    var evalType = _forges[i].EvaluationType;
                     if (evalType.CanNotBeNull()) {
                         assignment = optionalCoercers[i].CoerceCodegen(expression, evalType);
                     }

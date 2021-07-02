@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(MethodTargetStrategyStaticMethod),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<MethodTargetStrategyStaticMethod>(

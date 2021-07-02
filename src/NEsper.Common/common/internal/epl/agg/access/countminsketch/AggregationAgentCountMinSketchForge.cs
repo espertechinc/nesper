@@ -18,19 +18,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
     public class AggregationAgentCountMinSketchForge : AggregationAgentForge
     {
-        private readonly ExprForge stringEvaluator;
-        private readonly ExprForge optionalFilterForge;
+        private readonly ExprForge _stringEvaluator;
+        private readonly ExprForge _optionalFilterForge;
 
         public AggregationAgentCountMinSketchForge(
             ExprForge stringEvaluator,
             ExprForge optionalFilterForge)
         {
-            this.stringEvaluator = stringEvaluator;
-            this.optionalFilterForge = optionalFilterForge;
+            this._stringEvaluator = stringEvaluator;
+            this._optionalFilterForge = optionalFilterForge;
         }
 
         public ExprForge OptionalFilter {
-            get => optionalFilterForge;
+            get => _optionalFilterForge;
         }
 
         public CodegenExpression Make(
@@ -38,22 +38,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), GetType(), classScope);
             method.Block
-                .DeclareVar<AggregationAgentCountMinSketch>("cms", NewInstance(typeof(AggregationAgentCountMinSketch)))
+                .DeclareVarNewInstance<AggregationAgentCountMinSketch>("cms")
                 .SetProperty(
                     Ref("cms"),
                     "StringEval",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(stringEvaluator, method, this.GetType(), classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluator(_stringEvaluator, method, GetType(), classScope))
                 .SetProperty(
                     Ref("cms"),
                     "OptionalFilterEval",
-                    optionalFilterForge == null
+                    _optionalFilterForge == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
-                            optionalFilterForge,
+                            _optionalFilterForge,
                             method,
-                            this.GetType(),
+                            GetType(),
                             classScope))
                 .MethodReturn(Ref("cms"));
             return LocalMethod(method);

@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 	    /// <param name="method">the fast method to call</param>
 	    /// <param name="hasParameters">true if the method takes parameters</param>
 	    public DynamicPropertyDescriptorByMethod(Type clazz, MethodInfo method, bool hasParameters) {
-	        this.Clazz = clazz;
-	        this.Method = method;
-	        this.HasParameters = hasParameters;
+	        Clazz = clazz;
+	        Method = method;
+	        HasParameters = hasParameters;
 	    }
 
 	    /// <summary>

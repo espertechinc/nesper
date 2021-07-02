@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     {
         private readonly string _functionName;
         private readonly bool _distinct;
-        private ConfigurationCompilerPlugInAggregationMultiFunction _configuration;
+        private readonly ConfigurationCompilerPlugInAggregationMultiFunction _configuration;
 
         /// <summary>
         /// Ctor.
@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             bool distinct,
             ConfigurationCompilerPlugInAggregationMultiFunction configuration)
         {
-            this._functionName = functionName;
-            this._distinct = distinct;
-            this._configuration = configuration;
+            _functionName = functionName;
+            _distinct = distinct;
+            _configuration = configuration;
         }
 
         /// <summary>

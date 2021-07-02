@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 }
             }
 
-            EventType optionalInsertIntoEventType = processor.EventTypeRspInputEvents;
+            var optionalInsertIntoEventType = processor.EventTypeRspInputEvents;
             var args = new SelectProcessorArgs(
                 selectNoWildcard.ToArray(),
                 null,

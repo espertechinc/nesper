@@ -11,12 +11,15 @@ using System.Linq;
 
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
+using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
 
@@ -26,7 +29,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumSelectFrom
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
@@ -47,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Strvals.selectFrom( (v, i) => v || '_' || Convert.ToString(i))");
 				builder.WithExpression(fields[1], "Strvals.selectFrom( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
 					.Verify(fields[0], value => AssertValuesArrayScalar(value, "E1_0", "E2_1", "E3_2"))
@@ -78,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Contained.selectFrom( (v, i) => new {v0=v.Id,v1=i})");
 				builder.WithExpression(fields[1], "Contained.selectFrom( (v, i, s) => new {v0=v.Id,v1=i + 100*s})");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<IDictionary<string, object>>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"))
 					.Verify(
@@ -143,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
 				builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = Key0||'y'})");
 
-				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypes(stmt.EventType, field, typeof(ICollection<IDictionary<string,object>>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"))
 					.Verify(
@@ -186,21 +188,32 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string field = "c0";
-				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(field, "Contained.selectFrom(x => Id)");
+				var fields = "c0,c1".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "Contained.selectFrom(x => Id)");
+				builder.WithExpression(fields[1], "Contained.selectFrom(x => null)");
 
-				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, "c0", typeof(ICollection<object>)));
-
+				builder.WithStatementConsumer(
+					stmt => SupportEventPropUtil.AssertTypes(
+						stmt.EventType,
+						fields,
+						new[] {
+							typeof(ICollection<string>),
+							typeof(ICollection<object>)
+						}));
+				
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E3,2"))
-					.Verify(field, value => AssertValuesArrayScalar(value, "E1", "E2", "E3"));
+					.Verify(fields[0], value => LambdaAssertionUtil.AssertValuesArrayScalar(value, "E1", "E2", "E3"))
+					.Verify(fields[1], value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
-					.Verify(field, Assert.IsNull);
+					.Verify(fields[0], value => Assert.IsNull(value))
+					.Verify(fields[1], value => Assert.IsNull(value));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
-					.Verify(field, value => AssertValuesArrayScalar(value));
-
+					.Verify(fields[0], value => LambdaAssertionUtil.AssertValuesArrayScalar(value))
+					.Verify(fields[1], value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
+				
 				builder.Run(env);
 			}
 		}
@@ -214,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(field, "Strvals.selectFrom(v => extractNum(v))");
 
-				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypes(stmt.EventType, field, typeof(ICollection<int>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Verify(field, value => AssertValuesArrayScalar(value, 2, 1, 5, 4));

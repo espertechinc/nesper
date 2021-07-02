@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.streamtype;
@@ -138,8 +139,14 @@ namespace com.espertech.esper.common.@internal.view.util
             int expressionNumber)
         {
             var forge = sizeNode.Forge;
-            var returnType = sizeNode.Forge.EvaluationType.GetBoxedType();
-            if (!returnType.IsNumeric() || returnType.IsFloatingPointClass() || returnType == typeof(long?)) {
+            
+            var sizeType = sizeNode.Forge.EvaluationType;
+            if (sizeType.IsNullTypeSafe()) {
+                throw new ViewParameterException(GetViewParamMessage(viewName));
+            }
+            
+            var sizeTypeBoxed = sizeType.GetBoxedType();
+            if (!sizeTypeBoxed.IsNumeric() || sizeTypeBoxed.IsFloatingPointClass() || sizeTypeBoxed.IsInt64()) {
                 throw new ViewParameterException(GetViewParamMessage(viewName));
             }
 

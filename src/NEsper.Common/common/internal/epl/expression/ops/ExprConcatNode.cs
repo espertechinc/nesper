@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var childType = ChildNodes[i].Forge.EvaluationType;
-                var childTypeName = childType == null ? "null" : childType.CleanName();
                 if (childType != typeof(string)) {
+                    var childTypeName = childType == null ? "null" : childType.TypeSafeName();
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
                         childTypeName +
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            ThreadingProfile threadingProfile = validationContext.StatementCompileTimeService.Configuration.Common
+            var threadingProfile = validationContext.StatementCompileTimeService.Configuration.Common
                 .Execution.ThreadingProfile;
             _forge = new ExprConcatNodeForge(this, threadingProfile);
             return null;

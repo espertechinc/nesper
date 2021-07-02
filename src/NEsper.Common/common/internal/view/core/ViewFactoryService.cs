@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.expression;
@@ -36,64 +37,64 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public interface ViewFactoryService
     {
-        LengthWindowViewFactory Length();
+        LengthWindowViewFactory Length(StateMgmtSetting stateMgmtSettings);
 
-        PriorEventViewFactory Prior();
+        PriorEventViewFactory Prior(StateMgmtSetting stateMgmtSettings);
 
-        TimeWindowViewFactory Time();
+        TimeWindowViewFactory Time(StateMgmtSetting stateMgmtSettings);
 
-        KeepAllViewFactory Keepall();
+        KeepAllViewFactory Keepall(StateMgmtSetting stateMgmtSettings);
 
-        TimeBatchViewFactory Timebatch();
+        TimeBatchViewFactory Timebatch(StateMgmtSetting stateMgmtSettings);
 
-        TimeLengthBatchViewFactory Timelengthbatch();
+        TimeLengthBatchViewFactory Timelengthbatch(StateMgmtSetting stateMgmtSettings);
 
-        LengthBatchViewFactory Lengthbatch();
+        LengthBatchViewFactory Lengthbatch(StateMgmtSetting stateMgmtSettings);
 
-        SortWindowViewFactory Sort();
+        SortWindowViewFactory Sort(StateMgmtSetting stateMgmtSettings);
 
-        RankWindowViewFactory Rank();
+        RankWindowViewFactory Rank(StateMgmtSetting stateMgmtSettings);
 
-        TimeAccumViewFactory Timeaccum();
+        TimeAccumViewFactory Timeaccum(StateMgmtSetting stateMgmtSettings);
 
-        UniqueByPropertyViewFactory Unique();
+        UniqueByPropertyViewFactory Unique(StateMgmtSetting stateMgmtSettings);
 
-        FirstUniqueByPropertyViewFactory Firstunique();
+        FirstUniqueByPropertyViewFactory Firstunique(StateMgmtSetting stateMgmtSettings);
 
-        FirstTimeViewFactory Firsttime();
+        FirstTimeViewFactory Firsttime(StateMgmtSetting stateMgmtSettings);
 
-        TimeOrderViewFactory Timeorder();
+        TimeOrderViewFactory Timeorder(StateMgmtSetting stateMgmtSettings);
 
-        ExternallyTimedBatchViewFactory Exttimebatch();
+        ExternallyTimedBatchViewFactory Exttimebatch(StateMgmtSetting stateMgmtSettings);
 
-        ExternallyTimedWindowViewFactory Exttime();
+        ExternallyTimedWindowViewFactory Exttime(StateMgmtSetting stateMgmtSettings);
 
-        LastEventViewFactory Lastevent();
+        LastEventViewFactory Lastevent(StateMgmtSetting stateMgmtSettings);
 
-        FirstEventViewFactory Firstevent();
+        FirstEventViewFactory Firstevent(StateMgmtSetting stateMgmtSettings);
 
-        FirstLengthWindowViewFactory Firstlength();
+        FirstLengthWindowViewFactory Firstlength(StateMgmtSetting stateMgmtSettings);
 
-        SizeViewFactory Size();
+        SizeViewFactory Size(StateMgmtSetting stateMgmtSettings);
 
-        UnivariateStatisticsViewFactory Uni();
+        UnivariateStatisticsViewFactory Uni(StateMgmtSetting stateMgmtSettings);
 
-        WeightedAverageViewFactory Weightedavg();
+        WeightedAverageViewFactory Weightedavg(StateMgmtSetting stateMgmtSettings);
 
-        RegressionLinestViewFactory Regression();
+        RegressionLinestViewFactory Regression(StateMgmtSetting stateMgmtSettings);
 
-        CorrelationViewFactory Correlation();
+        CorrelationViewFactory Correlation(StateMgmtSetting stateMgmtSettings);
 
-        GroupByViewFactory Group();
+        GroupByViewFactory Group(StateMgmtSetting stateMgmtSettings);
 
-        IntersectViewFactory Intersect();
+        IntersectViewFactory Intersect(StateMgmtSetting stateMgmtSettings);
 
-        UnionViewFactory Union();
+        UnionViewFactory Union(StateMgmtSetting stateMgmtSettings);
 
-        ExpressionBatchViewFactory Exprbatch();
+        ExpressionBatchViewFactory Exprbatch(StateMgmtSetting stateMgmtSettings);
 
-        ExpressionWindowViewFactory Expr();
+        ExpressionWindowViewFactory Expr(StateMgmtSetting stateMgmtSettings);
 
-        RowRecogNFAViewFactory RowRecog();
+        RowRecogNFAViewFactory RowRecog(StateMgmtSetting stateMgmtSettings);
     }
 } // end of namespace

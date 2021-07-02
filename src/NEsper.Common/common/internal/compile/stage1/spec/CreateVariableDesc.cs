@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="assignment">expression assigning the initial value, or null if none</param>
         /// <param name="constant">if set to <c>true</c> [constant].</param>
         public CreateVariableDesc(
-            ClassIdentifierWArray variableType,
+            ClassDescriptor variableType,
             string variableName,
             ExprNode assignment,
             bool constant)
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Returns the variable type. </summary>
         /// <value>type of variable</value>
-        public ClassIdentifierWArray VariableType { get; }
+        public ClassDescriptor VariableType { get; }
 
         /// <summary>Returns the variable name </summary>
         /// <value>name</value>

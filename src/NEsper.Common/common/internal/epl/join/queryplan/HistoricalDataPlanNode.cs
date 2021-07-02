@@ -31,35 +31,35 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// </summary>
     public class HistoricalDataPlanNode : QueryPlanNode
     {
-        private PollResultIndexingStrategy indexingStrategy;
-        private HistoricalIndexLookupStrategy lookupStrategy;
-        private int numStreams = -1;
-        private ExprEvaluator outerJoinExprEval;
-        private int rootStreamNum = -1;
-        private int streamNum = -1;
+        private PollResultIndexingStrategy _indexingStrategy;
+        private HistoricalIndexLookupStrategy _lookupStrategy;
+        private int _numStreams = -1;
+        private ExprEvaluator _outerJoinExprEval;
+        private int _rootStreamNum = -1;
+        private int _streamNum = -1;
 
         public int StreamNum {
-            set => streamNum = value;
+            set => _streamNum = value;
         }
 
         public int NumStreams {
-            set => numStreams = value;
+            set => _numStreams = value;
         }
 
         public HistoricalIndexLookupStrategy LookupStrategy {
-            set => lookupStrategy = value;
+            set => _lookupStrategy = value;
         }
 
         public PollResultIndexingStrategy IndexingStrategy {
-            set => indexingStrategy = value;
+            set => _indexingStrategy = value;
         }
 
         public int RootStreamNum {
-            set => rootStreamNum = value;
+            set => _rootStreamNum = value;
         }
 
         public ExprEvaluator OuterJoinExprEval {
-            set => outerJoinExprEval = value;
+            set => _outerJoinExprEval = value;
         }
 
         public override ExecNode MakeExec(
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             VirtualDWView[] viewExternal,
             ILockable[] tableSecondaryIndexLocks)
         {
-            var viewable = (HistoricalEventViewable) streamViews[streamNum];
-            return new HistoricalDataExecNode(viewable, indexingStrategy, lookupStrategy, numStreams, streamNum);
+            var viewable = (HistoricalEventViewable) streamViews[_streamNum];
+            return new HistoricalDataExecNode(viewable, _indexingStrategy, _lookupStrategy, _numStreams, _streamNum);
         }
 
         /// <summary>
@@ -81,15 +81,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <returns>strategy</returns>
         public HistoricalTableLookupStrategy MakeOuterJoinStategy(Viewable[] streamViews)
         {
-            var viewable = (HistoricalEventViewable) streamViews[streamNum];
+            var viewable = (HistoricalEventViewable) streamViews[_streamNum];
             return new HistoricalTableLookupStrategy(
                 viewable,
-                indexingStrategy,
-                lookupStrategy,
-                numStreams,
-                streamNum,
-                rootStreamNum,
-                outerJoinExprEval);
+                _indexingStrategy,
+                _lookupStrategy,
+                _numStreams,
+                _streamNum,
+                _rootStreamNum,
+                _outerJoinExprEval);
         }
 
         public void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         protected void Print(IndentWriter writer)
         {
             writer.IncrIndent();
-            writer.WriteLine("HistoricalDataPlanNode streamNum=" + streamNum);
+            writer.WriteLine("HistoricalDataPlanNode streamNum=" + _streamNum);
         }
     }
 } // end of namespace

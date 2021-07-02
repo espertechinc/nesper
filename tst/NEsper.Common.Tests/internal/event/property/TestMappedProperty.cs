@@ -57,10 +57,9 @@ namespace com.espertech.esper.common.@internal.@event.property
         [Test]
         public void TestGetPropertyType()
         {
-            Type[] expected = new Type[] { typeof(string), typeof(string) };
             for (int i = 0; i < mapped.Length; i++)
             {
-                Assert.AreEqual(expected[i], mapped[i].GetPropertyType(eventType,
+                Assert.AreEqual(typeof(string), mapped[i].GetPropertyType(eventType,
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
             }
 

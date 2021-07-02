@@ -75,8 +75,8 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 
-            // Stage 0 - parse and compile-inline-classes and walk statement
-            var walked = ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
+            // Stage 1 - parse and compile-inline-classes and walk statement
+            var walked = ParseCompileInlinedClassesWalk(compilable, compilerOptions.InlinedClassInspection, compileTimeServices);
             var raw = walked.StatementSpecRaw;
             string classNameCreateClass = null;
             if (raw.CreateClassProvided != null) {

@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             InKeywordTableLookupPlanSingleIdxFactory factory,
             PropertyHashedEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
-            this._eventsPerStream = new EventBean[factory.LookupStream + 1];
+            _factory = factory;
+            _index = index;
+            _eventsPerStream = new EventBean[factory.LookupStream + 1];
         }
 
         public ICollection<EventBean> Lookup(

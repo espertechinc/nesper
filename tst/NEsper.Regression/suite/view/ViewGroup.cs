@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -59,140 +60,140 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithEscapedPropertyText(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupEscapedPropertyText());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionBatch(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupExpressionBatch());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupExpressionGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupTimeWin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLengthBatch(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupLengthBatch());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLengthWin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupLengthWin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeLengthBatch(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupTimeLengthBatch());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeOrder(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupTimeOrder());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeAccum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupTimeAccum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeBatch(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupTimeBatch());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReclaimWithFlipTime(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupReclaimWithFlipTime(5000L));
             return execs;
         }
 
         public static IList<RegressionExecution> WithLengthWinWeightAvg(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupLengthWinWeightAvg());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiProperty(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupMultiProperty());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLinest(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupLinest());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCorrel(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupCorrel());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReclaimAgedHint(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupReclaimAgedHint());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReclaimTimeWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupReclaimTimeWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStats(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupStats());
             return execs;
         }
 
         public static IList<RegressionExecution> WithObjectArrayEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewGroupObjectArrayEvent());
             return execs;
         }
@@ -351,6 +352,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                     env,
                     epl,
                     "Failed to validate data window declaration: The 'merge' declaration cannot be used in conjunction with multiple data windows");
+                
+                epl = "create schema MyEvent(somefield null);\n" +
+                      "select * from MyEvent#groupwin(somefield)#length(2)";
+                SupportMessageAssertUtil.TryInvalidCompile(env, epl,
+                    "Failed to validate data window declaration: Group-window received a null-typed criteria expression");
             }
         }
 

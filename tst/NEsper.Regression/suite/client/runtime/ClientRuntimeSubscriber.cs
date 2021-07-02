@@ -50,70 +50,70 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithPerformanceSynthetic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberPerformanceSynthetic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerformanceSyntheticUndelivered(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberPerformanceSyntheticUndelivered());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSimpleSelectUpdateOnly(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberSimpleSelectUpdateOnly());
             return execs;
         }
 
         public static IList<RegressionExecution> WithVariables(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberVariables());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartStopStatement(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberStartStopStatement());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvocationTargetEx(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberInvocationTargetEx());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBindWildcardJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberBindWildcardJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubscriberAndListener(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberSubscriberAndListener());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBindings(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSubscriberBindings());
             return execs;
         }

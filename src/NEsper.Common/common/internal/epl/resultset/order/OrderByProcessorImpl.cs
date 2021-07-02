@@ -38,9 +38,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
     /// </summary>
     public class OrderByProcessorImpl
     {
-        public static readonly CodegenExpressionRef REF_ISNEWDATA = ExprForgeCodegenNames.REF_ISNEWDATA;
-        public static readonly string NAME_ISNEWDATA = ResultSetProcessorCodegenNames.NAME_ISNEWDATA;
-
         public static void GetSortKeyCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
@@ -116,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         createSortPropertiesWRollup,
                         REF_ORDERCURRENTGENERATORS,
                         REF_ISNEWDATA,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .MethodReturn(
                     StaticMethod(
@@ -233,8 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             CodegenLegoMethodExpression.CodegenExpression(
                                 elements[0].ExprNode.Forge,
                                 method,
-                                classScope,
-                                true),
+                                classScope),
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_EXPREVALCONTEXT));
@@ -251,8 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[i].ExprNode.Forge,
                                     method,
-                                    classScope,
-                                    true),
+                                    classScope),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -391,8 +386,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[0].ExprNode.Forge,
                                     method,
-                                    classScope,
-                                    true),
+                                    classScope),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT))
@@ -434,8 +428,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[i].ExprNode.Forge,
                                     method,
-                                    classScope,
-                                    true),
+                                    classScope),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -484,13 +477,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
                         orderBy[0].ExprNode.Forge,
                         methodNode,
-                        classScope,
-                        true);
+                        classScope);
                     methodNode.Block.MethodReturn(
                         LocalMethod(
                             expression,
                             EnumForgeCodegenNames.REF_EPS,
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                            ExprForgeCodegenNames.REF_ISNEWDATA,
                             REF_EXPREVALCONTEXT));
                     return;
                 }
@@ -502,15 +494,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
                         orderBy[i].ExprNode.Forge,
                         methodNode,
-                        classScope,
-                        true);
+                        classScope);
                     methodNode.Block.AssignArrayElement(
                         "keys",
                         Constant(i),
                         LocalMethod(
                             expression,
                             EnumForgeCodegenNames.REF_EPS,
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                            ExprForgeCodegenNames.REF_ISNEWDATA,
                             REF_EXPREVALCONTEXT));
                 }
 

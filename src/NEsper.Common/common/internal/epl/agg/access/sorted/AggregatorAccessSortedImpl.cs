@@ -40,13 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	public class AggregatorAccessSortedImpl : AggregatorAccessWFilterBase,
 		AggregatorAccessSorted
 	{
-		private readonly AggregationStateSortedForge forge;
-		private readonly CodegenExpressionMember sorted;
-		private readonly CodegenExpressionInstanceField sortedSerde;
-		private readonly CodegenExpressionMember size;
-		private readonly CodegenExpressionInstanceField comparator;
-		private readonly CodegenExpressionMember joinRefs;
-		private readonly CodegenExpressionInstanceField joinRefsSerde;
+		private readonly AggregationStateSortedForge _forge;
+		private readonly CodegenExpressionMember _sorted;
+		private readonly CodegenExpressionInstanceField _sortedSerde;
+		private readonly CodegenExpressionMember _size;
+		private readonly CodegenExpressionInstanceField _comparator;
+		private readonly CodegenExpressionMember _joinRefs;
+		private readonly CodegenExpressionInstanceField _joinRefsSerde;
 
 		public AggregatorAccessSortedImpl(
 			bool join,
@@ -58,19 +58,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			ExprNode optionalFilter)
 			: base(optionalFilter)
 		{
-			this.forge = forge;
-			sorted = membersColumnized.AddMember(col, typeof(IOrderedDictionary<object, object>), "sorted");
-			size = membersColumnized.AddMember(col, typeof(int), "size");
+			this._forge = forge;
+			_sorted = membersColumnized.AddMember(col, typeof(IOrderedDictionary<object, object>), "sorted");
+			_size = membersColumnized.AddMember(col, typeof(int), "size");
 			var types = ExprNodeUtilityQuery.GetExprResultTypes(forge.Spec.Criteria);
-			comparator = classScope.AddOrGetDefaultFieldSharable(
+			_comparator = classScope.AddOrGetDefaultFieldSharable(
 				new CodegenFieldSharableComparator(
 					COMPARATORHASHABLEMULTIKEYS,
 					types,
 					forge.Spec.IsSortUsingCollator,
 					forge.Spec.SortDescending));
-			ctor.Block.AssignRef(sorted, NewInstance<OrderedListDictionary<object, object>>(comparator));
+			ctor.Block.AssignRef(_sorted, NewInstance<OrderedListDictionary<object, object>>(_comparator));
 
-			sortedSerde = classScope.AddOrGetDefaultFieldSharable(
+			_sortedSerde = classScope.AddOrGetDefaultFieldSharable(
 				new ProxyCodegenFieldSharable() {
 					ProcType = () => { return typeof(DIOSerdeTreeMapEventsMayDeque); },
 
@@ -87,15 +87,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				});
 
 			if (join) {
-				joinRefs = membersColumnized.AddMember(col, typeof(RefCountedSetAtomicInteger<object>), "refs");
-				ctor.Block.AssignRef(joinRefs, NewInstance(typeof(RefCountedSetAtomicInteger<object>)));
-				joinRefsSerde = classScope.AddOrGetDefaultFieldSharable(
+				_joinRefs = membersColumnized.AddMember(col, typeof(RefCountedSetAtomicInteger<object>), "refs");
+				ctor.Block.AssignRef(_joinRefs, NewInstance(typeof(RefCountedSetAtomicInteger<object>)));
+				_joinRefsSerde = classScope.AddOrGetDefaultFieldSharable(
 					new CodegenSharableSerdeEventTyped(
 						REFCOUNTEDSETATOMICINTEGER, forge.Spec.StreamEventType));
 			}
 			else {
-				joinRefs = null;
-				joinRefsSerde = null;
+				_joinRefs = null;
+				_joinRefsSerde = null;
 			}
 		}
 
@@ -109,17 +109,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			var ctx = symbols.GetAddExprEvalCtx(method);
 			var referenceAddToColl = ReferenceAddToCollCodegen(method, namedMethods, classScope);
 			method.Block
-				.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
+				.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
 				.IfRefNull("theEvent")
 				.BlockReturnNoValue();
 
-			if (joinRefs == null) {
+			if (_joinRefs == null) {
 				method.Block
 					.LocalMethod(referenceAddToColl, Ref("theEvent"), eps, ctx);
 			}
 			else {
 				method.Block
-					.IfCondition(ExprDotMethod(joinRefs, "Add", Ref("theEvent")))
+					.IfCondition(ExprDotMethod(_joinRefs, "Add", Ref("theEvent")))
 					.LocalMethod(referenceAddToColl, Ref("theEvent"), eps, ctx);
 			}
 		}
@@ -133,17 +133,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			var eps = symbols.GetAddEPS(method);
 			var ctx = symbols.GetAddExprEvalCtx(method);
 			var dereferenceRemove = DereferenceRemoveFromCollCodegen(method, namedMethods, classScope);
-			method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
+			method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
 				.IfRefNull("theEvent")
 				.BlockReturnNoValue();
 
-			if (joinRefs == null) {
+			if (_joinRefs == null) {
 				method.Block
 					.LocalMethod(dereferenceRemove, Ref("theEvent"), eps, ctx);
 			}
 			else {
 				method.Block
-					.IfCondition(ExprDotMethod(joinRefs, "Remove", Ref("theEvent")))
+					.IfCondition(ExprDotMethod(_joinRefs, "Remove", Ref("theEvent")))
 					.LocalMethod(dereferenceRemove, Ref("theEvent"), eps, ctx);
 			}
 		}
@@ -153,10 +153,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.ExprDotMethod(sorted, "Clear")
-				.AssignRef(size, Constant(0));
-			if (joinRefs != null) {
-				method.Block.ExprDotMethod(joinRefs, "Clear");
+				.ExprDotMethod(_sorted, "Clear")
+				.AssignRef(_size, Constant(0));
+			if (_joinRefs != null) {
+				method.Block.ExprDotMethod(_joinRefs, "Clear");
 			}
 		}
 
@@ -164,11 +164,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope,
 			CodegenMethod parent)
 		{
-			var method = parent.MakeChildWithScope(typeof(EventBean), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+			var method = parent.MakeChildWithScope(typeof(EventBean), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
 			method.Block
-				.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
+				.IfCondition(ExprDotMethod(_sorted, "IsEmpty"))
 				.BlockReturn(ConstantNull())
-				.DeclareVar<KeyValuePair<object, object>>("max", ExprDotName(sorted, "FirstEntry"))
+				.DeclareVar<KeyValuePair<object, object>>("max", ExprDotName(_sorted, "FirstEntry"))
 				.MethodReturn(StaticMethod(typeof(AggregatorAccessSortedImpl), "CheckedPayloadMayDeque", ExprDotName(Ref("max"), "Value")));
 			return LocalMethod(method);
 		}
@@ -177,33 +177,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope,
 			CodegenMethod parent)
 		{
-			var method = parent.MakeChildWithScope(typeof(EventBean), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+			var method = parent.MakeChildWithScope(typeof(EventBean), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
 			method.Block
-				.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
+				.IfCondition(ExprDotMethod(_sorted, "IsEmpty"))
 				.BlockReturn(ConstantNull())
-				.DeclareVar<KeyValuePair<object, object>>("min", ExprDotName(sorted, "LastEntry"))
+				.DeclareVar<KeyValuePair<object, object>>("min", ExprDotName(_sorted, "LastEntry"))
 				.MethodReturn(StaticMethod(typeof(AggregatorAccessSortedImpl), "CheckedPayloadMayDeque", ExprDotName(Ref("min"), "Value")));
 			return LocalMethod(method);
 		}
 
 		public CodegenExpression EnumeratorCodegen()
 		{
-			return NewInstance(typeof(AggregationStateSortedEnumerator), sorted, ConstantFalse());
+			return NewInstance(typeof(AggregationStateSortedEnumerator), _sorted, ConstantFalse());
 		}
 
 		public CodegenExpression ReverseEnumeratorCodegen()
 		{
-			return NewInstance(typeof(AggregationStateSortedEnumerator), sorted, ConstantTrue());
+			return NewInstance(typeof(AggregationStateSortedEnumerator), _sorted, ConstantTrue());
 		}
 
 		public CodegenExpression CollectionReadOnlyCodegen()
 		{
-			return NewInstance(typeof(AggregationStateSortedWrappingCollection), sorted, size);
+			return NewInstance(typeof(AggregationStateSortedWrappingCollection), _sorted, _size);
 		}
 
 		public CodegenExpression SizeCodegen()
 		{
-			return size;
+			return _size;
 		}
 
 		public override void WriteCodegen(
@@ -216,10 +216,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.Apply(WriteInt(output, row, size))
-				.ExprDotMethod(sortedSerde, "Write", RowDotMember(row, sorted), output, unitKey, writer);
-			if (joinRefs != null) {
-				method.Block.ExprDotMethod(joinRefsSerde, "Write", RowDotMember(row, joinRefs), output, unitKey, writer);
+				.Apply(WriteInt(output, row, _size))
+				.ExprDotMethod(_sortedSerde, "Write", RowDotMember(row, _sorted), output, unitKey, writer);
+			if (_joinRefs != null) {
+				method.Block.ExprDotMethod(_joinRefsSerde, "Write", RowDotMember(row, _joinRefs), output, unitKey, writer);
 			}
 		}
 
@@ -232,13 +232,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.Apply(ReadInt(row, size, input))
-				.AssignRef(RowDotMember(row, sorted), NewInstance(typeof(OrderedListDictionary<object, object>), comparator))
-				.ExprDotMethod(sortedSerde, "Read", RowDotMember(row, sorted), input, unitKey);
-			if (joinRefs != null) {
+				.Apply(ReadInt(row, _size, input))
+				.AssignRef(RowDotMember(row, _sorted), NewInstance(typeof(OrderedListDictionary<object, object>), _comparator))
+				.ExprDotMethod(_sortedSerde, "Read", RowDotMember(row, _sorted), input, unitKey);
+			if (_joinRefs != null) {
 				method.Block.AssignRef(
-					RowDotMember(row, joinRefs),
-					Cast(typeof(RefCountedSetAtomicInteger<object>), ExprDotMethod(joinRefsSerde, "Read", input, unitKey)));
+					RowDotMember(row, _joinRefs),
+					Cast(typeof(RefCountedSetAtomicInteger<object>), ExprDotMethod(_joinRefsSerde, "Read", input, unitKey)));
 			}
 		}
 
@@ -290,28 +290,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenNamedMethods namedMethods,
 			CodegenClassScope classScope)
 		{
-			var getComparable = GetComparableWMultiKeyCodegen(forge.Spec.Criteria, sorted, namedMethods, classScope);
+			var getComparable = GetComparableWMultiKeyCodegen(_forge.Spec.Criteria, _sorted, namedMethods, classScope);
 
 			var method = parent
-				.MakeChildWithScope(typeof(void),  this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeChildWithScope(typeof(void),  GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 			method.Block
 				.DeclareVar<object>("comparable", LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-				.DeclareVar<object>("existing", ExprDotMethod(sorted, "Get", Ref("comparable")))
+				.DeclareVar<object>("existing", ExprDotMethod(_sorted, "Get", Ref("comparable")))
 				.IfRefNull("existing")
-				.ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("theEvent"))
+				.ExprDotMethod(_sorted, "Put", Ref("comparable"), Ref("theEvent"))
 				.IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
 				.DeclareVar<ArrayDeque<EventBean>>("coll", NewInstance<ArrayDeque<EventBean>>(Constant(2)))
 				.ExprDotMethod(Ref("coll"), "Add", Cast<EventBean>(Ref("existing")))
 				.ExprDotMethod(Ref("coll"), "Add", Ref("theEvent"))
-				.ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("coll"))
+				.ExprDotMethod(_sorted, "Put", Ref("comparable"), Ref("coll"))
 				.IfElse()
 				.DeclareVar<ArrayDeque<EventBean>>("q", Cast<ArrayDeque<EventBean>>(Ref("existing")))
 				.ExprDotMethod(Ref("q"), "Add", Ref("theEvent"))
 				.BlockEnd()
-				.Increment(size);
+				.Increment(_size);
 
 			return method;
 		}
@@ -321,39 +321,39 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenNamedMethods namedMethods,
 			CodegenClassScope classScope)
 		{
-			var getComparable = GetComparableWMultiKeyCodegen(forge.Spec.Criteria, sorted, namedMethods, classScope);
+			var getComparable = GetComparableWMultiKeyCodegen(_forge.Spec.Criteria, _sorted, namedMethods, classScope);
 
 			var method = parent
-				.MakeChildWithScope(typeof(void),  this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeChildWithScope(typeof(void),  GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 			method.Block
 				.DeclareVar<object>("comparable", LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-				.DeclareVar<object>("existing", ExprDotMethod(sorted, "Get", Ref("comparable")))
+				.DeclareVar<object>("existing", ExprDotMethod(_sorted, "Get", Ref("comparable")))
 				
 				.IfRefNull("existing")
 				.BlockReturnNoValue()
 				
 				.IfCondition(StaticMethod<object>("Equals", Ref("existing"), Ref("theEvent")))
-				.ExprDotMethod(sorted, "Remove", Ref("comparable"))
-				.Decrement(size)
+				.ExprDotMethod(_sorted, "Remove", Ref("comparable"))
+				.Decrement(_size)
 
 				.IfElseIf(InstanceOf(Ref("existing"), typeof(ArrayDeque<object>)))
 				.DeclareVar<ArrayDeque<object>>("q", Cast(typeof(ArrayDeque<object>), Ref("existing")))
 				.ExprDotMethod(Ref("q"), "Remove", Ref("theEvent"))
 				.IfCondition(ExprDotMethod(Ref("q"), "IsEmpty"))
-				.ExprDotMethod(sorted, "Remove", Ref("comparable"))
+				.ExprDotMethod(_sorted, "Remove", Ref("comparable"))
 				.BlockEnd()
 				
 				.IfElseIf(InstanceOf(Ref("existing"), typeof(ArrayDeque<EventBean>)))
 				.DeclareVar<ArrayDeque<EventBean>>("q", Cast(typeof(ArrayDeque<EventBean>), Ref("existing")))
 				.ExprDotMethod(Ref("q"), "Remove", Ref("theEvent"))
 				.IfCondition(ExprDotMethod(Ref("q"), "IsEmpty"))
-				.ExprDotMethod(sorted, "Remove", Ref("comparable"))
+				.ExprDotMethod(_sorted, "Remove", Ref("comparable"))
 				.BlockEnd()
 				
-				.Decrement(size);
+				.Decrement(_size);
 
 			return method;
 		}
@@ -366,7 +366,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			var method = parent
 				.MakeChild(typeof(AggregationStateSorted), typeof(AggregatorAccessSortedImpl), classScope);
 			method.Block
-				.DeclareVar<AggregationStateSorted>("state", NewInstance(typeof(AggregationStateSorted)))
+				.DeclareVarNewInstance<AggregationStateSorted>("state")
 				.SetProperty(Ref("state"), "Count", MemberCol("size", column))
 				.SetProperty(Ref("state"), "Sorted", MemberCol("sorted", column))
 				.MethodReturn(Ref("state"));

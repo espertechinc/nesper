@@ -19,12 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
 	public class AggregationMethodSortedEventsBetweenEval : AggregationMultiFunctionAggregationMethod
 	{
-		private readonly ExprEvaluator fromKeyEval;
-		private readonly ExprEvaluator fromInclusiveEval;
-		private readonly ExprEvaluator toKeyEval;
-		private readonly ExprEvaluator toInclusiveEval;
-		private readonly Func<IDictionary<object, object>, object> value;
-		private readonly Func<IDictionary<object, object>, ICollection<EventBean>> events;
+		private readonly ExprEvaluator _fromKeyEval;
+		private readonly ExprEvaluator _fromInclusiveEval;
+		private readonly ExprEvaluator _toKeyEval;
+		private readonly ExprEvaluator _toInclusiveEval;
+		private readonly Func<IDictionary<object, object>, object> _value;
+		private readonly Func<IDictionary<object, object>, ICollection<EventBean>> _events;
 
 		public AggregationMethodSortedEventsBetweenEval(
 			ExprEvaluator fromKeyEval,
@@ -34,12 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			Func<IDictionary<object, object>, object> value,
 			Func<IDictionary<object, object>, ICollection<EventBean>> events)
 		{
-			this.fromKeyEval = fromKeyEval;
-			this.fromInclusiveEval = fromInclusiveEval;
-			this.toKeyEval = toKeyEval;
-			this.toInclusiveEval = toInclusiveEval;
-			this.value = value;
-			this.events = events;
+			this._fromKeyEval = fromKeyEval;
+			this._fromInclusiveEval = fromInclusiveEval;
+			this._toKeyEval = toKeyEval;
+			this._toInclusiveEval = toInclusiveEval;
+			this._value = value;
+			this._events = events;
 		}
 
 		public object GetValue(
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				return null;
 			}
 
-			return value.Invoke(submap);
+			return _value.Invoke(submap);
 		}
 
 		public ICollection<EventBean> GetValueCollectionEvents(
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				return null;
 			}
 
-			return events.Invoke(submap);
+			return _events.Invoke(submap);
 		}
 
 		public ICollection<object> GetValueCollectionScalar(
@@ -100,22 +100,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			ExprEvaluatorContext exprEvaluatorContext)
 		{
 			var sorted = (AggregationStateSorted) row.GetAccessState(aggColNum);
-			var fromKey = fromKeyEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+			var fromKey = _fromKeyEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 			if (fromKey == null) {
 				return null;
 			}
 
-			var fromInclusive = fromInclusiveEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedBoolean();
+			var fromInclusive = _fromInclusiveEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedBoolean();
 			if (fromInclusive == null) {
 				return null;
 			}
 
-			var toKey = toKeyEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+			var toKey = _toKeyEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 			if (toKey == null) {
 				return null;
 			}
 
-			var toInclusive = toInclusiveEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedBoolean();
+			var toInclusive = _toInclusiveEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedBoolean();
 			if (toInclusive == null) {
 				return null;
 			}

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             return new SAIFFInitializeBuilder(
                     typeof(DefaultSupportCaptureOpFactory<object>),
-                    this.GetType(),
+                    GetType(),
                     "so",
                     parent,
                     symbols,

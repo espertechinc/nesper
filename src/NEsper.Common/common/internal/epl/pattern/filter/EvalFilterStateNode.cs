@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             EvalFilterNode evalFilterNode)
             : base(parentNode)
         {
-            this._evalFilterNode = evalFilterNode;
+            _evalFilterNode = evalFilterNode;
         }
 
         public override EvalNode FactoryNode => _evalFilterNode;

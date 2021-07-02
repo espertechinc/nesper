@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                             "GetSortKey",
                             Ref("eventsPerStream"),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
 
                 if (forge.OptionalHavingNode == null) {
                     loop.DeclareVar<EventBean[]>(
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     var select = ResultSetProcessorUtil.GetSelectEventsHavingCodegen(classScope, instance);
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
 
                 loop.IfCondition(
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         "SortWOrderKeys",
                         Ref("outgoingEvents"),
                         Ref("orderKeysArr"),
-                        MEMBER_AGENTINSTANCECONTEXT))
+                        MEMBER_EXPREVALCONTEXT))
                 .MethodReturn(
                     ExprDotMethod(
                         StaticMethod(typeof(Arrays), "Enumerate", Ref("orderedEvents")),
@@ -205,10 +205,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
             if (forge.IsOutputAll) {
+                var stateMgmtSettings = forge.OutputAllHelperSettings.Invoke();
                 instance.AddMember(NAME_OUTPUTALLHELPER, typeof(ResultSetProcessorSimpleOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLHELPER,
-                    ExprDotMethod(factory, "MakeRSSimpleOutputAll", Ref("this"), MEMBER_AGENTINSTANCECONTEXT, eventTypes));
+                    ExprDotMethod(factory, "MakeRSSimpleOutputAll", Ref("this"), MEMBER_EXPREVALCONTEXT, eventTypes, stateMgmtSettings.ToExpression()));
                 method.Block.ExprDotMethod(Member(NAME_OUTPUTALLHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
             }
             else if (forge.IsOutputLast) {
@@ -219,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         factory,
                         "MakeRSSimpleOutputLast",
                         Ref("this"),
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         eventTypes));
                 method.Block.ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
             }

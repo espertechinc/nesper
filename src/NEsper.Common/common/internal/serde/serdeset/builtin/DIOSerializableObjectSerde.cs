@@ -11,6 +11,7 @@ using System.IO;
 using System.Text.Json;
 
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.io;
 

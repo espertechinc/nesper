@@ -9,6 +9,7 @@
 using System;
 using System.Text;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>constant value</returns>
         public object FilterConstant { get; }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Constant(FilterConstant)));
 
             method.Block.MethodReturn(inner);
-            return method;
+            return LocalMethod(method);
         }
 
         public override string ToString()
@@ -126,17 +127,17 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public static void ValueExprToString(
             StringBuilder @out,
-            Object constant)
+            object constant)
         {
             var constantType = constant?.GetType();
-            var constantTypeName = constantType?.CleanName();
+            var constantTypeName = constantType?.TypeSafeName();
             
             @out.Append("constant ");
             CodegenExpressionUtil.RenderConstant(@out, constant);
             @out.Append(" type ").Append(constantTypeName);
         }
 
-        public static String ValueExprToString(Object constant)
+        public static string ValueExprToString(object constant)
         {
             var builder = new StringBuilder();
             ValueExprToString(builder, constant);

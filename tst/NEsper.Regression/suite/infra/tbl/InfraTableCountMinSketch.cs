@@ -42,28 +42,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNonStringType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNonStringType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraDocSamples());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFrequencyAndTopk(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraFrequencyAndTopk());
             return execs;
         }
@@ -332,6 +332,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "into table MyCMS select countMinSketchAdd(distinct 'abc') as wordcms from SupportByteArrEventStringId",
                     "Failed to validate select-clause expression 'countMinSketchAdd(distinct \"abc\")': Count-min-sketch aggregation function 'countMinSketchAdd' is not supported with distinct [");
 
+                TryInvalidCompile(
+                    env,
+                    path,
+                    "into table MyCMS select countMinSketchAdd(null) as wordcms from SupportByteArrEventStringId",
+                    "Failed to validate select-clause expression 'countMinSketchAdd(null)': Invalid null-type parameter");
+                
                 // invalid "countMinSketchFrequency" declarations
                 //
                 TryInvalidCompile(

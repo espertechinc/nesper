@@ -16,41 +16,41 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
     public class SubSelectFactory : StatementReadyCallback
     {
-        private int subqueryNumber;
-        private ViewableActivator activator;
-        private SubSelectStrategyFactory strategyFactory;
-        private bool hasAggregation;
-        private bool hasPrior;
-        private bool hasPrevious;
+        private int _subqueryNumber;
+        private ViewableActivator _activator;
+        private SubSelectStrategyFactory _strategyFactory;
+        private bool _hasAggregation;
+        private bool _hasPrior;
+        private bool _hasPrevious;
 
         public int SubqueryNumber {
-            get => subqueryNumber;
-            set => subqueryNumber = value;
+            get => _subqueryNumber;
+            set => _subqueryNumber = value;
         }
 
         public ViewableActivator Activator {
-            get => activator;
-            set => activator = value;
+            get => _activator;
+            set => _activator = value;
         }
 
         public SubSelectStrategyFactory StrategyFactory {
-            get => strategyFactory;
-            set => strategyFactory = value;
+            get => _strategyFactory;
+            set => _strategyFactory = value;
         }
 
         public bool HasAggregation {
-            get => this.hasAggregation;
-            set => this.hasAggregation = value;
+            get => _hasAggregation;
+            set => _hasAggregation = value;
         }
 
         public bool HasPrior {
-            get => this.hasPrior;
-            set => this.hasPrior = value;
+            get => _hasPrior;
+            set => _hasPrior = value;
         }
 
         public bool HasPrevious {
-            get => this.hasPrevious;
-            set => this.hasPrevious = value;
+            get => _hasPrevious;
+            set => _hasPrevious = value;
         }
 
         public void Ready(
@@ -58,22 +58,22 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             ModuleIncidentals moduleIncidentals,
             bool recovery)
         {
-            strategyFactory.Ready(statementContext, activator.EventType);
+            _strategyFactory.Ready(statementContext, _activator.EventType);
         }
 
         public void Ready(
             SubSelectStrategyFactoryContext subselectFactoryContext,
             bool recovery)
         {
-            strategyFactory.Ready(subselectFactoryContext, activator.EventType);
+            _strategyFactory.Ready(subselectFactoryContext, _activator.EventType);
         }
 
         public AIRegistryRequirementSubquery RegistryRequirements {
             get => new AIRegistryRequirementSubquery(
-                hasAggregation,
-                hasPrior,
-                hasPrevious,
-                strategyFactory.LookupStrategyDesc);
+                _hasAggregation,
+                _hasPrior,
+                _hasPrevious,
+                _strategyFactory.LookupStrategyDesc);
         }
     }
 } // end of namespace

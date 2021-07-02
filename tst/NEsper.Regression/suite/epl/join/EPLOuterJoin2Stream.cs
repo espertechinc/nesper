@@ -63,77 +63,77 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithFullOuterMultikeyWArrayPrimitive(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullOuterMultikeyWArrayPrimitive());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEventType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinEventType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftOuterJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRightOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinRightOuterJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiColumnRightCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultiColumnRightCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiColumnRight(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultiColumnRight());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiColumnLeft(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultiColumnLeft());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiColumnLeftOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultiColumnLeftOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullOuterJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullOuterIteratorGroupBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullOuterIteratorGroupBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRangeOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinRangeOuterJoin());
             return execs;
         }
@@ -495,8 +495,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create(new[] {"S0.Id", " S0.P00", " S0.P01", " S1.Id", " S1.P10", " S1.P11"});
                 var fromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportBean_S0).Name, "S0").AddView("keepall"),
-                    FilterStream.Create(typeof(SupportBean_S1).Name, "S1").AddView("keepall"));
+                    FilterStream.Create(nameof(SupportBean_S0), "S0").AddView("keepall"),
+                    FilterStream.Create(nameof(SupportBean_S1), "S1").AddView("keepall"));
                 fromClause.Add(OuterJoinQualifier.Create("S0.P00", OuterJoinType.LEFT, "S1.P10").Add("S1.P11", "S0.P01"));
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);

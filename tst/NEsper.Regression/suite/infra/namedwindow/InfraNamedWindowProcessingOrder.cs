@@ -36,14 +36,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static IList<RegressionExecution> WithOrderedDeleteAndSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOrderedDeleteAndSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDispatchBackQueue(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraDispatchBackQueue(rep));
             }

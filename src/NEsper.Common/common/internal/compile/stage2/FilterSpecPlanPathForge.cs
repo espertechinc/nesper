@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             method.Block
-                .DeclareVar<FilterSpecPlanPath>("path", NewInstance(typeof(FilterSpecPlanPath)))
+                .DeclareVarNewInstance<FilterSpecPlanPath>("path")
                 .SetProperty(Ref("path"), "Triplets", Ref("triplets"))
                 .SetProperty(Ref("path"), "PathNegate", OptionalEvaluator(PathNegate, method, classScope))
                 .MethodReturn(Ref("path"));

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
 	    public bool HasTripletControl {
 		    get {
-			    foreach (FilterSpecPlanPathTriplet triplet in triplets) {
+			    foreach (var triplet in triplets) {
 				    if (triplet.TripletConfirm != null) {
 					    return true;
 				    }

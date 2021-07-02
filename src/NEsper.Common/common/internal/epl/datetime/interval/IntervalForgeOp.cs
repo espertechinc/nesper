@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
     public class IntervalForgeOp : IntervalOp
     {
-        private readonly ExprEvaluator evaluatorTimestamp;
-        private readonly IntervalForgeImpl.IIntervalOpEval intervalOpEval;
+        private readonly ExprEvaluator _evaluatorTimestamp;
+        private readonly IntervalForgeImpl.IIntervalOpEval _intervalOpEval;
 
         public IntervalForgeOp(
             ExprEvaluator evaluatorTimestamp,
             IntervalForgeImpl.IIntervalOpEval intervalOpEval)
         {
-            this.evaluatorTimestamp = evaluatorTimestamp;
-            this.intervalOpEval = intervalOpEval;
+            this._evaluatorTimestamp = evaluatorTimestamp;
+            this._intervalOpEval = intervalOpEval;
         }
 
         public object Evaluate(
@@ -37,12 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var parameter = evaluatorTimestamp.Evaluate(eventsPerStream, isNewData, context);
+            var parameter = _evaluatorTimestamp.Evaluate(eventsPerStream, isNewData, context);
             if (parameter == null) {
                 return parameter;
             }
 
-            return intervalOpEval.Evaluate(startTs, endTs, parameter, eventsPerStream, isNewData, context);
+            return _intervalOpEval.Evaluate(startTs, endTs, parameter, eventsPerStream, isNewData, context);
         }
 
         public static CodegenExpression Codegen(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     Unbox<long?>(Ref("startTs")),
                     Unbox<long?>(Ref("endTs")),
                     derefParameter,
-                    forge.ForgeTimestamp.EvaluationType,
+                    evaluationType,
                     methodNode,
                     exprSymbol,
                     codegenClassScope));

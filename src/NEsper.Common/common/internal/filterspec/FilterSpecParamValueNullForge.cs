@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .BlockReturn(FilterValueSetParamImpl.CodegenNew(ConstantNull()));
 
             method.Block.MethodReturn(inner);
-            return method;
+            return LocalMethod(method);
         }
 
         public override void ValueExprToString(StringBuilder @out, int i)

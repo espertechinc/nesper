@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[6], "Strvals.firstOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
 				builder.WithExpression(fields[7], "Strvals.lastOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3")).Expect(fields, "E1", "E3", "E1", "E1", null, null, null, null);
 
@@ -78,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Contained.firstOf().P00");
 				builder.WithExpression(fields[1], "Contained.lastOf().P00");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,3")).Expect(fields, 1, 3);
 
@@ -101,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Contained.firstOf()");
 				builder.WithExpression(fields[1], "Contained.lastOf()");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E3,9", "E2,9"))
 					.Verify("c0", value => AssertId(value, "E1"))
@@ -132,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Contained.firstOf( (x, i, s) => P00 = 9 and i >= 1 and s > 2)");
 				builder.WithExpression(fields[5], "Contained.lastOf((x, i, s) => P00 = 9 and i >= 1 and s > 2)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
 
 				SupportBean_ST0_Container beanOne = SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9");
 				builder.WithAssertion(beanOne)

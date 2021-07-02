@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
     public class ProxyEventPropertyWriterSPI : EventPropertyWriterSPI
     {
-        public Action<object, EventBean> ProcWrite;
+        public Action<object, EventBean> procWrite;
 
         public Func<
             CodegenExpression,
@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression,
             CodegenMethodScope,
             CodegenClassScope,
-            CodegenExpression> ProcWriteCodegen;
+            CodegenExpression> procWriteCodegen;
 
         public void Write(
             object value,
             EventBean target)
         {
-            ProcWrite(value, target);
+            procWrite(value, target);
         }
 
         public CodegenExpression WriteCodegen(
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return ProcWriteCodegen(
+            return procWriteCodegen(
                 assigned,
                 underlying,
                 target,

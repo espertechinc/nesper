@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashFactory : ContextControllerFactoryBase
     {
-        private ContextControllerDetailHash hashSpec;
+        private ContextControllerDetailHash _hashSpec;
 
         public ContextControllerDetailHash HashSpec {
-            get => hashSpec;
-            set => hashSpec = value;
+            get => _hashSpec;
+            set => _hashSpec = value;
         }
 
         public override ContextController Create(ContextManagerRealization contextManagerRealization)
@@ -53,13 +53,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             var hashCode = partitionKey.AsInt32();
 
             if (!isCreateWindow) {
-                foundPartition = FindHashItemSpec(hashSpec, filterSpec);
+                foundPartition = FindHashItemSpec(_hashSpec, filterSpec);
             }
             else {
                 var factory = (StatementAgentInstanceFactoryCreateNW) optionalStatementDesc.Lightweight.StatementContext
                     .StatementAIFactoryProvider.Factory;
                 var declaredAsName = factory.AsEventTypeName;
-                foreach (var partitionItem in hashSpec.Items) {
+                foreach (var partitionItem in _hashSpec.Items) {
                     if (partitionItem.FilterSpecActivatable.FilterForEventType.Name.Equals(declaredAsName)) {
                         foundPartition = partitionItem;
                         break;
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public override StatementAIResourceRegistry AllocateAgentInstanceResourceRegistry(
             AIRegistryRequirements registryRequirements)
         {
-            if (hashSpec.Granularity <= 65536) {
+            if (_hashSpec.Granularity <= 65536) {
                 return AIRegistryUtil.AllocateRegistries(registryRequirements, AIRegistryFactoryMultiPerm.INSTANCE);
             }
 

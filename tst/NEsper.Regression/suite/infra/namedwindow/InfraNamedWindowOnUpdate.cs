@@ -42,56 +42,56 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static IList<RegressionExecution> WithUpdateMultikeyWArrayTwoFields(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateMultikeyWArrayTwoFields());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUpdateMultikeyWArrayPrimitiveArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateMultikeyWArrayPrimitiveArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUpdateWrapper(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateWrapper());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUpdateCopyMethodBean(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateCopyMethodBean());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubclass(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSubclass());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultipleDataWindowUnion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMultipleDataWindowUnion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultipleDataWindowIntersect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMultipleDataWindowIntersect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUpdateNonPropertySet(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateNonPropertySet());
             return execs;
         }

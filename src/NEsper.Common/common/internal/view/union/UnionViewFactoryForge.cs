@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -56,20 +57,21 @@ namespace com.espertech.esper.common.@internal.view.union
         {
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(UnionViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Union";
         }
@@ -93,6 +95,11 @@ namespace com.espertech.esper.common.@internal.view.union
             foreach (var forge in unioned) {
                 forge.Accept(visitor);
             }
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_UNION;
         }
     }
 } // end of namespace

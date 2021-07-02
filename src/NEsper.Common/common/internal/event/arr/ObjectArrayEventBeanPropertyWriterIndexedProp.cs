@@ -17,21 +17,21 @@ namespace com.espertech.esper.common.@internal.@event.arr
 {
     public class ObjectArrayEventBeanPropertyWriterIndexedProp : ObjectArrayEventBeanPropertyWriter
     {
-        private readonly int indexTarget;
+        private readonly int _indexTarget;
 
         public ObjectArrayEventBeanPropertyWriterIndexedProp(
             int propertyIndex,
             int indexTarget)
             : base(propertyIndex)
         {
-            this.indexTarget = indexTarget;
+            this._indexTarget = indexTarget;
         }
 
         public override void Write(
             object value,
             object[] array)
         {
-            ObjectArrayWriteIndexedProp(value, array, index, indexTarget);
+            ObjectArrayWriteIndexedProp(value, array, index, _indexTarget);
         }
 
         public override CodegenExpression WriteCodegen(
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 assigned,
                 underlying,
                 Constant(index),
-                Constant(indexTarget));
+                Constant(_indexTarget));
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             : base(distinct)
 
         {
-            this._functionName = functionName;
+            _functionName = functionName;
         }
 
         public AggregationPortableValidationPlugin()

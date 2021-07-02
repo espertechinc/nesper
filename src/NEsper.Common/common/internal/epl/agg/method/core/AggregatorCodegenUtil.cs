@@ -54,10 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             var filterType = filterForge.EvaluationType;
-            method.Block.DeclareVar(
-                filterType.GetBoxedType(),
-                "pass",
-                filterForge.EvaluateCodegen(filterType, method, symbols, classScope));
+            method.Block.DeclareVar(filterType, "pass", filterForge.EvaluateCodegen(filterType, method, symbols, classScope));
             if (filterType.CanBeNull()) {
                 method.Block.IfRefNull("pass").BlockReturnNoValue();
             }

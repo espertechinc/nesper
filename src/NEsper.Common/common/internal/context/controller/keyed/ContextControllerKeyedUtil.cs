@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedUtil
     {
-        public static Object[] UnpackKey(Object key)
+        public static object[] UnpackKey(object key)
         {
             if (key is MultiKey multiKey) {
                 return multiKey.ToObjectArray();
@@ -165,11 +165,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                                 "' found mismatch of property types, property '" +
                                 names[i] +
                                 "' of type '" +
-                                types[i].CleanName() +
+                                types[i].TypeSafeName() +
                                 "' compared to property '" +
                                 property +
                                 "' of type '" +
-                                typeBoxed.CleanName() +
+                                typeBoxed.TypeSafeName() +
                                 "'");
                         }
                     }
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
             if (!isCreateWindow) {
                 if (filtersSpec.FilterForEventType.Metadata.TypeClass == EventTypeTypeClass.NAMED_WINDOW) {
-                    String declaredAsName = FindNamedWindowDeclaredAsName(statements, filtersSpec.FilterForEventType.Metadata.Name);
+                    string declaredAsName = FindNamedWindowDeclaredAsName(statements, filtersSpec.FilterForEventType.Metadata.Name);
                     foreach (ContextControllerDetailKeyedItem partitionItem in keyedSpec.Items) {
                         if (partitionItem.FilterSpecActivatable.FilterForEventType.Name.Equals(declaredAsName)) {
                             foundPartition = partitionItem;
@@ -268,9 +268,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             return addendum;
         }
 
-        private static String FindNamedWindowDeclaredAsName(
+        private static string FindNamedWindowDeclaredAsName(
             IDictionary<int, ContextControllerStatementDesc> statements,
-            String name)
+            string name)
         {
             foreach (var stmtEntry in statements) {
                 StatementContext ctx = stmtEntry.Value.Lightweight.StatementContext;

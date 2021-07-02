@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             int index)
             : base(clazz, writerMember)
         {
-            this._index = index;
+            _index = index;
         }
 
         public override void Write(

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -70,14 +71,6 @@ namespace com.espertech.esper.common.@internal.@event.property
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
             return propertyDesc?.ReturnType;
-        }
-
-        public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
-            return propertyDesc?.ReturnTypeGeneric;
         }
 
         public override Type GetPropertyTypeMap(

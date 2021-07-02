@@ -172,11 +172,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                             other.EventBeanCollection, 
                             enumcoll.EventBeanCollection));
                 }
-            } else if (enumcoll.IsObjectCollection) {
+            } else if (enumcoll.IsValueCollection) {
                 return FlexCollection.Of(
                     EnumIntersectForgeEvalSet(
-                        other.ObjectCollection, 
-                        enumcoll.ObjectCollection));
+                        other.ValueCollection, 
+                        enumcoll.ValueCollection));
             }
             
             throw new ArgumentException("mismatch in FlexCollection types");

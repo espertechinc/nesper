@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.view.prior
         public string ViewName => "prior";
 
         public ViewUpdatedCollection MakeViewUpdatedCollection(
-            SortedSet<int> priorRequests,
+            ISet<int> priorRequests,
             AgentInstanceContext agentInstanceContext)
         {
             if (priorRequests.IsEmpty()) {

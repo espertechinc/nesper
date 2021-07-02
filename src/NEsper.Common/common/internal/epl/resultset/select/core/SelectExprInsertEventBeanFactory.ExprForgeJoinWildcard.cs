@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -24,13 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprEvaluator,
             ExprNodeRenderable
         {
-            private readonly int streamNum;
+            private readonly int _streamNum;
 
             public ExprForgeJoinWildcard(
                 int streamNum,
                 Type returnType)
             {
-                this.streamNum = streamNum;
+                this._streamNum = streamNum;
                 EvaluationType = returnType;
             }
 
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 bool isNewData,
                 ExprEvaluatorContext context)
             {
-                var bean = eventsPerStream[streamNum];
+                var bean = eventsPerStream[_streamNum];
 
                 return bean?.Underlying;
             }
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 methodNode.Block
                     .DeclareVar<EventBean>(
                         "bean",
-                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNum)))
+                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
                     .IfRefNullReturnNull("bean")
                     .MethodReturn(
                         CodegenExpressionBuilder.Cast(

@@ -278,6 +278,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "create unique index IndexTwo on MyInfraOne(f2 btree)",
                     "Combination of unique index with btree (range) is not supported [create unique index IndexTwo on MyInfraOne(f2 btree)]");
 
+                TryInvalidCompile(
+                    env,
+                    path,
+                    "create schema MyMap(somefield null);\n" +
+                    "create window MyWindow#keepall as MyMap;\n" +
+                    "create unique index MyIndex on MyWindow(somefield)",
+                    "Property named 'somefield' is null-typed");
+
                 // invalid insert-into unique index
                 var eplCreateTwo = namedWindow
                     ? "@Name('create') create window MyInfraTwo#keepall as SupportBean"

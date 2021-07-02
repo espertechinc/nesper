@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordInKeywordMultiTableLookupStrategyFactory factory,
             PropertyHashedEventTable[] indexes)
         {
-            this._factory = factory;
-            this._indexes = indexes;
+            _factory = factory;
+            _indexes = indexes;
             _events = new EventBean[factory.streamCountOuter + 1];
         }
 

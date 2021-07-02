@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithSelectWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSelectWildcard(true));
             execs.Add(new InfraSelectWildcard(false));
             return execs;
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithSelectWildcardSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSelectWildcardSceneTwo(true));
             execs.Add(new InfraSelectWildcardSceneTwo(false));
             return execs;
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithInsert(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsert(true));
             execs.Add(new InfraInsert(false));
             return execs;
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithUpdate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdate(true));
             execs.Add(new InfraUpdate(false));
             return execs;
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraDelete(true));
             execs.Add(new InfraDelete(false));
             return execs;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithDeleteContextPartitioned(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraDeleteContextPartitioned(true));
             execs.Add(new InfraDeleteContextPartitioned(false));
             return execs;
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithSelectCountStar(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSelectCountStar(true));
             execs.Add(new InfraSelectCountStar(false));
             return execs;
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithAggUngroupedRowForAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraAggUngroupedRowForAll(true));
             execs.Add(new InfraAggUngroupedRowForAll(false));
             return execs;
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithInClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInClause(true));
             execs.Add(new InfraInClause(false));
             return execs;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithAggUngroupedRowForGroup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraAggUngroupedRowForGroup(true));
             execs.Add(new InfraAggUngroupedRowForGroup(false));
             return execs;
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraJoin(true, true));
             execs.Add(new InfraJoin(false, false));
             execs.Add(new InfraJoin(true, false));
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithAggUngroupedRowForEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraAggUngroupedRowForEvent(true));
             execs.Add(new InfraAggUngroupedRowForEvent(false));
             return execs;
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithJoinWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraJoinWhere(true));
             execs.Add(new InfraJoinWhere(false));
             return execs;
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> With3StreamInnerJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new Infra3StreamInnerJoin(rep, true));
                 execs.Add(new Infra3StreamInnerJoin(rep, false));
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithExecuteFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraExecuteFilter(true));
             execs.Add(new InfraExecuteFilter(false));
             return execs;
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInvalid(true));
             execs.Add(new InfraInvalid(false));
             return execs;
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithSelectDistinct(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSelectDistinct(true));
             execs.Add(new InfraSelectDistinct(false));
             return execs;
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static void DoubleInt(SupportBean bean)
         {
-            bean.IntPrimitive = bean.IntPrimitive * 2;
+            bean.IntPrimitive *= 2;
         }
 
         private static void AssertCtxInfraCountPerCode(
@@ -1836,10 +1836,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"a", 1}});
 
                 // try enum-value insert
-                var epl = "create schema MyMode (Mode " + typeof(SupportEnum).Name + ");\n" +
+                var epl = "create schema MyMode (Mode " + nameof(SupportEnum) + ");\n" +
                           (namedWindow
                               ? "@Name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
-                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
+                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + nameof(SupportEnum) + ");\n");
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAF(
                     "insert into MyInfraTwo select " +

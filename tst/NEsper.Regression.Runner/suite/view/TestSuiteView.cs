@@ -594,6 +594,9 @@ namespace com.espertech.esper.regressionrun.suite.view
 
             [Test, RunInApplicationDomain]
             public void WithUniqueAndFirstLength() => RegressionRunner.Run(_session, ViewIntersect.WithUniqueAndFirstLength());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithGroupTimeLength() => RegressionRunner.Run(_session, ViewIntersect.WithGroupTimeLength());
         }
 
         /// <summary>

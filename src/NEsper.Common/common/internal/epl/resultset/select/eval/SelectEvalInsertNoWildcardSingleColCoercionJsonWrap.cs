@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 			    typeof(WrapperEventType),
 			    Cast(typeof(WrapperEventType), EventTypeUtility.ResolveTypeCodegen(wrapper, EPStatementInitServicesConstants.REF)));
 		    var method = codegenMethodScope
-			    .MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
+			    .MakeChild(typeof(EventBean), GetType(), codegenClassScope)
 			    .AddParam(evaluationType, "result")
 			    .Block
 			    .DeclareVar(typeof(string), "json", Cast(typeof(string), Ref("result")))

@@ -39,49 +39,49 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithTableArrayAssignmentBoxed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableArrayAssignmentBoxed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableEMACompute(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableEMACompute());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMergeTwoTables(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMergeTwoTables());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMergeSelectWithAggReadAndEnum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMergeSelectWithAggReadAndEnum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMergeWhereWithMethodRead(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMergeWhereWithMethodRead());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnMergePlainPropsAnyKeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOnMergePlainPropsAnyKeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableOnMergeSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableOnMergeSimple());
             return execs;
         }

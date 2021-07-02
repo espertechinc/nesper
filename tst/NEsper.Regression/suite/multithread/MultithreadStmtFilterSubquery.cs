@@ -44,9 +44,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.SendEventBean(new SupportBean_S0(1));
 
             var insertThread = new Thread(new InsertRunnable(env.Runtime, 1000).Run);
-            insertThread.Name = typeof(MultithreadStmtFilterSubquery).Name + "-insert";
+            insertThread.Name = nameof(MultithreadStmtFilterSubquery) + "-insert";
             var filterThread = new Thread(new FilterRunnable(env.Runtime, 1000).Run);
-            filterThread.Name = typeof(MultithreadStmtFilterSubquery).Name + "-filter";
+            filterThread.Name = nameof(MultithreadStmtFilterSubquery) + "-filter";
 
             log.Info("Starting threads");
             insertThread.Start();
@@ -67,11 +67,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var insertThread = new Thread(
                 new InsertRunnable(env.Runtime, 1000).Run);
-            insertThread.Name = typeof(MultithreadStmtFilterSubquery).Name + "-insert";
+            insertThread.Name = nameof(MultithreadStmtFilterSubquery) + "-insert";
 
             var filterThread = new Thread(
                 new FilterRunnable(env.Runtime, 1000).Run);
-            filterThread.Name = typeof(MultithreadStmtFilterSubquery).Name + "-filter";
+            filterThread.Name = nameof(MultithreadStmtFilterSubquery) + "-filter";
 
             log.Info("Starting threads");
             insertThread.Start();

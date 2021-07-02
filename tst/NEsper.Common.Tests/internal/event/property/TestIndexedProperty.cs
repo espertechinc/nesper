@@ -65,10 +65,9 @@ namespace com.espertech.esper.common.@internal.@event.property
         [Test]
         public void TestGetPropertyType()
         {
-            Type[] expected = {typeof(int), typeof(int), typeof(int), typeof(int)};
             for (var i = 0; i < indexed.Length; i++) {
                 Assert.AreEqual(
-                    expected[i],
+                    typeof(int),
                     indexed[i]
                         .GetPropertyType(
                             eventType,

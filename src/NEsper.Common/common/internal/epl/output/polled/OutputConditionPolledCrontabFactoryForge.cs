@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public sealed class OutputConditionPolledCrontabFactoryForge : OutputConditionPolledFactoryForge
     {
-        private readonly ExprNode[] expressions;
+        private readonly ExprNode[] _expressions;
 
         public OutputConditionPolledCrontabFactoryForge(
             IList<ExprNode> list,
@@ -33,14 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         {
             ExprValidationContext validationContext =
                 new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services).Build();
-            expressions = new ExprNode[list.Count];
+            _expressions = new ExprNode[list.Count];
             int count = 0;
             foreach (ExprNode parameters in list) {
                 ExprNode node = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.OUTPUTLIMIT,
                     parameters,
                     validationContext);
-                expressions[count++] = node;
+                _expressions[count++] = node;
             }
         }
 
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenClassScope classScope)
         {
             return NewInstance<OutputConditionPolledCrontabFactory>(
-                ExprNodeUtilityCodegen.CodegenEvaluators(expressions, parent, this.GetType(), classScope));
+                ExprNodeUtilityCodegen.CodegenEvaluators(_expressions, parent, GetType(), classScope));
         }
     }
 } // end of namespace

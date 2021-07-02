@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
-            CodegenExpressionBuilder.TraverseMultiple(parameters, consumer);
+            TraverseMultiple(parameters, consumer);
         }
     }
 }

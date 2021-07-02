@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -30,12 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 	    public EnumArrayOfEvent(ExprDotEvalParamLambda lambda, Type arrayComponentType) : base(lambda)
 	    {
-	        this._arrayComponentType = arrayComponentType;
+	        _arrayComponentType = arrayComponentType;
 	    }
 
 	    public override EnumEval EnumEvaluator {
 		    get {
-			    ExprEvaluator inner = InnerExpression.ExprEvaluator;
+			    var inner = InnerExpression.ExprEvaluator;
 
 			    return new ProxyEnumEval(
 				    (
@@ -51,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					    var beans = (ICollection<EventBean>) enumcoll;
 					    var count = -1;
 
-					    foreach (EventBean next in beans) {
+					    foreach (var next in beans) {
 						    count++;
 						    eventsLambda[StreamNumLambda] = next;
 						    var item = inner.Evaluate(eventsLambda, isNewData, context);
@@ -63,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		    }
 	    }
 
-	    public override Type ReturnType() {
+	    public override Type ReturnTypeOfMethod() {
 	        return TypeHelper.GetArrayType(_arrayComponentType);
 	    }
 
@@ -71,8 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	        return NewArrayByLength(_arrayComponentType, Constant(0));
 	    }
 
-	    public override void InitBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
-	        Type arrayType = TypeHelper.GetArrayType(_arrayComponentType);
+	    public override void InitBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope)
+	    {
+		    var arrayType = ReturnTypeOfMethod();
 	        block.DeclareVar(arrayType, "result", NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
 	            .DeclareVar<int>("count", Constant(0));
 	    }

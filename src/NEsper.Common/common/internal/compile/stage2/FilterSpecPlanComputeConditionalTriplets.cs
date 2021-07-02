@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             if (plan.FilterNegate != null) {
                 var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     return null;
                 }
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             foreach (var path in paths) {
                 var pass = true;
                 var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     pass = false;
                 }
 
@@ -83,16 +83,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             var triplets = path.Triplets;
             var valueList = new List<FilterValueSetParam>(triplets.Length);
-            var count = 0;
             foreach (var triplet in triplets) {
                 var controlResult = triplet.TripletConfirm?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (controlResult != null && true.Equals(controlResult)) {
                     continue;
                 }
 
-                FilterValueSetParam valueParam = triplet.Param.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                var valueParam = triplet.Param.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
                 valueList.Add(valueParam);
-                count++;
             }
 
             return valueList.ToArray();

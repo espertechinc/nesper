@@ -50,8 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope,
-                            true),
+                            context.ClassScope),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
                         ConstantNull()));
@@ -99,8 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope,
-                            true),
+                            context.ClassScope),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
                         ConstantNull()))
@@ -144,8 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.IndexNode,
                             method, 
-                            classScope,
-                            true),
+                            classScope),
                         ConstantNull(),
                         ConstantTrue(),
                         ConstantNull()));

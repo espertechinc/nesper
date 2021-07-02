@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprNode validated,
             Type targetType)
         {
-            this._widener = widener;
-            this._validated = validated;
-            this._targetType = targetType;
+            _widener = widener;
+            _validated = validated;
+            _targetType = targetType;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression inner = _validated.Forge.EvaluateCodegen(
+            var inner = _validated.Forge.EvaluateCodegen(
                 _validated.Forge.EvaluationType,
                 codegenMethodScope,
                 exprSymbol,

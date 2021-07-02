@@ -14,6 +14,7 @@ using System.Xml;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -531,6 +532,17 @@ namespace com.espertech.esper.common.@internal.support
                 fragmentBean[0].EventType,
                 fragmentType.FragmentType);
             AssertConsistency(fragmentBean[0]);
+        }
+
+        public static void AssertPropertiesTypes(
+            EventType eventType,
+            string names,
+            params Type[] type)
+        {
+            String[] split = names.SplitCsv();
+            for (int i = 0; i < split.Length; i++) {
+                ScopeTestHelper.AssertEquals("Type for " + split[i], type[i], eventType.GetPropertyType(split[i]));
+            }
         }
     }
 } // end of namespace

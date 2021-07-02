@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.IO;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -33,68 +35,69 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             WithStaticMethodLocalAndCreateClassTogether(execs);
             WithInvalidCompile(execs);
             WithDocSamples(execs);
+            WithCompilerInlinedClassInspectionOption(execs);
             return execs;
         }
 
         public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassDocSamples());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassInvalidCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodLocalAndCreateClassTogether(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodLocalAndCreateClassTogether());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodCreateClassWithPackageName(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodCreateClassWithPackageName());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodLocalWithPackageName(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodLocalWithPackageName());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodCreateFAFQuery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodCreateFAFQuery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodLocalFAFQuery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodLocalFAFQuery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodCreateCompileVsRuntime(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodCreateCompileVsRuntime());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticMethodCreate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodCreate(false));
             execs.Add(new ExprClassStaticMethodCreate(true));
             return execs;
@@ -102,10 +105,41 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
         public static IList<RegressionExecution> WithStaticMethodLocal(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodLocal(false));
             execs.Add(new ExprClassStaticMethodLocal(true));
             return execs;
+        }
+        
+        public static IList<RegressionExecution> WithCompilerInlinedClassInspectionOption(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ExprClassCompilerInlinedClassInspectionOption());
+            return execs;
+        }
+
+        internal class ExprClassCompilerInlinedClassInspectionOption : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "inlined_class \"\"\"\n" +
+                          "  using System;\n" +
+                          "  using System.IO;\n" +
+                          "  public class MyUtility {\n" +
+                          "    public static void fib(int n) {\n" +
+                          "      Console.Out.WriteLine(Directory.GetFiles(\".\"));\n" +
+                          "    }\n" +
+                          "  }\n" +
+                          "\"\"\"\n" +
+                          "@name('s0') select MyUtility.fib(IntPrimitive) from SupportBean";
+
+                var support = new MySupportInlinedClassInspection();
+                env.Compile(epl, compilerOptions => compilerOptions.InlinedClassInspection = support);
+
+                Assert.AreEqual(1, support.contexts.Count);
+                var ctx = support.contexts[0];
+                //Assert.AreEqual("MyUtility", ctx.getJaninoClassFiles()[0].getThisClassName());
+            }
         }
 
         private class ExprClassDocSamples : RegressionExecution
@@ -375,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                                "        }\n" +
                                "    }\n" +
                                "}\n" +
-                               "\"\"\"\n";
+                               "\"\"\"";
                 env.CompileDeploy(_soda, eplClass, path);
                 env.CompileDeploy(_soda, $"@Name('s0') select {namespc}.MyClass.DoIt(TheString) as c0 from SupportBean", path);
                 env.AddListener("s0");
@@ -431,6 +465,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             public string DoIt(string parameter)
             {
                 return "|" + parameter + "|";
+            }
+        }
+
+        internal class MySupportInlinedClassInspection : InlinedClassInspectionOption
+        {
+            internal IList<InlinedClassInspectionContext> contexts = new List<InlinedClassInspectionContext>();
+            public void Visit(InlinedClassInspectionContext env)
+            {
+                contexts.Add(env);
             }
         }
     }

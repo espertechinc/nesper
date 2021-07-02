@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.bean;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -316,20 +317,86 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventBeanPropertyResolutionFragment()
-        {
-            RegressionRunner.Run(session, EventBeanPropertyResolutionFragment.Executions());
+        public void TestEventBeanPropertyAccessPerformance() {
+            RegressionRunner.Run(session, new EventBeanPropertyAccessPerformance());
         }
         
         [Test, RunInApplicationDomain]
-        public void TestEventBeanPropertyAccessPerformance() {
-            RegressionRunner.Run(session, new EventBeanPropertyAccessPerformance());
+        public void TestEventBeanSchemaGenericType() {
+            RegressionRunner.Run(session, EventBeanSchemaGenericType.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionWDefaults()
         {
             RegressionRunner.Run(session, EventBeanPropertyResolutionWDefaults.Executions());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventBeanPropertyResolutionFragment
+        /// <code>
+        /// RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEventBeanPropertyResolutionFragment : AbstractTestBase
+        {
+            public TestEventBeanPropertyResolutionFragment() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithFragmentMapMulti() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithFragmentMapMulti());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragment3Level() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithObjectArrayFragment3Level());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMap3Level() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithMapFragmentMap3Level());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragmentBeans() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithObjectArrayFragmentBeans());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMapBeans() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithMapFragmentMapBeans());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragmentTransposedMapEventBean() => RegressionRunner.Run(
+                _session,
+                EventBeanPropertyResolutionFragment.WithObjectArrayFragmentTransposedMapEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentTransposedMapEventBean() => RegressionRunner.Run(
+                _session,
+                EventBeanPropertyResolutionFragment.WithMapFragmentTransposedMapEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMapUnnamed() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithMapFragmentMapUnnamed());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragmentObjectArrayNested() => RegressionRunner.Run(
+                _session,
+                EventBeanPropertyResolutionFragment.WithObjectArrayFragmentObjectArrayNested());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMapNested() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithMapFragmentMapNested());
+
+            [Test, RunInApplicationDomain]
+            public void WithNativeBeanFragment() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithNativeBeanFragment());
+
+            [Test, RunInApplicationDomain]
+            public void WithWrapperFragmentWithObjectArray() => RegressionRunner.Run(
+                _session,
+                EventBeanPropertyResolutionFragment.WithWrapperFragmentWithObjectArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithWrapperFragmentWithMap() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithWrapperFragmentWithMap());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArraySimpleTypes() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithObjectArraySimpleTypes());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapSimpleTypes() => RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.WithMapSimpleTypes());
         }
     }
 } // end of namespace

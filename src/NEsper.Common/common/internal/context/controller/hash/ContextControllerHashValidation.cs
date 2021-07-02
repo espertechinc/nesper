@@ -21,23 +21,23 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashValidation : ContextControllerPortableInfo
     {
-        private readonly ContextControllerHashValidationItem[] items;
+        private readonly ContextControllerHashValidationItem[] _items;
 
         public ContextControllerHashValidation(ContextControllerHashValidationItem[] items)
         {
-            this.items = items;
+            this._items = items;
         }
 
         public ContextControllerHashValidationItem[] GetItems()
         {
-            return items;
+            return _items;
         }
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            CodegenExpression[] init = new CodegenExpression[items.Length];
+            CodegenExpression[] init = new CodegenExpression[_items.Length];
             for (int i = 0; i < init.Length; i++) {
-                init[i] = items[i].Make(addInitSvc);
+                init[i] = _items[i].Make(addInitSvc);
             }
 
             return NewInstance<ContextControllerHashValidation>(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             StatementCompileTimeServices compileTimeServices)
         {
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(
-                items.Select(i => (Supplier<EventType>) i.Get),
+                _items.Select(i => (Supplier<EventType>) i.Get),
                 contextName,
                 spec,
                 compileTimeServices);

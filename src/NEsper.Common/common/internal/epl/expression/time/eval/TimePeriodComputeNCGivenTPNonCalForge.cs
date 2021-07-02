@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(TimePeriodComputeNCGivenTPNonCalEval),
-                this.GetType(),
+                GetType(),
                 classScope);
 
             method.Block.DeclareVar<TimePeriodComputeNCGivenTPNonCalEval>(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                 ExprNodeUtilityCodegen.CodegenEvaluators(
                     timePeriodForge.Forges,
                     method,
-                    this.GetType(),
+                    GetType(),
                     classScope));
             method.Block.SetProperty(
                 Ref("eval"),

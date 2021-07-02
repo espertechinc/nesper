@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StatementAgentInstanceFactoryForge forge)
             : base(className, namespaceScope)
         {
-            this._forge = forge;
+            _forge = forge;
         }
 
         protected override Type TypeOfFactory()

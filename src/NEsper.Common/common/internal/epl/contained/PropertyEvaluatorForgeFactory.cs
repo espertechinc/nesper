@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -113,6 +114,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     }
 
                     var returnType = validatedExprNode.Forge.EvaluationType;
+                    if (returnType.IsNullTypeSafe()) {
+                        throw new ExprValidationException("Expression returns a null-typed value");
+                    }
 
                     // when the expression returns an array, allow array values to become the column of the single-column event type
                     if (returnType.IsArray &&
@@ -160,9 +164,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                                         "Event type '" +
                                         streamEventType.Name +
                                         "' underlying type " +
-                                        streamEventType.UnderlyingType.CleanName() +
+                                        streamEventType.UnderlyingType.TypeSafeName() +
                                         " cannot be assigned a value of type " +
-                                        returnType.CleanName());
+                                        returnType.TypeSafeName());
                                 }
                             }
                             else {
@@ -171,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                                         "Event type '" +
                                         streamEventType.Name +
                                         "' requires string-type array and cannot be assigned from value of type " +
-                                        returnType.CleanName());
+                                        returnType.TypeSafeName());
                                 }
                             }
                         }

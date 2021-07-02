@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.plugin
 			ValidateDTMStaticMethodAllowNull(inputType, reformatOp.DateTimeOffsetOp, typeof(DateTimeOffset), reformatOpParams);
 			ValidateDTMStaticMethodAllowNull(inputType, reformatOp.DateTimeOp, typeof(DateTime), reformatOpParams);
 			
-			if (reformatOp.ReturnType == null || reformatOp.ReturnType == typeof(void)) {
+			if (reformatOp.ReturnType == null || reformatOp.ReturnType.IsVoid()) {
 				throw new ExprValidationException("Invalid return type for reformat operation, return type is " + reformatOp.ReturnType);
 			}
 		}

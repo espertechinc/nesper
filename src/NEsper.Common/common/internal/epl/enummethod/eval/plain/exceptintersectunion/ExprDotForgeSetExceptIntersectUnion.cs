@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             DotMethodFP footprint,
             IList<ExprNode> parameters,
             EnumMethodEnum enumMethod,
-            String enumMethodUsedName,
+            string enumMethodUsedName,
             EventType inputEventType,
             Type collectionComponentType,
             ExprValidationContext validationContext)
@@ -43,12 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 validationContext.StatementRawInfo,
                 validationContext.StatementCompileTimeService);
 
-            EPType type;
+            EPChainableType type;
             if (inputEventType != null) {
-                type = EPTypeHelper.CollectionOfEvents(inputEventType);
+                type = EPChainableTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                type = EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
             }
 
             if (inputEventType != null) {
@@ -81,6 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 }
             }
             else {
+                
                 var setType = enumSrc.Enumeration?.ComponentTypeCollection;
                 if (setType == null) {
                     var message = "Enumeration method '" +
@@ -110,12 +112,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
         private class EnumForgeDescFactoryEIU : EnumForgeDescFactory
         {
             private readonly EnumMethodEnum _enumMethod;
-            private readonly EPType _type;
+            private readonly EPChainableType _type;
             private readonly ExprDotEnumerationSourceForge _enumSrc;
 
             public EnumForgeDescFactoryEIU(
                 EnumMethodEnum enumMethod,
-                EPType type,
+                EPChainableType type,
                 ExprDotEnumerationSourceForge enumSrc)
             {
                 _enumMethod = enumMethod;
@@ -133,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 int streamCountIncoming,
                 StatementCompileTimeServices services)
             {
-                var scalar = _type is ClassMultiValuedEPType;
+                var scalar = _type is EPChainableTypeClass;
                 EnumForge forge = _enumMethod switch {
                     EnumMethodEnum.UNION => new EnumUnionForge(streamCountIncoming, _enumSrc.Enumeration, scalar),
                     EnumMethodEnum.INTERSECT => new EnumIntersectForge(streamCountIncoming, _enumSrc.Enumeration, scalar),

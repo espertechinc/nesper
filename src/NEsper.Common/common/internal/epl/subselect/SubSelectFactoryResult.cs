@@ -18,61 +18,61 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
     public class SubSelectFactoryResult
     {
-        private readonly ViewableActivationResult subselectActivationResult;
-        private readonly SubordTableLookupStrategy lookupStrategy;
-        private readonly SubselectAggregationPreprocessorBase subselectAggregationPreprocessor;
-        private readonly AggregationService aggregationService;
-        private readonly PriorEvalStrategy priorStrategy;
-        private readonly PreviousGetterStrategy previousStrategy;
-        private readonly Viewable subselectView;
-        private readonly EventTable[] indexes;
+        private readonly ViewableActivationResult _subselectActivationResult;
+        private readonly SubordTableLookupStrategy _lookupStrategy;
+        private readonly SubselectAggregationPreprocessorBase _subselectAggregationPreprocessor;
+        private readonly AggregationService _aggregationService;
+        private readonly PriorEvalStrategy _priorStrategy;
+        private readonly PreviousGetterStrategy _previousStrategy;
+        private readonly Viewable _subselectView;
+        private readonly EventTable[] _indexes;
 
         public SubSelectFactoryResult(
             ViewableActivationResult subselectActivationResult,
             SubSelectStrategyRealization realization,
             SubordTableLookupStrategy lookupStrategy)
         {
-            this.subselectActivationResult = subselectActivationResult;
-            this.lookupStrategy = lookupStrategy;
-            this.subselectAggregationPreprocessor = realization.SubselectAggregationPreprocessor;
-            this.aggregationService = realization.AggregationService;
-            this.priorStrategy = realization.PriorStrategy;
-            this.previousStrategy = realization.PreviousStrategy;
-            this.subselectView = realization.SubselectView;
-            this.indexes = realization.Indexes;
+            _subselectActivationResult = subselectActivationResult;
+            _lookupStrategy = lookupStrategy;
+            _subselectAggregationPreprocessor = realization.SubselectAggregationPreprocessor;
+            _aggregationService = realization.AggregationService;
+            _priorStrategy = realization.PriorStrategy;
+            _previousStrategy = realization.PreviousStrategy;
+            _subselectView = realization.SubselectView;
+            _indexes = realization.Indexes;
         }
 
         public ViewableActivationResult SubselectActivationResult {
-            get => subselectActivationResult;
+            get => _subselectActivationResult;
         }
 
         public SubordTableLookupStrategy LookupStrategy {
-            get => lookupStrategy;
+            get => _lookupStrategy;
         }
 
         public SubselectAggregationPreprocessorBase SubselectAggregationPreprocessor {
-            get => subselectAggregationPreprocessor;
+            get => _subselectAggregationPreprocessor;
         }
 
         public AggregationService AggregationService {
-            get => aggregationService;
+            get => _aggregationService;
         }
 
         public PriorEvalStrategy PriorStrategy {
-            get => priorStrategy;
+            get => _priorStrategy;
         }
 
         public PreviousGetterStrategy PreviousStrategy {
-            get => previousStrategy;
+            get => _previousStrategy;
         }
 
         public Viewable SubselectView {
-            get => subselectView;
+            get => _subselectView;
         }
 
         public EventTable[] GetIndexes()
         {
-            return indexes;
+            return _indexes;
         }
     }
 } // end of namespace

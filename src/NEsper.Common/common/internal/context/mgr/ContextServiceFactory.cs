@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.controller.hash;
@@ -20,17 +21,22 @@ namespace com.espertech.esper.common.@internal.context.mgr
     public interface ContextServiceFactory
     {
         ContextStatementEventEvaluator ContextStatementEventEvaluator { get; }
-        ContextControllerKeyedFactory KeyedFactory();
+        ContextControllerKeyedFactory KeyedFactory(
+            StateMgmtSetting terminationStateMgmtSettings,
+            StateMgmtSetting ctxStateMgmtSettings);
 
-        ContextControllerCategoryFactory CategoryFactory();
+        ContextControllerCategoryFactory CategoryFactory(StateMgmtSetting stateMgmtSettings);
 
-        ContextControllerHashFactory HashFactory();
+        ContextControllerHashFactory HashFactory(StateMgmtSetting stateMgmtSettings);
 
-        ContextControllerInitTermFactory InitTermFactory();
+        ContextControllerInitTermFactory InitTermFactory(
+            StateMgmtSetting distinctStateMgmtSettings,
+            StateMgmtSetting ctxStateMgmtSettings);
 
         ContextPartitionIdService GetContextPartitionIdService(
             StatementContext statementContextCreateContext,
-            DataInputOutputSerde[] bindings);
+            DataInputOutputSerde[] bindings,
+            StateMgmtSetting stateMgmtSettings);
 
         DataInputOutputSerde[] GetContextPartitionKeyBindings(
             ContextDefinition contextDefinition);

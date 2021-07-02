@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.collection
     {
         private readonly EventBean[] _events;
         private int _index;
-        private int? _limit;
+        private readonly int? _limit;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ArrayEventEnumerator" /> class.

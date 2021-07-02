@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class WrapperEventBeanMapCopyMethodForge : EventBeanCopyMethodForge
     {
-        private readonly WrapperEventType wrapperEventType;
+        private readonly WrapperEventType _wrapperEventType;
 
         /// <summary>
         ///     Ctor.
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="wrapperEventType">wrapper type</param>
         public WrapperEventBeanMapCopyMethodForge(WrapperEventType wrapperEventType)
         {
-            this.wrapperEventType = wrapperEventType;
+            this._wrapperEventType = wrapperEventType;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
@@ -36,13 +36,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             return NewInstance<WrapperEventBeanMapCopyMethod>(
                 Cast(
                     typeof(WrapperEventType),
-                    EventTypeUtility.ResolveTypeCodegen(wrapperEventType, EPStatementInitServicesConstants.REF)),
+                    EventTypeUtility.ResolveTypeCodegen(_wrapperEventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new WrapperEventBeanMapCopyMethod(wrapperEventType, eventBeanTypedEventFactory);
+            return new WrapperEventBeanMapCopyMethod(_wrapperEventType, eventBeanTypedEventFactory);
         }
     }
 } // end of namespace

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             SubordTableLookupStrategy tableLookupStrategy)
         {
             this.joinExpr = joinExpr;
-            this.eventsPerStream = new EventBean[2];
+            eventsPerStream = new EventBean[2];
             this.tableLookupStrategy = tableLookupStrategy;
         }
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name + " " + " strategy " + tableLookupStrategy.ToQueryPlan();
+            return GetType().Name + " " + " strategy " + tableLookupStrategy.ToQueryPlan();
         }
     }
 } // end of namespace

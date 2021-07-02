@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     return Variable.Type;
                 }
 
-                return EPTypeHelper.GetClassSingleValued(ChainForge[ChainForge.Length - 1].TypeInfo);
+                return EPChainableTypeClass.FromInputOrNull(ChainForge[ChainForge.Length - 1].TypeInfo);
             }
         }
 

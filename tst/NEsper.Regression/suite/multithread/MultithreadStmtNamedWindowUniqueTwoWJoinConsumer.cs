@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             var runtime = EPRuntimeProvider.GetRuntime(
-                typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "_" + runtimeNum + "_" + count++,
+                nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "_" + runtimeNum + "_" + count++,
                 config);
             runtime.Initialize();
 
@@ -100,13 +100,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             };
 
             var t1 = new Thread(runnableOne) {
-                Name = typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "-one"
+                Name = nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "-one"
             };
             var t2 = new Thread(runnableTwo) {
-                Name = typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "-two"
+                Name = nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "-two"
             };
             var t3 = new Thread(runnableThree) {
-                Name = typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "-three"
+                Name = nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "-three"
             };
             t1.Start();
             t2.Start();

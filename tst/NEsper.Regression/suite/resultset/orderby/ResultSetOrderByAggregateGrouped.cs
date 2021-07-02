@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol", "Volume").Add(Expressions.Sum("Price"), "mySum");
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name)
+                    FilterStream.Create(nameof(SupportMarketDataBean))
                         .AddView(View.Create("length", Expressions.Constant(20))));
                 model.GroupByClause = GroupByClause.Create("Symbol");
                 model.OutputLimitClause = OutputLimitClause.Create(6);

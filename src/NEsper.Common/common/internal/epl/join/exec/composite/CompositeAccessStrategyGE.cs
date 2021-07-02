@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
-            var comparable = base.EvaluateLookup(theEvent, context);
+            var comparable = EvaluateLookup(theEvent, context);
             optionalKeyCollector?.Add(comparable);
 
             if (comparable == null) {
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
-            var comparable = base.EvaluatePerStream(eventPerStream, context);
+            var comparable = EvaluatePerStream(eventPerStream, context);
             optionalKeyCollector?.Add(comparable);
 
             if (comparable == null) {

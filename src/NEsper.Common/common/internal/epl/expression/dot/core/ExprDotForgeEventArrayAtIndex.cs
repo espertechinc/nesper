@@ -23,18 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
 	public class ExprDotForgeEventArrayAtIndex : ExprDotForge
 	{
-		private readonly EPType _returnType;
+		private readonly EPChainableType _returnType;
 		private readonly ExprNode _indexExpression;
 
 		public ExprDotForgeEventArrayAtIndex(
-			EPType returnType,
+			EPChainableType returnType,
 			ExprNode indexExpression)
 		{
 			_returnType = returnType;
 			_indexExpression = indexExpression;
 		}
 
-		public EPType TypeInfo => _returnType;
+		public EPChainableType TypeInfo => _returnType;
 
 		public void Visit(ExprDotEvalVisitor visitor)
 		{

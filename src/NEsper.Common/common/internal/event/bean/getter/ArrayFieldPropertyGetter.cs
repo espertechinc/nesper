@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                field.FieldType.GetElementType(),
-                null)
+                field.FieldType.GetElementType())
         {
             _index = index;
             _field = field;
@@ -65,8 +64,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return GetBeanProp(obj.Underlying);
         }
-
-        public override Type BeanPropType => _field.FieldType.GetElementType().GetBoxedType();
 
         public override bool IsExistsProperty(EventBean eventBean)
         {

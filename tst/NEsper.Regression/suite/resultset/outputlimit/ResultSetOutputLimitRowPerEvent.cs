@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
     {
         private const string JOIN_KEY = "KEY";
         private const string CATEGORY = "Aggregated and Un-grouped";
-        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
+        private static readonly string EVENT_NAME = nameof(SupportMarketDataBean);
 
         public static IList<RegressionExecution> Executions()
         {

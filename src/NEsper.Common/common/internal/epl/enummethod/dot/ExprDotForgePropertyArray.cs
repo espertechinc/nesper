@@ -26,12 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 	public class ExprDotForgePropertyArray : ExprDotEval, ExprDotForge {
 
 	    private readonly EventPropertyGetterSPI _getter;
-	    private readonly EPType _returnType;
+	    private readonly EPChainableType _returnType;
 	    private readonly ExprNode _indexExpression;
 	    private readonly Type _arrayType;
 	    private readonly string _propertyName;
 
-	    public ExprDotForgePropertyArray(EventPropertyGetterSPI getter, EPType returnType, ExprNode indexExpression, Type arrayType, string propertyName) {
+	    public ExprDotForgePropertyArray(EventPropertyGetterSPI getter, EPChainableType returnType, ExprNode indexExpression, Type arrayType, string propertyName) {
 	        _getter = getter;
 	        _returnType = returnType;
 	        _indexExpression = indexExpression;
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 	        return array.GetValue(index.Value);
 	    }
 
-	    public EPType TypeInfo => _returnType;
+	    public EPChainableType TypeInfo => _returnType;
 
 	    public void Visit(ExprDotEvalVisitor visitor) {
 	        visitor.VisitPropertySource();
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 	    public ExprDotForge DotForge => this;
 
 	    public CodegenExpression Codegen(CodegenExpression inner, Type innerType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope) {
-	        Type type = EPTypeHelper.GetCodegenReturnType(_returnType);
+	        Type type = EPChainableTypeHelper.GetCodegenReturnType(_returnType);
 	        CodegenMethod method = parent
 		        .MakeChild(type, typeof(ExprDotForgeProperty), classScope)
 		        .AddParam(innerType, "target").AddParam(typeof(int?), "index");

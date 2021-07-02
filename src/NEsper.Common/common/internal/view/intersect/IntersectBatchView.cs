@@ -39,33 +39,35 @@ namespace com.espertech.esper.common.@internal.view.intersect
         IntersectViewMarker,
         ViewDataVisitableContainer
     {
-        internal readonly AgentInstanceContext agentInstanceContext;
-        internal readonly IntersectViewFactory factory;
-        internal readonly View[] views;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly IntersectViewFactory _factory;
+        private readonly View[] _views;
 
         public IntersectBatchView(
             AgentInstanceViewFactoryChainContext agentInstanceContext,
             IntersectViewFactory factory,
             IList<View> viewList)
         {
-            this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
-            this.factory = factory;
-            views = viewList.ToArray();
+            _agentInstanceContext = agentInstanceContext.AgentInstanceContext;
+            _factory = factory;
+            _views = viewList.ToArray();
 
             for (var i = 0; i < viewList.Count; i++) {
                 var view = new LastPostObserverView(i);
-                views[i].Child = view;
+                _views[i].Child = view;
                 view.Observer = this;
             }
         }
 
-        public View[] ViewContained => views;
+        public View[] ViewContained => _views;
 
-        public ViewFactory ViewFactory => factory;
+        public ViewFactory ViewFactory => _factory;
+        
+        public View[] RelatedViews => _views;
 
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (var view in views) {
+            foreach (var view in _views) {
                 (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
@@ -74,20 +76,20 @@ namespace com.espertech.esper.common.@internal.view.intersect
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _factory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_factory, newData, oldData);
 
-            var localState = factory.BatchViewLocalStatePerThread;
+            var localState = _factory.BatchViewLocalStatePerThread;
 
             // handle remove stream: post oldData to all views
             if (oldData != null && oldData.Length != 0) {
                 try {
                     localState.IsIgnoreViewIRStream = true;
-                    for (var i = 0; i < views.Length; i++) {
-                        var view = views[i];
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
+                    for (var i = 0; i < _views.Length; i++) {
+                        var view = _views[i];
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newData, oldData);
                         view.Update(newData, oldData);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
                 finally {
@@ -99,12 +101,12 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 // post to all non-batch views first to let them decide the remove stream, if any
                 try {
                     localState.IsCaptureIRNonBatch = true;
-                    for (var i = 0; i < views.Length; i++) {
-                        if (i != factory.BatchViewIndex) {
-                            var view = views[i];
-                            agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
+                    for (var i = 0; i < _views.Length; i++) {
+                        if (i != _factory.BatchViewIndex) {
+                            var view = _views[i];
+                            _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newData, oldData);
                             view.Update(newData, oldData);
-                            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                         }
                     }
                 }
@@ -115,19 +117,19 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 // if there is any data removed from non-batch views, remove from all views
                 // collect removed events
                 localState.RemovedEvents.Clear();
-                for (var i = 0; i < views.Length; i++) {
+                for (var i = 0; i < _views.Length; i++) {
                     if (localState.OldEventsPerView[i] != null) {
-                        for (var j = 0; j < views.Length; j++) {
+                        for (var j = 0; j < _views.Length; j++) {
                             if (i == j) {
                                 continue;
                             }
 
-                            var view = views[j];
+                            var view = _views[j];
                             var oldEvents = localState.OldEventsPerView[i];
 
-                            agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldEvents);
+                            _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, oldEvents);
                             view.Update(null, oldEvents);
-                            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                             for (var k = 0; k < localState.OldEventsPerView[i].Length; k++) {
                                 localState.RemovedEvents.Add(localState.OldEventsPerView[i][k]);
@@ -140,7 +142,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
                 // post only new events to the batch view that have not been removed
                 EventBean[] newDataNonRemoved;
-                if (factory.IsAsymetric) {
+                if (_factory.IsAsymetric) {
                     newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(
                         newData,
                         localState.RemovedEvents,
@@ -151,21 +153,21 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 }
 
                 if (newDataNonRemoved != null) {
-                    var view = views[factory.BatchViewIndex];
-                    agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newDataNonRemoved, null);
+                    var view = _views[_factory.BatchViewIndex];
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newDataNonRemoved, null);
                     view.Update(newDataNonRemoved, null);
-                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
-        public override EventType EventType => factory.EventType;
+        public override EventType EventType => _factory.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return views[factory.BatchViewIndex].GetEnumerator();
+            return _views[_factory.BatchViewIndex].GetEnumerator();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
@@ -178,7 +180,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             EventBean[] newEvents,
             EventBean[] oldEvents)
         {
-            var localState = factory.BatchViewLocalStatePerThread;
+            var localState = _factory.BatchViewLocalStatePerThread;
 
             if (localState.IsIgnoreViewIRStream) {
                 return;
@@ -186,7 +188,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
             if (localState.IsCaptureIRNonBatch) {
                 localState.OldEventsPerView[streamId] = oldEvents;
-                if (factory.IsAsymetric) {
+                if (_factory.IsAsymetric) {
                     localState.NewEventsPerView[streamId] = newEvents;
                 }
 
@@ -194,19 +196,19 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             // handle case where irstream originates from view, i.e. timer-based
-            if (streamId == factory.BatchViewIndex) {
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newEvents, oldEvents);
+            if (streamId == _factory.BatchViewIndex) {
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newEvents, oldEvents);
                 child.Update(newEvents, oldEvents);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 if (newEvents != null) {
                     try {
                         localState.IsIgnoreViewIRStream = true;
-                        for (var i = 0; i < views.Length; i++) {
+                        for (var i = 0; i < _views.Length; i++) {
                             if (i != streamId) {
-                                agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, newEvents);
-                                views[i].Update(null, newEvents);
-                                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, newEvents);
+                                _views[i].Update(null, newEvents);
+                                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                             }
                         }
                     }
@@ -220,11 +222,11 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 if (oldEvents != null) {
                     try {
                         localState.IsIgnoreViewIRStream = true;
-                        for (var i = 0; i < views.Length; i++) {
+                        for (var i = 0; i < _views.Length; i++) {
                             if (i != streamId) {
-                                agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldEvents);
-                                views[i].Update(null, oldEvents);
-                                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, oldEvents);
+                                _views[i].Update(null, oldEvents);
+                                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                             }
                         }
                     }
@@ -237,7 +239,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            IntersectDefaultView.VisitViewContained(viewDataVisitor, factory, views);
+            IntersectDefaultView.VisitViewContained(viewDataVisitor, _factory, _views);
         }
         
         public void Transfer(AgentInstanceTransferServices services)

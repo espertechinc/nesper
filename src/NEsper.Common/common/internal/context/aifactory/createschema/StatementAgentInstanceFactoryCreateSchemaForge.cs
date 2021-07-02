@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateSchema),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<StatementAgentInstanceFactoryCreateSchema>(

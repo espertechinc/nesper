@@ -31,11 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             RandomAccessByIndexGetter randomAccessGetter,
             RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
-            this._streamNumber = streamNumber;
-            this._evalNode = evalNode;
-            this._componentType = componentType;
-            this._randomAccessGetter = randomAccessGetter;
-            this._relativeAccessGetter = relativeAccessGetter;
+            _streamNumber = streamNumber;
+            _evalNode = evalNode;
+            _componentType = componentType;
+            _randomAccessGetter = randomAccessGetter;
+            _relativeAccessGetter = relativeAccessGetter;
         }
 
         public object Evaluate(

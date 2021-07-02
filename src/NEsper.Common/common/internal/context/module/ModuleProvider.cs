@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         IDictionary<ModuleProperty, object> ModuleProperties { get; }
 
-        ModuleDependenciesRuntime ModuleDependencies { get; }
+        ModuleDependenciesRuntime GetModuleDependencies();
 
         void InitializeEventTypes(EPModuleEventTypeInitServices svc);
 

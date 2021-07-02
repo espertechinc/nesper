@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <returns>itself</returns>
         public VirtualDataWindowFactoryModeManaged SetInjectionStrategyFactoryFactory(InjectionStrategy strategy)
         {
-            this.injectionStrategyFactoryFactory = strategy;
+            injectionStrategyFactoryFactory = strategy;
             return this;
         }
     }

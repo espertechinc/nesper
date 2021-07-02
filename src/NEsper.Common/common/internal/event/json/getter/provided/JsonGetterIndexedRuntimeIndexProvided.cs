@@ -22,18 +22,18 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 	/// Property getter for Json underlying fields.
 	/// </summary>
 	public sealed class JsonGetterIndexedRuntimeIndexProvided : EventPropertyGetterIndexedSPI {
-	    private readonly FieldInfo field;
+	    private readonly FieldInfo _field;
 
 	    public JsonGetterIndexedRuntimeIndexProvided(FieldInfo field) {
-	        this.field = field;
+	        _field = field;
 	    }
 
 	    public CodegenExpression EventBeanGetIndexedCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope, CodegenExpression beanExpression, CodegenExpression key) {
-	        return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name), key);
+	        return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(CastUnderlying(_field.DeclaringType, beanExpression), _field.Name), key);
 	    }
 
 	    public object Get(EventBean eventBean, int index) {
-	        return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(eventBean.Underlying, field, index);
+	        return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(eventBean.Underlying, _field, index);
 	    }
 	}
 } // end of namespace

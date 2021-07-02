@@ -241,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public CompositeIndexQuery SetNext(CompositeIndexQuery next)
         {
-            this._next = next;
+            _next = next;
             return this;
         }
     }

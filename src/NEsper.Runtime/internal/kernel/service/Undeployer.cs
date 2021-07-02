@@ -142,7 +142,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				services.FilterSharedLookupableRepository.RemoveReferencesStatement(statement.StatementId);
 			}
 
-			var moduleDependencies = moduleProvider.ModuleDependencies;
+			var moduleDependencies = moduleProvider.GetModuleDependencies();
 			foreach (var namedWindow in moduleDependencies.PathNamedWindows) {
 				services.NamedWindowPathRegistry.RemoveDependency(namedWindow.Name, namedWindow.ModuleName, deploymentId);
 			}

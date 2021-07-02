@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
         public StmtForgeMethodSelect(StatementBaseInfo @base)
         {
-            this._base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(

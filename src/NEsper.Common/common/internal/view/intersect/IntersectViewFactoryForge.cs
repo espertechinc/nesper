@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -32,8 +33,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         DataWindowViewForgeUniqueCandidate
     {
         private readonly IList<ViewFactoryForge> intersected;
-        private int batchViewIndex = -1;
-        private bool hasAsymetric;
+        private readonly int batchViewIndex = -1;
+        private readonly bool hasAsymetric;
 
         public IntersectViewFactoryForge(IList<ViewFactoryForge> intersected)
         {
@@ -64,20 +65,21 @@ namespace com.espertech.esper.common.@internal.view.intersect
         {
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
-            this.eventType = parentEventType;
+            eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(IntersectViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Intersect";
         }
@@ -95,7 +97,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
                     factory,
                     "Intersecteds",
                     LocalMethod(
-                        MakeViewFactories(intersected, this.GetType(), method, classScope, symbols)));
+                        MakeViewFactories(intersected, GetType(), method, classScope, symbols)));
         }
 
         public override string ViewName {
@@ -147,7 +149,12 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 return null;
             }
         }
-
+        
         public override IList<ViewFactoryForge> InnerForges => intersected;
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_INTERSECT;
+        }
     }
 } // end of namespace

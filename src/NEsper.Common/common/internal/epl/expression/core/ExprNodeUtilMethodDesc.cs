@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Reflection;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -16,17 +17,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool allConstants,
             ExprForge[] childForges,
             MethodInfo reflectionMethod,
+            Type methodTargetType,
             bool isLocalInlinedClass)
         {
             IsAllConstants = allConstants;
             ChildForges = childForges;
             ReflectionMethod = reflectionMethod;
+            MethodTargetType = methodTargetType;
             IsLocalInlinedClass = isLocalInlinedClass;
         }
 
         public bool IsAllConstants { get; }
 
         public MethodInfo ReflectionMethod { get; }
+
+        public Type MethodTargetType { get; }
 
         public ExprForge[] ChildForges { get; }
         

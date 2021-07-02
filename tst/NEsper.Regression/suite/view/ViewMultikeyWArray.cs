@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -49,112 +50,112 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithLastUniqueArrayKeyDataflow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueArrayKeyDataflow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueArrayKeySubqueryInFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueArrayKeySubqueryInFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueArrayKeyNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueArrayKeyNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueArrayKeySubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueArrayKeySubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueArrayKeyUnion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueArrayKeyUnion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueArrayKeyIntersection(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueArrayKeyIntersection());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueTwoKeyAllArrayOfObject(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueTwoKeyAllArrayOfObject());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueTwoKeyAllArrayOfPrimitive(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueTwoKeyAllArrayOfPrimitive());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueOneKey2DimArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueOneKey2DimArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueOneKeyArrayOfObjectArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueOneKeyArrayOfObjectArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueOneKeyArrayOfLongPrimitive(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueOneKeyArrayOfLongPrimitive());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueThreeKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueThreeKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRank(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyRank());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupWin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyGroupWin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyFirstUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueTwoKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewMultiKeyLastUniqueTwoKey());
             return execs;
         }

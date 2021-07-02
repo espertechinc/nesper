@@ -9,6 +9,7 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 var child = forges[i];
                 var childType = child.EvaluationType.GetBoxedType();
                 var name = "r" + i;
-                if (childType == null) {
+                if (childType.IsNullTypeSafe()) {
                     args[i] = new StaticMethodCodegenArgDesc(
                         name,
                         parameterTypes[i],

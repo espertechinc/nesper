@@ -87,8 +87,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             var result = new DataMap[events.Length];
             var length = 0;
             for (var i = 0; i < result.Length; i++) {
-                if (events[i] is NaturalEventBean) {
-                    var natural = (NaturalEventBean) events[i];
+                if (events[i] is NaturalEventBean natural) {
                     result[length] = Convert(natural);
                     length++;
                 }

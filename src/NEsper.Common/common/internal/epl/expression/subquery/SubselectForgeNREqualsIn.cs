@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class SubselectForgeNREqualsIn : SubselectForgeNREqualsInBase
     {
-        private readonly ExprForge filterEval;
+        private readonly ExprForge _filterEval;
 
         public SubselectForgeNREqualsIn(
             ExprSubselectNode subselect,
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge filterEval)
             : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
         {
-            this.filterEval = filterEval;
+            this._filterEval = filterEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -46,17 +47,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
+            if (subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var left = symbols.GetAddLeftResult(method);
             method.Block.DeclareVar<bool>("hasNullRow", ConstantFalse());
             var @foreach = method.Block.ForEach(typeof(EventBean), "theEvent", symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
-                if (filterEval != null) {
+                if (_filterEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                         @foreach,
-                        filterEval.EvaluationType,
-                        filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
+                        _filterEval.EvaluationType,
+                        _filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
                 }
 
                 @foreach.IfNullReturnNull(left);

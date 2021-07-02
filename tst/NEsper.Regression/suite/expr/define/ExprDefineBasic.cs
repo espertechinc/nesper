@@ -63,182 +63,182 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
         public static IList<RegressionExecution> WithSplitStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSplitStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEventTypeAndSODA(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineEventTypeAndSODA());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNestedExpressionMultiSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineNestedExpressionMultiSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryNamedWindowCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryNamedWindowCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryNamedWindowUncorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryNamedWindowUncorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryUncorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryUncorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryJoinSameField(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryJoinSameField());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryCross(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryCross());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryMultiresult(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSubqueryMultiresult());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCaseNewMultiReturnNoElse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineCaseNewMultiReturnNoElse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSequenceAndNested(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineSequenceAndNested());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereClauseExpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineWhereClauseExpression());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnnotationOrder(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineAnnotationOrder());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoParameterVariable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineNoParameterVariable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOneParameterLambdaReturn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineOneParameterLambdaReturn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoParameterArithmetic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineNoParameterArithmetic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithScalarReturn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineScalarReturn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWildcardAndPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineWildcardAndPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregationAccess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineAggregationAccess());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregatedResult(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineAggregatedResult());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregationNoAccess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineAggregationNoAccess());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionSimpleTwoModule(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineExpressionSimpleTwoModule());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionSimpleSameModule(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineExpressionSimpleSameModule());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionSimpleSameStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprDefineExpressionSimpleSameStmt());
             return execs;
         }
@@ -248,10 +248,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             string epl)
         {
             env.CompileDeploy(epl).AddListener("s0");
-            LambdaAssertionUtil.AssertTypes(
+            SupportEventPropUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 new[] {"val1"},
-                new[] {typeof(ICollection<object>)});
+                new[] {typeof(ICollection<SupportBean>)});
 
             env.SendEventBean(new SupportBean("E1", 2));
             var outArray = env.Listener("s0")
@@ -608,7 +608,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"val1"};
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(string)});
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(string)});
 
                 env.SendEventBean(new SupportBean_ST0("ST0", 0));
                 env.SendEventBean(new SupportBean_ST1("ST1", 20));
@@ -658,7 +658,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"val1", "val2"};
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {typeof(int?), typeof(int?)});
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"val0", "val1"};
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {typeof(string), typeof(string)});
@@ -766,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"val0", "val1"};
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {typeof(string), typeof(string)});
@@ -827,13 +827,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     path);
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fieldsSelected,
-                    new[] {
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>)
-                    });
+                var inner = typeof(ICollection<IDictionary<string, object>>);
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fieldsSelected, new[] {inner, inner});
 
                 env.SendEventBean(new SupportBean("E0", 0));
                 env.SendEventBean(new SupportBean_ST0("ID0", 0));
@@ -939,11 +934,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     path);
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fieldSelected,
                     new[] {
-                        typeof(ICollection<object>)
+                        typeof(ICollection<IDictionary<string, object>>)
                     });
 
                 env.SendEventBean(new SupportBean("E0", 0));
@@ -1001,7 +996,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {typeof(int?), typeof(int?), typeof(double?), typeof(long?)});
@@ -1151,11 +1146,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new[] {"val1"},
                     new[] {
-                        typeof(ICollection<object>)
+                        typeof(ICollection<string>)
                     });
 
                 env.SendEventBean(SupportCollection.MakeString("E1,E2,E3,E4"));
@@ -1219,10 +1214,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var props = env.Statement("s0").EventType.PropertyNames;
                 EPAssertionUtil.AssertEqualsAnyOrder(props, fields);
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(fields[0]));
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(fields[1]));
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(fields[2]));
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(fields[3]));
+                var eventType = env.Statement("s0").EventType;
+                for (int i = 0; i < fields.Length; i++) {
+                    Assert.AreEqual(typeof(int?), eventType.GetPropertyType(fields[i]));
+                }
                 var getter = env.Statement("s0").EventType.GetGetter(fields[3]);
 
                 env.SendEventBean(new SupportBean("E1", 11));
@@ -1263,12 +1258,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new[] {"val1", "val2"},
                     new[] {
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>)
+                        typeof(ICollection<SupportBean_ST0>),
+                        typeof(ICollection<SupportBean_ST0>)
                     });
 
                 var theEvent = SupportBean_ST0_Container.Make3Value("E1,K1,1", "E2,K2,2", "E20,K20,20");
@@ -1318,7 +1313,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"val1", "val2"};
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {typeof(int?), typeof(int?)});
@@ -1358,7 +1353,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"val1", "val2", "val3"};
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {typeof(int?), typeof(int?), typeof(int?)});

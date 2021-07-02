@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -873,7 +874,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var keys = new SubordPropRangeKeyForge[funcs.Count];
             for (var i = 0; i < funcs.Count; i++) {
                 var func = funcs[i];
-                keys[i] = new SubordPropRangeKeyForge(func, func.Expressions[0].Forge.EvaluationType);
+                var funcType = func.Expressions[0].Forge.EvaluationType.TypeNormalized();
+                keys[i] = new SubordPropRangeKeyForge(func, funcType);
             }
 
             return keys;

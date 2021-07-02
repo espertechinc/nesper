@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprDotNodeForgeStaticMethod inner)
             : base(parent, false)
         {
-            this._inner = inner;
+            _inner = inner;
         }
 
         public override MethodInfo Method => _inner.StaticMethod;

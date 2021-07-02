@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -85,9 +86,6 @@ namespace com.espertech.esper.common.@internal.util
             TypeWidenerCustomizer customizer,
             string statementName)
         {
-            var columnTypeBoxed = columnType.GetBoxedType();
-            var targetTypeBoxed = writeablePropertyType.GetBoxedType();
-
             var custom = customizer?.WidenerFor(
                 columnName,
                 columnType,
@@ -98,27 +96,34 @@ namespace com.espertech.esper.common.@internal.util
                 return custom;
             }
 
-            if (columnType == null) {
+            if (writeablePropertyType.IsNullType()) {
+                return null;
+            }
+
+            var columnTypeBoxed = columnType.GetBoxedType();
+            var writtenTypeBoxed = writeablePropertyType.GetBoxedType();
+
+            if (columnType.IsNullTypeSafe()) {
                 if (writeablePropertyType.CanNotBeNull()) {
                     var message = "Invalid assignment of column '" +
                                   columnName +
                                   "' of null type to event property '" +
                                   writeablePropertyName +
                                   "' typed as '" +
-                                  writeablePropertyType.CleanName() +
+                                  writeablePropertyType.TypeSafeName() +
                                   "', nullable type mismatch";
                     throw new TypeWidenerException(message);
                 }
             }
-            else if (columnTypeBoxed != targetTypeBoxed) {
-                if (columnTypeBoxed == typeof(string) && targetTypeBoxed == typeof(char?)) {
+            else if (columnTypeBoxed != writtenTypeBoxed) {
+                if (columnTypeBoxed == typeof(string) && writtenTypeBoxed == typeof(char?)) {
                     return STRING_TO_CHAR_COERCER;
                 }
 
                 if (allowObjectArrayToCollectionConversion &&
                     columnTypeBoxed.IsArray &&
                     !columnTypeBoxed.GetElementType().IsValueType &&
-                    targetTypeBoxed.IsImplementsInterface(typeof(ICollection<object>))) {
+                    TypeHelper.IsImplementsInterface(columnTypeBoxed, typeof(ICollection<object>))) {
                     return OBJECT_ARRAY_TO_COLLECTION_COERCER;
                 }
                 
@@ -128,7 +133,7 @@ namespace com.espertech.esper.common.@internal.util
                 // a winning approach.
 
                 var columnTypeUnboxed = columnType.GetUnboxedType();
-                var targetTypeUnboxed = targetTypeBoxed.GetUnboxedType();
+                var targetTypeUnboxed = writtenTypeBoxed.GetUnboxedType();
 
                 if (!columnType.IsAssignmentCompatible(writeablePropertyType) && 
                     !columnTypeUnboxed.IsAssignmentCompatible(targetTypeUnboxed)) {
@@ -136,10 +141,10 @@ namespace com.espertech.esper.common.@internal.util
                     // Arrays can be assigned to each other if the underlying target types
                     // can be assigned from one another.
                     if (columnType.IsArray && 
-                        targetTypeBoxed.IsArray &&
-                        columnType.GetArrayRank() == targetTypeBoxed.GetArrayRank()) {
+                        writtenTypeBoxed.IsArray &&
+                        columnType.GetArrayRank() == writtenTypeBoxed.GetArrayRank()) {
                         var columnElementType = columnType.GetElementType();
-                        var targetElementType = targetTypeBoxed.GetElementType();
+                        var targetElementType = writtenTypeBoxed.GetElementType();
                         if (columnElementType.IsAssignmentCompatible(targetElementType)) {
                             return new TypeWidenerCompatibleArrayCoercer(
                                 columnElementType,
@@ -147,14 +152,14 @@ namespace com.espertech.esper.common.@internal.util
                         }
                     }
 
-                    var writablePropName = writeablePropertyType.CleanName();
+                    var writablePropName = writeablePropertyType.TypeSafeName();
                     if (writeablePropertyType.IsArray) {
-                        writablePropName = writeablePropertyType.GetElementType().CleanName() + "[]";
+                        writablePropName = writeablePropertyType.GetElementType().TypeSafeName() + "[]";
                     }
 
-                    var columnTypeName = columnType.CleanName();
+                    var columnTypeName = columnType.TypeSafeName();
                     if (columnType.IsArray) {
-                        columnTypeName = columnType.GetElementType().CleanName() + "[]";
+                        columnTypeName = columnType.GetElementType().TypeSafeName() + "[]";
                     }
 
                     var message = "Invalid assignment of column '" +
@@ -171,7 +176,7 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (writeablePropertyType.IsNumeric()) {
                     return new TypeWidenerBoxedNumeric(
-                        SimpleNumberCoercerFactory.GetCoercer(columnTypeBoxed, targetTypeBoxed));
+                        SimpleNumberCoercerFactory.GetCoercer(columnTypeBoxed, writtenTypeBoxed));
                 }
             }
 
@@ -460,7 +465,7 @@ namespace com.espertech.esper.common.@internal.util
         internal class TypeWidenerCompatibleArrayCoercer : TypeWidenerSPI
         {
             private Type inputElementType;
-            private Type targetElementType;
+            private readonly Type targetElementType;
 
             public TypeWidenerCompatibleArrayCoercer(
                 Type inputElementType,
@@ -468,7 +473,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 this.inputElementType = inputElementType;
                 this.targetElementType = targetElementType;
-                this.WidenResultType = targetElementType.MakeArrayType();
+                WidenResultType = targetElementType.MakeArrayType();
             }
 
             public Type WidenResultType { get; }

@@ -61,28 +61,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public static IList<RegressionExecution> WithRandomRectsWRandomQuery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexRandomRectsWRandomQuery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRandomIntPointsInSquareUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexRandomIntPointsInSquareUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRandomMovingPoints(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexRandomMovingPoints());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEdgeSubdivide(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexEdgeSubdivide(true));
             execs.Add(new EPLSpatialMXCIFEventIndexEdgeSubdivide(false));
             return execs;
@@ -90,56 +90,56 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public static IList<RegressionExecution> WithTableSubdivideDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexTableSubdivideDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableSubdivideDeepAddDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexTableSubdivideDeepAddDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableSubdivideMergeDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexTableSubdivideMergeDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithZeroWidthAndHeight(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexZeroWidthAndHeight());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableFireAndForget(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexTableFireAndForget());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerformance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexPerformance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnTriggerNWInsertRemove(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexOnTriggerNWInsertRemove(false));
             execs.Add(new EPLSpatialMXCIFEventIndexOnTriggerNWInsertRemove(true));
             return execs;
@@ -147,14 +147,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public static IList<RegressionExecution> WithUnindexed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexUnindexed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFEventIndexNamedWindowSimple());
             return execs;
         }

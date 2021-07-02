@@ -48,112 +48,112 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotInNullableCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectNotInNullableCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotInSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectNotInSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotInNullRow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectNotInNullRow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInMultiIndex(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInMultiIndex());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSingleIndex(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSingleIndex());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInNullRow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInNullRow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInNullableCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInNullableCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInNullable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInNullable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInFilterCriteria(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInFilterCriteria());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSelectWhereExpressions(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSelectWhereExpressions());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSelectWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSelectWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSelectCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSelectCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSelectOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSelectOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSelect());
             return execs;
         }
@@ -650,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 TryInvalidCompile(
                     env,
                     "@Name('s0') select IntArr in (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

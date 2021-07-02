@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -29,11 +31,11 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// </summary>
     public class UnivariateStatisticsViewForge : ViewFactoryForgeBase
     {
-        internal const string NAME = "Univariate statistics";
-        internal StatViewAdditionalPropsForge additionalProps;
-        internal ExprNode fieldExpression;
+        private const string NAME = "Univariate statistics";
+        private StatViewAdditionalPropsForge _additionalProps;
+        private ExprNode _fieldExpression;
 
-        private IList<ExprNode> viewParameters;
+        private IList<ExprNode> _viewParameters;
 
         public override string ViewName => NAME;
 
@@ -45,18 +47,19 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 true,
                 viewForgeEnv,
                 streamNumber);
@@ -68,10 +71,10 @@ namespace com.espertech.esper.common.@internal.view.derived
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            fieldExpression = validated[0];
+            _fieldExpression = validated[0];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 1, parentEventType, streamNumber, viewForgeEnv);
-            eventType = UnivariateStatisticsView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+            _additionalProps = StatViewAdditionalPropsForge.Make(validated, 1, parentEventType, streamNumber, viewForgeEnv);
+            eventType = UnivariateStatisticsView.CreateEventType(_additionalProps, viewForgeEnv, streamNumber);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -83,12 +86,12 @@ namespace com.espertech.esper.common.@internal.view.derived
                 viewForgeEnv.SerdeResolver);
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(UnivariateStatisticsViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Uni";
         }
@@ -99,14 +102,19 @@ namespace com.espertech.esper.common.@internal.view.derived
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (additionalProps != null) {
-                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
+            if (_additionalProps != null) {
+                method.Block.SetProperty(factory, "AdditionalProps", _additionalProps.Codegen(method, classScope));
             }
 
             method.Block.SetProperty(
                 factory,
                 "FieldEval",
-                CodegenEvaluator(fieldExpression.Forge, method, GetType(), classScope));
+                CodegenEvaluator(_fieldExpression.Forge, method, GetType(), classScope));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_UNIVARIATESTAT;
         }
     }
 } // end of namespace

@@ -20,25 +20,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
     public class AggregationForgeFactoryAccessCountMinSketchState : AggregationForgeFactoryAccessBase
     {
-        private readonly ExprAggMultiFunctionCountMinSketchNode parent;
-        private readonly AggregationStateCountMinSketchForge stateFactory;
+        private readonly ExprAggMultiFunctionCountMinSketchNode _parent;
+        private readonly AggregationStateCountMinSketchForge _stateFactory;
 
         public AggregationForgeFactoryAccessCountMinSketchState(
             ExprAggMultiFunctionCountMinSketchNode parent,
             AggregationStateCountMinSketchForge stateFactory)
         {
-            this.parent = parent;
-            this.stateFactory = stateFactory;
+            this._parent = parent;
+            this._stateFactory = stateFactory;
         }
 
         public override Type ResultType => null;
 
         public override AggregationAccessorForge AccessorForge => new AggregationAccessorForgeCountMinSketch();
 
-        public override ExprAggregateNodeBase AggregationExpression => parent;
+        public override ExprAggregateNodeBase AggregationExpression => _parent;
 
         public override AggregationPortableValidation AggregationPortableValidation =>
-            new AggregationPortableValidationCountMinSketch(stateFactory.specification.Agent.AcceptableValueTypes);
+            new AggregationPortableValidationCountMinSketch(_stateFactory.specification.Agent.AcceptableValueTypes);
 
         public override AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 throw new IllegalStateException("Count-min-sketch is not supported for match-recognize");
             }
 
-            return stateFactory;
+            return _stateFactory;
         }
 
         public override AggregationAgentForge GetAggregationStateAgent(

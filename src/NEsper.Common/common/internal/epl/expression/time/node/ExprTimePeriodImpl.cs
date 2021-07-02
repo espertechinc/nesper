@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         ExprTimePeriod,
         TimePeriodEval
     {
-        private ExprTimePeriodForge forge;
+        private ExprTimePeriodForge _forge;
 
         public ExprTimePeriodImpl(
             bool hasYear,
@@ -65,8 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
@@ -124,8 +124,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -133,12 +133,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         public TimePeriodComputeForge TimePeriodComputeForge {
             get {
-                CheckValidated(forge);
+                CheckValidated(_forge);
                 if (IsConstantResult) {
-                    return forge.ConstTimePeriodComputeForge();
+                    return _forge.ConstTimePeriodComputeForge();
                 }
 
-                return forge.NonconstTimePeriodComputeForge();
+                return _forge.NonconstTimePeriodComputeForge();
             }
         }
 
@@ -147,8 +147,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CheckValidated(forge);
-            return forge.EvaluateGetTimePeriodCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            CheckValidated(_forge);
+            return _forge.EvaluateGetTimePeriodCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression MakeTimePeriodAnonymous(
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             var exprMethod = method.MakeChild(typeof(TimePeriod), GetType(), classScope)
                 .AddParam(PARAMS);
 
-            CodegenExpression expression = forge.EvaluateGetTimePeriodCodegen(exprMethod, exprSymbol, classScope);
+            CodegenExpression expression = _forge.EvaluateGetTimePeriodCodegen(exprMethod, exprSymbol, classScope);
             //exprSymbol.DerivedSymbolsCodegen(evalMethod, exprMethod.Block, classScope);
             exprSymbol.DerivedSymbolsCodegen(exprMethod, exprMethod.Block, classScope);
             exprMethod.Block.MethodReturn(expression);
@@ -183,8 +183,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CheckValidated(forge);
-            return forge.EvaluateAsSecondsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            CheckValidated(_forge);
+            return _forge.EvaluateAsSecondsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         /// <summary>
@@ -193,8 +193,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         /// <value>true for variable present, false for not present</value>
         public bool HasVariable {
             get {
-                CheckValidated(forge);
-                return forge.HasVariable;
+                CheckValidated(_forge);
+                return _forge.HasVariable;
             }
         }
 
@@ -203,8 +203,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             bool newData,
             ExprEvaluatorContext context)
         {
-            CheckValidated(forge);
-            return forge.EvaluateGetTimePeriod(eventsPerStream, newData, context);
+            CheckValidated(_forge);
+            return _forge.EvaluateGetTimePeriod(eventsPerStream, newData, context);
         }
 
         public double EvaluateAsSeconds(
@@ -212,8 +212,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             bool newData,
             ExprEvaluatorContext context)
         {
-            CheckValidated(forge);
-            return forge.EvaluateAsSeconds(eventsPerStream, newData, context);
+            CheckValidated(_forge);
+            return _forge.EvaluateAsSeconds(eventsPerStream, newData, context);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             }
 
             var adders = list.ToArray();
-            forge = new ExprTimePeriodForge(this, hasVariables, adders);
+            _forge = new ExprTimePeriodForge(this, hasVariables, adders);
             return null;
         }
 
@@ -407,11 +407,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             }
 
             var returnType = expression.Forge.EvaluationType;
-            if (!returnType.IsNumeric()) {
-                throw new ExprValidationException("Time period expression requires a numeric parameter type");
-            }
-
-            if ((HasMonth || HasYear) && returnType.GetBoxedType() != typeof(int?)) {
+            ExprNodeUtilityValidate.ValidateReturnsNumeric(expression.Forge, () => "Time period expression requires a numeric parameter type");
+            if ((HasMonth || HasYear) && !returnType.IsInt32()) {
                 throw new ExprValidationException(
                     "Time period expressions with month or year component require integer values, received a " +
                     returnType.GetSimpleName() +

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -31,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEqualsAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (rightResult is Array array) {
                     var arrayLength = array.Length;
                     for (var index = 0; index < arrayLength; index++) {
-                        object item = array.GetValue(index);
+                        var item = array.GetValue(index);
                         if (item == null) {
                             hasNullRow = true;
                             continue;
@@ -196,9 +197,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             for (var i = 1; i < forges.Length; i++) {
                 var refforge = forges[i];
                 var refname = "r" + i;
-                var reftype = forges[i].EvaluationType;
+                var reftype = forges[i].EvaluationType.TypeNormalized();
 
-                if (reftype.IsArray) {
+                if ((reftype != null) && (reftype.IsArray)) {
                     var arrayBlock = block.IfRefNullReturnNull("left")
                         .DeclareVar(
                             reftype,
@@ -278,13 +279,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "CheckedContains", leftWithBoxing)))
                         .BlockReturn(ConstantFalse());
                 }
-                else
-                {
-                    block.IfRefNullReturnNull("leftCoerced");
-                    block.DeclareVar(
-                        forge.CoercionTypeBoxed,
-                        refname,
-                        forge.Coercer == null
+                else {
+                    var rhs = ConstantNull();
+                    if (reftype != null) {
+                        rhs = forge.Coercer == null
                             ? refforge.EvaluateCodegen(
                                 forge.CoercionTypeBoxed,
                                 methodNode,
@@ -298,7 +296,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                     codegenClassScope),
                                 reftype,
                                 methodNode,
-                                codegenClassScope));
+                                codegenClassScope);
+                    }
+
+                    block.IfRefNullReturnNull("leftCoerced");
+                    block.DeclareVar(forge.CoercionTypeBoxed, refname, rhs);
+
                     var ifRightNotNull = block.IfRefNotNull(refname);
                     {
                         ifRightNotNull.AssignRef("hasNonNullRow", ConstantTrue());

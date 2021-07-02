@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 	    }
 
 	    public FilterSpecPlan(FilterSpecPlanPath[] paths, ExprEvaluator filterConfirm, ExprEvaluator controlNegate) {
-	        this._paths = paths;
-	        this._filterConfirm = filterConfirm;
-	        this._filterNegate = controlNegate;
+	        _paths = paths;
+	        _filterConfirm = filterConfirm;
+	        _filterNegate = controlNegate;
 	    }
 
 	    public FilterSpecPlanPath[] Paths {

@@ -282,6 +282,18 @@ namespace com.espertech.esper.regressionrun.suite.expr
             }
 
             [Test, RunInApplicationDomain]
+            public void WithPropertyGenericComponentType() => RegressionRunner.Run(_session, ExprEnumDataSources.WithPropertyGenericComponentType());
+            
+            [Test, RunInApplicationDomain]
+            public void WithUDFStaticMethodGeneric() => RegressionRunner.Run(_session, ExprEnumDataSources.WithUDFStaticMethodGeneric());
+            
+            [Test, RunInApplicationDomain]
+            public void WithSubqueryGenericComponentType() => RegressionRunner.Run(_session, ExprEnumDataSources.WithSubqueryGenericComponentType());
+
+            [Test, RunInApplicationDomain]
+            public void WithBeanWithMap() => RegressionRunner.Run(_session, ExprEnumDataSources.WithBeanWithMap());
+            
+            [Test, RunInApplicationDomain]
             public void WithCast() => RegressionRunner.Run(_session, ExprEnumDataSources.WithCast());
 
             [Test, RunInApplicationDomain]
@@ -422,7 +434,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public void WithSumArray() => RegressionRunner.Run(_session, ExprEnumSumOf.WithSumArray());
 
             [Test, RunInApplicationDomain]
-            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumSumOf.WithInvalid());
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumSumOf.WithSumInvalid());
 
             [Test, RunInApplicationDomain]
             public void WithSumScalarStringValue() => RegressionRunner.Run(_session, ExprEnumSumOf.WithSumScalarStringValue());
@@ -470,7 +482,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public TestExprEnumOrderBy() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithInvalid());
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithOrderByInvalid());
 
             [Test, RunInApplicationDomain]
             public void WithOrderByScalarWithParam() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithOrderByScalarWithParam());

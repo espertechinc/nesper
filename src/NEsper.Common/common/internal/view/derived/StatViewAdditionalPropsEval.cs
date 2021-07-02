@@ -23,10 +23,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             Type[] additionalTypes,
             DataInputOutputSerde[] additionalSerdes)
         {
-            this.AdditionalProps = additionalProps;
-            this.AdditionalEvals = additionalEvals;
-            this.AdditionalTypes = additionalTypes;
-            this.AdditionalSerdes = additionalSerdes;
+            AdditionalProps = additionalProps;
+            AdditionalEvals = additionalEvals;
+            AdditionalTypes = additionalTypes;
+            AdditionalSerdes = additionalSerdes;
         }
 
         public string[] AdditionalProps { get; }

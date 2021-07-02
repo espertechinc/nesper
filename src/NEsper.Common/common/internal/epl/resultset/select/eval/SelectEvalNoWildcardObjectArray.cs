@@ -39,16 +39,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenBlock block = methodNode.Block
                 .DeclareVar<object[]>(
                     "props",
-                    NewArrayByLength(typeof(object), Constant(this.context.ExprForges.Length)));
-            for (int i = 0; i < this.context.ExprForges.Length; i++) {
+                    NewArrayByLength(typeof(object), Constant(context.ExprForges.Length)));
+            for (int i = 0; i < context.ExprForges.Length; i++) {
                 CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
                     typeof(object),
-                    this.context.ExprForges[i],
+                    context.ExprForges[i],
                     methodNode,
                     exprSymbol,
                     codegenClassScope);

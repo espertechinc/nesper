@@ -315,17 +315,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         targetFragment = insertIntoTargetType.GetFragmentType(columnNames[i]);
                     }
 
+                    var expressionReturnType = expressionReturnTypes[i] as Type;
                     if (insertIntoTargetType != null &&
-                        ReferenceEquals(fragmentType.FragmentType.UnderlyingType, expressionReturnTypes[i]) &&
+                        ReferenceEquals(fragmentType.FragmentType.UnderlyingType, expressionReturnType) &&
                         (targetFragment == null || targetFragment?.IsNative == true)) {
                         var getter = ((EventTypeSPI) eventTypeStream).GetGetterSPI(propertyName);
                         var returnType = eventTypeStream.GetPropertyType(propertyName);
                         exprForges[i] = new ExprEvalByGetter(streamNum, getter, returnType);
                     }
-                    else if (insertIntoTargetType != null &&
-                             expressionReturnTypes[i] is Type &&
-                             fragmentType.FragmentType.UnderlyingType ==
-                             ((Type) expressionReturnTypes[i]).GetElementType() &&
+                    else if ((insertIntoTargetType != null) &&
+                             (expressionReturnType != null) &&
+                             (fragmentType.FragmentType.UnderlyingType == expressionReturnType.GetElementType()) &&
                              (targetFragment == null || targetFragment?.IsNative == true)) {
                         // same for arrays: may need to unwrap the fragment if the target type has this underlying type
                         var getter = ((EventTypeSPI) eventTypeStream).GetGetterSPI(propertyName);
@@ -469,12 +469,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 if (_insertIntoDesc == null || insertIntoTargetType == null) {
                                     var expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
                                     var returnType = expression.Forge.EvaluationType;
-                                    if (returnType == typeof(object[]) ||
+                                    if (returnType.IsNullTypeSafe() ||
+                                        returnType == typeof(object[]) ||
                                         returnType.IsGenericDictionary() ||
                                         returnType.IsBuiltinDataType()) {
                                         throw new ExprValidationException(
                                             "Invalid expression return type '" +
-                                            returnType.CleanName() +
+                                            returnType.TypeSafeName() +
                                             "' for transpose function");
                                     }
 
@@ -746,7 +747,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     "Cannot transpose additional properties in the select-clause to target event type '" +
                                     insertIntoTargetType.Name +
                                     "' with underlying type '" +
-                                    insertIntoTargetType.UnderlyingType.CleanName() +
+                                    insertIntoTargetType.UnderlyingType.TypeSafeName() +
                                     "', the " +
                                     ImportServiceCompileTimeConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE +
                                     " function must occur alone in the select clause");
@@ -754,6 +755,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                             var expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
                             var returnType = expression.Forge.EvaluationType;
+                            if (returnType.IsNullType()) {
+                                throw new ExprValidationException("Cannot transpose a null-type value");
+                            }
+                            
                             if (insertIntoTargetType is ObjectArrayEventType && returnType == typeof(object[])) {
                                 SelectExprProcessorForge forgeX =
                                     new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceObjectArray(
@@ -803,9 +808,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         innerType.UnderlyingType)) {
                                         throw new ExprValidationException(
                                             "Invalid expression return type '" +
-                                            exprNode.Forge.EvaluationType.CleanName() +
+                                            exprNode.Forge.EvaluationType.TypeSafeName() +
                                             "' for transpose function, expected '" +
-                                            innerType.UnderlyingType.CleanName() +
+                                            innerType.UnderlyingType.TypeSafeName() +
                                             "'");
                                     }
 
@@ -1290,21 +1295,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         if (insertIntoTargetType != null) {
                             // check if the existing type and new type are compatible
                             var columnOneType = expressionReturnTypes[0];
-                            if (insertIntoTargetType is WrapperEventType) {
-                                var wrapperType = (WrapperEventType) insertIntoTargetType;
+                            var columnOneTypeType = columnOneType as Type;
+                            if (insertIntoTargetType is WrapperEventType wrapperType && columnOneTypeType != null) {
                                 // Map and Object both supported
-                                if ((ReferenceEquals(wrapperType.UnderlyingEventType.UnderlyingType, columnOneType)) ||
-                                    (wrapperType.UnderlyingEventType is JsonEventType && ReferenceEquals(columnOneType, typeof(string)))) {
+                                if ((wrapperType.UnderlyingEventType.UnderlyingType == columnOneTypeType) ||
+                                    (wrapperType.UnderlyingEventType is JsonEventType && (columnOneTypeType == typeof(string)))) {
                                     singleColumnWrapOrBeanCoercion = true;
                                     resultEventType = insertIntoTargetType;
                                 }
                             }
 
-                            if (insertIntoTargetType is BeanEventType && columnOneType is Type) {
-                                var beanType = (BeanEventType) insertIntoTargetType;
+                            if (insertIntoTargetType is BeanEventType beanType && columnOneTypeType != null) {
                                 // Map and Object both supported
                                 if (TypeHelper.IsSubclassOrImplementsInterface(
-                                    (Type) columnOneType,
+                                    columnOneTypeType,
                                     beanType.UnderlyingType)) {
                                     singleColumnWrapOrBeanCoercion = true;
                                     resultEventType = insertIntoTargetType;
@@ -1605,7 +1609,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         private EventType AllocateBeanTransposeUnderlyingType(
-            Type returnType, String moduleName, BeanEventTypeFactory beanEventTypeFactoryProtected)
+            Type returnType, string moduleName, BeanEventTypeFactory beanEventTypeFactoryProtected)
         {
             // check if the module has already registered the same bean type.
             // since private bean-types are registered by fully-qualified class name this prevents name-duplicate.
@@ -1749,13 +1753,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         private Pair<ExprForge, object> HandleUnderlyingStreamInsert(
             ExprForge exprEvaluator,
             EventPropertyDescriptor optionalInsertedTargetProp,
-            EPType optionalInsertedTargetEPType)
+            EPChainableType optionalInsertedTargetType)
         {
-            if (!(exprEvaluator is ExprStreamUnderlyingNode)) {
+            if (!(exprEvaluator is ExprStreamUnderlyingNode undNode)) {
                 return null;
             }
 
-            var undNode = (ExprStreamUnderlyingNode) exprEvaluator;
             var streamNum = undNode.StreamId;
             var returnType = undNode.Forge.EvaluationType;
             var namedWindowAsType = GetNamedWindowUnderlyingType(
@@ -1764,6 +1767,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             var tableMetadata =
                 _args.TableCompileTimeResolver.ResolveTableFromEventType(_args.TypeService.EventTypes[streamNum]);
 
+            if (returnType.IsNullTypeSafe()) {
+                throw new ExprValidationException("Null-type value is not allowed");
+            }
+            
             EventType eventTypeStream;
             ExprForge forge;
             if (tableMetadata != null) {
@@ -1774,7 +1781,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 eventTypeStream = _args.TypeService.EventTypes[streamNum];
                 if (optionalInsertedTargetProp != null &&
                     TypeHelper.IsSubclassOrImplementsInterface(eventTypeStream.UnderlyingType, optionalInsertedTargetProp.PropertyType) &&
-                    (optionalInsertedTargetEPType == null || !EventTypeUtility.IsTypeOrSubTypeOf(eventTypeStream, EPTypeHelper.GetEventType(optionalInsertedTargetEPType)))) {
+                    (optionalInsertedTargetType == null || !EventTypeUtility.IsTypeOrSubTypeOf(eventTypeStream, EPChainableTypeHelper.GetEventType(optionalInsertedTargetType)))) {
                     return new Pair<ExprForge, object>(new ExprEvalStreamInsertUnd(undNode, streamNum, returnType), returnType);
                 }
                 else {
@@ -1798,21 +1805,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             return nw?.OptionalEventTypeAs;
         }
 
-        private static EPTypesAndPropertyDescPair DetermineInsertedEventTypeTargets(
+        private static TypesAndPropertyDescPair DetermineInsertedEventTypeTargets(
             EventType targetType,
             IList<SelectClauseExprCompiledSpec> selectionList,
             InsertIntoDesc insertIntoDesc)
         {
-            var targets = new EPType[selectionList.Count];
+            var targets = new EPChainableType[selectionList.Count];
             var propertyDescriptors = new EventPropertyDescriptor[selectionList.Count];
             if (targetType == null) {
-                return new EPTypesAndPropertyDescPair(targets, propertyDescriptors);
+                return new TypesAndPropertyDescPair(targets, propertyDescriptors);
             }
 
             for (var i = 0; i < selectionList.Count; i++) {
                 var expr = selectionList[i];
                 
-                String providedName = null;
+                string providedName = null;
                 if (expr.ProvidedName != null) {
                     providedName = expr.ProvidedName;
                 } else if (insertIntoDesc.ColumnNames.Count > i) {
@@ -1839,14 +1846,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
 
                 if (fragmentEventType.IsIndexed) {
-                    targets[i] = EPTypeHelper.CollectionOfEvents(fragmentEventType.FragmentType);
+                    targets[i] = EPChainableTypeHelper.CollectionOfEvents(fragmentEventType.FragmentType);
                 }
                 else {
-                    targets[i] = EPTypeHelper.SingleEvent(fragmentEventType.FragmentType);
+                    targets[i] = EPChainableTypeHelper.SingleEvent(fragmentEventType.FragmentType);
                 }
             }
 
-            return new EPTypesAndPropertyDescPair(targets, propertyDescriptors);
+            return new TypesAndPropertyDescPair(targets, propertyDescriptors);
         }
 
         private TypeAndForgePair HandleTypableExpression(
@@ -1891,16 +1898,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         private TypeAndForgePair HandleInsertIntoEnumeration(
-            String insertIntoColName,
-            EPType insertIntoTarget,
+            string insertIntoColName,
+            EPChainableType insertIntoTarget,
             ExprNode expr,
             ExprForge forge)
         {
-            if (insertIntoTarget == null || (!EPTypeHelper.IsCarryEvent(insertIntoTarget))) {
+            if (insertIntoTarget == null || (!EPChainableTypeHelper.IsCarryEvent(insertIntoTarget))) {
                 return null;
             }
 
-            var targetType = EPTypeHelper.GetEventType(insertIntoTarget);
+            var targetType = EPChainableTypeHelper.GetEventType(insertIntoTarget);
             ExprEnumerationForge enumeration;
             if (forge is ExprEnumerationForge) {
                 enumeration = (ExprEnumerationForge) forge;
@@ -1938,7 +1945,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CheckTypeCompatible(insertIntoColName, targetType, sourceType);
 
             // handle collection target - produce EventBean[]
-            if (insertIntoTarget is EventMultiValuedEPType) {
+            if (insertIntoTarget is EPChainableTypeEventMulti) {
                 if (eventTypeColl != null) {
                     var enumerationCollForgeInner =
                         new ExprEvalEnumerationCollForge(enumeration, targetType, false);
@@ -1989,7 +1996,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         private TypeAndForgePair HandleInsertIntoTypableExpression(
-            EPType insertIntoTarget,
+            EPChainableType insertIntoTarget,
             ExprForge forge,
             SelectProcessorArgs args)
         {
@@ -2071,7 +2078,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             // handle collection
             ExprForge typableForge;
-            var targetIsMultirow = insertIntoTarget is EventMultiValuedEPType;
+            var targetIsMultirow = insertIntoTarget is EPChainableTypeEventMulti;
             if (typable.IsMultirow ?? false) {
                 if (targetIsMultirow) {
                     typableForge = new SelectExprProcessorTypableMultiForge(
@@ -2279,13 +2286,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             public ExprForge Forge { get; }
         }
 
-        internal class EPTypesAndPropertyDescPair
+        internal class TypesAndPropertyDescPair
         {
-            public EPType[] InsertIntoTargetsPerCol { get; }
+            public EPChainableType[] InsertIntoTargetsPerCol { get; }
             public EventPropertyDescriptor[] PropertyDescriptors { get; }
 
-            internal EPTypesAndPropertyDescPair(
-                EPType[] insertIntoTargetsPerCol,
+            internal TypesAndPropertyDescPair(
+                EPChainableType[] insertIntoTargetsPerCol,
                 EventPropertyDescriptor[] propertyDescriptors)
             {
                 InsertIntoTargetsPerCol = insertIntoTargetsPerCol;

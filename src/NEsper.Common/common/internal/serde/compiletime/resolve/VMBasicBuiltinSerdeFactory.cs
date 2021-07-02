@@ -21,9 +21,9 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 	/// </summary>
 	public class VMBasicBuiltinSerdeFactory
 	{
-		private static readonly IDictionary<Type, DataInputOutputSerde> PRIMITIVES =
+		private static readonly IDictionary<Type, DataInputOutputSerde> Primitives =
 			new Dictionary<Type, DataInputOutputSerde>();
-		private static readonly IDictionary<Type, DataInputOutputSerde> BOXED =
+		private static readonly IDictionary<Type, DataInputOutputSerde> Boxed =
 			new Dictionary<Type, DataInputOutputSerde>();
 
 		static VMBasicBuiltinSerdeFactory() 
@@ -100,14 +100,14 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			Type type,
 			DataInputOutputSerde serde)
 		{
-			PRIMITIVES.Put(type, serde);
+			Primitives.Put(type, serde);
 		}
 
 		private static void AddBoxed(
 			Type type,
 			DataInputOutputSerde serde)
 		{
-			BOXED.Put(type, serde);
+			Boxed.Put(type, serde);
 		}
 
 		/// <summary>
@@ -118,10 +118,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 		internal static DataInputOutputSerde GetSerde(Type type)
 		{
 			if (type.IsPrimitive) {
-				return PRIMITIVES.Get(type);
+				return Primitives.Get(type);
 			}
 
-			return BOXED.Get(type);
+			return Boxed.Get(type);
 		}
 	}
 } // end of namespace

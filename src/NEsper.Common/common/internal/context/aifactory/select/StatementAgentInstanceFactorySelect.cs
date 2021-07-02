@@ -58,55 +58,55 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 		}
 
 		public ViewableActivator[] ViewableActivators {
-			set => this._viewableActivators = value;
+			set => _viewableActivators = value;
 		}
 
 		public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider {
-			set => this._resultSetProcessorFactoryProvider = value;
+			set => _resultSetProcessorFactoryProvider = value;
 		}
 
 		public ViewFactory[][] ViewFactories {
-			set => this._viewFactories = value;
+			set => _viewFactories = value;
 		}
 
 		public OutputProcessViewFactoryProvider OutputProcessViewFactoryProvider {
-			set => this._outputProcessViewFactoryProvider = value;
+			set => _outputProcessViewFactoryProvider = value;
 		}
 
 		public ViewResourceDelegateDesc[] ViewResourceDelegates {
-			set => this._viewResourceDelegates = value;
+			set => _viewResourceDelegates = value;
 		}
 
 		public ExprEvaluator WhereClauseEvaluator {
-			set => this._whereClauseEvaluator = value;
+			set => _whereClauseEvaluator = value;
 		}
 
 		public string[] StreamNames {
-			set => this._streamNames = value;
+			set => _streamNames = value;
 		}
 
 		public JoinSetComposerPrototype JoinSetComposerPrototype {
-			set => this._joinSetComposerPrototype = value;
+			set => _joinSetComposerPrototype = value;
 		}
 
 		public IDictionary<int, SubSelectFactory> Subselects {
-			set => this._subselects = value;
+			set => _subselects = value;
 		}
 
 		public bool OrderByWithoutOutputRateLimit {
-			set => this._orderByWithoutOutputRateLimit = value;
+			set => _orderByWithoutOutputRateLimit = value;
 		}
 
 		public bool IsUnidirectionalJoin {
-			set => this._unidirectionalJoin = value;
+			set => _unidirectionalJoin = value;
 		}
 
 		public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses {
-			set => this._tableAccesses = value;
+			set => _tableAccesses = value;
 		}
 
 		public string WhereClauseEvaluatorTextForAudit {
-			set => this._whereClauseEvaluatorTextForAudit = value;
+			set => _whereClauseEvaluatorTextForAudit = value;
 		}
 
 		public void StatementCreate(StatementContext statementContext)
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			}
 
 			// determine match-recognize "previous"-node strategy (none if not present, or one handling and number of nodes)
-			var matchRecognize = RowRecogHelper.RecursiveFindRegexService(topViews[0]);
+			var matchRecognize = topViews.Length == 0 ? null : RowRecogHelper.RecursiveFindRegexService(topViews[0]);
 			if (matchRecognize != null) {
 				rowRecogPreviousStrategy = matchRecognize.PreviousEvaluationStrategy;
 				stopCallbacks.Add(matchRecognize);
@@ -190,6 +190,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			// start subselects
 			var subselectActivations = SubSelectHelperStart.StartSubselects(
 				_subselects,
+				agentInstanceContext,
 				agentInstanceContext,
 				stopCallbacks,
 				isRecoveringResilient);
@@ -206,7 +207,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			JoinSetComposer joinSetComposer;
 			JoinPreloadMethod joinPreloadMethod;
 			OutputProcessView outputProcessView;
-			if (streamViews.Length == 1) {
+			if (streamViews.Length <= 1) {
 				outputProcessView = HandleSimpleSelect(
 					streamViews,
 					processorPair.First,
@@ -256,14 +257,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 				topViews = eventStreamParentViewable;
 			}
 
+			// handle optional from-clause
+			Runnable postContextMergeRunnable = null;
+			if (streamViews.Length == 0) {
+				outputProcessView.Parent = ViewNullEvent.INSTANCE;
+				postContextMergeRunnable = () => outputProcessView.Update(new EventBean[]{null}, CollectionUtil.EVENTBEANARRAY_EMPTY);
+			}
+			
 			// finally process startup events: handle any pattern-match-event that was produced during startup,
 			// relevant for "timer:interval(0)" in conjunction with contexts
-			Runnable postContextMergeRunnable = () => {
-				for (var stream = 0; stream < numStreams; stream++) {
-					var activationResult = activationResults[stream];
-					activationResult.OptPostContextMergeRunnable?.Invoke();
-				}
-			};
+			if (postContextMergeRunnable == null) {
+				postContextMergeRunnable = () => {
+					for (var stream = 0; stream < numStreams; stream++) {
+						var activationResult = activationResults[stream];
+						activationResult.OptPostContextMergeRunnable?.Invoke();
+					}
+				};
+			}
 
 			return new StatementAgentInstanceFactorySelectResult(
 				outputProcessView,
@@ -320,10 +330,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 				var subqueries = AIRegistryRequirements.GetSubqueryRequirements(_subselects);
 
 				var hasRowRecogWithPrevious = false;
-				foreach (var viewFactory in _viewFactories[0]) {
-					if (viewFactory is RowRecogNFAViewFactory) {
-						var recog = (RowRecogNFAViewFactory) viewFactory;
-						hasRowRecogWithPrevious = recog.Desc.PreviousRandomAccessIndexes != null;
+				if (_viewFactories.Length > 0) {
+					foreach (var viewFactory in _viewFactories[0]) {
+						if (viewFactory is RowRecogNFAViewFactory) {
+							var recog = (RowRecogNFAViewFactory) viewFactory;
+							hasRowRecogWithPrevious = recog.Desc.PreviousRandomAccessIndexes != null;
+						}
 					}
 				}
 
@@ -339,6 +351,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			bool discardPartialsOnMatch,
 			AgentInstanceContext agentInstanceContext)
 		{
+			if (streamViews.Length == 0) {
+				return _outputProcessViewFactoryProvider.OutputProcessViewFactory.MakeView(resultSetProcessor, agentInstanceContext);
+			}
+
 			Deque<EPStatementDispatch> dispatches = null;
 			var finalView = streamViews[0];
 

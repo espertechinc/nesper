@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="likeString">pattern to match</param>
         public StringPatternSetLike(string likeString)
         {
-            this._likeString = likeString;
+            _likeString = likeString;
             _likeUtil = new LikeUtil(likeString, '\\', false);
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.type
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

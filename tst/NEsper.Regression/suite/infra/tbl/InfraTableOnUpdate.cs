@@ -36,28 +36,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithMultikeyWArrayTwoArrayNonGetter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableOnUpdateMultikeyWArrayTwoArrayNonGetter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableOnUpdateMultikeyWArrayTwoArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultikeyWArrayOneArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableOnUpdateMultikeyWArrayOneArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableOnUpdateTwoKey());
             return execs;
         }

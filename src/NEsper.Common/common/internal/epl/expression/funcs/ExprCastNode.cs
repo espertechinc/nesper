@@ -11,11 +11,13 @@ using System.IO;
 using System.Numerics;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -31,44 +33,44 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public partial class ExprCastNode : ExprNodeBase
     {
-        private ExprCastNodeForge forge;
+        private ExprCastNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="classIdentifierWArray">the the name of the type to cast to</param>
-        public ExprCastNode(ClassIdentifierWArray classIdentifierWArray)
+        public ExprCastNode(ClassDescriptor classIdentifierWArray)
         {
             ClassIdentifierWArray = classIdentifierWArray;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
-        public ClassIdentifierWArray ClassIdentifierWArray { get; }
+        public ClassDescriptor ClassIdentifierWArray { get; }
 
         public bool IsConstantResult {
             get {
-                CheckValidated(forge);
-                return forge.IsConstant;
+                CheckValidated(_forge);
+                return _forge.IsConstant;
             }
         }
 
         public Type TargetType {
             get {
-                CheckValidated(forge);
-                return forge.EvaluationType;
+                CheckValidated(_forge);
+                return _forge.EvaluationType;
             }
         }
 
@@ -81,9 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var fromType = ChildNodes[0].Forge.EvaluationType;
-            var classIdentifier = ClassIdentifierWArray.ClassIdentifier;
-            var classIdentifierInvariant = classIdentifier.Trim();
-            var arrayDimensions = ClassIdentifierWArray.ArrayDimensions;
+            var classIdentifierInvariant = ClassIdentifierWArray.ClassIdentifier.Trim().ToLowerInvariant();
 
             // Local function to match a class identifier
             bool MatchesClassIdentifier(string identifier)
@@ -112,15 +112,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             // identify target type
             // try the primitive names including "string"
             SimpleTypeCaster caster;
-            var targetType = TypeHelper.GetPrimitiveTypeForName(classIdentifier.Trim());
-            if (!ClassIdentifierWArray.IsArrayOfPrimitive) {
-                targetType = targetType.GetBoxedType();
+            Type clazzSimpleNamed = null;
+            if (ClassIdentifierWArray.TypeParameters.IsEmpty()) {
+                clazzSimpleNamed = TypeHelper.GetPrimitiveTypeForName(ClassIdentifierWArray.ClassIdentifier.Trim());
             }
 
-            targetType = ApplyDimensions(targetType);
+            Type targetType = null;
+            if (clazzSimpleNamed != null) {
+                targetType = clazzSimpleNamed;
+                if (!ClassIdentifierWArray.IsArrayOfPrimitive) {
+                    targetType = targetType.GetBoxedType();
+                }
+                targetType = ApplyDimensions(targetType);
+            }
 
             bool numeric;
             CasterParserComputerForge casterParserComputerForge = null;
+            
             if (dateFormatParameter != null) {
                 if (fromType != typeof(string)) {
                     throw new ExprValidationException(
@@ -131,10 +139,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
                 if (targetType == null) {
                     try {
-                        targetType = TypeHelper.GetClassForName(
-                            classIdentifier.Trim(),
+                        var targetClass = TypeHelper.GetClassForName(
+                            ClassIdentifierWArray.ClassIdentifier.Trim(),
                             validationContext.ImportService.ClassForNameProvider);
-                        targetType = ApplyDimensions(targetType);
+                        targetType = ApplyDimensions(targetClass);
+                        // expected
                     }
                     catch (TypeLoadException) {
                         // expected
@@ -238,18 +247,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 numeric = true;
             }
             else {
-                try {
-                    targetType = TypeHelper.GetClassForName(
-                        classIdentifier.Trim(),
-                        validationContext.ImportService.ClassForNameProvider);
-                }
-                catch (TypeLoadException e) {
-                    throw new ExprValidationException(
-                        "Class as listed in cast function by name '" + classIdentifier + "' cannot be loaded",
-                        e);
+                targetType = ImportTypeUtil.ResolveClassIdentifierToType(
+                    ClassIdentifierWArray,
+                    false,
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
+                if (targetType == null) {
+                    throw new ExprValidationException("Class as listed in cast function by name '" + ClassIdentifierWArray.ToEPL() + "' cannot be found");
                 }
 
-                targetType = ApplyDimensions(targetType);
                 numeric = targetType.IsNumeric();
                 if (numeric) {
                     caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
@@ -293,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
             
-            forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
+            _forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
             return null;
         }
 
@@ -367,6 +373,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var formatReturnType = formatExpr.Forge.EvaluationType;
             string staticFormatString = null;
 
+            if (formatReturnType.IsNullTypeSafe()) {
+                throw new ExprValidationException("Invalid null value for date format");
+            }
+            
             if (formatReturnType == typeof(string)) {
                 if (formatExpr.Forge.ForgeConstantType.IsCompileTimeConstant) {
                     staticFormatString = (string) formatForge.ExprEvaluator.Evaluate(null, true, null);
@@ -464,8 +474,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var formatEval = CodegenLegoMethodExpression.CodegenExpression(
                 formatExpr,
                 codegenClassScope.NamespaceScope.InitMethod,
-                codegenClassScope,
-                true);
+                codegenClassScope);
             CodegenExpression formatInit = LocalMethod(formatEval, ConstantNull(), ConstantTrue(), ConstantNull());
             return codegenClassScope.AddDefaultFieldUnshared(true, type, formatInit);
         }
@@ -478,7 +487,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 "Invalid format, expected string-format or " +
                 expected.GetSimpleName() +
                 " but received " +
-                received.CleanName());
+                received.TypeSafeName());
         }
 
         private Type ApplyDimensions(Type targetType)

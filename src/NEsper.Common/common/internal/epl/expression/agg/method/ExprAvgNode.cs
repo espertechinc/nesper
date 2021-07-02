@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 optionalFilter = positionalParams[1];
             }
 
-            var childType = base.ValidateNumericChildAllowFilter(HasFilter);
+            var childType = ValidateNumericChildAllowFilter(HasFilter);
             var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
             return new AggregationForgeFactoryAvg(this, childType, distinctSerde, validationContext.ImportService.DefaultMathContext);
         }

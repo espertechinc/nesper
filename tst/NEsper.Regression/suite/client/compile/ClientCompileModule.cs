@@ -49,42 +49,42 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithCommentTrailing(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleCommentTrailing());
             return execs;
         }
 
         public static IList<RegressionExecution> WithParseFail(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleParseFail());
             return execs;
         }
 
         public static IList<RegressionExecution> WithParse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleParse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoModules(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleTwoModules());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLineNumberAndComments(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleLineNumberAndComments());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWImports(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleWImports());
             return execs;
         }

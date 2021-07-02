@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="propertyName">property name</param>
         public DOMAttributeAndElementGetter(string propertyName)
         {
-            this._propertyName = propertyName;
+            _propertyName = propertyName;
         }
 
         public object GetValueAsFragment(XmlNode node)

@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumSumScalar : ThreeFormScalar
 	{
-		private readonly ExprDotEvalSumMethodFactory sumMethodFactory;
+		private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
 
 		public EnumSumScalar(
 			ExprDotEvalParamLambda lambda,
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters,
 			ExprDotEvalSumMethodFactory sumMethodFactory) : base(lambda, fieldEventType, numParameters)
 		{
-			this.sumMethodFactory = sumMethodFactory;
+			this._sumMethodFactory = sumMethodFactory;
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var method = sumMethodFactory.SumAggregator;
+						var method = _sumMethodFactory.SumAggregator;
 
 						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
@@ -66,8 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType() {
-	        return sumMethodFactory.ValueType;
+		public override Type ReturnTypeOfMethod() {
+	        return _sumMethodFactory.ValueType;
 	    }
 
 	    public override CodegenExpression ReturnIfEmptyOptional() {
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    }
 
 	    public override void InitBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
-	        sumMethodFactory.CodegenDeclare(block);
+	        _sumMethodFactory.CodegenDeclare(block);
 	    }
 
 	    public override void ForEachBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
@@ -84,11 +84,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	        if (!innerType.IsPrimitive) {
 	            block.IfRefNull("value").BlockContinue();
 	        }
-	        sumMethodFactory.CodegenEnterNumberTypedNonNull(block, Ref("value"));
+	        _sumMethodFactory.CodegenEnterNumberTypedNonNull(block, Ref("value"));
 	    }
 
 	    public override void ReturnResult(CodegenBlock block) {
-	        sumMethodFactory.CodegenReturn(block);
+	        _sumMethodFactory.CodegenReturn(block);
 	    }
 	}
 } // end of namespace

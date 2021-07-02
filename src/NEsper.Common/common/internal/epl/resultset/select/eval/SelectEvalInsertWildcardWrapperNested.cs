@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
-                this.GetType(),
+                GetType(),
                 "WildcardNestedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),
                 innerType,

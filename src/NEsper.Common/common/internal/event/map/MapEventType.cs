@@ -139,7 +139,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -156,7 +155,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,

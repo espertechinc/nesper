@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordPropRangeKeyForge rangeKey,
             CoercionDesc coercionDesc)
         {
-            this._isNwOnTrigger = isNWOnTrigger;
-            this._numStreamsOuter = numStreamsOuter;
-            this._rangeKey = rangeKey;
-            this._coercionDesc = coercionDesc;
+            _isNwOnTrigger = isNWOnTrigger;
+            _numStreamsOuter = numStreamsOuter;
+            _rangeKey = rangeKey;
+            _coercionDesc = coercionDesc;
         }
 
         public string ToQueryPlan()

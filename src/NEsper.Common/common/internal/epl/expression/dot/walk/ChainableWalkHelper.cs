@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
@@ -636,7 +637,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			}
 
 			var constantNode = (ExprConstantNode) node;
-			return constantNode.ConstantType.GetBoxedType() == expected;
+			var type = constantNode.ConstantType;
+			if (type.IsNullTypeSafe()) {
+				return expected == null;
+			}
+			
+			return type.GetBoxedType() == expected;
 		}
 
 		private static string ToPlainPropertyString(

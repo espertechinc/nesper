@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			ExprNode optionalFilter)
 			: base(optionalFilter)
 		{
-			this._forge = forge;
+			_forge = forge;
 			_currentMinMaxBean = membersColumnized.AddMember(col, typeof(EventBean), "currentMinMaxBean");
 			_currentMinMaxBeanSerde = classScope.AddOrGetDefaultFieldSharable(
 				new CodegenSharableSerdeEventTyped(
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			var comparable = GetComparableWObjectArrayKeyCodegen(_forge.Spec.Criteria, _currentMinMaxBean, namedMethods, classScope);
 
 			var methodNode = parent
-				.MakeChild(typeof(void), this.GetType(), classScope)
+				.MakeChild(typeof(void), GetType(), classScope)
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);

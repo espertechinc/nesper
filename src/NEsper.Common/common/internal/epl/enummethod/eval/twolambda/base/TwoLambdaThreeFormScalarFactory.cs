@@ -22,21 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 		private readonly ObjectArrayEventType _typeFirst;
 		private readonly ObjectArrayEventType _typeSecond;
 		private readonly int _numParams;
-		private readonly EPType _returnType;
-		private readonly TwoLambdaThreeFormScalarFactory.ForgeFunction _function;
+		private readonly ForgeFunction _function;
 
 		public TwoLambdaThreeFormScalarFactory(
 			ObjectArrayEventType typeFirst,
 			ObjectArrayEventType typeSecond,
 			int numParams,
-			EPType returnType,
-			TwoLambdaThreeFormScalarFactory.ForgeFunction function)
+			ForgeFunction function)
 		{
-			this._typeFirst = typeFirst;
-			this._typeSecond = typeSecond;
-			this._numParams = numParams;
-			this._returnType = returnType;
-			this._function = function;
+			_typeFirst = typeFirst;
+			_typeSecond = typeSecond;
+			_numParams = numParams;
+			_function = function;
 		}
 
 		public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
@@ -49,10 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			int streamCountIncoming,
 			StatementCompileTimeServices services)
 		{
-			ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-			ExprDotEvalParamLambda second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
-			EnumForge forge = _function.Invoke(first, second, _typeFirst, _typeSecond, streamCountIncoming, _numParams, _returnType);
-			return new EnumForgeDesc(_returnType, forge);
+			var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+			var second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
+			return _function.Invoke(first, second, _typeFirst, _typeSecond, streamCountIncoming, _numParams);
 		}
 
 		private static EnumForgeLambdaDesc MakeDesc(ObjectArrayEventType type)
@@ -60,13 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			return new EnumForgeLambdaDesc(new EventType[] {type}, new string[] {type.Name});
 		}
 
-		public delegate EnumForge ForgeFunction(
+		public delegate EnumForgeDesc ForgeFunction(
 			ExprDotEvalParamLambda first,
 			ExprDotEvalParamLambda second,
 			ObjectArrayEventType eventTypeFirst,
 			ObjectArrayEventType eventTypeSecond,
 			int streamCountIncoming,
-			int numParams,
-			EPType typeInfo);
+			int numParams);
 	}
 } // end of namespace

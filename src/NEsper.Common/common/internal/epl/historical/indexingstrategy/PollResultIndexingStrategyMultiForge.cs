@@ -18,22 +18,22 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyMultiForge : PollResultIndexingStrategyForge
     {
-        private readonly PollResultIndexingStrategyForge[] indexingStrategies;
-        private readonly int streamNum;
+        private readonly PollResultIndexingStrategyForge[] _indexingStrategies;
+        private readonly int _streamNum;
 
         public PollResultIndexingStrategyMultiForge(
             int streamNum,
             PollResultIndexingStrategyForge[] indexingStrategies)
         {
-            this.streamNum = streamNum;
-            this.indexingStrategies = indexingStrategies;
+            this._streamNum = streamNum;
+            this._indexingStrategies = indexingStrategies;
         }
 
         public string ToQueryPlan()
         {
             var writer = new StringWriter();
             var delimiter = "";
-            foreach (var strategy in indexingStrategies) {
+            foreach (var strategy in _indexingStrategies) {
                 writer.Write(delimiter);
                 writer.Write(strategy.ToQueryPlan());
                 delimiter = ", ";
@@ -51,12 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
             method.Block.DeclareVar<PollResultIndexingStrategy[]>(
                 "strats",
-                NewArrayByLength(typeof(PollResultIndexingStrategy), Constant(indexingStrategies.Length)));
-            for (var i = 0; i < indexingStrategies.Length; i++) {
+                NewArrayByLength(typeof(PollResultIndexingStrategy), Constant(_indexingStrategies.Length)));
+            for (var i = 0; i < _indexingStrategies.Length; i++) {
                 method.Block.AssignArrayElement(
                     Ref("strats"),
                     Constant(i),
-                    indexingStrategies[i].Make(method, symbols, classScope));
+                    _indexingStrategies[i].Make(method, symbols, classScope));
             }
 
             method.Block

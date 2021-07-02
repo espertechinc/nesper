@@ -16,18 +16,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 {
     public class ExprDeclaredCollectorCompileTime : ExprDeclaredCollector
     {
-        private readonly IDictionary<string, ExpressionDeclItem> moduleExpressions;
+        private readonly IDictionary<string, ExpressionDeclItem> _moduleExpressions;
 
         public ExprDeclaredCollectorCompileTime(IDictionary<string, ExpressionDeclItem> moduleExpressions)
         {
-            this.moduleExpressions = moduleExpressions;
+            this._moduleExpressions = moduleExpressions;
         }
 
         public void RegisterExprDeclared(
             string expressionName,
             ExpressionDeclItem meta)
         {
-            moduleExpressions.Put(expressionName, meta);
+            _moduleExpressions.Put(expressionName, meta);
         }
     }
 } // end of namespace

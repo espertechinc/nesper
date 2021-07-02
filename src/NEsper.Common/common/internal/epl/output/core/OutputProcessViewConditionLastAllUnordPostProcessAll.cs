@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public class OutputProcessViewConditionLastAllUnordPostProcessAll : OutputProcessViewConditionLastAllUnord
     {
-        private readonly OutputStrategyPostProcess postProcessor;
+        private readonly OutputStrategyPostProcess _postProcessor;
 
         public OutputProcessViewConditionLastAllUnordPostProcessAll(
             ResultSetProcessor resultSetProcessor,
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 parent,
                 agentInstanceContext)
         {
-            this.postProcessor = postProcessor;
+            this._postProcessor = postProcessor;
         }
 
         protected override void Output(
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             // Child view can be null in replay from named window
             if (child != null) {
-                postProcessor.Output(forceUpdate, results, child);
+                _postProcessor.Output(forceUpdate, results, child);
             }
         }
     }

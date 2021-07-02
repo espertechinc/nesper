@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
 
 		public AggregationMultiFunctionAggregationMethodModeManaged(InjectionStrategy injectionStrategyAggregationMethodFactory)
 		{
-			this._injectionStrategyAggregationMethodFactory = injectionStrategyAggregationMethodFactory;
+			_injectionStrategyAggregationMethodFactory = injectionStrategyAggregationMethodFactory;
 		}
 
 		/// <summary>
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
 		/// <returns>itself</returns>
 		public AggregationMultiFunctionAggregationMethodModeManaged SetInjectionStrategyAggregationMethodFactory(InjectionStrategy strategy)
 		{
-			this._injectionStrategyAggregationMethodFactory = strategy;
+			_injectionStrategyAggregationMethodFactory = strategy;
 			return this;
 		}
 	}

@@ -50,140 +50,140 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithContextPartitionedInitiated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteContextPartitionedInitiated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextPartitionedInitiatedSameEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteContextPartitionedInitiatedSameEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextPartitionedCategory(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteContextPartitionedCategory());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextPartitionedHash(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteContextPartitionedHash());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextPartitionedSegmented(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteContextPartitionedSegmented());
             return execs;
         }
 
         public static IList<RegressionExecution> WithHint(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteHint());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBooleanExprAnd(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteBooleanExprAnd());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBooleanExprSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteBooleanExprSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrRewriteAndOrMulti(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteOrRewriteAndOrMulti());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndRewriteInnerOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteAndRewriteInnerOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndRewriteNotEqualsWithOrConsolidateSecond(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteAndRewriteNotEqualsWithOrConsolidateSecond());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndRewriteNotEqualsConsolidate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteAndRewriteNotEqualsConsolidate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndRewriteNotEqualsOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteAndRewriteNotEqualsOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrRewriteEightOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteOrRewriteEightOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrRewriteFourOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteOrRewriteFourOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrRewriteThreeWithOverlap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteOrRewriteThreeWithOverlap());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrRewriteWithAnd(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteOrRewriteWithAnd());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrRewriteThreeOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteOrRewriteThreeOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOrRewriteTwoOr());
             return execs;
         }

@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			int numParameters)
 			: base(innerExpression, streamCountIncoming)
 		{
-			this._secondExpression = secondExpression;
-			this._resultEventType = resultEventType;
-			this._numParameters = numParameters;
+			_secondExpression = secondExpression;
+			_resultEventType = resultEventType;
+			_numParameters = numParameters;
 		}
 
 		public override CodegenExpression Codegen(
@@ -80,14 +80,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			var scope = new ExprForgeCodegenSymbol(false, null);
 			var methodNode = codegenMethodScope
 				.MakeChildWithScope(typeof(IDictionary<object, object>), GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+				.AddParam(PARAMS);
 			var hasIndex = _numParameters >= 2;
 			var hasSize = _numParameters >= 3;
 
 			var returnIfEmpty = ReturnIfEmptyOptional();
 			if (returnIfEmpty != null) {
 				methodNode.Block
-					.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+					.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
 					.BlockReturn(returnIfEmpty);
 			}
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 				.DeclareVar<ObjectArrayEventBean>(
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
+				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
 				methodNode.Block.DeclareVar<int>("count", Constant(-1));
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			}
 
 			var forEach = methodNode.Block
-				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+				.ForEach(typeof(object), "next", REF_ENUMCOLL)
 				.AssignArrayElement("props", Constant(0), Ref("next"));
 			
 			if (hasIndex) {

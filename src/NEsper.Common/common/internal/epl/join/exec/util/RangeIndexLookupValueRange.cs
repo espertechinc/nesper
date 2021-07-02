@@ -12,8 +12,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.util
 {
     public class RangeIndexLookupValueRange : RangeIndexLookupValue
     {
-        private QueryGraphRangeEnum _operator;
-        private bool _isAllowRangeReverse;
+        private readonly QueryGraphRangeEnum _operator;
+        private readonly bool _isAllowRangeReverse;
 
         public RangeIndexLookupValueRange(
             object value,

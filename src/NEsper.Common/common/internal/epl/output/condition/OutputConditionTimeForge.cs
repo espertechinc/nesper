@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 throw new IllegalStateException("Unassigned callback id");
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(OutputConditionFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(OutputConditionFactory), GetType(), classScope);
             method.Block
                 .DeclareVar<TimePeriodCompute>(
                     "delta",
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         }
 
         public int ScheduleCallbackId {
-            set { this.scheduleCallbackId = value; }
+            set { scheduleCallbackId = value; }
         }
 
         public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)

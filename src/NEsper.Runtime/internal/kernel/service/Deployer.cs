@@ -123,13 +123,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			var deploymentClassLoader = DeployerHelperResolver.GetClassLoader(-1, deploymentClassLoaderOption, services);
 			var moduleProvider = ModuleProviderUtil.Analyze(compiled, deploymentClassLoader, services.ClassProvidedPathRegistry);
 			if (moduleProvider.ClassLoader is ClassProvidedImportClassLoader) {
-				((ClassProvidedImportClassLoader) moduleProvider.ClassLoader).Imported = moduleProvider.ModuleProvider.ModuleDependencies.PathClasses;
+				((ClassProvidedImportClassLoader) moduleProvider.ClassLoader).Imported = moduleProvider.ModuleProvider.GetModuleDependencies().PathClasses;
 			}
 
 			var moduleName = moduleProvider.ModuleProvider.ModuleName;
 
 			// resolve external dependencies
-			var moduleDependencies = moduleProvider.ModuleProvider.ModuleDependencies;
+			var moduleDependencies = moduleProvider.ModuleProvider.GetModuleDependencies();
 			var deploymentIdDependencies = ResolveDependencies(-1, moduleDependencies, services);
 
 			// initialize EPL objects defined by module

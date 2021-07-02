@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
@@ -19,8 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public interface AggregationServiceFactory
     {
         AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            ImportServiceRuntime importService,
+            ExprEvaluatorContext exprEvaluatorContext,
             bool isSubquery,
             int? subqueryNumber,
             int[] groupId);

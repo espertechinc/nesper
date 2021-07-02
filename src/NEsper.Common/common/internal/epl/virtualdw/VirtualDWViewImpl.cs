@@ -13,6 +13,7 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
@@ -50,9 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             AgentInstanceContext agentInstanceContext,
             VirtualDataWindow dataExternal)
         {
-            this._factory = factory;
-            this._agentInstanceContext = agentInstanceContext;
-            this._dataExternal = dataExternal;
+            _factory = factory;
+            _agentInstanceContext = agentInstanceContext;
+            _dataExternal = dataExternal;
         }
 
         public VirtualDataWindow VirtualDataWindow {
@@ -82,33 +83,33 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public SubordTableLookupStrategy GetSubordinateLookupStrategy(
             SubordTableLookupStrategyFactoryVDW subordTableFactory,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            Pair<IndexMultiKey, VirtualDWEventTable> tableVW = VirtualDWQueryPlanUtil.GetSubordinateQueryDesc(
+            var tableVW = VirtualDWQueryPlanUtil.GetSubordinateQueryDesc(
                 false,
                 subordTableFactory.IndexHashedProps,
                 subordTableFactory.IndexBtreeProps);
-            VirtualDWEventTable noopTable = tableVW.Second;
-            for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
-                string opRange = subordTableFactory.RangeEvals[i].Type.StringOp();
-                VirtualDataWindowLookupOp op = VirtualDataWindowLookupOpExtensions.FromOpString(opRange);
+            var noopTable = tableVW.Second;
+            for (var i = 0; i < noopTable.BtreeAccess.Count; i++) {
+                var opRange = subordTableFactory.RangeEvals[i].Type.StringOp();
+                var op = VirtualDataWindowLookupOpExtensions.FromOpString(opRange);
                 noopTable.BtreeAccess[i].Operator = op;
             }
 
             // allocate a number within the statement
             if (_lastAccessedByStatementName == null ||
-                !_lastAccessedByDeploymentId.Equals(agentInstanceContext.DeploymentId) ||
-                !_lastAccessedByStatementName.Equals(agentInstanceContext.StatementName)) {
+                !_lastAccessedByDeploymentId.Equals(exprEvaluatorContext.DeploymentId) ||
+                !_lastAccessedByStatementName.Equals(exprEvaluatorContext.StatementName)) {
                 _lastAccessedByNum = 0;
             }
 
             _lastAccessedByNum++;
 
-            VirtualDataWindowLookupContextSPI context = new VirtualDataWindowLookupContextSPI(
-                agentInstanceContext.DeploymentId,
-                agentInstanceContext.StatementName,
-                agentInstanceContext.StatementId,
-                agentInstanceContext.Annotations,
+            var context = new VirtualDataWindowLookupContextSPI(
+                exprEvaluatorContext.DeploymentId,
+                exprEvaluatorContext.StatementName,
+                exprEvaluatorContext.StatementId,
+                exprEvaluatorContext.Annotations,
                 false,
                 _factory.NamedWindowName,
                 noopTable.HashAccess,
@@ -133,21 +134,21 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             EventTable[] eventTables,
             int lookupStream)
         {
-            VirtualDWEventTable noopTable = (VirtualDWEventTable) eventTables[0];
-            for (int i = 0; i < noopTable.HashAccess.Count; i++) {
-                Type hashKeyType = tableLookupPlan.VirtualDWHashTypes[i];
+            var noopTable = (VirtualDWEventTable) eventTables[0];
+            for (var i = 0; i < noopTable.HashAccess.Count; i++) {
+                var hashKeyType = tableLookupPlan.VirtualDWHashTypes[i];
                 noopTable.HashAccess[i].LookupValueType = hashKeyType;
             }
 
-            for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
-                QueryGraphValueEntryRange range = tableLookupPlan.VirtualDWRangeEvals[i];
-                VirtualDataWindowLookupOp op = VirtualDataWindowLookupOpExtensions.FromOpString(range.Type.StringOp());
-                VirtualDataWindowLookupFieldDesc rangeField = noopTable.BtreeAccess[i];
+            for (var i = 0; i < noopTable.BtreeAccess.Count; i++) {
+                var range = tableLookupPlan.VirtualDWRangeEvals[i];
+                var op = VirtualDataWindowLookupOpExtensions.FromOpString(range.Type.StringOp());
+                var rangeField = noopTable.BtreeAccess[i];
                 rangeField.Operator = op;
                 rangeField.LookupValueType = tableLookupPlan.VirtualDWRangeTypes[i];
             }
 
-            VirtualDataWindowLookup index = _dataExternal.GetLookup(
+            var index = _dataExternal.GetLookup(
                 new VirtualDataWindowLookupContext(
                     agentInstanceContext.DeploymentId,
                     agentInstanceContext.StatementName,
@@ -175,24 +176,24 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             RangeIndexLookupValue[] rangeValues,
             Attribute[] annotations)
         {
-            VirtualDWEventTable noopTable = (VirtualDWEventTable) eventTable;
-            for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
-                RangeIndexLookupValueRange range = (RangeIndexLookupValueRange) rangeValues[i];
-                VirtualDataWindowLookupOp op = range.Operator.StringOp().FromOpString();
+            var noopTable = (VirtualDWEventTable) eventTable;
+            for (var i = 0; i < noopTable.BtreeAccess.Count; i++) {
+                var range = (RangeIndexLookupValueRange) rangeValues[i];
+                var op = range.Operator.StringOp().FromOpString();
                 noopTable.BtreeAccess[i].Operator = op;
             }
 
-            object[] keys = new object[keyValues.Length + rangeValues.Length];
-            for (int i = 0; i < keyValues.Length; i++) {
+            var keys = new object[keyValues.Length + rangeValues.Length];
+            for (var i = 0; i < keyValues.Length; i++) {
                 keys[i] = keyValues[i];
                 noopTable.HashAccess[i].LookupValueType = keyValues[i] == null ? null : keyValues[i].GetType();
             }
 
-            int offset = keyValues.Length;
-            for (int j = 0; j < rangeValues.Length; j++) {
-                object rangeValue = rangeValues[j].Value;
+            var offset = keyValues.Length;
+            for (var j = 0; j < rangeValues.Length; j++) {
+                var rangeValue = rangeValues[j].Value;
                 if (rangeValue is Range) {
-                    Range range = (Range) rangeValue;
+                    var range = (Range) rangeValue;
                     keys[j + offset] = new VirtualDataWindowKeyRange(range.LowEndpoint, range.HighEndpoint);
                     noopTable.BtreeAccess[j].LookupValueType =
                         range.LowEndpoint == null ? null : range.LowEndpoint.GetType();
@@ -203,8 +204,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 }
             }
 
-            string namedWindowName = _factory.NamedWindowName;
-            VirtualDataWindowLookup index = _dataExternal.GetLookup(
+            var namedWindowName = _factory.NamedWindowName;
+            var index = _dataExternal.GetLookup(
                 new VirtualDataWindowLookupContext(
                     null,
                     null,
@@ -245,15 +246,15 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             try {
                 IList<VirtualDataWindowEventStartIndex.VDWCreateIndexField> fields =
                     new List<VirtualDataWindowEventStartIndex.VDWCreateIndexField>();
-                foreach (string hash in explicitIndexDesc.HashProps) {
+                foreach (var hash in explicitIndexDesc.HashProps) {
                     fields.Add(new VirtualDataWindowEventStartIndex.VDWCreateIndexField(hash, "hash"));
                 }
 
-                foreach (string range in explicitIndexDesc.RangeProps) {
+                foreach (var range in explicitIndexDesc.RangeProps) {
                     fields.Add(new VirtualDataWindowEventStartIndex.VDWCreateIndexField(range, "btree"));
                 }
 
-                VirtualDataWindowEventStartIndex create = new VirtualDataWindowEventStartIndex(
+                var create = new VirtualDataWindowEventStartIndex(
                     _factory.NamedWindowName,
                     indexName,
                     fields,
@@ -261,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 _dataExternal.HandleEvent(create);
             }
             catch (Exception ex) {
-                string message =
+                var message =
                     "Exception encountered invoking virtual data window handle start-index event for window '" +
                     _factory.NamedWindowName +
                     "': " +
@@ -276,12 +277,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             QueryPlanIndexItem explicitIndexDesc)
         {
             try {
-                VirtualDataWindowEventStopIndex theEvent =
+                var theEvent =
                     new VirtualDataWindowEventStopIndex(_factory.NamedWindowName, indexName);
                 _dataExternal.HandleEvent(theEvent);
             }
             catch (Exception ex) {
-                string message =
+                var message =
                     "Exception encountered invoking virtual data window handle stop-index event for window '" +
                     _factory.NamedWindowName +
                     "': " +
@@ -293,12 +294,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public void HandleDestroy(int agentInstanceId)
         {
             try {
-                VirtualDataWindowEventStopWindow theEvent =
+                var theEvent =
                     new VirtualDataWindowEventStopWindow(_factory.NamedWindowName, agentInstanceId);
                 _dataExternal.HandleEvent(theEvent);
             }
             catch (Exception ex) {
-                string message =
+                var message =
                     "Exception encountered invoking virtual data window handle stop-window event for window '" +
                     _factory.NamedWindowName +
                     "': " +

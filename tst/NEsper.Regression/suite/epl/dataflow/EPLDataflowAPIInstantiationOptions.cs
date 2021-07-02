@@ -34,12 +34,12 @@ WithOperatorInjectionCallback(execs);
         }
 public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowOperatorInjectionCallback());
     return execs;
 }public static IList<RegressionExecution> WithParameterInjectionCallback(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowParameterInjectionCallback());
     return execs;
 }

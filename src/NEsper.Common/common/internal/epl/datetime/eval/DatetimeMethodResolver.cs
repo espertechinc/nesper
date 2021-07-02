@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.hook.datetimemethod;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.datetime.plugin;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;

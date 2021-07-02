@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     continue;
                 }
 
-                if (methods[i].ReturnType == typeof(void)) {
+                if (methods[i].ReturnType.IsVoid()) {
                     continue;
                 }
 
@@ -93,9 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 }
 
                 var parameterType = parameterTypes[0];
-                if (parameterType != typeof(int) &&
-                    parameterType != typeof(int?) &&
-                    parameterType != typeof(string)) {
+                if (!parameterType.IsInt32() && (parameterType != typeof(string))) {
                     continue;
                 }
 
@@ -124,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     "Configured field named '" +
                     fieldDesc.AccessorFieldName +
                     "' not found for class " +
-                    clazz.CleanName());
+                    clazz.TypeSafeName());
             }
 
             return MakeFieldDesc(field, fieldDesc.Name);

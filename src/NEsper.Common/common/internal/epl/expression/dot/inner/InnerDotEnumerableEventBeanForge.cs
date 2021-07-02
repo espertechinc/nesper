@@ -79,8 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             get => eventType;
         }
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.SingleEvent(eventType);
+        public EPChainableType TypeInfo {
+            get => EPChainableTypeHelper.SingleEvent(eventType);
         }
     }
 } // end of namespace

@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
+using com.espertech.esper.common.@internal.@event.bean.getter;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
@@ -26,14 +27,12 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         /// <param name="optionalValueSerde">value serde if any</param>
         /// <param name="isFireAndForget">indicates fire-and-forget</param>
         /// <param name="unique">indicates unique</param>
-        /// <param name="coerceOnAddOnly">indicator whether to coerce on value-add</param>
         /// <returns>table build</returns>
         public static EventTable BuildIndex(
             AgentInstanceContext agentInstanceContext,
             int indexedStreamNum,
             QueryPlanIndexItem item,
             EventType eventType,
-            bool coerceOnAddOnly,
             bool unique,
             string optionalIndexName,
             DataInputOutputSerde optionalValueSerde,
@@ -65,7 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         eventType,
                         optionalValueSerde,
                         isFireAndForget,
-                        agentInstanceContext.StatementContext.EventTableFactoryContext);
+                        item.StateMgmtSettings);
+                    
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
                 else {
@@ -73,7 +73,6 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         indexedStreamNum,
                         eventType,
                         indexProps,
-                        indexTypes,
                         item.TransformFireAndForget,
                         item.HashKeySerde,
                         unique,
@@ -81,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         indexGetter,
                         optionalValueSerde,
                         isFireAndForget,
-                        agentInstanceContext.StatementContext.EventTableFactoryContext);
+                        item.StateMgmtSettings);
+
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
             }
@@ -96,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         rangeKeySerdes[0],
                         optionalValueSerde,
                         isFireAndForget,
-                        agentInstanceContext.StatementContext.EventTableFactoryContext);
+                        agentInstanceContext.StatementContext.EventTableFactoryContext,
+                        item.StateMgmtSettings);
 
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
@@ -115,6 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         rangeKeySerdes,
                         optionalValueSerde,
                         isFireAndForget);
+                    
                     return factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
             }

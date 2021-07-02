@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 							"Subqueries require one or more views to limit the stream, consider declaring a length or time window");
 					}
 
-					ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(
+					var viewForgeDesc = ViewFactoryForgeUtil.CreateForges(
 						filterStreamSpecCompiled.ViewSpecs,
 						args,
 						filterStreamSpecCompiled.FilterSpecCompiled.ResultEventType);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				else if (streamSpec is NamedWindowConsumerStreamSpec) {
 					var namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.StreamSpecs[0];
 					var namedWindow = namedSpec.NamedWindow;
-					ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(namedSpec.ViewSpecs, args, namedWindow.EventType);
+					var viewForgeDesc = ViewFactoryForgeUtil.CreateForges(namedSpec.ViewSpecs, args, namedWindow.EventType);
 					viewForges = viewForgeDesc.Forges;
 					additionalForgeables = viewForgeDesc.MultikeyForges;
 					var namedWindowName = namedWindow.EventType.Name;
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				else if (streamSpec is TableQueryStreamSpec) {
 					var namedSpec = (TableQueryStreamSpec) statementSpec.StreamSpecs[0];
 					var table = namedSpec.Table;
-					ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(namedSpec.ViewSpecs, args, table.InternalEventType);
+					var viewForgeDesc = ViewFactoryForgeUtil.CreateForges(namedSpec.ViewSpecs, args, table.InternalEventType);
 					viewForges = viewForgeDesc.Forges;
 					additionalForgeables = viewForgeDesc.MultikeyForges;
 					var namedWindowName = table.TableName;

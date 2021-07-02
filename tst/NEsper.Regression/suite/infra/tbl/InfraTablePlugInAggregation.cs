@@ -31,14 +31,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithAccessRefCountedMap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraPlugInAccessRefCountedMap());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggMethodCSVLast3Strings(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraPlugInAggMethodCSVLast3Strings());
             return execs;
         }

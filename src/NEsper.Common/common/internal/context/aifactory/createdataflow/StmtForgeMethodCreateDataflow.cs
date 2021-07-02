@@ -1397,7 +1397,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         
         internal class ResolveTypesResult
         {
-            internal ResolveTypesResult(IDictionary<String, EventType> types, IList<StmtClassForgeableFactory> additionalForgeables)
+            internal ResolveTypesResult(IDictionary<string, EventType> types, IList<StmtClassForgeableFactory> additionalForgeables)
             {
                 Types = types;
                 AdditionalForgeables = additionalForgeables;

@@ -10,11 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -25,8 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     {
         private bool _audit;
         private short _factoryNodeId;
-        private bool _attachPatternText;
-
+        private readonly bool _attachPatternText;
+        private StateMgmtSetting _stateMgmtSettings;
+        
         /// <summary>
         ///     Constructor creates a list of child nodes.
         /// </summary>
@@ -76,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             TextWriter writer,
             PatternExpressionPrecedenceEnum parentPrecedence)
         {
-            if (this.Precedence.GetLevel() < parentPrecedence.GetLevel()) {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer);
                 writer.Write(")");
@@ -98,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                     "node",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
-                        .Add(NameOfFactory()))
+                        .Add(NameOfFactory(), _stateMgmtSettings.ToExpression()))
                 .SetProperty(Ref("node"), "FactoryNodeId", Constant(_factoryNodeId));
             if (_audit || classScope.IsInstrumented || _attachPatternText) {
                 var writer = new StringWriter();
@@ -112,10 +116,23 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return method;
         }
 
+        public void SetFactoryNodeId(
+            short factoryNodeId,
+            StatementRawInfo statementRawInfo,
+            int streamNum,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider)
+        {
+            _factoryNodeId = factoryNodeId;
+            _stateMgmtSettings = stateMgmtSettingsProvider.GetPattern(statementRawInfo, streamNum, AppliesTo());
+        }
+
+
         protected abstract Type TypeOfFactory();
 
         protected abstract string NameOfFactory();
 
+        protected abstract AppliesTo AppliesTo();
+        
         protected abstract void InlineCodegen(
             CodegenMethod method,
             SAIFFInitializeSymbol symbols,

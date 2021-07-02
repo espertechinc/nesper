@@ -32,13 +32,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprDotEvalParamLambda lambda,
 			bool max) : base(lambda)
 		{
-			this._max = max;
-			this._innerTypeBoxed = Boxing.GetBoxedType(InnerExpression.EvaluationType);
+			_max = max;
+			_innerTypeBoxed = Boxing.GetBoxedType(InnerExpression.EvaluationType);
 		}
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
 					ProcEvaluateEnumMethod = (
 						eventsLambda,
@@ -48,11 +48,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						IComparable minKey = null;
 						EventBean result = null;
 
-						ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-						foreach (EventBean next in beans) {
+						var beans = (ICollection<EventBean>) enumcoll;
+						foreach (var next in beans) {
 							eventsLambda[StreamNumLambda] = next;
 
-							object comparable = inner.Evaluate(eventsLambda, isNewData, context);
+							var comparable = inner.Evaluate(eventsLambda, isNewData, context);
 							if (comparable == null) {
 								continue;
 							}
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(EventBean);
 		}

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.view.prior
     public class PriorEventBufferUnbound : ViewUpdatedCollection,
         RandomAccessByIndex
     {
-        private readonly int maxSize;
+        private readonly int _maxSize;
 
         /// <summary>
         ///     Ctor.
@@ -33,16 +33,16 @@ namespace com.espertech.esper.common.@internal.view.prior
         /// <param name="maxPriorIndex">is the highest prior-event index required by any expression</param>
         public PriorEventBufferUnbound(int maxPriorIndex)
         {
-            maxSize = maxPriorIndex + 1;
-            NewEvents = new RollingEventBuffer(maxSize);
+            _maxSize = maxPriorIndex + 1;
+            NewEvents = new RollingEventBuffer(_maxSize);
         }
 
         public RollingEventBuffer NewEvents { get; }
 
         public EventBean GetNewData(int index)
         {
-            if (index >= maxSize) {
-                throw new ArgumentException("Index " + index + " not allowed, max size is " + maxSize);
+            if (index >= _maxSize) {
+                throw new ArgumentException("Index " + index + " not allowed, max size is " + _maxSize);
             }
 
             return NewEvents.Get(index);

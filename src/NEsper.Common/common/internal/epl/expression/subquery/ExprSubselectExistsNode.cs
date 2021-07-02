@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class ExprSubselectExistsNode : ExprSubselectNode
     {
-        private SubselectForgeNR subselectEvalStrategyNR;
+        private SubselectForgeNR _subselectEvalStrategyNr;
 
         public ExprSubselectExistsNode(StatementSpecRaw statementSpec)
             : base(statementSpec)
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public override void ValidateSubquery(ExprValidationContext validationContext)
         {
-            subselectEvalStrategyNR = SubselectNRForgeFactory.CreateStrategyExists(this);
+            _subselectEvalStrategyNr = SubselectNRForgeFactory.CreateStrategyExists(this);
         }
 
         public override IDictionary<string, object> TypableGetRowProperties()
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            return subselectEvalStrategyNR.EvaluateMatchesCodegen(parent, symbols, classScope);
+            return _subselectEvalStrategyNr.EvaluateMatchesCodegen(parent, symbols, classScope);
         }
 
         public override EventType GetEventTypeCollection(

@@ -13,26 +13,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprValidationMemberNameQualifiedSubquery : ExprValidationMemberName
     {
-        private readonly int subqueryNum;
+        private readonly int _subqueryNum;
 
         public ExprValidationMemberNameQualifiedSubquery(int subqueryNum)
         {
-            this.subqueryNum = subqueryNum;
+            this._subqueryNum = subqueryNum;
         }
 
         public CodegenFieldName AggregationResultFutureRef()
         {
-            return new CodegenFieldNameSubqueryAgg(subqueryNum);
+            return new CodegenFieldNameSubqueryAgg(_subqueryNum);
         }
 
         public CodegenFieldName PriorStrategy(int streamNum)
         {
-            return new CodegenFieldNameSubqueryPrior(subqueryNum);
+            return new CodegenFieldNameSubqueryPrior(_subqueryNum);
         }
 
         public CodegenFieldName PreviousStrategy(int streamNum)
         {
-            return new CodegenFieldNameSubqueryPrevious(subqueryNum);
+            return new CodegenFieldNameSubqueryPrevious(_subqueryNum);
         }
 
         public CodegenFieldName PreviousMatchrecognizeStrategy()

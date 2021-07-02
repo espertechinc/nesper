@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
     public class VariantEventBean : EventBean,
         VariantEvent
     {
-        private readonly VariantEventType variantEventType;
+        private readonly VariantEventType _variantEventType;
 
         /// <summary>
         ///     Ctor.
@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.@event.variant
             VariantEventType variantEventType,
             EventBean underlying)
         {
-            this.variantEventType = variantEventType;
+            this._variantEventType = variantEventType;
             UnderlyingEventBean = underlying;
         }
 
-        public EventType EventType => variantEventType;
+        public EventType EventType => _variantEventType;
 
         public object Get(string property)
         {
-            var getter = variantEventType.GetGetter(property);
+            var getter = _variantEventType.GetGetter(property);
             return getter?.Get(this);
         }
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public object GetFragment(string propertyExpression)
         {
-            var getter = variantEventType.GetGetter(propertyExpression);
+            var getter = _variantEventType.GetGetter(propertyExpression);
             if (getter == null) {
                 throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }

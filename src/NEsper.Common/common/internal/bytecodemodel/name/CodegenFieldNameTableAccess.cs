@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameTableAccess(int tableAccessNumber)
         {
-            this._tableAccessNumber = tableAccessNumber;
+            _tableAccessNumber = tableAccessNumber;
         }
 
         public string Name {

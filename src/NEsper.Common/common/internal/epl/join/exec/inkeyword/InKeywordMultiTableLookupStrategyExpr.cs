@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             InKeywordTableLookupPlanMultiIdxFactory factory,
             PropertyHashedEventTable[] indexes)
         {
-            this._factory = factory;
-            this._indexes = indexes;
-            this._eventsPerStream = new EventBean[factory.LookupStream + 1];
+            _factory = factory;
+            _indexes = indexes;
+            _eventsPerStream = new EventBean[factory.LookupStream + 1];
         }
 
         public PropertyHashedEventTable[] Index {

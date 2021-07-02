@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             long intervalTime)
             : base(distinct, hasFilter, inputValueType)
         {
-            this.IntervalTime = intervalTime;
+            IntervalTime = intervalTime;
         }
 
         public AggregationPortableValidationRate()

@@ -10,10 +10,12 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -26,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             Type targetType,
             CodegenExpression value)
         {
-            if (targetType == null) {
+            if (targetType.IsNullTypeSafe()) {
                 return ConstantNull();
             }
 
@@ -43,10 +45,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return value;
             }
 
-            if (targetType == typeof(void)) {
+            if (targetType.IsVoid()) {
                 throw new ArgumentException("Invalid void target type for cast");
             }
 
+            targetType = targetType.Flexify();
+            
             if (targetType == typeof(int)) {
                 return ExprDotMethod(value, "AsInt32");
             }
@@ -151,26 +155,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenClassScope codegenClassScope)
         {
             var type = forge.EvaluationType;
-            if (type == typeof(double)) {
+            if (type.IsNullType()) {
+                block.DeclareVar<double>(variable, Constant(0.0d));
+            }
+            else {
+                if (type == typeof(double)) {
+                    block.DeclareVar(
+                        type,
+                        variable,
+                        forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
+                    return;
+                }
+
+                string holder = variable + "_";
                 block.DeclareVar(
                     type,
-                    variable,
+                    holder,
                     forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
-                return;
-            }
+                if (type.CanBeNull()) {
+                    block.IfRefNullReturnNull(holder);
+                }
 
-            string holder = variable + "_";
-            block.DeclareVar(
-                type,
-                holder,
-                forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
-            if (type.CanBeNull()) {
-                block.IfRefNullReturnNull(holder);
+                block.DeclareVar<double>(
+                    variable,
+                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref(holder), type));
             }
-
-            block.DeclareVar<double>(
-                variable,
-                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref(holder), type));
         }
     }
 } // end of namespace

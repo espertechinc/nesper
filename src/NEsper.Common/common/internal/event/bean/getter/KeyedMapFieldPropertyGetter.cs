@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -41,8 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericFieldTypeMap(field, false),
-                null)
+                TypeHelper.GetSecondParameterTypeOrObject(field.FieldType))
         {
             _key = key;
             _field = field;
@@ -74,8 +74,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-
-        public override Type BeanPropType => TypeHelper.GetGenericFieldTypeMap(_field, false);
 
         public override Type TargetType => _field.DeclaringType;
 

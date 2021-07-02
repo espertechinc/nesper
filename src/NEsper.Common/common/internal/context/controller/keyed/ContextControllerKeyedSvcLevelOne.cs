@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedSvcLevelOne : ContextControllerKeyedSvc
     {
-        private static readonly object[] EMPTY_PARTITION_KEYS = new object[0];
+        private static readonly object[] EmptyPartitionKeys = new object[0];
 
         private readonly IDictionary<object, ContextControllerKeyedSvcEntry> _keys =
             new NullableDictionary<object, ContextControllerKeyedSvcEntry>(
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public object[] MgmtGetPartitionKeys(IntSeqKey controllerPath)
         {
-            return EMPTY_PARTITION_KEYS;
+            return EmptyPartitionKeys;
         }
 
         public int MgmtGetIncSubpath(IntSeqKey controllerPath)
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             ContextControllerFilterEntry[] filterEntries)
         {
-            this._filterEntries = filterEntries;
+            _filterEntries = filterEntries;
         }
 
         public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)

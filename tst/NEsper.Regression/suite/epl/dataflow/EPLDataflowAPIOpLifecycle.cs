@@ -39,17 +39,17 @@ WithFlowGraphOperator(execs);
         }
 public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFlowGraphOperator());
     return execs;
 }public static IList<RegressionExecution> WithFlowGraphSource(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFlowGraphSource());
     return execs;
 }public static IList<RegressionExecution> WithTypeEvent(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowTypeEvent());
     return execs;
 }

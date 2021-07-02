@@ -336,6 +336,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				    _statementContextRuntimeServices = new StatementContextRuntimeServices(
 					    _container,
 					    _contextManagementService,
+					    _contextPathRegistry,
 					    _contextServiceFactory,
 					    _databaseConfigServiceRuntime,
 					    _dataFlowFilterServiceAdapter,
@@ -370,6 +371,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					    _namedWindowPathRegistry,
 					    _rowRecogStateRepoFactory,
 					    _resultSetProcessorHelperFactory,
+					    _schedulingService,
 					    _statementAgentInstanceLockFactory,
 					    _statementResourceHolderBuilder,
 					    _tableExprEvaluatorContext,
@@ -387,6 +389,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    get {
 			    if (_stageRuntimeServices == null) {
 				    _stageRuntimeServices = new StageRuntimeServices(
+					    _importServiceRuntime,
 					    _dispatchService,
 					    _eventBeanService,
 					    _eventBeanTypedEventFactory,

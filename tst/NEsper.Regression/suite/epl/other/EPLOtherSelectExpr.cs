@@ -41,42 +41,42 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithWindowStats(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherWindowStats());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGetEventType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherGetEventType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEscapeString(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherEscapeString());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeywordsAllowed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherKeywordsAllowed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGraphSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherGraphSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrecedenceNoColumnName(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPrecedenceNoColumnName());
             return execs;
         }

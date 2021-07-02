@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
 	public class AggregationPortableValidationSorted : AggregationPortableValidation
 	{
-		private string aggFuncName;
-		private EventType containedEventType;
-		private Type[] optionalCriteriaTypes;
+		private string _aggFuncName;
+		private EventType _containedEventType;
+		private Type[] _optionalCriteriaTypes;
 
 		public AggregationPortableValidationSorted()
 		{
@@ -41,24 +41,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			EventType containedEventType,
 			Type[] optionalCriteriaTypes)
 		{
-			this.aggFuncName = aggFuncName;
-			this.containedEventType = containedEventType;
-			this.optionalCriteriaTypes = optionalCriteriaTypes;
+			this._aggFuncName = aggFuncName;
+			this._containedEventType = containedEventType;
+			this._optionalCriteriaTypes = optionalCriteriaTypes;
 		}
 
 		public string AggFuncName {
-			get => this.aggFuncName;
-			set => this.aggFuncName = value;
+			get => _aggFuncName;
+			set => _aggFuncName = value;
 		}
 
 		public EventType ContainedEventType {
-			get => this.containedEventType;
-			set => this.containedEventType = value;
+			get => _containedEventType;
+			set => _containedEventType = value;
 		}
 
 		public Type[] OptionalCriteriaTypes {
-			get => this.optionalCriteriaTypes;
-			set => this.optionalCriteriaTypes = value;
+			get => _optionalCriteriaTypes;
+			set => _optionalCriteriaTypes = value;
 		}
 
 		public void ValidateIntoTableCompatible(
@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
 			var other = (AggregationPortableValidationSorted) intoTableAgg;
-			AggregationValidationUtil.ValidateEventType(this.containedEventType, other.containedEventType);
-			AggregationValidationUtil.ValidateAggFuncName(aggFuncName, other.aggFuncName);
+			AggregationValidationUtil.ValidateEventType(_containedEventType, other._containedEventType);
+			AggregationValidationUtil.ValidateAggFuncName(_aggFuncName, other._aggFuncName);
 		}
 
 		public CodegenExpression Make(
@@ -78,12 +78,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			ModuleTableInitializeSymbol symbols,
 			CodegenClassScope classScope)
 		{
-			var method = parent.MakeChild(typeof(AggregationPortableValidationSorted), this.GetType(), classScope);
+			var method = parent.MakeChild(typeof(AggregationPortableValidationSorted), GetType(), classScope);
 			method.Block
-				.DeclareVar<AggregationPortableValidationSorted>("v", NewInstance(typeof(AggregationPortableValidationSorted)))
-				.SetProperty(Ref("v"), "AggFuncName", Constant(aggFuncName))
-				.SetProperty(Ref("v"), "ContainedEventType", EventTypeUtility.ResolveTypeCodegen(containedEventType, symbols.GetAddInitSvc(method)))
-				.SetProperty(Ref("v"), "OptionalCriteriaTypes", Constant(optionalCriteriaTypes))
+				.DeclareVarNewInstance<AggregationPortableValidationSorted>("v")
+				.SetProperty(Ref("v"), "AggFuncName", Constant(_aggFuncName))
+				.SetProperty(Ref("v"), "ContainedEventType", EventTypeUtility.ResolveTypeCodegen(_containedEventType, symbols.GetAddInitSvc(method)))
+				.SetProperty(Ref("v"), "OptionalCriteriaTypes", Constant(_optionalCriteriaTypes))
 				.MethodReturn(Ref("v"));
 			return LocalMethod(method);
 		}
@@ -108,21 +108,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			ExprNode[] @params)
 		{
 			var name = aggMethodName.ToLowerInvariant();
-			var componentType = containedEventType.UnderlyingType;
+			var componentType = _containedEventType.UnderlyingType;
 			switch (name) {
 				case "maxby": {
 					var forgeX = new AggregationMethodSortedMinMaxByForge(componentType, true);
-					return new AggregationMultiFunctionMethodDesc(forgeX, null, null, containedEventType);
+					return new AggregationMultiFunctionMethodDesc(forgeX, null, null, _containedEventType);
 				}
 
 				case "minby": {
 					var forgeX = new AggregationMethodSortedMinMaxByForge(componentType, false);
-					return new AggregationMultiFunctionMethodDesc(forgeX, null, null, containedEventType);
+					return new AggregationMultiFunctionMethodDesc(forgeX, null, null, _containedEventType);
 				}
 
 				case "sorted": {
-					var forgeX = new AggregationMethodSortedWindowForge(TypeHelper.GetArrayType(componentType));
-					return new AggregationMultiFunctionMethodDesc(forgeX, containedEventType, null, null);
+					var arrayTypeX = TypeHelper.GetArrayType(componentType);
+					var forgeX = new AggregationMethodSortedWindowForge(arrayTypeX);
+					return new AggregationMultiFunctionMethodDesc(forgeX, _containedEventType, null, null);
 				}
 			}
 
@@ -145,10 +146,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				footprintProvided,
 				DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
-			var keyType = optionalCriteriaTypes == null
+			var keyType = _optionalCriteriaTypes == null
 				? typeof(IComparable)
-				: (optionalCriteriaTypes.Length == 1 ? optionalCriteriaTypes[0] : typeof(HashableMultiKey));
-			var resultType = methodEnum.GetResultType(containedEventType.UnderlyingType, keyType);
+				: (_optionalCriteriaTypes.Length == 1 ? _optionalCriteriaTypes[0] : typeof(HashableMultiKey));
+			var resultType = methodEnum.GetResultType(_containedEventType.UnderlyingType, keyType);
 
 			AggregationMethodForge forge;
 			if (aggregationMethodSortedFootprintEnum == AggregationMethodSortedFootprintEnum.SUBMAP) {
@@ -164,8 +165,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				forge = new AggregationMethodSortedNoParamForge(componentType, methodEnum, resultType);
 			}
 
-			var eventTypeCollection = methodEnum.IsReturnsCollectionOfEvents() ? containedEventType : null;
-			var eventTypeSingle = methodEnum.IsReturnsSingleEvent() ? containedEventType : null;
+			var eventTypeCollection = methodEnum.IsReturnsCollectionOfEvents() ? _containedEventType : null;
+			var eventTypeSingle = methodEnum.IsReturnsSingleEvent() ? _containedEventType : null;
 			return new AggregationMultiFunctionMethodDesc(forge, eventTypeCollection, null, eventTypeSingle);
 		}
 
@@ -184,9 +185,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 					"' for parameter " +
 					parameterNumber +
 					" requires a key of type '" +
-					keyBoxed.CleanName() +
+					keyBoxed.TypeSafeName() +
 					"' but receives '" +
-					providedBoxed.CleanName() +
+					providedBoxed.TypeSafeName() +
 					"'");
 			}
 		}

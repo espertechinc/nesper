@@ -7,19 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom
 {
 	public class ExprDotForgeSelectFrom : ExprDotForgeLambdaThreeForm
 	{
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
@@ -28,19 +32,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			throw new IllegalStateException();
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => {
 				var returnType = lambda.BodyForge.EvaluationType;
-				return EPTypeHelper.CollectionOfSingleValue(returnType, typeof(EventBean));
+				if (returnType.IsNullType()) {
+					return EPChainableTypeHelper.CollectionOfSingleValue(typeof(object));
+				}
+
+				var clazz = typeof(ICollection<>).MakeGenericType(returnType); 
+				return new EPChainableTypeClass(clazz);
 			};
 		}
 

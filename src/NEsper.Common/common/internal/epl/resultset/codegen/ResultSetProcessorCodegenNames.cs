@@ -9,12 +9,12 @@
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.codegen
 {
     public class ResultSetProcessorCodegenNames
     {
-        public const string NAME_AGENTINSTANCECONTEXT = "agentInstanceContext";
         public const string NAME_SELECTEXPRPROCESSOR = "selectExprProcessor";
         public const string NAME_AGGREGATIONSVC = "aggregationService";
         public const string NAME_ORDERBYPROCESSOR = "orderByProcessor";
@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public const string NAME_NEWDATA = "newData";
         public const string NAME_OLDDATA = "oldData";
         public const string NAME_ISSYNTHESIZE = "isSynthesize";
-        public const string NAME_ISNEWDATA = "isNewData";
         public const string NAME_JOINSET = "joinset";
         public const string NAME_VIEWABLE = "viewable";
         public const string NAME_VIEWEVENTSLIST = "viewEventsList";
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public const string NAME_SELECTEXPRPROCESSOR_ARRAY = "o.selectExprProcessorArray";
         public const string NAME_HAVINGEVALUATOR_ARRAY_MEMBER = "o." + NAME_HAVINGEVALUATOR_ARRAYNONMEMBER;
 
-        public static readonly CodegenExpressionMember MEMBER_AGENTINSTANCECONTEXT = new CodegenExpressionMember(NAME_AGENTINSTANCECONTEXT);
+        public static readonly CodegenExpressionMember MEMBER_EXPREVALCONTEXT = new CodegenExpressionMember(NAME_EXPREVALCONTEXT);
         public static readonly CodegenExpressionMember MEMBER_SELECTEXPRPROCESSOR = new CodegenExpressionMember(NAME_SELECTEXPRPROCESSOR_MEMBER);
         public static readonly CodegenExpressionMember MEMBER_SELECTEXPRPROCESSOR_ARRAY = new CodegenExpressionMember(NAME_SELECTEXPRPROCESSOR_ARRAY);
         public static readonly CodegenExpressionMember MEMBER_HAVINGEVALUATOR_ARRAY = new CodegenExpressionMember(NAME_HAVINGEVALUATOR_ARRAY_MEMBER);
@@ -48,7 +47,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public static readonly CodegenExpressionRef REF_NEWDATA = Ref(NAME_NEWDATA);
         public static readonly CodegenExpressionRef REF_OLDDATA = Ref(NAME_OLDDATA);
         public static readonly CodegenExpressionRef REF_ISSYNTHESIZE = Ref(NAME_ISSYNTHESIZE);
-        public static readonly CodegenExpressionRef REF_ISNEWDATA = Ref(NAME_ISNEWDATA);
         public static readonly CodegenExpressionRef REF_JOINSET = Ref(NAME_JOINSET);
         public static readonly CodegenExpressionRef REF_VIEWABLE = Ref(NAME_VIEWABLE);
         public static readonly CodegenExpressionRef REF_VIEWEVENTSLIST = Ref(NAME_VIEWEVENTSLIST);

@@ -152,10 +152,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var collectionType = typeof(FlexCollection<>).MakeGenericType(EvaluationType);
             return MakeEvaluate(
                 GETSCALARCOLL,
                 this,
-                typeof(FlexCollection),
+                collectionType,
                 parent,
                 exprSymbol,
                 codegenClassScope);
@@ -350,6 +351,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (resultType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(resultType, typeof(ExprSubselectNode), classScope);
 
             CodegenExpression eps = symbols.GetAddEPS(method);

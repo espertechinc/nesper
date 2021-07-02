@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters,
 			ExprDotEvalSumMethodFactory sumMethodFactory) : base(lambda, indexEventType, numParameters)
 		{
-			this._sumMethodFactory = sumMethodFactory;
+			_sumMethodFactory = sumMethodFactory;
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return _sumMethodFactory.ValueType;
 		}

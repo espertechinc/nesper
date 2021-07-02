@@ -57,7 +57,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             execs.Add(new ContextKeySegmentedMultikeyWArrayTwoField());
             execs.Add(new ContextKeySegmentedWInitTermEndEvent());
             execs.Add(new ContextKeySegmentedWPatternFireWhenAllocated());
-
+            execs.Add(new ContextKeySegmentedWInitTermPatternAsName());
+            execs.Add(new ContextKeySegmentedTermEventSelect());
             return execs;
         }
 
@@ -160,6 +161,59 @@ namespace com.espertech.esper.regressionlib.suite.context
             return SendSBEvent(env, @string, null, intPrimitive);
         }
 
+        private class ContextKeySegmentedTermEventSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@public @buseventtype create schema UserEvent(userId string, alert string);\n" +
+                             "create context UserSessionContext partition by userId from UserEvent\n" +
+                             "  initiated by UserEvent(alert = 'A')\n" +
+                             "  terminated by UserEvent(alert = 'B') as termEvent;\n" +
+                             "@name('s0') context UserSessionContext select *, context.termEvent as term from UserEvent#firstevent\n" +
+                             "  output snapshot when terminated;";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                sendUser(env, "U1", "A");
+                sendUser(env, "U1", null);
+                sendUser(env, "U1", null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.Milestone(0);
+
+                var term = sendUser(env, "U1", "B");
+                Assert.AreSame(term, env.Listener("s0").AssertOneGetNewAndReset().Get("term"));
+
+                env.UndeployAll();
+            }
+
+            private IDictionary<string, object> sendUser(
+                RegressionEnvironment env,
+                string user,
+                string alert)
+            {
+                var data = CollectionUtil.BuildMap("userId", user, "alert", alert);
+                env.SendEventMap(data, "UserEvent");
+                return data;
+            }
+        }
+
+        private class ContextKeySegmentedWInitTermPatternAsName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create context MyContext partition by TheString from SupportBean\n" +
+                             "initiated by SupportBean(IntPrimitive = 1) as startevent\n" +
+                             "terminated by pattern[s=SupportBean(IntPrimitive = 2)] as endpattern;\n" +
+                             "@name('s0') context MyContext select context.startevent.IntBoxed as c0, context.endpattern.s.IntBoxed as c1 from SupportBean#firstevent output snapshot when terminated;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendSBEvent(env, "A", 10, 1);
+                SendSBEvent(env, "A", 20, 2);
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {10, 20});
+
+                env.UndeployAll();
+            }
+        }
+
         private class ContextKeySegmentedWInitTermEndEvent : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -202,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             private void SendAssertNoReceived(
                 RegressionEnvironment env,
-                String theString)
+                string theString)
             {
                 env.SendEventBean(new SupportBean(theString, 1));
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
@@ -210,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             private void SendAssertKey(
                 RegressionEnvironment env,
-                String theString)
+                string theString)
             {
                 env.SendEventBean(new SupportBean(theString, 0));
                 Assert.AreEqual(theString, env.Listener("s0").AssertOneGetNewAndReset()["key1"]);
@@ -267,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             private void SendAssertArray(
                 RegressionEnvironment env,
-                String id,
+                string id,
                 int[] array,
                 int value,
                 int expected)
@@ -324,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             private void SendAssertArray(
                 RegressionEnvironment env,
-                String id,
+                string id,
                 int[] array,
                 int value,
                 int expected)

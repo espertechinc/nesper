@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             if (plan.FilterNegate != null) {
                 var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     return null;
                 }
             }

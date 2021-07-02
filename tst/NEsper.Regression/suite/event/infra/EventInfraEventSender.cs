@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -104,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				env,
 				JSON_TYPENAME,
 				new SupportBean(),
-				"Unexpected event object of type '" + typeof(SupportBean).Name + "', expected a Json-formatted string-type value");
+				"Unexpected event object of type '" + nameof(SupportBean) + "', expected a Json-formatted string-type value");
 
 			// No such type
 			try {

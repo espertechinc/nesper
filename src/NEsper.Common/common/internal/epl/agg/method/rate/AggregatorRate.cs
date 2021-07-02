@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
     /// </summary>
     public class AggregatorRate : AggregatorMethodWDistinctWFilterBase
     {
-        private AggregationForgeFactoryRate _factory;
-        private CodegenExpressionMember _accumulator;
-        private CodegenExpressionMember _isSet;
-        private CodegenExpressionMember _latest;
-        private CodegenExpressionMember _oldest;
+        private readonly AggregationForgeFactoryRate _factory;
+        private readonly CodegenExpressionMember _accumulator;
+        private readonly CodegenExpressionMember _isSet;
+        private readonly CodegenExpressionMember _latest;
+        private readonly CodegenExpressionMember _oldest;
 
         public AggregatorRate(
             AggregationForgeFactoryRate factory,

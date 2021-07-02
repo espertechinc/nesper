@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         ///         The accessor return values must match the return type declared herein.
         ///     </para>
         ///     <para>
-        ///         Use <seelaso cref="EPTypeHelper.SingleValue" /> to indicate that the accessor
+        ///         Use <seelaso cref="EPChainableTypeHelper.SingleValueNonNull" /> to indicate that the accessor
         ///         returns a single value. The accessor should return the single value upon invocation of
         ///         <seealso cref="AggregationMultiFunctionAccessor.GetValue" />.
         ///         The accessor should return a null value for all other accessor methods.
@@ -55,14 +55,14 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         ///         The accessor should return a null value for all other accessor methods.
         ///     </para>
         ///     <para>
-        ///         Use <seealso cref="EPTypeHelper.CollectionOfSingleValue" /> to indicate that the accessor
+        ///         Use <seealso cref="EPChainableTypeHelper.CollectionOfSingleValue" /> to indicate that the accessor
         ///         returns a collection of single values (scalar, object etc.). The accessor should return a
         ///         Collection in
         ///         <seealso cref="AggregationMultiFunctionAccessor.GetValue" />.
         ///         The accessor should return a null value for all other accessor methods.
         ///     </para>
         ///     <para>
-        ///         Use <seealso cref="EPTypeHelper.Array" /> to indicate that the accessor
+        ///         Use <seealso cref="EPChainableTypeHelper.Array" /> to indicate that the accessor
         ///         returns an array of single values. The accessor should return an array in
         ///         {@link AggregationMultiFunctionAccessor#getValue(AggregationMultiFunctionState, EventBean[], boolean,
         ///         ExprEvaluatorContext)}.
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         ///     </para>
         /// </summary>
         /// <value>expression result type</value>
-        EPType ReturnType { get; }
+        EPChainableType ReturnType { get; }
 
         /// <summary>
         ///     Return a state-key object that determines how the runtime shares aggregation state

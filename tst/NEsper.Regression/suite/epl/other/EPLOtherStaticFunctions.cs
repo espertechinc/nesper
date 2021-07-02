@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -65,168 +66,168 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithStaticFuncEnumConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherStaticFuncEnumConstant());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStaticFuncWCurrentTimeStamp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherStaticFuncWCurrentTimeStamp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrimitiveConversion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPrimitiveConversion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPassthru(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPassthru());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNestedFunction(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNestedFunction());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOtherClauses(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherOtherClauses());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultipleMethodInvocations(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherMultipleMethodInvocations());
             return execs;
         }
 
         public static IList<RegressionExecution> WithComplexParameters(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherComplexParameters());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUserDefined(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUserDefined());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoParameters(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherTwoParameters());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleParameter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSingleParameter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleParameterCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSingleParameterCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleParameterOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSingleParameterOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerfConstantParametersNested(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPerfConstantParametersNested());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerfConstantParameters(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPerfConstantParameters());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoParameters(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNoParameters());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayParameter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherArrayParameter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithException(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherException());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReturnsMapIndexProperty(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherReturnsMapIndexProperty());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEscape(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherEscape());
             return execs;
         }
 
         public static IList<RegressionExecution> WithChainedStatic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherChainedStatic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithChainedInstance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherChainedInstance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNullPrimitive(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNullPrimitive());
             return execs;
         }

@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameMatchRecognizeAgg(int aggregationNumber)
         {
-            this._aggregationNumber = aggregationNumber;
+            _aggregationNumber = aggregationNumber;
         }
 
         public string Name {

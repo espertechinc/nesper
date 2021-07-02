@@ -37,10 +37,10 @@ namespace com.espertech.esper.common.client
             string queryProviderClassName,
             bool targetHa)
         {
-            this._compilerVersion = compilerVersion;
-            this._moduleProviderClassName = moduleProviderClassName;
-            this._queryProviderClassName = queryProviderClassName;
-            this._targetHA = targetHa;
+            _compilerVersion = compilerVersion;
+            _moduleProviderClassName = moduleProviderClassName;
+            _queryProviderClassName = queryProviderClassName;
+            _targetHA = targetHa;
         }
 
         /// <summary>

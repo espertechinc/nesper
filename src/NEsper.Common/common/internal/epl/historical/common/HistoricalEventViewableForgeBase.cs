@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -37,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             int streamNum,
             EventType eventType)
         {
-            this._streamNum = streamNum;
-            this._eventType = eventType;
+            _streamNum = streamNum;
+            _eventType = eventType;
         }
 
         public EventType EventType => _eventType;
@@ -71,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
             var eventTypeExpr = EventTypeUtility.ResolveTypeCodegen(_eventType, symbols.GetAddInitSvc(method));
             method.Block
-                .DeclareVar(TypeOfImplementation(), @ref.Ref, NewInstance(TypeOfImplementation()))
+                .DeclareVarNewInstance(TypeOfImplementation(), @ref.Ref)
                 .SetProperty(@ref, "StreamNumber", Constant(_streamNum))
                 .SetProperty(@ref, "EventType", eventTypeExpr)
                 .SetProperty(@ref, "HasRequiredStreams", Constant(!_subordinateStreams.IsEmpty()))
@@ -108,24 +110,29 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                         }
                         else if (InputParamEvaluators.Length == 1) {
                             var paramType = InputParamEvaluators[0].EvaluationType;
-                            if (paramType == null || !paramType.IsArray) {
+                            if (paramType.IsNullTypeSafe() || !paramType.IsArray) {
                                 block.BlockReturn(Ref("lv"));
                             }
                             else {
-                                var mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.GetElementType());
+                                var componentType = paramType.GetElementType();
+                                var mktype = MultiKeyPlanner.GetMKClassForComponentType(componentType);
                                 block.BlockReturn(NewInstance(mktype, Cast(paramType, Ref("lv"))));
                             }
                         }
                         else {
                             block.DeclareVar<object[]>("values", Cast(typeof(object[]), Ref("lv")));
-                            CodegenExpression[] expressions = new CodegenExpression[MultiKeyClassRef.MKTypes.Length];
-                            for (int i = 0; i < expressions.Length; i++) {
-                                expressions[i] = Cast(MultiKeyClassRef.MKTypes[i], ArrayAtIndex(Ref("values"), Constant(i)));
+                            
+                            var expressions = new CodegenExpression[MultiKeyClassRef.MKTypes.Length];
+                            for (var i = 0; i < expressions.Length; i++) {
+                                var type = MultiKeyClassRef.MKTypes[i];
+                                expressions[i] = type.IsNullType() 
+                                    ? ConstantNull()
+                                    : Cast(type, ArrayAtIndex(Ref("values"), Constant(i)));
                             }
                             
                             var instance = MultiKeyClassRef.ClassNameMK.Type != null
                                 ? NewInstance(MultiKeyClassRef.ClassNameMK.Type, expressions)
-                                : NewInstanceInner(MultiKeyClassRef.ClassNameMK.Name, expressions);
+                                : NewInstanceNamed(MultiKeyClassRef.ClassNameMK.Name, expressions);
 
                             block.BlockReturn(instance);
                         }

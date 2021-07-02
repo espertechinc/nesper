@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator lhsEval,
             ExprEvaluator patternEval)
         {
-            this._forge = forge;
-            this._lhsEval = lhsEval;
-            this._patternEval = patternEval;
+            _forge = forge;
+            _lhsEval = lhsEval;
+            _patternEval = patternEval;
         }
 
         public object Evaluate(
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public static Regex ExprRegexNodeCompilePattern(string text)
         {
             try {
-                return RegexExtensions.Compile(text, out string patternText);
+                return RegexExtensions.Compile(text, out var patternText);
             }
             catch (ArgumentException ex) {
                 throw new EPException("Failed to compile regex pattern '" + text + "': " + ex.Message, ex);

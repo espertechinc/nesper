@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.property;
@@ -80,6 +81,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             _startTimestampPropertyName = startTimestampPropertyName;
             _endTimestampPropertyName = endTimestampPropertyName;
 
+            ValidateMapPropertyTypes(propertyTypes);
+
             _optionalSuperTypes = optionalSuperTypes;
             _optionalDeepSuperTypes = optionalDeepSuperTypes ?? Collections.GetEmptySet<EventType>();
 
@@ -106,6 +109,27 @@ namespace com.espertech.esper.common.@internal.@event.core
             _endTimestampPropertyName = desc.End;
         }
 
+        private void ValidateMapPropertyTypes(IDictionary<string, object> propertyTypes) {
+            foreach (var entry in propertyTypes) {
+                var value = entry.Value;
+                if (value == null) {
+                    continue;
+                }
+                
+                if (!(value is TypeBeanOrUnderlying) &&
+                    !(value is TypeBeanOrUnderlying[]) &&
+                    !(value is EventType) &&
+                    !(value is EventType[]) &&
+                    !(value is Type) &&
+                    !(value is IDictionary<string, object>)) {
+                    throw new IllegalStateException("Unrecognized nestable property type '" + value + "'");
+                }
+                if (value is IDictionary<string, object> valueAsMap) {
+                    ValidateMapPropertyTypes(valueAsMap);
+                }
+            }
+        }
+
         /// <summary>
         ///     Returns the name-type map of map properties, each value in the map
         ///     can be a Class or a Map&lt;String, Object&gt; (for nested maps).
@@ -128,15 +152,15 @@ namespace com.espertech.esper.common.@internal.@event.core
         public IDictionary<string, object> NestableTypes => _nestableTypes;
 
         public IDictionary<string, PropertySetDescriptorItem> PropertyItems => _propertyItems;
+        
+        public Type GetPropertyTypeRaw(string propertyName)
+        {
+            return EventTypeUtility.GetNestablePropertyType(propertyName, _propertyItems, _nestableTypes, _beanEventTypeFactory, _publicFields);
+        }
 
         public Type GetPropertyType(string propertyName)
         {
-            return EventTypeUtility.GetNestablePropertyType(
-                propertyName,
-                _propertyItems,
-                _nestableTypes,
-                _beanEventTypeFactory,
-                _publicFields);
+            return GetPropertyTypeRaw(propertyName).TypeNormalized();
         }
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyName)
@@ -176,14 +200,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public bool IsProperty(string propertyName)
         {
-            var propertyType = GetPropertyType(propertyName);
-            if (propertyType == null) {
-                // Could be a native null type, such as "insert into A select null as field..."
-                if (_propertyItems.ContainsKey(StringValue.UnescapeDot(propertyName))) {
-                    return true;
-                }
-            }
-
+            var propertyType = GetPropertyTypeRaw(propertyName);
             return propertyType != null;
         }
 
@@ -219,6 +236,12 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                 // parse, can be an indexed property
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+                if (property is SimpleProperty) {
+                    item = _propertyItems.Get(property.PropertyNameAtomic);
+                    // may contain null values
+                    return item?.FragmentEventType;
+                }
+                
                 if (property is IndexedProperty indexedProp) {
                     var type = _nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
@@ -239,20 +262,17 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return new FragmentEventType(innerType, false, false); // false since an index is present
                     }
 
-                    if (!(type is Type)) {
+                    if (type is Type typeClass) {
+                        // its an array
+                        if (typeClass.IsArray) {
+                            var component = typeClass.GetElementType();
+                            return EventBeanUtility.CreateNativeFragmentType(component, _beanEventTypeFactory, _publicFields);
+                        }
+
                         return null;
                     }
 
-                    if (!((Type) type).IsArray) {
-                        return null;
-                    }
-
-                    // its an array
-                    return EventBeanUtility.CreateNativeFragmentType(
-                        ((Type) type).GetElementType(),
-                        null,
-                        _beanEventTypeFactory,
-                        _publicFields);
+                    return null;
                 }
 
                 if (property is MappedProperty) {
@@ -269,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             // The property getters therefore act on
 
             // Take apart the nested property into a map key and a nested value class property name
-            var propertyMap = StringValue.UnescapeDot(propertyName.Substring(0, index));
+            var propertyMap = PropertyParser.UnescapeBacktickForProperty(StringValue.UnescapeDot(propertyName.Substring(0, index)));
             var propertyNested = propertyName.Substring(index + 1);
 
             // If the property is dynamic, it cannot be a fragment
@@ -304,21 +324,20 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
 
                     // handle array class in map case
-                    if (!(type is Type)) {
-                        return null;
+                    if (type is Type typeClass) {
+                        if (!typeClass.IsArray) {
+                            return null;
+                        }
+
+                        var fragmentParent = EventBeanUtility.CreateNativeFragmentType(
+                            typeClass,
+                            _beanEventTypeFactory,
+                            _publicFields);
+
+                        return fragmentParent?.FragmentType.GetFragmentType(propertyNested);
                     }
 
-                    if (!((Type) type).IsArray) {
-                        return null;
-                    }
-
-                    var fragmentParent = EventBeanUtility.CreateNativeFragmentType(
-                        (Type) type,
-                        null,
-                        _beanEventTypeFactory,
-                        _publicFields);
-
-                    return fragmentParent?.FragmentType.GetFragmentType(propertyNested);
+                    return null;
                 }
 
                 if (property is MappedProperty) {
@@ -495,7 +514,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     "Type by name '" +
                     otherType.Name +
                     "' is not a compatible type (target type underlying is '" +
-                    otherType.UnderlyingType.CleanName() +
+                    otherType.UnderlyingType.TypeSafeName() +
                     "')");
             }
 

@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 			WriteablePropertyDescriptor[] properties,
 			ImportService classpathImportService)
 		{
-			this._jsonEventType = jsonEventType;
-			this._service = service;
+			_jsonEventType = jsonEventType;
+			_service = service;
 
 			_beanInstantiator = new BeanInstantiatorForgeByNewInstanceReflection(jsonEventType.UnderlyingType);
 

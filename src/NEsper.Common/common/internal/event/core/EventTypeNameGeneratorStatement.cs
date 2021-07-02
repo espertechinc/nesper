@@ -13,12 +13,12 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventTypeNameGeneratorStatement
     {
-        private readonly int statementNumber;
-        private int seqNum;
+        private readonly int _statementNumber;
+        private int _seqNum;
 
         public EventTypeNameGeneratorStatement(int statementNumber)
         {
-            this.statementNumber = statementNumber;
+            this._statementNumber = statementNumber;
         }
 
         public string AnonymousTypeName => FormatSingleConst("out");
@@ -124,10 +124,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var builder = new StringBuilder();
             builder.Append("stmt");
-            builder.Append(statementNumber);
+            builder.Append(_statementNumber);
             builder.Append("_");
             builder.Append(postfixConst);
-            builder.Append(seqNum++);
+            builder.Append(_seqNum++);
             return builder.ToString();
         }
 
@@ -137,13 +137,13 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var builder = new StringBuilder();
             builder.Append("stmt");
-            builder.Append(statementNumber);
+            builder.Append(_statementNumber);
             builder.Append("_");
             builder.Append(postfixNameOne);
             builder.Append("_");
             builder.Append(postfixValueOne);
             builder.Append("_");
-            builder.Append(seqNum++);
+            builder.Append(_seqNum++);
             return builder.ToString();
         }
     }

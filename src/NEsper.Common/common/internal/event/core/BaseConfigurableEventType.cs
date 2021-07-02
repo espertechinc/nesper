@@ -29,10 +29,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <summary>
         ///     Descriptors for each known property.
         /// </summary>
-        private IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
+        private IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
 
-        private IDictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>> propertyFragmentTypes;
-        private IDictionary<string, EventPropertyGetter> propertyGetterCodegeneratedCache;
+        private IDictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>> _propertyFragmentTypes;
+        private IDictionary<string, EventPropertyGetter> _propertyGetterCodeGeneratedCache;
 
         /// <summary>
         ///     Getters for each known property.
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public XMLFragmentEventTypeFactory XmlEventTypeFactory { get; }
 
-        public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap => propertyDescriptorMap;
+        public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap => _propertyDescriptorMap;
 
         public string Name => Metadata.Name;
 
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public Type GetPropertyType(string propertyExpression)
         {
-            var desc = propertyDescriptorMap.Get(propertyExpression);
+            var desc = _propertyDescriptorMap.Get(propertyExpression);
             if (desc != null) {
                 return desc.PropertyType;
             }
@@ -120,9 +120,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         public FragmentEventType GetFragmentType(string property)
         {
             lock (this) {
-                var pair = propertyFragmentTypes.Get(property);
+                var pair = _propertyFragmentTypes.Get(property);
                 if (pair == null) {
-                    if (propertyFragmentTypes.ContainsKey(property)) {
+                    if (_propertyFragmentTypes.ContainsKey(property)) {
                         return null;
                     }
 
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
-            return propertyDescriptorMap.Get(propertyName);
+            return _propertyDescriptorMap.Get(propertyName);
         }
 
         EventPropertyGetterIndexed EventType.GetGetterIndexed(string indexedPropertyName)
@@ -215,8 +215,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             propertyGetters = new Dictionary<string, EventPropertyGetterSPI>();
             PropertyDescriptors = new EventPropertyDescriptor[explicitProperties.Count];
             PropertyNames = new string[explicitProperties.Count];
-            propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
-            propertyFragmentTypes = new Dictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>>();
+            _propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
+            _propertyFragmentTypes = new Dictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>>();
 
             var count = 0;
             foreach (var @explicit in explicitProperties) {
@@ -225,16 +225,16 @@ namespace com.espertech.esper.common.@internal.@event.core
                 
                 var desc = @explicit.Descriptor;
                 PropertyDescriptors[count] = desc;
-                propertyDescriptorMap.Put(desc.PropertyName, desc);
+                _propertyDescriptorMap.Put(desc.PropertyName, desc);
 
                 if (@explicit.OptionalFragmentTypeName != null) {
-                    propertyFragmentTypes.Put(
+                    _propertyFragmentTypes.Put(
                         @explicit.Descriptor.PropertyName,
                         new Pair<ExplicitPropertyDescriptor, FragmentEventType>(@explicit, null));
                 }
 
                 if (!desc.IsFragment) {
-                    propertyFragmentTypes.Put(@explicit.Descriptor.PropertyName, null);
+                    _propertyFragmentTypes.Put(@explicit.Descriptor.PropertyName, null);
                 }
 
                 count++;

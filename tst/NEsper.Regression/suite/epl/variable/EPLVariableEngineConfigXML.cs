@@ -31,9 +31,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             var typeSet = env.Statement("set").EventType;
             Assert.AreEqual(typeof(string), typeSet.GetPropertyType("p_1"));
-            Assert.AreEqual(typeof(bool?), typeSet.GetPropertyType("p_2"));
-            Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("p_3"));
-            Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("p_4"));
+            Assert.AreEqual(typeof(bool), typeSet.GetPropertyType("p_2"));
+            Assert.AreEqual(typeof(long), typeSet.GetPropertyType("p_3"));
+            Assert.AreEqual(typeof(double), typeSet.GetPropertyType("p_4"));
             Array.Sort(typeSet.PropertyNames);
             CollectionAssert.AreEquivalent(fieldsVar, typeSet.PropertyNames);
 

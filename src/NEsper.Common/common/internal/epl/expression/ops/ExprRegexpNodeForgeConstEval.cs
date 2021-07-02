@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprRegexpNodeForgeConst forge,
             ExprEvaluator lhsEval)
         {
-            this._forge = forge;
-            this._lhsEval = lhsEval;
+            _forge = forge;
+            _lhsEval = lhsEval;
         }
 
         public object Evaluate(

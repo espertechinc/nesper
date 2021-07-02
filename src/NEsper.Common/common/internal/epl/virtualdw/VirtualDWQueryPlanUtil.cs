@@ -10,9 +10,11 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.virtualdw
@@ -89,14 +91,14 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             IList<IndexedPropDesc> hashIndexedFields = new List<IndexedPropDesc>();
             foreach (var hashprop in keysAvailable) {
                 hashFields.Add(new VirtualDataWindowLookupFieldDesc(hashprop, VirtualDataWindowLookupOp.EQUALS, null));
-                hashIndexedFields.Add(new IndexedPropDesc(hashprop, eventType.GetPropertyType(hashprop)));
+                hashIndexedFields.Add(new IndexedPropDesc(hashprop, eventType.GetPropertyType(hashprop).TypeNormalized()));
             }
 
             IList<VirtualDataWindowLookupFieldDesc> btreeFields = new List<VirtualDataWindowLookupFieldDesc>();
             IList<IndexedPropDesc> btreeIndexedFields = new List<IndexedPropDesc>();
             foreach (var btreeprop in rangesAvailable) {
                 btreeFields.Add(new VirtualDataWindowLookupFieldDesc(btreeprop, null, null));
-                btreeIndexedFields.Add(new IndexedPropDesc(btreeprop, eventType.GetPropertyType(btreeprop)));
+                btreeIndexedFields.Add(new IndexedPropDesc(btreeprop, eventType.GetPropertyType(btreeprop).TypeNormalized()));
             }
 
             var noopTable = new VirtualDWEventTable(false, hashFields, btreeFields, TABLE_ORGANIZATION);

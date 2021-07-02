@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 using Avro.Generic;
 
@@ -25,6 +26,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.events;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -62,126 +64,183 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             WithSameCRC(execs);
             WithBeanImport(execs);
             WithCopyFromDeepWithValueObject(execs);
+            WithTypeParameterized(execs);
             return execs;
         }
 
+        public static IList<RegressionExecution> WithTypeParameterized(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new EPLOtherCreateSchemaTypeParameterized());
+            return execs;
+        }
+        
         public static IList<RegressionExecution> WithCopyFromDeepWithValueObject(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaCopyFromDeepWithValueObject());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBeanImport(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaBeanImport());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSameCRC(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaSameCRC());
             return execs;
         }
 
         public static IList<RegressionExecution> WithVariantType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaVariantType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWithEventType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaWithEventType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCopyFromOrderObjectArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaCopyFromOrderObjectArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInherit(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaInherit());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNestableMapArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaNestableMapArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithModelPONO(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaModelPONO());
             return execs;
         }
 
         public static IList<RegressionExecution> WithColDefPlain(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaColDefPlain());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAvroSchemaWAnnotation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaAvroSchemaWAnnotation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithConfiguredNotRemoved(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaConfiguredNotRemoved());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCopyProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaCopyProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayPrimitiveType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaArrayPrimitiveType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPublicSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaPublicSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPathSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaPathSimple());
             return execs;
+        }
+
+        public class EPLOtherCreateSchemaTypeParameterized : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                TryAssertionTypeParameterized(env, GetSchema(EventRepresentationChoice.OBJECTARRAY), "MyEvent");
+                TryAssertionTypeParameterized(env, GetSchema(EventRepresentationChoice.MAP), "MyEvent");
+
+                string beanSchema = "@name('schema') create schema MyEvent as " + typeof(MyLocalSchemaTypeParamEvent<object>).CleanName() + ";\n";
+                TryAssertionTypeParameterized(env, beanSchema, "MyEvent");
+
+                TryAssertionTypeParameterized(env, null, "MyPreconfiguredParameterizeTypeMap");
+            }
+
+            private string GetSchema(EventRepresentationChoice rep)
+            {
+                StringBuilder buf = new StringBuilder();
+                buf.Append("@name('schema') ").Append(rep.GetAnnotationText()).Append("create schema MyEvent(");
+                string delimiter = "";
+                foreach (SupportGenericColUtil.PairOfNameAndType pair in SupportGenericColUtil.NAMESANDTYPES) {
+                    buf
+                        .Append(delimiter)
+                        .Append(pair.Name)
+                        .Append(" ")
+                        .Append(pair.TypeName);
+                    delimiter = ",";
+                }
+                buf.Append(");\n");
+                return buf.ToString();
+            }
+
+            private void TryAssertionTypeParameterized(
+                RegressionEnvironment env,
+                string schemaEPL,
+                string eventTypeName)
+            {
+                string epl = schemaEPL ?? "";
+                epl += "@name('s0') select " + SupportGenericColUtil.AllNames() + " from " + eventTypeName + ";\n";
+                env.CompileDeploy(epl);
+
+                if (schemaEPL != null) {
+                    SupportGenericColUtil.AssertPropertyTypes(env.Statement("schema").EventType);
+                }
+
+                SupportGenericColUtil.AssertPropertyTypes(env.Statement("s0").EventType);
+
+                env.UndeployAll();
+            }
         }
 
         public class EPLOtherCreateSchemaCopyFromDeepWithValueObject : RegressionExecution
@@ -310,6 +369,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     "create schema Invalid (x int[dummy])",
                     "Invalid array keyword 'dummy', expected 'primitive'");
+                TryInvalidCompile(
+                    env,
+                    "create schema Invalid (x int<string>[primitive])",
+                    "Cannot use the 'primitive' keyword with type parameters");
+
             }
 
             private static void TryAssertionSchemaArrayPrimitiveType(
@@ -339,11 +403,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test schema
                 env.CompileDeploy("@Name('schema') create schema MySchema (bean SupportBean, beanarray SupportBean_S0[])");
                 var stmtSchemaType = env.Statement("schema").EventType;
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("bean", typeof(SupportBean), null, false, false, false, false, true),
+
+                SupportEventPropUtil.AssertPropEquals(
+                    new SupportEventPropDesc("bean", typeof(SupportBean))
+                        .WithFragment(),
                     stmtSchemaType.GetPropertyDescriptor("bean"));
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true),
+                SupportEventPropUtil.AssertPropEquals(
+                    new SupportEventPropDesc("beanarray", typeof(SupportBean_S0[]))
+                        .WithComponentType(typeof(SupportBean_S0))
+                        .WithIndexed()
+                        .WithFragment(),
                     stmtSchemaType.GetPropertyDescriptor("beanarray"));
 
                 env.CompileDeploy("@Name('s0') insert into MySchema select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent").AddListener("s0");
@@ -356,11 +425,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('window') create window MyWindow#keepall as (bean SupportBean, beanarray SupportBean_S0[])", path)
                     .AddListener("window");
                 var stmtWindowType = env.Statement("window").EventType;
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("bean", typeof(SupportBean), null, false, false, false, false, true),
+
+                SupportEventPropUtil.AssertPropEquals(
+                    new SupportEventPropDesc("bean", typeof(SupportBean))
+                        .WithFragment(),
                     stmtWindowType.GetPropertyDescriptor("bean"));
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true),
+                SupportEventPropUtil.AssertPropEquals(
+                    new SupportEventPropDesc("beanarray", typeof(SupportBean_S0[]))
+                        .WithComponentType(typeof(SupportBean_S0))
+                        .WithIndexed()
+                        .WithFragment(),
                     stmtWindowType.GetPropertyDescriptor("beanarray"));
 
                 env.CompileDeploy("@Name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent", path);
@@ -1116,6 +1190,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public class MyLocalValueObject
         {
         }
+
+        public class MyLocalSchemaTypeParamEvent<T>
+        {
+            private IList<string> listOfString;
+            private IList<int?> listOfOptionalInteger;
+            private IDictionary<string, int> mapOfStringAndInteger;
+            private IList<string>[] listArrayOfString;
+            
+            public IList<string[]> listOfStringArray;
+            public IList<string>[][] listArray2DimOfString;
+            public IList<string[][]> listOfStringArray2Dim;
+            public IList<T> listOfT;
+
+            public IList<string> ListOfString => listOfString;
+
+            public IList<int?> ListOfOptionalInteger => listOfOptionalInteger;
+
+            public IDictionary<string, int> MapOfStringAndInteger => mapOfStringAndInteger;
+
+            public IList<string>[] ListArrayOfString => listArrayOfString;
+
+            public IList<string[]> ListOfStringArray => listOfStringArray;
+
+            public IList<string>[][] ListArray2DimOfString => listArray2DimOfString;
+
+            public IList<string[][]> ListOfStringArray2Dim => listOfStringArray2Dim;
+
+            public IList<T> ListOfT => listOfT;
+        }
+
         // ReSharper restore InconsistentNaming
         // ReSharper restore UnusedMember.Global
     }

@@ -118,9 +118,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 classScope);
 
             method.Block
-                .DeclareVar<ContextControllerDetailKeyedItem>(
-                    "item",
-                    NewInstance(typeof(ContextControllerDetailKeyedItem)))
+                .DeclareVarNewInstance<ContextControllerDetailKeyedItem>("item")
                 .SetProperty(Ref("item"), "Getter", getter)
                 .SetProperty(Ref("item"), "Lookupables", Ref("lookupables"))
                 .SetProperty(Ref("item"), "PropertyTypes", Constant(types))

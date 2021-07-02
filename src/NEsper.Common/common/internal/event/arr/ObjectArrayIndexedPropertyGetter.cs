@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayIndexedPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly int index;
-        private readonly int propertyIndex;
+        private readonly int _index;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -32,18 +32,18 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int propertyIndex,
             int index)
         {
-            this.propertyIndex = propertyIndex;
-            this.index = index;
+            this._propertyIndex = propertyIndex;
+            this._index = index;
         }
 
         public object GetObjectArray(object[] array)
         {
-            return GetObjectArrayIndexValue(array, propertyIndex, index);
+            return GetObjectArrayIndexValue(array, _propertyIndex, _index);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
-            return IsObjectArrayExistsProperty(array, propertyIndex, index);
+            return IsObjectArrayExistsProperty(array, _propertyIndex, _index);
         }
 
         public object Get(EventBean eventBean)
@@ -100,8 +100,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "GetObjectArrayIndexValue",
                 underlyingExpression,
-                Constant(propertyIndex),
-                Constant(index));
+                Constant(_propertyIndex),
+                Constant(_index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "IsObjectArrayExistsProperty",
                 underlyingExpression,
-                Constant(propertyIndex),
-                Constant(index));
+                Constant(_propertyIndex),
+                Constant(_index));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

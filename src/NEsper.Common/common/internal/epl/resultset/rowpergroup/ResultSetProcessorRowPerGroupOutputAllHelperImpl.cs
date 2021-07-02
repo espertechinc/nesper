@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.ExprEvaluatorContext);
                 }
             }
 
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.ExprEvaluatorContext);
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.ExprEvaluatorContext);
                 }
             }
 
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.ExprEvaluatorContext);
                 }
             }
         }

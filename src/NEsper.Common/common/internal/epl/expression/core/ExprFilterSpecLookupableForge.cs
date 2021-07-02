@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 typeof(ExprFilterSpecLookupable),
                 typeof(ExprFilterSpecLookupableForge),
                 classScope);
-            CodegenExpression singleEventEvalExpr = ConstantNull();
+            var singleEventEvalExpr = ConstantNull();
             if (_optionalEventEvalForge != null) {
                 var eval = new CodegenExpressionLambda(method.Block)
                     .WithParam<EventBean>("bean")
@@ -69,14 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 singleEventEvalExpr = anonymous;
             }
 
-            CodegenExpression epsEvalExpr = ConstantNull();
+            var epsEvalExpr = ConstantNull();
             if (_optionalExprForge != null) {
                 epsEvalExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
                     _optionalExprForge, method, typeof(ExprFilterSpecLookupableForge), classScope);
             }
 
-            CodegenExpression serdeExpr = _valueSerde == null ? ConstantNull() : _valueSerde.Codegen(method, classScope, null);
-            CodegenExpression returnTypeExpr = _returnType == null ? ConstantNull() : Typeof(_returnType);
+            var serdeExpr = _valueSerde == null ? ConstantNull() : _valueSerde.Codegen(method, classScope, null);
+            var returnTypeExpr = _returnType == null ? ConstantNull() : Typeof(_returnType);
 
             method.Block
                 .DeclareVar<ExprEventEvaluator>("eval", singleEventEvalExpr)

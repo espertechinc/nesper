@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.context.query
 {
     public interface FAFProvider
     {
-        ModuleDependenciesRuntime ModuleDependencies { get; }
+        ModuleDependenciesRuntime GetModuleDependencies();
 
         void InitializeEventTypes(EPModuleEventTypeInitServices svc);
 

@@ -32,12 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         {
             string message =
                 "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
-            if (this.positionalParams.Length != 2) {
+            if (positionalParams.Length != 2) {
                 throw new ExprValidationException(message);
             }
 
-            ExprNode first = this.positionalParams[0];
-            ExprNode second = this.positionalParams[1];
+            ExprNode first = positionalParams[0];
+            ExprNode second = positionalParams[1];
             if (!second.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 throw new ExprValidationException(message);
             }
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             int size = num.AsInt32();
 
             if (optionalFilter != null) {
-                this.positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
+                positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
             }
 
             var childType = first.Forge.EvaluationType;

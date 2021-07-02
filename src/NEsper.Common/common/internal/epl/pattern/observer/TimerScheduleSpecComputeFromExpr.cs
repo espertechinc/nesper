@@ -29,15 +29,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         private TimePeriodEval timePeriod;
 
         public ExprEvaluator Date {
-            set { this.date = value; }
+            set { date = value; }
         }
 
         public ExprEvaluator Repetitions {
-            set { this.repetitions = value; }
+            set { repetitions = value; }
         }
 
         public TimePeriodEval TimePeriod {
-            set { this.timePeriod = value; }
+            set { timePeriod = value; }
         }
 
         public TimerScheduleSpec Compute(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             long? optionalRemainder = null;
             if (date != null) {
                 object param = PatternExpressionUtil.EvaluateChecked(
-                    TimerScheduleObserverForge.NAME_OBSERVER,
+                    NAME_OBSERVER,
                     date,
                     eventsPerStream,
                     exprEvaluatorContext);

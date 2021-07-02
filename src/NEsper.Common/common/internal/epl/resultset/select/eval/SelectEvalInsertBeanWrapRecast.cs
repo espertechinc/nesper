@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             int streamNumber,
             EventType[] typesPerStream)
         {
-            this.eventType = targetType;
+            eventType = targetType;
             this.streamNumber = streamNumber;
 
             var sourceType = typesPerStream[streamNumber];
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     EPStatementInitServicesConstants.REF));
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block

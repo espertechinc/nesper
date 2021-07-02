@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
@@ -31,14 +32,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaEventXMLCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLNoSchemaEventXMLPreconfig());
             return execs;
         }
@@ -70,11 +71,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
             env.CompileDeploy("@Name('insert') insert into MyNestedStream select nested1 from " + eventTypeName, path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nested1", typeof(string), typeof(char), false, false, true, false, false)
-                },
-                env.Statement("insert").EventType.PropertyDescriptors);
+
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("insert").EventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("nested1", typeof(string))
+                    .WithIndexed()
+                    .WithComponentType(typeof(char))
+                );
+                
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
 
             env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path);

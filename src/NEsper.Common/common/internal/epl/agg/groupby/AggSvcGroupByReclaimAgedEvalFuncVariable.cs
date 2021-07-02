@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.util;
@@ -19,25 +20,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
     /// </summary>
     public class AggSvcGroupByReclaimAgedEvalFuncVariable : AggSvcGroupByReclaimAgedEvalFunc
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AggSvcGroupByReclaimAgedEvalFuncVariable));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AggSvcGroupByReclaimAgedEvalFuncVariable));
 
-        private readonly VariableReader variableReader;
+        private readonly VariableReader _variableReader;
 
         public AggSvcGroupByReclaimAgedEvalFuncVariable(VariableReader variableReader)
         {
-            this.variableReader = variableReader;
+            this._variableReader = variableReader;
         }
 
         public double? LongValue {
             get {
-                var val = variableReader.Value;
+                var val = _variableReader.Value;
                 if (val != null && val.IsNumber()) {
                     return val.AsDouble();
                 }
 
-                log.Warn(
+                Log.Warn(
                     "Variable '" +
-                    variableReader.MetaData.VariableName +
+                    _variableReader.MetaData.VariableName +
                     " returned a null value, using last valid value");
                 return null;
             }

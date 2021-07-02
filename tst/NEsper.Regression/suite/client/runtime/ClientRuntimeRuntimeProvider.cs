@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> Withk(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeObtainEngineWideRWLock());
             return execs;
         }

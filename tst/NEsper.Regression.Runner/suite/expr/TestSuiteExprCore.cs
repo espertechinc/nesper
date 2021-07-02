@@ -189,11 +189,11 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test, RunInApplicationDomain]
         public void TestExprCoreRelOp()
         {
-            RegressionRunner.Run(session, new ExprCoreRelOp());
+            RegressionRunner.Run(session, ExprCoreRelOp.Executions());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestExprEventIdentityEquals()
+        public void TestExprCoreEventIdentityEquals()
         {
             RegressionRunner.Run(session, ExprCoreEventIdentityEquals.Executions());
         }
@@ -610,6 +610,9 @@ namespace com.espertech.esper.regressionrun.suite.expr
         public class TestExprCoreEqualsIs : AbstractTestBase
         {
             public TestExprCoreEqualsIs() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithNull() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithNull());
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, ExprCoreEqualsIs.WithInvalid());

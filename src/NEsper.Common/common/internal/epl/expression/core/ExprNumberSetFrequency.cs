@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private ExprEvaluator evaluator;
+        [NonSerialized] private ExprEvaluator _evaluator;
 
         public override ExprForge Forge => this;
 
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var value = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var value = _evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (value == null) {
                 return HandleNumberSetFreqNullValue();
             }
@@ -115,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
 
-            evaluator = forge.ExprEvaluator;
+            _evaluator = forge.ExprEvaluator;
             return null;
         }
 

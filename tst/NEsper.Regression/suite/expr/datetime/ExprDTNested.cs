@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                               "DateTime.set('hour', 1).set('minute', 2).set('second', 3) as val3" +
                               " from SupportDateTime";
             env.CompileDeploy(eplFragment).AddListener("s0");
-            LambdaAssertionUtil.AssertTypes(
+            SupportEventPropUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 fields,
                 new[] {
@@ -56,15 +57,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           "DateTime.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val3" +
                           " from SupportDateTime";
             env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
-            LambdaAssertionUtil.AssertTypes(
+            SupportEventPropUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 fields,
-                new[] {
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx)
-                });
+                typeof(DateTimeEx));
 
             env.SendEventBean(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(

@@ -31,8 +31,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprEvaluator ExprEvaluator => Desc.Forge.ExprEvaluator;
 
-        public Type EvaluationType => Desc.Forge.EvaluationType;
-
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         public bool IsConstantResult => false;

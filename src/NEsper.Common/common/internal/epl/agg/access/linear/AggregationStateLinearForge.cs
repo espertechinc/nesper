@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
     public class AggregationStateLinearForge : AggregationStateFactoryForge
     {
-        internal readonly ExprAggMultiFunctionLinearAccessNode expr;
-        internal readonly ExprForge optionalFilter;
-        internal readonly int streamNum;
+        private readonly ExprAggMultiFunctionLinearAccessNode expr;
+        private readonly ExprForge optionalFilter;
+        private readonly int streamNum;
 
         public AggregationStateLinearForge(
             ExprAggMultiFunctionLinearAccessNode expr,
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         public EventType EventType => expr.StreamType;
 
-        public Type ClassType => expr.ComponentTypeCollection;
+        //public Type ClassType => expr.ComponentTypeCollection;
 
         public ExprNode Expression => expr;
 

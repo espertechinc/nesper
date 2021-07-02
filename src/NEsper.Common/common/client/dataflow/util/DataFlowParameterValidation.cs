@@ -8,9 +8,11 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -80,17 +82,25 @@ namespace com.espertech.esper.common.client.dataflow.util
             ExprNode validated,
             Type expectedReturnType)
         {
-            Type returnType = validated.Forge.EvaluationType;
-            if (!returnType.GetBoxedType().IsAssignmentCompatible(expectedReturnType)) {
-                string message = "Failed to validate return type of parameter '" +
-                                 name +
-                                 "', expected '" +
-                                 expectedReturnType.CleanName() +
-                                 "' but received '" +
-                                 returnType.CleanName() +
-                                 "'";
-                throw new ExprValidationException(message);
+            var returnType = validated.Forge.EvaluationType;
+            if (returnType.IsNullTypeSafe()) {
+                throw MakeValidateReturnTypeEx(name, "null", expectedReturnType);
             }
+            
+            if (!returnType.GetBoxedType().IsAssignmentCompatible(expectedReturnType)) {
+                throw MakeValidateReturnTypeEx(name, returnType.TypeSafeName(), expectedReturnType);
+            }
+        }
+        
+        private static ExprValidationException MakeValidateReturnTypeEx(
+            string name,
+            string received,
+            Type expected)
+        {
+            string message = "Failed to validate return type of parameter '" + name +
+                             "', expected '" + expected.TypeSafeName() +
+                             "' but received '" + received + "'";
+            return new ExprValidationException(message);
         }
     }
 } // end of namespace

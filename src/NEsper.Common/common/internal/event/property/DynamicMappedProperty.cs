@@ -89,13 +89,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             return typeof(object);
         }
 
-        public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType beanEventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            return GenericPropertyDesc.ObjectGeneric;
-        }
-
         public override Type GetPropertyTypeMap(
             IDictionary<string, object> optionalMapPropTypes,
             BeanEventTypeFactory beanEventTypeFactory)

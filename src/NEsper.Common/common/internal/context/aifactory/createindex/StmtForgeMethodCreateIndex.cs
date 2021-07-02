@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
 
         public StmtForgeMethodCreateIndex(StatementBaseInfo @base)
         {
-            this._base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -97,6 +97,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 indexedEventType,
                 _base.StatementRawInfo,
                 services);
+            explicitIndexDesc.PlanStateMgmtSettings(_base.StatementRawInfo, services);
+
             var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null
                 ? null
                 : explicitIndexDesc.AdvancedIndexProvisionDesc.IndexDesc.AdvancedIndexDescRuntime;

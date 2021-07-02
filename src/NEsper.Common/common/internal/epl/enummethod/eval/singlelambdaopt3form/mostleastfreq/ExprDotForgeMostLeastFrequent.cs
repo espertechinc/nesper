@@ -19,17 +19,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ExprDotForgeMostLeastFrequent : ExprDotForgeLambdaThreeForm
 	{
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			var returnType = collectionComponentType.GetBoxedType();
-			return EPTypeHelper.SingleValue(returnType);
+			return new EPChainableTypeClass(returnType);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			return streamCountIncoming => new EnumMostLeastFrequentScalarNoParam(
@@ -38,13 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				type.GetNormalizedClass());
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => {
 				var returnType = lambda.BodyForge.EvaluationType.GetBoxedType();
-				return EPTypeHelper.SingleValue(returnType);
+				return EPChainableTypeHelper.SingleValueNonNull(returnType);
 			};
 		}
 

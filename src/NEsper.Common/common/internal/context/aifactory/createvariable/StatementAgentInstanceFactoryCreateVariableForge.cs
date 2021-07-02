@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 .SetProperty(
                     Ref("saiff"),
                     "ResultSetProcessorFactoryProvider",
-                    NewInstanceInner(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")));
+                    NewInstanceNamed(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")));
 
             if (optionalInitialValue != null) {
                 method.Block

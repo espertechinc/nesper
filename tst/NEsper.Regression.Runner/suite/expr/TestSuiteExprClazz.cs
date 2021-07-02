@@ -84,6 +84,9 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
             [Test, RunInApplicationDomain]
             public void WithStaticMethodLocal() => RegressionRunner.Run(_session, ExprClassStaticMethod.WithStaticMethodLocal());
+            
+            [Test, RunInApplicationDomain]
+            public void WithCompilerInlinedClassInspectionOption() => RegressionRunner.Run(_session, ExprClassStaticMethod.WithCompilerInlinedClassInspectionOption());
         }
         
         /// <summary>

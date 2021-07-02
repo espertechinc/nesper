@@ -132,8 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             if (joinDesc.CustomIndexOps != null && !joinDesc.CustomIndexOps.IsEmpty()) {
-                foreach (var op
-                    in joinDesc.CustomIndexOps) {
+                foreach (var op in joinDesc.CustomIndexOps) {
                     foreach (var index in indexMetadata.Indexes) {
                         if (IsCustomIndexMatch(index, op)) {
                             var provisionDesc =
@@ -154,6 +153,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                                 false,
                                 provisionCompileTime,
                                 eventTypeIndexed);
+                            indexItemForge.PlanStateMgmtSettings(statementRawInfo, services);
+
                             var indexDesc = new SubordinateQueryIndexDescForge(
                                 null,
                                 index.Value.OptionalIndexName,
@@ -518,7 +519,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 unique,
                 null,
                 eventTypeIndexed);
-            
+            indexItem.PlanStateMgmtSettings(raw, services);            
             
             var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(indexCoercionTypes, true, raw, services.SerdeResolver);
             indexItem.HashMultiKeyClasses = multiKeyPlan.ClassRef;

@@ -25,13 +25,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLVariableOutputRateEventsAll());
-            execs.Add(new EPLVariableOutputRateEventsAllOM());
-            execs.Add(new EPLVariableOutputRateEventsAllCompile());
-            execs.Add(new EPLVariableOutputRateTimeAll());
+WithEventsAll(execs);
+WithEventsAllOM(execs);
+WithEventsAllCompile(execs);
+WithTimeAll(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithTimeAll(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLVariableOutputRateTimeAll());
+    return execs;
+}public static IList<RegressionExecution> WithEventsAllCompile(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLVariableOutputRateEventsAllCompile());
+    return execs;
+}public static IList<RegressionExecution> WithEventsAllOM(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLVariableOutputRateEventsAllOM());
+    return execs;
+}public static IList<RegressionExecution> WithEventsAll(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLVariableOutputRateEventsAll());
+    return execs;
+}
         private static void TryAssertionOutputRateEventsAll(RegressionEnvironment env)
         {
             SendSupportBeans(env, "E1", "E2"); // varargs: sends 2 events
@@ -155,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Runtime.VariableService.SetVariableValue(null, "var_output_limit", 3L);
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create().Add(Expressions.CountStar(), "cnt");
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model.OutputLimitClause = OutputLimitClause.Create(OutputLimitSelector.LAST, "var_output_limit");
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 

@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     matchEvent,
                     isFollowedByQuitted,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
+                ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
             }
             else {
                 // Else start a new sub-expression for the next-in-line filter
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     evalFollowedByNode.FactoryNode,
                     this,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateFalse(this, true);
+                ParentEvaluator.EvaluateFalse(this, true);
                 Quit();
             }
 

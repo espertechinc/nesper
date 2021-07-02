@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType,
             FieldInfo field,
-            int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             _field = field;
             _index = index;

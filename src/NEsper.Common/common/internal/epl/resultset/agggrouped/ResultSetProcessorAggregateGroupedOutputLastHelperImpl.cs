@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 foreach (var aNewData in newData) {
                     var mk = newDataMultiKey[count];
                     eventsPerStream[0] = aNewData;
-                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     processor.AggregationService.ApplyLeave(
                         eventsPerStream,
                         oldDataMultiKey[count],
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var count = 0;
                 foreach (var aNewData in newData) {
                     var mk = newDataMultiKey[count];
-                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     processor.AggregationService.ApplyLeave(
                         anOldData.Array,
                         oldDataMultiKey[count],
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                     count++;
                 }
             }

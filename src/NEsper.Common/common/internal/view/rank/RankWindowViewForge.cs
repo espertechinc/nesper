@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -54,10 +55,11 @@ namespace com.espertech.esper.common.@internal.view.rank
             useCollatorSort = viewForgeEnv.Configuration.Compiler.Language.IsSortUsingCollator;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             eventType = parentEventType;
             var message =
@@ -149,12 +151,12 @@ namespace com.espertech.esper.common.@internal.view.rank
             return desc.MultiKeyForgeables;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(RankWindowViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Rank";
         }
@@ -191,6 +193,11 @@ namespace com.espertech.esper.common.@internal.view.rank
                     "SortSerdes",
                     DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
             ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_RANK;
         }
     }
 } // end of namespace

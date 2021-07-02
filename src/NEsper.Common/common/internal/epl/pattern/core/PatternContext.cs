@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         {
             var method = parent.MakeChild(typeof(PatternContext), GetType(), classScope);
             method.Block
-                .DeclareVar<PatternContext>("ctx", NewInstance(typeof(PatternContext)))
+                .DeclareVarNewInstance<PatternContext>("ctx")
                 .SetProperty(
                     Ref("ctx"),
                     "MatchedEventMapMeta",

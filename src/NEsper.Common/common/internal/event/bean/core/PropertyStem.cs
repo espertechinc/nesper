@@ -9,6 +9,7 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -285,7 +286,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

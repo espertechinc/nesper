@@ -77,13 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			var scope = new ExprForgeCodegenSymbol(false, null);
 			var methodNode = codegenMethodScope
 				.MakeChildWithScope(typeof(IDictionary<object, object>), GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+				.AddParam(PARAMS);
 			var hasSize = _numParameters >= 3;
 
 			var returnIfEmpty = ReturnIfEmptyOptional();
 			if (returnIfEmpty != null) {
 				methodNode.Block
-					.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+					.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
 					.BlockReturn(returnIfEmpty);
 			}
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			methodNode.Block
 				.DeclareVar<ObjectArrayEventBean>("indexEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters - 1)), resultTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
+				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"))
 				.DeclareVar<int>("count", Constant(-1));
 			if (hasSize) {
@@ -100,10 +100,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			}
 
 			var forEach = methodNode.Block
-				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+				.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
 				.IncrementRef("count")
 				.AssignArrayElement("props", Constant(0), Ref("count"))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
+				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("next"));
 			ForEachBlock(forEach, methodNode, scope, codegenClassScope);
 
 			ReturnResult(methodNode.Block);

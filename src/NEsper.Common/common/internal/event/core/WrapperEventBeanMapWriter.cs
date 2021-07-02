@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class WrapperEventBeanMapWriter : EventBeanWriter
     {
-        private readonly string[] properties;
+        private readonly string[] _properties;
 
         /// <summary>
         ///     Ctor.
@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="properties">to write</param>
         public WrapperEventBeanMapWriter(string[] properties)
         {
-            this.properties = properties;
+            this._properties = properties;
         }
 
         public void Write(
@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             var mappedEvent = (DecoratingEventBean) theEvent;
             var map = mappedEvent.DecoratingProperties;
 
-            for (var i = 0; i < properties.Length; i++) {
-                map.Put(properties[i], values[i]);
+            for (var i = 0; i < _properties.Length; i++) {
+                map.Put(_properties[i], values[i]);
             }
         }
     }

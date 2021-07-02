@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
 					ProcEvaluateEnumMethod = (
 						eventsLambda,
@@ -51,19 +51,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						IComparable minKey = null;
 						EventBean result = null;
 
-						ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-						ObjectArrayEventBean indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
-						object[] props = indexEvent.Properties;
+						var beans = (ICollection<EventBean>) enumcoll;
+						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
+						var props = indexEvent.Properties;
 						props[1] = enumcoll.Count;
 						eventsLambda[StreamNumLambda + 1] = indexEvent;
-						int count = -1;
+						var count = -1;
 
-						foreach (EventBean next in beans) {
+						foreach (var next in beans) {
 							count++;
 							props[0] = count;
 							eventsLambda[StreamNumLambda] = next;
 
-							object comparable = inner.Evaluate(eventsLambda, isNewData, context);
+							var comparable = inner.Evaluate(eventsLambda, isNewData, context);
 							if (comparable == null) {
 								continue;
 							}
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(EventBean);
 		}

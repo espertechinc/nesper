@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var variantType = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             var jw = joinWildcardProcessorForge.ProcessCodegen(
                 resultEventType,

@@ -30,22 +30,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             Type collectionComponentType,
             ExprValidationContext validationContext)
         {
-            EPType type;
+            EPChainableType type;
             if (inputEventType != null) {
-                type = EPTypeHelper.CollectionOfEvents(inputEventType);
+                type = EPChainableTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                type = EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
             }
 
             return new EnumForgeDescFactoryReverse(type, inputEventType == null);
         }
 
         private class EnumForgeDescFactoryReverse : EnumForgeDescFactory {
-            private readonly EPType _type;
+            private readonly EPChainableType _type;
             private readonly bool _isScalar;
 
-            public EnumForgeDescFactoryReverse(EPType type, bool isScalar)
+            public EnumForgeDescFactoryReverse(EPChainableType type, bool isScalar)
             {
                 _type = type;
                 _isScalar = isScalar;

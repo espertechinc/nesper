@@ -68,9 +68,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             method.Block
-                .DeclareVar<ContextControllerDetailCategory>(
-                    "detail",
-                    NewInstance(typeof(ContextControllerDetailCategory)))
+                .DeclareVarNewInstance<ContextControllerDetailCategory>("detail")
                 .SetProperty(Ref("detail"), "FilterSpecActivatable", Ref("filterSpec"))
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .MethodReturn(Ref("detail"));

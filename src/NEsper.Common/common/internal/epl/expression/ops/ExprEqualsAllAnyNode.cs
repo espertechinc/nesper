@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -77,20 +78,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be the same boxed type returned by expressions under this
-            Type typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-
-            // collections, array or map not supported
-            if (typeOne.IsArray || typeOne.IsGenericCollection() || typeOne.IsGenericStringDictionary()) {
-                throw new ExprValidationException(
-                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-            }
-
+            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            ExprNodeUtilityValidate.ValidateLHSTypeAnyAllSomeIn(typeOne);
+            
             IList<Type> comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
             var hasCollectionOrArray = false;
             for (var i = 0; i < ChildNodes.Length - 1; i++) {
                 var propType = ChildNodes[i + 1].Forge.EvaluationType;
-                if (propType == null) {
+                if (propType.IsNullTypeSafe()) {
                     // no action
                 }
                 else if (propType.IsArray) {
@@ -119,6 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
             }
 
+            if (coercionTypeBoxed.IsNullType()) {
+                throw new ExprValidationException("Implicit conversion to null-type is not allowed");
+            }
+            
             // Check if we need to coerce
             var mustCoerce = false;
             Coercer coercer = null;

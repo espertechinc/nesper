@@ -19,11 +19,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
 {
     public class VariantPropertyGetterCacheCodegenField : CodegenFieldSharable
     {
-        private readonly VariantEventType variantEventType;
+        private readonly VariantEventType _variantEventType;
 
         public VariantPropertyGetterCacheCodegenField(VariantEventType variantEventType)
         {
-            this.variantEventType = variantEventType;
+            this._variantEventType = variantEventType;
         }
 
         public Type Type()
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
         {
             var type = Cast(
                 typeof(VariantEventType),
-                EventTypeUtility.ResolveTypeCodegen(variantEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_variantEventType, EPStatementInitServicesConstants.REF));
             return ExprDotName(type, "VariantPropertyGetterCache");
         }
 
@@ -51,12 +51,12 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
             var that = (VariantPropertyGetterCacheCodegenField) o;
 
-            return variantEventType.Equals(that.variantEventType);
+            return _variantEventType.Equals(that._variantEventType);
         }
 
         public override int GetHashCode()
         {
-            return variantEventType.GetHashCode();
+            return _variantEventType.GetHashCode();
         }
     }
 } // end of namespace

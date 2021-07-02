@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -34,6 +35,7 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -72,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool isOnSelect,
             ImportServiceCompileTime importService,
             StatementRawInfo raw,
-            SerdeCompileTimeResolver serdeResolver)
+            SerdeCompileTimeResolver serdeResolver,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider)
         {
             // No aggregates used, we do not need this service
             if (selectAggregateExprNodes.IsEmpty() && havingAggregateExprNodes.IsEmpty()) {
@@ -224,6 +227,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var accessFactories = multiFunctionAggPlan.StateFactoryForges;
             var hasAccessAgg = accessorPairsForge.Length > 0;
             var hasMethodAgg = methodAggFactories.Length > 0;
+            
+            var stateMgmtSettings = stateMgmtSettingsProvider.GetAggregation(raw, AppliesTo.AGGREGATION_GROUPBY);
 
             AggregationServiceFactoryForge serviceForge;
             var useFlags = new AggregationUseFlags(isUnidirectional, isFireAndForget, isOnSelect);
@@ -267,7 +272,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 useFlags);
             if (!hasGroupByClause) {
                 if (localGroupByPlan != null) {
-                    serviceForge = new AggSvcLocalGroupByForge(false, localGroupByPlan, useFlags);
+                    serviceForge = new AggSvcLocalGroupByForge(false, localGroupByPlan, useFlags, stateMgmtSettings);
                 }
                 else {
                     serviceForge = new AggregationServiceGroupAllForge(rowStateDesc);
@@ -285,7 +290,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
                 var reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
                 if (localGroupByPlan != null) {
-                    serviceForge = new AggSvcLocalGroupByForge(true, localGroupByPlan, useFlags);
+                    serviceForge = new AggSvcLocalGroupByForge(true, localGroupByPlan, useFlags, stateMgmtSettings);
                 }
                 else {
                     if (!isDisallowNoReclaim && hasNoReclaim) {
@@ -293,7 +298,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                             throw GetRollupReclaimEx();
                         }
 
-                        serviceForge = new AggregationServiceGroupByForge(groupDesc, importService.TimeAbacus);
+                        serviceForge = new AggregationServiceGroupByForge(groupDesc, importService.TimeAbacus, stateMgmtSettings);
                     }
                     else if (!isDisallowNoReclaim && reclaimGroupAged != null) {
                         if (groupByRollupDesc != null) {
@@ -306,14 +311,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                             reclaimGroupFrequency,
                             variableCompileTimeResolver,
                             optionalContextName);
-                        serviceForge = new AggregationServiceGroupByForge(groupDesc, importService.TimeAbacus);
+                        serviceForge = new AggregationServiceGroupByForge(groupDesc, importService.TimeAbacus, stateMgmtSettings);
                     }
                     else if (groupByRollupDesc != null) {
-                        serviceForge = new AggSvcGroupByRollupForge(rowStateDesc, groupByRollupDesc, groupByNodes);
+                        serviceForge = new AggSvcGroupByRollupForge(rowStateDesc, groupByRollupDesc, groupByNodes, stateMgmtSettings);
                     }
                     else {
                         groupDesc.IsRefcounted = true;
-                        serviceForge = new AggregationServiceGroupByForge(groupDesc, importService.TimeAbacus);
+                        serviceForge = new AggregationServiceGroupByForge(groupDesc, importService.TimeAbacus, stateMgmtSettings);
                     }
                 }
             }
@@ -647,7 +652,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             double valueDouble;
             try {
-                valueDouble = Double.Parse(hintValue);
+                valueDouble = double.Parse(hintValue);
             }
             catch (EPException) {
                 throw;

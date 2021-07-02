@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.util;
@@ -107,14 +108,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                     supplier.Invoke());
             }
 
-            ExprNode node = indexes[0];
+            var node = indexes[0];
             var evaluationType = node.Forge.EvaluationType;
             if (!evaluationType.IsInt32()) {
                 throw new ExprValidationException(
                     "Incorrect index expression for array operation, expected an expression returning an integer value but the expression '" +
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(node) +
                     "' returns '" +
-                    evaluationType.CleanName() +
+                    evaluationType.TypeSafeName() +
                     "' for " +
                     supplier.Invoke());
             }

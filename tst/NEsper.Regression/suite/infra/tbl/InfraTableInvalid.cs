@@ -39,28 +39,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidAnnotations(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInvalidAnnotations());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidAggMatchMultiFunc(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInvalidAggMatchMultiFunc());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidAggMatchSingleFunc(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInvalidAggMatchSingleFunc());
             return execs;
         }
@@ -688,6 +688,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "create schema aggvar_ungrouped as SupportBean",
                     "A table by name 'aggvar_ungrouped' already exists [");
+
+                // cannot use null-type key
+                TryInvalidCompile(
+                    env,
+                    path,
+                    "create table MyTable(somefield null primary key, id string)",
+                    "Incorrect syntax near 'null' (a reserved keyword)");
 
                 env.UndeployAll();
             }

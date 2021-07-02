@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.function;
 
@@ -76,13 +77,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextPartitionSelector[] selectorPerLevel)
         {
             if (selector is ContextPartitionSelectorFiltered) {
-                ContextPartitionSelectorFiltered filter = (ContextPartitionSelectorFiltered) selector;
+                var filter = (ContextPartitionSelectorFiltered) selector;
                 VisitPartitions(
                     path,
                     (
                         partitionKey,
                         subpathOrCPIds) => {
-                        ContextPartitionIdentifierInitiatedTerminated identifier =
+                        var identifier =
                             ContextControllerInitTermUtil.KeyToIdentifier(subpathOrCPIds, partitionKey, this);
                         if (filter.Filter(identifier)) {
                             realization.ContextPartitionRecursiveVisit(
@@ -113,7 +114,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             if (selector is ContextPartitionSelectorById) {
-                ContextPartitionSelectorById byId = (ContextPartitionSelectorById) selector;
+                var byId = (ContextPartitionSelectorById) selector;
                 VisitPartitions(
                     path,
                     (
@@ -139,14 +140,14 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean triggeringEvent)
         {
             // compute correlated termination
-            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
+            var start = factory.InitTermSpec.StartCondition;
 
-            ContextConditionDescriptorFilter filter = start as ContextConditionDescriptorFilter;
+            var filter = start as ContextConditionDescriptorFilter;
             if (filter?.OptionalFilterAsName == null) {
                 return;
             }
 
-            int tag = map.Meta.GetTagFor(filter.OptionalFilterAsName);
+            var tag = map.Meta.GetTagFor(filter.OptionalFilterAsName);
             if (tag == -1) {
                 return;
             }
@@ -154,24 +155,39 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             map.Add(tag, triggeringEvent);
         }
         
-        public void PopulateEndConditionFromTrigger(MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+        public void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            IDictionary<string, object> matchedEventMap,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory) {
             // compute correlated termination
-            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
+            var start = factory.InitTermSpec.StartCondition;
             if (!(start is ContextConditionDescriptorPattern)) {
                 return;
             }
-            ContextConditionDescriptorPattern pattern = (ContextConditionDescriptorPattern) start;
-            foreach (String tagged in pattern.TaggedEvents) {
-                PopulatePattern(tagged, map, matchedEventMap);
+            var pattern = (ContextConditionDescriptorPattern) start;
+            if (pattern.AsName == null) {
+                foreach (var tagged in pattern.TaggedEvents) {
+                    PopulatePattern(tagged, map, matchedEventMap);
+                }
+
+                foreach (var array in pattern.ArrayEvents) {
+                    PopulatePattern(array, map, matchedEventMap);
+                }
             }
-            foreach (String array in pattern.ArrayEvents) {
-                PopulatePattern(array, map, matchedEventMap);
+            else {
+                foreach (var entry in matchedEventMap) {
+                    var tag = map.Meta.GetTagFor(entry.Key);
+                    if (tag == -1) {
+                        return;
+                    }
+                    map.Add(tag, entry.Value);
+                }
             }
         }
 
-        private void PopulatePattern(String tagged, MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+        private void PopulatePattern(string tagged, MatchedEventMap map, IDictionary<string, object> matchedEventMap) {
             if (matchedEventMap.TryGetValue(tagged, out var value)) {
-                int tag = map.Meta.GetTagFor(tagged);
+                var tag = map.Meta.GetTagFor(tagged);
                 if (tag != -1) {
                     map.Add(tag, value);
                 }

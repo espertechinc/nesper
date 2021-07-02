@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             DateTimeExEval dateTimeExEval,
             TimeAbacus timeAbacus)
         {
-            this._dateTimeExEval = dateTimeExEval;
-            this._timeAbacus = timeAbacus;
+            _dateTimeExEval = dateTimeExEval;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;

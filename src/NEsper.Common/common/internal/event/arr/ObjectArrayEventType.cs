@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 {
     public class ObjectArrayEventType : BaseNestableEventType
     {
-        private IDictionary<string, Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>> propertyWriters;
-        private EventPropertyDescriptor[] writablePropertyDescriptors;
+        private IDictionary<string, Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>> _propertyWriters;
+        private EventPropertyDescriptor[] _writablePropertyDescriptors;
 
         public ObjectArrayEventType(
             EventTypeMetadata metadata,
@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override EventPropertyDescriptor[] WriteableProperties {
             get {
-                if (writablePropertyDescriptors == null) {
+                if (_writablePropertyDescriptors == null) {
                     InitializeWriters();
                 }
 
-                return writablePropertyDescriptors;
+                return _writablePropertyDescriptors;
             }
         }
 
@@ -78,11 +78,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override EventPropertyWriterSPI GetWriter(string propertyName)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = propertyWriters.Get(propertyName);
+            var pair = _propertyWriters.Get(propertyName);
             if (pair != null) {
                 return pair.Second;
             }
@@ -111,11 +111,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = propertyWriters.Get(propertyName);
+            var pair = _propertyWriters.Get(propertyName);
             if (pair != null) {
                 return pair.First;
             }
@@ -131,7 +131,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -149,7 +148,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -162,7 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override EventBeanWriter GetWriter(string[] properties)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
@@ -173,7 +171,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             for (var i = 0; i < properties.Length; i++) {
                 var writerPair =
-                    propertyWriters.Get(properties[i]);
+                    _propertyWriters.Get(properties[i]);
                 if (writerPair != null) {
                     writers[i] = writerPair.Second;
                     indexes.Add(indexesPerProperty.Get(writerPair.First.PropertyName));
@@ -214,8 +212,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     new Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>(prop, eventPropertyWriter));
             }
 
-            propertyWriters = propertyWritersMap;
-            writablePropertyDescriptors = writeableProps.ToArray();
+            _propertyWriters = propertyWritersMap;
+            _writablePropertyDescriptors = writeableProps.ToArray();
         }
 
         private static EventTypeNestableGetterFactory GetGetterFactory(

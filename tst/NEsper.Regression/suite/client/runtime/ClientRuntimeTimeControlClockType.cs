@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             configuration.Runtime.Threading.IsInternalTimerEnabled = false;
             configuration.Common.AddEventType(typeof(SupportBean));
-            var runtime = EPRuntimeProvider.GetRuntime(typeof(ClientRuntimeTimeControlClockType).Name, configuration);
+            var runtime = EPRuntimeProvider.GetRuntime(nameof(ClientRuntimeTimeControlClockType), configuration);
 
             runtime.EventService.AdvanceTime(0);
             Assert.AreEqual(0, runtime.EventService.CurrentTime);

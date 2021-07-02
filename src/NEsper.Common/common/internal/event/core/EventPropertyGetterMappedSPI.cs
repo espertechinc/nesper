@@ -26,15 +26,15 @@ namespace com.espertech.esper.common.@internal.@event.core
     public class ProxyEventPropertyGetterMappedSPI : EventPropertyGetterMappedSPI
     {
         public Func<CodegenMethodScope, CodegenClassScope, CodegenExpression, CodegenExpression, CodegenExpression>
-            ProcEventBeanGetMappedCodegen;
+            procEventBeanGetMappedCodegen;
 
-        public Func<EventBean, string, object> ProcGet;
+        public Func<EventBean, string, object> procGet;
 
         public object Get(
             EventBean eventBean,
             string mapKey)
         {
-            return ProcGet.Invoke(eventBean, mapKey);
+            return procGet.Invoke(eventBean, mapKey);
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression beanExpression,
             CodegenExpression key)
         {
-            return ProcEventBeanGetMappedCodegen.Invoke(
+            return procEventBeanGetMappedCodegen.Invoke(
                 codegenMethodScope,
                 codegenClassScope,
                 beanExpression,

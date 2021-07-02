@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -24,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRRelOpAllWGroupBy : SubselectForgeNRRelOpBase
     {
-        private readonly ExprForge havingEval;
+        private readonly ExprForge _havingEval;
 
         public SubselectForgeNRRelOpAllWGroupBy(
             ExprSubselectNode subselect,
@@ -40,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 resultWhenNoMatchingEvents,
                 computer)
         {
-            this.havingEval = havingEval;
+            this._havingEval = havingEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -48,6 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
@@ -76,11 +82,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     Ref("cpid"),
                     ConstantNull());
 
-                if (havingEval != null) {
+                if (_havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                         forEach,
-                        havingEval.EvaluationType,
-                        havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                        _havingEval.EvaluationType,
+                        _havingEval.EvaluateCodegen(_havingEval.EvaluationType, method, symbols, classScope));
                 }
 
                 forEach.AssignRef("hasRows", ConstantTrue());

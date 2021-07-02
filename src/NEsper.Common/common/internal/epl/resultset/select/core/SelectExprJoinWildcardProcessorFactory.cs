@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public static SelectExprProcessorForgeWForgables Create(
             SelectProcessorArgs args,
             InsertIntoDesc insertIntoDesc,
-            Func<String, String> eventTypeNamePostfix) 
+            Func<string, string> eventTypeNamePostfix) 
         {
             var streamNames = args.TypeService.StreamNames;
             var streamTypes = args.TypeService.EventTypes;

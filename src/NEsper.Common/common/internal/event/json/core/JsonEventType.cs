@@ -12,6 +12,7 @@ using System.Text.Json;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.serializers;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		// Type of the underlying json representation - usually an native object (class)
 		private Type _underlyingType;
 		// Indicates that the underlying type is transient and must be replaced.
-		private bool _underlyingTypeIsTransient;
+		private readonly bool _underlyingTypeIsTransient;
 		// Type of the delegate
 		private Type _delegateType;
 		// Type of the deserializer
@@ -152,14 +153,14 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			if (property is MappedProperty mapProp) {
 				EventPropertyWriter writer = GetWriter(propertyName);
 				return writer != null
-					? new EventPropertyDescriptor(mapProp.PropertyNameAtomic, typeof(object), null, false, true, false, true, false) 
+					? new EventPropertyDescriptor(mapProp.PropertyNameAtomic, typeof(object), false, true, false, true, false) 
 					: null;
 			}
 
 			if (property is IndexedProperty indexedProp) {
 				EventPropertyWriter writer = GetWriter(propertyName);
 				return writer != null
-					? new EventPropertyDescriptor(indexedProp.PropertyNameAtomic, typeof(object), null, true, false, true, false, false)
+					? new EventPropertyDescriptor(indexedProp.PropertyNameAtomic, typeof(object), true, false, true, false, false)
 					: null;
 			}
 
@@ -260,7 +261,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				}
 
 				var propName = propMeEntry.Key;
-				var setOneType = this.NestableTypes.Get(propName);
+				var setOneType = NestableTypes.Get(propName);
 				var setTwoType = other.NestableTypes.Get(propName);
 				var setTwoTypeFound = other.NestableTypes.ContainsKey(propName);
 

@@ -44,10 +44,10 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public string IndexModuleName { get; }
 
-        public static CodegenExpression MakeArray(ICollection<ModuleIndexMeta> names)
+        public static CodegenExpression MakeArrayNullIfEmpty(ICollection<ModuleIndexMeta> names)
         {
             if (names.IsEmpty()) {
-                return EnumValue(typeof(ModuleIndexMeta), "EMPTY_ARRAY");
+                return ConstantNull();
             }
 
             var expressions = new CodegenExpression[names.Count];

@@ -39,70 +39,70 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithCastAndUDF(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberCastAndUDF());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberJoin());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithFilterEquals(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberFilterEquals());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMinMax(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberMinMax());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberAggregation());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMath(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberMath());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithIn(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberIn());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithBetween(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberBetween());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithRelOp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberRelOp());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithEquals(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBigNumberEquals());
 			return execs;
 		}

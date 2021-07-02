@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class DOMConvertingArrayGetter : EventPropertyGetterSPI
     {
-        private readonly Type componentType;
-        private readonly DOMPropertyGetter getter;
-        private readonly SimpleTypeParserSPI parser;
+        private readonly Type _componentType;
+        private readonly DOMPropertyGetter _getter;
+        private readonly SimpleTypeParserSPI _parser;
 
         /// <summary>
         ///     Ctor.
@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             DOMPropertyGetter domPropertyGetter,
             Type returnType)
         {
-            getter = domPropertyGetter;
-            componentType = returnType;
-            parser = SimpleTypeParserFactory.GetParser(returnType);
+            _getter = domPropertyGetter;
+            _componentType = returnType;
+            _parser = SimpleTypeParserFactory.GetParser(returnType);
         }
 
         public object Get(EventBean obj)
@@ -53,12 +53,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var node = (XmlNode) obj.Underlying;
-            var result = getter.GetValueAsNodeArray(node);
+            var result = _getter.GetValueAsNodeArray(node);
             if (result == null) {
                 return null;
             }
 
-            return GetDOMArrayFromNodes(result, componentType, parser);
+            return GetDOMArrayFromNodes(result, _componentType, _parser);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -126,15 +126,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var mComponentType = codegenClassScope.AddDefaultFieldUnshared(true, typeof(Type), Constant(componentType));
+            var mComponentType = codegenClassScope.AddDefaultFieldUnshared(true, typeof(Type), Constant(_componentType));
             var mParser = codegenClassScope.AddOrGetDefaultFieldSharable(
-                new SimpleTypeParserCodegenFieldSharable(parser, codegenClassScope));
+                new SimpleTypeParserCodegenFieldSharable(_parser, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")
                 .Block
                 .DeclareVar<XmlNode[]>(
                     "result",
-                    getter.GetValueAsNodeArrayCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
+                    _getter.GetValueAsNodeArrayCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(StaticMethod(GetType(), "GetDOMArrayFromNodes", Ref("result"), mComponentType, mParser));
         }

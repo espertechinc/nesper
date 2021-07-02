@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval);
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties);
     }
 
     public delegate void ContextControllerConditionCallbackDelegate(
@@ -30,7 +31,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         EventBean optionalTriggeringEvent,
         IDictionary<string, object> optionalTriggeringPattern,
         EventBean optionalTriggeringEventPattern,
-        IDictionary<string, object> optionalPatternForInclusiveEval);
+        IDictionary<string, object> optionalPatternForInclusiveEval,
+        IDictionary<string, object> terminationProperties);
 
     public class ProxyContextControllerConditionCallback : ContextControllerConditionCallback
     {
@@ -51,7 +53,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval)
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties)
         {
             ProcRangeNotification(
                 conditionPath,
@@ -59,7 +62,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 optionalTriggeringEvent,
                 optionalTriggeringPattern,
                 optionalTriggeringEventPattern,
-                optionalPatternForInclusiveEval);
+                optionalPatternForInclusiveEval,
+                terminationProperties);
         }
     }
 } // end of namespace

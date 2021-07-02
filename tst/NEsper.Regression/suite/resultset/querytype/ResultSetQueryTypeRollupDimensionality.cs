@@ -57,14 +57,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
         public static IList<RegressionExecution> WithRollupMultikeyWArrayGroupingSet(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArrayGroupingSet());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRollupMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(false, true));
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(false, false));
             execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(true, false));
@@ -73,147 +73,147 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
         public static IList<RegressionExecution> WithNamedWindowDeleteAndRStream2Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeNamedWindowDeleteAndRStream2Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowCube2Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeNamedWindowCube2Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeOnSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextPartitionAlsoRollup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeContextPartitionAlsoRollup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOutputWhenTerminated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeOutputWhenTerminated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundCube4Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundCube4Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBoundGroupingSet2LevelTopAndDetail(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeBoundGroupingSet2LevelTopAndDetail());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBoundGroupingSet2LevelNoTopNoDetail(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeBoundGroupingSet2LevelNoTopNoDetail());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBoundCube3Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeBoundCube3Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundGroupingSet2LevelUnenclosed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundGroupingSet2LevelUnenclosed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundCubeUnenclosed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundCubeUnenclosed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundRollupUnenclosed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundRollupUnenclosed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupByWithComputation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeGroupByWithComputation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNonBoxedTypeWithRollup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeNonBoxedTypeWithRollup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMixedAccessAggregation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeMixedAccessAggregation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundRollup3Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundRollup3Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundRollup2DimBatchWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundRollup2DimBatchWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundRollup1Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundRollup1Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundRollup2Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeUnboundRollup2Dim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBoundRollup2Dim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeBoundRollup2Dim());
             return execs;
         }

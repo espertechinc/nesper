@@ -50,14 +50,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSelectIndexPerfCorrelated(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySelectIndexPerfCorrelated(true));
 			execs.Add(new InfraFAFSubquerySelectIndexPerfCorrelated(false));
 			return execs;
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
 		public static IList<RegressionExecution> WithSelectIndexPerfWSubstitution(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySelectIndexPerfWSubstitution(true));
 			execs.Add(new InfraFAFSubquerySelectIndexPerfWSubstitution(false));
 			return execs;
@@ -73,77 +73,77 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
 		public static IList<RegressionExecution> WithSelectGroupBy(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySelectGroupBy());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSelectWhere(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySelectWhere());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithContextSelect(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryContextSelect());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithContextBothWindows(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryContextBothWindows());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithDeleteCorrelatedWhere(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryDeleteCorrelatedWhere());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithUpdateCorrelatedWhere(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryUpdateCorrelatedWhere());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithUpdateCorrelatedSet(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryUpdateCorrelatedSet());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSelectCorrelated(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySelectCorrelated());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithDeleteUncorrelated(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryDeleteUncorrelated());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithUpdateUncorrelated(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryUpdateUncorrelated());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInsert(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubqueryInsert(true));
 			execs.Add(new InfraFAFSubqueryInsert(false));
 			return execs;
@@ -151,14 +151,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
 		public static IList<RegressionExecution> WithSimpleJoin(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySimpleJoin());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new InfraFAFSubquerySimple(true));
 			execs.Add(new InfraFAFSubquerySimple(false));
 			return execs;

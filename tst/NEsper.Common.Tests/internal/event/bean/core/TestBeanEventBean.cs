@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
+
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
@@ -193,93 +195,48 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual(typeof(object), eventBean.EventType.GetPropertyType("IterableUndefined[0]"));
             Assert.AreEqual(typeof(object), eventBean.EventType.GetPropertyType("IterableObject[0]"));
 
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "IterableNested",
-                    typeof(IEnumerable<SupportBeanIterableProps.SupportBeanSpecialGetterNested>),
-                    typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
-                    false,
-                    false,
-                    true,
-                    false,
-                    true),
+            AssertPropEquals(
+                new SupportEventPropDesc("IterableNested", typeof(IEnumerable<SupportBeanIterableProps.SupportBeanSpecialGetterNested>))
+                    .WithComponentType(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested))
+                    .WithIndexed()
+                    .WithFragment(),
                 eventBean.EventType.GetPropertyDescriptor("IterableNested"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "IterableInteger",
-                    typeof(IEnumerable<int>),
-                    typeof(int),
-                    false,
-                    false,
-                    true,
-                    false,
-                    false),
+            AssertPropEquals(
+                new SupportEventPropDesc("IterableInteger", typeof(IEnumerable<int>))
+                    .WithComponentType(typeof(int))
+                    .WithIndexed(),
                 eventBean.EventType.GetPropertyDescriptor("IterableInteger"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "ListNested",
-                    typeof(IList<SupportBeanIterableProps.SupportBeanSpecialGetterNested>),
-                    typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
-                    false,
-                    false,
-                    true,
-                    false,
-                    true),
+            AssertPropEquals(
+                new SupportEventPropDesc("ListNested", typeof(IList<SupportBeanIterableProps.SupportBeanSpecialGetterNested>))
+                    .WithComponentType(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested))
+                    .WithIndexed()
+                    .WithFragment(),
                 eventBean.EventType.GetPropertyDescriptor("ListNested"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "ListInteger",
-                    typeof(IList<int>),
-                    typeof(int),
-                    false,
-                    false,
-                    true,
-                    false,
-                    false),
+            AssertPropEquals(
+                new SupportEventPropDesc("ListInteger", typeof(IList<int>))
+                    .WithComponentType(typeof(int))
+                    .WithIndexed(),
                 eventBean.EventType.GetPropertyDescriptor("ListInteger"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "MapNested",
-                    typeof(IDictionary<string, SupportBeanIterableProps.SupportBeanSpecialGetterNested>),
-                    typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
-                    false,
-                    false,
-                    false,
-                    true,
-                    false),
+            AssertPropEquals(
+                new SupportEventPropDesc("MapNested", typeof(IDictionary<string, SupportBeanIterableProps.SupportBeanSpecialGetterNested>))
+                    .WithComponentType(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested))
+                    .WithIndexed(false)
+                    .WithMapped(),
                 eventBean.EventType.GetPropertyDescriptor("MapNested"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "MapInteger",
-                    typeof(IDictionary<string, int>),
-                    typeof(int),
-                    false,
-                    false,
-                    false,
-                    true,
-                    false),
+            AssertPropEquals(
+                new SupportEventPropDesc("MapInteger", typeof(IDictionary<string, int>))
+                    .WithComponentType(typeof(int))
+                    .WithIndexed(false)
+                    .WithMapped(),
                 eventBean.EventType.GetPropertyDescriptor("MapInteger"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "IterableUndefined",
-                    typeof(IEnumerable<object>),
-                    typeof(object),
-                    false,
-                    false,
-                    true,
-                    false,
-                    false),
+            AssertPropEquals(
+                new SupportEventPropDesc("IterableUndefined", typeof(IEnumerable<object>))
+                    .WithIndexed(),
                 eventBean.EventType.GetPropertyDescriptor("IterableUndefined"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor(
-                    "IterableObject",
-                    typeof(IEnumerable<object>),
-                    typeof(object),
-                    false,
-                    false,
-                    true,
-                    false,
-                    false),
+            AssertPropEquals(
+                new SupportEventPropDesc("IterableObject", typeof(IEnumerable<object>))
+                    .WithComponentType(typeof(object))
+                    .WithIndexed(),
                 eventBean.EventType.GetPropertyDescriptor("IterableObject"));
 
             AssertNestedCollection(eventBean, "IterableNested", "I");

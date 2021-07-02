@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Configuration config)
         {
             config.Common.AddEventType("S0", typeof(SupportBean_S0));
-            var runtimeURI = typeof(MultithreadStmtPatternFollowedBy).Name + "_" + profile;
+            var runtimeURI = nameof(MultithreadStmtPatternFollowedBy) + "_" + profile;
             var runtime = EPRuntimeProvider.GetRuntime(runtimeURI, config);
             runtime.Initialize();
 
@@ -79,10 +79,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 int[] threadTwoValues = {1, 3, 5, 7, 9};
 
                 var threadOne = new Thread(new SenderRunnable(runtime.EventService, threadOneValues).Run);
-                threadOne.Name = typeof(MultithreadStmtPatternFollowedBy).Name + "-one";
+                threadOne.Name = nameof(MultithreadStmtPatternFollowedBy) + "-one";
 
                 var threadTwo = new Thread(new SenderRunnable(runtime.EventService, threadTwoValues).Run);
-                threadTwo.Name = typeof(MultithreadStmtPatternFollowedBy).Name + "-two";
+                threadTwo.Name = nameof(MultithreadStmtPatternFollowedBy) + "-two";
 
                 threadOne.Start();
                 threadTwo.Start();

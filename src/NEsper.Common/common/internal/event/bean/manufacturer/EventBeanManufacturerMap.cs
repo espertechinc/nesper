@@ -20,9 +20,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     /// </summary>
     public class EventBeanManufacturerMap : EventBeanManufacturer
     {
-        private readonly EventBeanTypedEventFactory eventAdapterService;
-        private readonly MapEventType mapEventType;
-        private readonly WriteablePropertyDescriptor[] writables;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
+        private readonly MapEventType _mapEventType;
+        private readonly WriteablePropertyDescriptor[] _writables;
 
         /// <summary>
         ///     Ctor.
@@ -35,15 +35,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             EventBeanTypedEventFactory eventAdapterService,
             WriteablePropertyDescriptor[] properties)
         {
-            this.eventAdapterService = eventAdapterService;
-            this.mapEventType = mapEventType;
-            writables = properties;
+            this._eventAdapterService = eventAdapterService;
+            this._mapEventType = mapEventType;
+            _writables = properties;
         }
 
         public EventBean Make(object[] properties)
         {
             var values = MakeUnderlying(properties);
-            return eventAdapterService.AdapterForTypedMap(values, mapEventType);
+            return _eventAdapterService.AdapterForTypedMap(values, _mapEventType);
         }
 
         object EventBeanManufacturer.MakeUnderlying(object[] properties)
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             IDictionary<string, object> values = new Dictionary<string, object>();
             for (var i = 0; i < properties.Length; i++) {
-                values.Put(writables[i].PropertyName, properties[i]);
+                values.Put(_writables[i].PropertyName, properties[i]);
             }
 
             return values;

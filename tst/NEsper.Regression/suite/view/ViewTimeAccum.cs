@@ -40,63 +40,63 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithGroupedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumGroupedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumSum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumMonthScoped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreviousAndPriorSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumPreviousAndPriorSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreviousAndPriorSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumPreviousAndPriorSceneOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumRStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneThree(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumSceneThree());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeAccumSceneOne());
             return execs;
         }

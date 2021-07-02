@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -45,22 +46,22 @@ WithInvalid(execs);
         }
 public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowInvalid());
     return execs;
 }public static IList<RegressionExecution> WithStatementFilter(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowStatementFilter());
     return execs;
 }public static IList<RegressionExecution> WithStmtNameDynamic(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowStmtNameDynamic());
     return execs;
 }public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowAllTypes());
     return execs;
 }

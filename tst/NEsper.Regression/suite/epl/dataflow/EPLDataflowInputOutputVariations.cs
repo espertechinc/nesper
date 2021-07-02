@@ -41,17 +41,17 @@ WithFactorial(execs);
         }
 public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFactorial());
     return execs;
 }public static IList<RegressionExecution> WithFanInOut(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFanInOut());
     return execs;
 }public static IList<RegressionExecution> WithLargeNumOpsDataFlow(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowLargeNumOpsDataFlow());
     return execs;
 }

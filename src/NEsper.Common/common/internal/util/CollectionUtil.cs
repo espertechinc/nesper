@@ -543,9 +543,32 @@ namespace com.espertech.esper.common.@internal.util
                 return result;
             }
 
-            if (listOfBeans != null && listOfBeans.Equals(bean)) {
+            if (listOfBeans.Equals(bean)) {
                 eventMap.Remove(key);
                 return true;
+            }
+
+            return false;
+        }
+
+        public static bool RemoveEventUnkeyedLazyListMap(
+            EventBean bean,
+            IDictionary<object, object> eventMap)
+        {
+            foreach (var entry in eventMap) {
+                if (entry.Value is IList<EventBean> events) {
+                    if (events.Remove(bean)) {
+                        if (events.IsEmpty()) {
+                            eventMap.Remove(entry.Key);
+                        }
+
+                        return true;
+                    }
+                }
+                else if (object.Equals(entry.Value, bean)) {
+                    eventMap.Remove(entry.Key);
+                    return true;
+                }
             }
 
             return false;

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int streamCountIncoming,
 			ExprDotEvalSumMethodFactory sumMethodFactory) : base(streamCountIncoming)
 		{
-			this._sumMethodFactory = sumMethodFactory;
+			_sumMethodFactory = sumMethodFactory;
 		}
 
 		public override EnumEval EnumEvaluator => this;

@@ -24,11 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 {
 	public abstract class ExprDotForgeTwoLambda : ExprDotForgeEnumMethodBase
 	{
-
-		protected abstract EPType ReturnType(
-			EventType inputEventType,
-			Type collectionComponentType);
-
 		protected abstract TwoLambdaThreeFormEventPlainFactory.ForgeFunction TwoParamEventPlain();
 		protected abstract TwoLambdaThreeFormEventPlusFactory.ForgeFunction TwoParamEventPlus();
 		protected abstract TwoLambdaThreeFormScalarFactory.ForgeFunction TwoParamScalar();
@@ -46,21 +41,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 				throw new IllegalStateException();
 			}
 
-			EPType returnType = ReturnType(inputEventType, collectionComponentType);
-			ExprLambdaGoesNode lambdaFirst = (ExprLambdaGoesNode) parameters[0];
-			ExprLambdaGoesNode lambdaSecond = (ExprLambdaGoesNode) parameters[1];
+			var lambdaFirst = (ExprLambdaGoesNode) parameters[0];
+			var lambdaSecond = (ExprLambdaGoesNode) parameters[1];
 			if (lambdaFirst.GoesToNames.Count != lambdaSecond.GoesToNames.Count) {
 				throw new ExprValidationException(
 					"Enumeration method '" + enumMethodUsedName + "' expected the same number of parameters for both the key and the value expression");
 			}
 
-			int numParameters = lambdaFirst.GoesToNames.Count;
+			var numParameters = lambdaFirst.GoesToNames.Count;
 
 			if (inputEventType != null) {
-				string streamNameFirst = lambdaFirst.GoesToNames[0];
-				string streamNameSecond = lambdaSecond.GoesToNames[0];
+				var streamNameFirst = lambdaFirst.GoesToNames[0];
+				var streamNameSecond = lambdaSecond.GoesToNames[0];
 				if (numParameters == 1) {
-					return new TwoLambdaThreeFormEventPlainFactory(inputEventType, streamNameFirst, streamNameSecond, returnType, TwoParamEventPlain());
+					return new TwoLambdaThreeFormEventPlainFactory(inputEventType, streamNameFirst, streamNameSecond, TwoParamEventPlain());
 				}
 
 				IDictionary<string, object> fieldsFirst = new Dictionary<string, object>();
@@ -72,12 +66,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 					fieldsSecond.Put(lambdaSecond.GoesToNames[2], typeof(int?));
 				}
 
-				ObjectArrayEventType typeFirst = ExprDotNodeUtility.MakeTransientOAType(
+				var typeFirst = ExprDotNodeUtility.MakeTransientOAType(
 					enumMethodUsedName,
 					fieldsFirst,
 					validationContext.StatementRawInfo,
 					validationContext.StatementCompileTimeService);
-				ObjectArrayEventType typeSecond = ExprDotNodeUtility.MakeTransientOAType(
+				var typeSecond = ExprDotNodeUtility.MakeTransientOAType(
 					enumMethodUsedName,
 					fieldsSecond,
 					validationContext.StatementRawInfo,
@@ -89,7 +83,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 					typeFirst,
 					typeSecond,
 					lambdaFirst.GoesToNames.Count,
-					returnType,
 					TwoParamEventPlus());
 			}
 			else {
@@ -108,12 +101,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 					fieldsSecond.Put(lambdaSecond.GoesToNames[2], typeof(int?));
 				}
 
-				ObjectArrayEventType typeFirst = ExprDotNodeUtility.MakeTransientOAType(
+				var typeFirst = ExprDotNodeUtility.MakeTransientOAType(
 					enumMethodUsedName,
 					fieldsFirst,
 					validationContext.StatementRawInfo,
 					validationContext.StatementCompileTimeService);
-				ObjectArrayEventType typeSecond = ExprDotNodeUtility.MakeTransientOAType(
+				var typeSecond = ExprDotNodeUtility.MakeTransientOAType(
 					enumMethodUsedName,
 					fieldsSecond,
 					validationContext.StatementRawInfo,
@@ -123,7 +116,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 					typeFirst,
 					typeSecond,
 					lambdaFirst.GoesToNames.Count,
-					returnType,
 					TwoParamScalar());
 			}
 		}

@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			ObjectArrayEventType resultEventType,
 			int numParameters) : base(innerExpression, streamCountIncoming)
 		{
-			this._secondExpression = secondExpression;
-			this._resultEventType = resultEventType;
-			this._numParameters = numParameters;
+			_secondExpression = secondExpression;
+			_resultEventType = resultEventType;
+			_numParameters = numParameters;
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 							return EmptyDictionary<object, object>.Instance;
 						}
 
-						IDictionary<object, object> map = new NullableDictionary<object, object>();
+						var map = new NullableDictionary<object, object>();
 						var resultEvent = new ObjectArrayEventBean(new object[3], _resultEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
 						var props = resultEvent.Properties;
@@ -91,20 +91,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			var scope = new ExprForgeCodegenSymbol(false, null);
 			var methodNode = codegenMethodScope
 				.MakeChildWithScope(typeof(IDictionary<object, object>), typeof(EnumToMapScalar), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+				.AddParam(PARAMS);
 			var hasIndex = _numParameters >= 2;
 			var hasSize = _numParameters >= 3;
 
 			var block = methodNode.Block
-				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+				.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
 				.BlockReturn(EnumValue(typeof(EmptyDictionary<object, object>), "Instance"));
 
-			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(NullableDictionary<object, object>)))
-				.DeclareVar(
-					typeof(ObjectArrayEventBean),
-					"resultEvent",
-					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
+			block
+				.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(NullableDictionary<object, object>)))
+				.DeclareVar<ObjectArrayEventBean>("resultEvent", NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
+				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
 				block.DeclareVar<int>("count", Constant(-1));
@@ -115,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			}
 
 			var forEach = block
-				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+				.ForEach(typeof(object), "next", REF_ENUMCOLL)
 				.AssignArrayElement("props", Constant(0), Ref("next"));
 			if (hasIndex) {
 				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));

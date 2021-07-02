@@ -226,7 +226,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 0,
                 indexItem,
                 indexedType,
-                true,
                 indexItem.IsUnique,
                 indexName,
                 optionalValueSerde,

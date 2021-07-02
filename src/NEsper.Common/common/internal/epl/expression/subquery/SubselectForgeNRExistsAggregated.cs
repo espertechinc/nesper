@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsAggregated : SubselectForgeNR
     {
-        private readonly ExprForge havingEval;
+        private readonly ExprForge _havingEval;
 
         public SubselectForgeNRExistsAggregated(ExprForge havingEval)
         {
-            this.havingEval = havingEval;
+            this._havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
-            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true);
+            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(_havingEval, method, classScope);
             CodegenExpression having = LocalMethod(
                 havingMethod,
                 REF_EVENTS_SHIFTED,

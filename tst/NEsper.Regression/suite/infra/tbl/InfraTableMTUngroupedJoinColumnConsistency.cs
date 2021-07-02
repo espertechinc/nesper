@@ -70,10 +70,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // start
             var threadWrite = new Thread(writeRunnable.Run) {
-                Name = typeof(InfraTableMTUngroupedJoinColumnConsistency).Name + "-write"
+                Name = nameof(InfraTableMTUngroupedJoinColumnConsistency) + "-write"
             };
             var threadRead = new Thread(readRunnable.Run) {
-                Name = typeof(InfraTableMTUngroupedJoinColumnConsistency).Name + "-read"
+                Name = nameof(InfraTableMTUngroupedJoinColumnConsistency) + "-read"
             };
             threadWrite.Start();
             threadRead.Start();

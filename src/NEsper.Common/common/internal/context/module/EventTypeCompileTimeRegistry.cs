@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public EventTypeCompileTimeRegistry(EventTypeRepository eventTypeRepositoryPreconfigured)
         {
-            this._eventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
+            _eventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
         }
 
         public void NewType(EventType type)

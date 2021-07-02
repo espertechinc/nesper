@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
@@ -58,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           " from SupportDateTime";
 
                 env.CompileDeploy(epl, path).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
@@ -181,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {

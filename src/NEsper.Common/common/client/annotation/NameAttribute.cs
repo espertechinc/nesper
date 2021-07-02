@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.client.annotation
 {
     public class NameAttribute : Attribute
     {
-        private string _value;
+        private readonly string _value;
 
         public NameAttribute(string name)
         {
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.annotation
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

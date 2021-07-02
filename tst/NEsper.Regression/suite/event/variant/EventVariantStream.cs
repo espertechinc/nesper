@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -66,64 +67,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 Assert.IsTrue(eventType.IsProperty(expectedProp));
             }
 
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor(
-                        "TheString",
-                        typeof(string),
-                        typeof(char),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "BoolBoxed",
-                        typeof(bool?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "IntPrimitive",
-                        typeof(int?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "LongPrimitive",
-                        typeof(long?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "DoublePrimitive",
-                        typeof(double?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "EnumValue",
-                        typeof(SupportEnum?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false)
-                },
-                eventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                eventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("TheString", typeof(string)),
+                new SupportEventPropDesc("BoolBoxed", typeof(bool?)),
+                new SupportEventPropDesc("IntPrimitive", typeof(int?)),
+                new SupportEventPropDesc("LongPrimitive", typeof(long?)),
+                new SupportEventPropDesc("DoublePrimitive", typeof(double?)),
+                new SupportEventPropDesc("EnumValue", typeof(SupportEnum)));
         }
 
         public static object PreProcessEvent(object o)
@@ -297,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("create window MainEventWindow#length(10000) as MyVariantTwoTypedSBVariant", path);
                 env.CompileDeploy(
                     "insert into MainEventWindow select " +
-                    typeof(EventVariantStream).Name +
+                    nameof(EventVariantStream) +
                     ".PreProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
                     path);
                 env.CompileDeploy("@Name('s0') select * from MainEventWindow where TheString = 'E'", path);

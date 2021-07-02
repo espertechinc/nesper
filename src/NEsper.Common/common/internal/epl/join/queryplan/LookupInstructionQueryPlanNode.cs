@@ -27,10 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// </summary>
     public class LookupInstructionQueryPlanNode : QueryPlanNode
     {
-        private readonly BaseAssemblyNodeFactory[] assemblyInstructionFactories;
-        private readonly bool[] requiredPerStream;
-        private readonly int rootStream;
-        private readonly string rootStreamName;
+        private readonly BaseAssemblyNodeFactory[] _assemblyInstructionFactories;
+        private readonly bool[] _requiredPerStream;
+        private readonly int _rootStream;
+        private readonly string _rootStreamName;
 
         /// <summary>
         ///     Ctor.
@@ -49,12 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             LookupInstructionPlan[] lookupInstructions,
             BaseAssemblyNodeFactory[] assemblyInstructionFactories)
         {
-            this.rootStream = rootStream;
-            this.rootStreamName = rootStreamName;
+            this._rootStream = rootStream;
+            this._rootStreamName = rootStreamName;
             LookupInstructions = lookupInstructions;
             NumStreams = numStreams;
-            this.requiredPerStream = requiredPerStream;
-            this.assemblyInstructionFactories = assemblyInstructionFactories;
+            this._requiredPerStream = requiredPerStream;
+            this._assemblyInstructionFactories = assemblyInstructionFactories;
         }
 
         public int NumStreams { get; }
@@ -84,12 +84,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             return new LookupInstructionExecNode(
-                rootStream,
-                rootStreamName,
+                _rootStream,
+                _rootStreamName,
                 NumStreams,
                 execs,
-                requiredPerStream,
-                assemblyInstructionFactories);
+                _requiredPerStream,
+                _assemblyInstructionFactories);
         }
     }
 } // end of namespace

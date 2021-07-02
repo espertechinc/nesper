@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             string statementName,
             string statementDeploymentId);
 
-        int CountStatements(Func<StatementContext, Boolean> filter);
+        int CountStatements(Func<StatementContext, bool> filter);
 
         IDictionary<int, ContextControllerStatementDesc> Statements { get; }
 

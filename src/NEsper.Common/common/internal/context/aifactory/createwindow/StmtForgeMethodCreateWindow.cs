@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
         public StmtForgeMethodCreateWindow(StatementBaseInfo @base)
         {
-            this._base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(

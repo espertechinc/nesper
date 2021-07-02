@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
 
         public JsonEventType CreateJson(
             EventTypeMetadata metadata,
-            IDictionary<String, Object> properties,
+            IDictionary<string, object> properties,
             string[] superTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName,

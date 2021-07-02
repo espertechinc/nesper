@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             var count = 0;
             foreach (var specParam in triplets) {
-                FilterValueSetParam valueParam = specParam.Param.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                var valueParam = specParam.Param.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
                 valueList[count] = valueParam;
                 count++;
             }

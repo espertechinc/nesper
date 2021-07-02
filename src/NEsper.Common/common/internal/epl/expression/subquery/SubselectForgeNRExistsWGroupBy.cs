@@ -17,11 +17,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsWGroupBy : SubselectForgeNR
     {
-        private readonly ExprSubselectNode subselect;
+        private readonly ExprSubselectNode _subselect;
 
         public SubselectForgeNRExistsWGroupBy(ExprSubselectNode subselect)
         {
-            this.subselect = subselect;
+            this._subselect = subselect;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         {
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
             CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+                new CodegenFieldNameSubqueryAgg(_subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
             method.Block.ApplyTri(

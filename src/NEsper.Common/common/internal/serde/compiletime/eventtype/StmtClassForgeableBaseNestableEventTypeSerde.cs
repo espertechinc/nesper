@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 
 	        var ctorParams = Collections.SingletonList(
 		        new CodegenTypedParam(typeof(EventTypeResolver), "resolver", false));
-	        var providerCtor = new CodegenCtor(this.GetType(), ClassName, includeDebugSymbols, ctorParams);
+	        var providerCtor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, ctorParams);
 	        for (var i = 0; i < forges.Length; i++) {
 	            providerCtor.Block.AssignRef("s" + i, forges[i].Codegen(providerCtor, classScope, Ref("resolver")));
 	        }

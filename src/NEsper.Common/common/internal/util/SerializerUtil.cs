@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -64,7 +65,7 @@ namespace com.espertech.esper.common.@internal.util
                 return Constant(userObject);
             }
 
-            var value = SerializerUtil.ObjectToByteArrBase64(userObject);
+            var value = ObjectToByteArrBase64(userObject);
             return StaticMethod(typeof(SerializerUtil), "ByteArrBase64ToObject", Constant(value));
         }
 

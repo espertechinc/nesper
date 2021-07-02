@@ -26,13 +26,13 @@ namespace com.espertech.esper.common.@internal.view.derived
     public class WeightedAverageView : ViewSupport,
         DerivedValueView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
+        private readonly AgentInstanceContext _agentInstanceContext;
 
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
-        private readonly WeightedAverageViewFactory viewFactory;
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
+        private readonly WeightedAverageViewFactory _viewFactory;
         protected internal double currentValue = double.NaN;
 
-        private EventBean lastNewEvent;
+        private EventBean _lastNewEvent;
         protected internal object[] lastValuesEventNew;
         protected internal double sumW = double.NaN;
 
@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             WeightedAverageViewFactory viewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
-            this.viewFactory = viewFactory;
-            this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
+            this._viewFactory = viewFactory;
+            this._agentInstanceContext = agentInstanceContext.AgentInstanceContext;
         }
 
         public double SumXtimesW {
@@ -66,42 +66,42 @@ namespace com.espertech.esper.common.@internal.view.derived
             set => lastValuesEventNew = value;
         }
 
-        public ViewFactory ViewFactory => viewFactory;
+        public ViewFactory ViewFactory => _viewFactory;
 
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _viewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_viewFactory, newData, oldData);
 
             var oldValue = currentValue;
 
             // If we have child views, keep a reference to the old values, so we can update them as old data event.
             EventBean oldDataMap = null;
-            if (lastNewEvent == null) {
+            if (_lastNewEvent == null) {
                 if (child != null) {
                     IDictionary<string, object> oldDataValues = new Dictionary<string, object>();
-                    oldDataValues.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), oldValue);
+                    oldDataValues.Put(ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE.GetName(), oldValue);
                     AddProperties(oldDataValues);
-                    oldDataMap = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+                    oldDataMap = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
                         oldDataValues,
-                        viewFactory.eventType);
+                        _viewFactory.eventType);
                 }
             }
 
             // add data points to the bean
             if (newData != null) {
                 for (var i = 0; i < newData.Length; i++) {
-                    eventsPerStream[0] = newData[i];
-                    var pointnum = viewFactory.fieldNameXEvaluator.Evaluate(
-                        eventsPerStream,
+                    _eventsPerStream[0] = newData[i];
+                    var pointnum = _viewFactory.fieldNameXEvaluator.Evaluate(
+                        _eventsPerStream,
                         true,
-                        agentInstanceContext);
-                    var weightnum = viewFactory.fieldNameWeightEvaluator.Evaluate(
-                        eventsPerStream,
+                        _agentInstanceContext);
+                    var weightnum = _viewFactory.fieldNameWeightEvaluator.Evaluate(
+                        _eventsPerStream,
                         true,
-                        agentInstanceContext);
+                        _agentInstanceContext);
                     if (pointnum != null && weightnum != null) {
                         double point = pointnum.AsDouble();
                         double weight = weightnum.AsDouble();
@@ -117,15 +117,15 @@ namespace com.espertech.esper.common.@internal.view.derived
                     }
                 }
 
-                if (viewFactory.additionalProps != null && newData.Length != 0) {
-                    var additionalEvals = viewFactory.additionalProps.AdditionalEvals;
+                if (_viewFactory.additionalProps != null && newData.Length != 0) {
+                    var additionalEvals = _viewFactory.additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }
 
                     for (var val = 0; val < additionalEvals.Length; val++) {
                         lastValuesEventNew[val] = additionalEvals[val]
-                            .Evaluate(eventsPerStream, true, agentInstanceContext);
+                            .Evaluate(_eventsPerStream, true, _agentInstanceContext);
                     }
                 }
             }
@@ -133,15 +133,15 @@ namespace com.espertech.esper.common.@internal.view.derived
             // remove data points from the bean
             if (oldData != null) {
                 for (var i = 0; i < oldData.Length; i++) {
-                    eventsPerStream[0] = oldData[i];
-                    var pointnum = viewFactory.fieldNameXEvaluator.Evaluate(
-                        eventsPerStream,
+                    _eventsPerStream[0] = oldData[i];
+                    var pointnum = _viewFactory.fieldNameXEvaluator.Evaluate(
+                        _eventsPerStream,
                         true,
-                        agentInstanceContext);
-                    var weightnum = viewFactory.fieldNameWeightEvaluator.Evaluate(
-                        eventsPerStream,
+                        _agentInstanceContext);
+                    var weightnum = _viewFactory.fieldNameWeightEvaluator.Evaluate(
+                        _eventsPerStream,
                         true,
-                        agentInstanceContext);
+                        _agentInstanceContext);
 
                     if (pointnum != null && weightnum != null) {
                         double point = pointnum.AsDouble();
@@ -162,46 +162,46 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If there are child view, fireStatementStopped update method
             if (child != null) {
                 IDictionary<string, object> newDataMap = new Dictionary<string, object>();
-                newDataMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), currentValue);
+                newDataMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE.GetName(), currentValue);
                 AddProperties(newDataMap);
                 EventBean newDataEvent =
-                    agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+                    _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
                         newDataMap,
-                        viewFactory.eventType);
+                        _viewFactory.eventType);
 
                 EventBean[] newEvents = {newDataEvent};
                 EventBean[] oldEvents;
-                if (lastNewEvent == null) {
+                if (_lastNewEvent == null) {
                     oldEvents = new[] {oldDataMap};
                 }
                 else {
-                    oldEvents = new[] {lastNewEvent};
+                    oldEvents = new[] {_lastNewEvent};
                 }
 
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newEvents, oldEvents);
                 child.Update(newEvents, oldEvents);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
-                lastNewEvent = newDataEvent;
+                _lastNewEvent = newDataEvent;
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
-        public override EventType EventType => viewFactory.eventType;
+        public override EventType EventType => _viewFactory.eventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
             IDictionary<string, object> newDataMap = new Dictionary<string, object>();
-            newDataMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), currentValue);
+            newDataMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE.GetName(), currentValue);
             AddProperties(newDataMap);
             return EnumerationHelper.SingletonNullable(
-                agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(newDataMap, viewFactory.eventType));
+                _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(newDataMap, _viewFactory.eventType));
         }
 
         private void AddProperties(IDictionary<string, object> newDataMap)
         {
-            viewFactory.additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
+            _viewFactory.additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
         }
 
         public static EventType CreateEventType(
@@ -210,11 +210,11 @@ namespace com.espertech.esper.common.@internal.view.derived
             int streamNum)
         {
             var schemaMap = new LinkedHashMap<string, object>();
-            schemaMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), typeof(double?));
+            schemaMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
                 schemaMap,
                 additionalProps,
-                ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
+                ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE);
             return DerivedViewTypeUtil.NewType("wavgview", schemaMap, env, streamNum);
         }
     }

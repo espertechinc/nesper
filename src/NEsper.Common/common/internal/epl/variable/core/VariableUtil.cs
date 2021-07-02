@@ -40,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             return "Variable '" +
                    variableName +
                    "' of declared type " +
-                   variableType.CleanName() +
+                   variableType.TypeSafeName() +
                    " cannot be assigned a value of type " +
-                   initValueClass.CleanName();
+                   initValueClass.TypeSafeName();
         }
 
         public static void ConfigureVariables(
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             BeanEventTypeFactory beanEventTypeFactory)
         {
             foreach (var entry in variables) {
-                string variableName = entry.Key.Trim();
+                var variableName = entry.Key.Trim();
                 if (repo.GetMetadata(variableName) != null) {
                     continue;
                 }
 
                 VariableMetaData meta;
                 try {
-                    var variableType = ClassIdentifierWArray.ParseSODA(entry.Value.VariableType);
+                    var variableType = ClassDescriptor.ParseTypeText(entry.Value.VariableType);
                     meta = GetTypeInfo(
                         variableName,
                         null,
@@ -89,16 +89,16 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         public static VariableMetaData CompileVariable(
-            String variableName,
-            String variableModuleName,
+            string variableName,
+            string variableModuleName,
             NameAccessModifier variableVisibility,
-            String optionalContextName,
+            string optionalContextName,
             NameAccessModifier? optionalContextVisibility,
-            String optionalModuleName,
-            ClassIdentifierWArray variableType,
+            string optionalModuleName,
+            ClassDescriptor variableType,
             bool isConstant,
             bool compileTimeConstant,
-            Object initializationValue,
+            object initializationValue,
             ImportService importService,
             ExtensionClass extensionClass,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -168,92 +168,63 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string optionalContextName,
             NameAccessModifier? optionalContextVisibility,
             string optionalContextModule,
-            ClassIdentifierWArray variableTypeWArray,
+            ClassDescriptor variableTypeWArray,
             bool preconfigured,
             bool constant,
             bool compileTimeConstant,
             object valueAsProvided,
-            ImportService importService,
-            ExtensionClass extensionClass,
+            ImportService classpathImportService,
+            ExtensionClass classpathExtension,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            // Determine the variable type
-            var primitiveType = TypeHelper.GetPrimitiveTypeForName(variableTypeWArray.ClassIdentifier);
-            var type = TypeHelper.GetTypeForSimpleName(variableTypeWArray.ClassIdentifier).GetBoxedType();
-            Type arrayType = null;
-            EventType eventType = null;
-            if (type == null) {
-                if (variableTypeWArray.ClassIdentifier.Equals("object", StringComparison.InvariantCultureIgnoreCase)) {
-                    type = TypeHelper.GetArrayType(typeof(object), variableTypeWArray.ArrayDimensions);
-                }
-
-                if (type == null) {
-                    eventType = eventTypeRepositoryPreconfigured.GetTypeByName(variableTypeWArray.ClassIdentifier);
-                    if (eventType != null) {
-                        type = eventType.UnderlyingType;
-                    }
-                }
-
-                ImportException lastException = null;
-                if (type == null) {
-                    try {
-                        type = importService.ResolveClass(variableTypeWArray.ClassIdentifier, false, extensionClass);
-                        type = TypeHelper.GetArrayType(type, variableTypeWArray.ArrayDimensions);
-                    }
-                    catch (ImportException e) {
-                        Log.Debug("Not found '" + type + "': " + e.Message, e);
-                        lastException = e;
-                        // expected
-                    }
-                }
-
-                if (type == null) {
-                    throw new VariableTypeException(
-                        "Cannot create variable '" +
-                        variableName +
-                        "', type '" +
-                        variableTypeWArray.ClassIdentifier +
-                        "' is not a recognized type",
-                        lastException);
-                }
-
-                if (variableTypeWArray.ArrayDimensions > 0 && eventType != null) {
-                    throw new VariableTypeException(
-                        "Cannot create variable '" +
-                        variableName +
-                        "', type '" +
-                        variableTypeWArray.ClassIdentifier +
-                        "' cannot be declared as an array type as it is an event type",
-                        lastException);
+            Type variableClass = null;
+            ExprValidationException exTypeResolution = null;
+            try {
+                variableClass = ImportTypeUtil.ResolveClassIdentifierToType(variableTypeWArray, true, classpathImportService, classpathExtension);
+                if (variableClass == null) {
+                    throw new ExprValidationException("Failed to resolve type parameter '" + variableTypeWArray.ToEPL() + "'");
                 }
             }
-            else {
-                if (variableTypeWArray.ArrayDimensions > 0) {
-                    if (variableTypeWArray.IsArrayOfPrimitive) {
-                        if (primitiveType == null) {
-                            throw new VariableTypeException(
-                                "Cannot create variable '" +
-                                variableName +
-                                "', type '" +
-                                variableTypeWArray.ClassIdentifier +
-                                "' is not a primitive type");
-                        }
+            catch (ExprValidationException ex) {
+                exTypeResolution = ex;
+            }
 
-                        arrayType = TypeHelper.GetArrayType(primitiveType, variableTypeWArray.ArrayDimensions);
-                    }
-                    else {
-                        arrayType = TypeHelper.GetArrayType(type, variableTypeWArray.ArrayDimensions);
-                    }
+            EventType variableEventType = null;
+            if (variableClass == null) {
+                variableEventType = eventTypeRepositoryPreconfigured.GetTypeByName(variableTypeWArray.ClassIdentifier);
+                if (variableEventType != null) {
+                    variableClass = variableEventType.UnderlyingType;
                 }
             }
 
-            if (eventType == null &&
-                !type.IsBuiltinDataType() &&
-                type != typeof(object) &&
-                !type.IsArray &&
-                !type.IsEnum) {
+            if (variableClass == null) {
+                throw new VariableTypeException(
+                    "Cannot create variable '" +
+                    variableName +
+                    "', type '" +
+                    variableTypeWArray.ClassIdentifier +
+                    "' is not a recognized type",
+                    exTypeResolution);
+            }
+
+            if (variableEventType != null && (variableTypeWArray.ArrayDimensions > 0 || !variableTypeWArray.TypeParameters.IsEmpty())) {
+                throw new VariableTypeException(
+                    "Cannot create variable '" +
+                    variableName +
+                    "', type '" +
+                    variableTypeWArray.ClassIdentifier +
+                    "' cannot be declared as an array type and cannot receive type parameters as it is an event type",
+                    exTypeResolution);
+            }
+
+            if ((variableEventType == null) &&
+                (!variableClass.IsBuiltinDataType()) &&
+                (variableClass != typeof(object)) &&
+                !variableClass.IsArray &&
+                !variableClass.IsEnum &&
+                variableClass.IsFragmentableType()) {
                 if (variableTypeWArray.ArrayDimensions > 0) {
                     throw new VariableTypeException(
                         "Cannot create variable '" +
@@ -263,14 +234,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "' cannot be declared as an array, only scalar types can be array");
                 }
 
-                eventType = beanEventTypeFactory.GetCreateBeanType(type, false);
+                variableEventType = beanEventTypeFactory.GetCreateBeanType(variableClass, false);
             }
 
-            if (arrayType != null) {
-                type = arrayType;
-            }
-
-            var coerced = GetCoercedValue(valueAsProvided, eventType, variableName, type, eventBeanTypedEventFactory);
+            var coerced = GetCoercedValue(valueAsProvided, variableEventType, variableName, variableClass, eventBeanTypedEventFactory);
             return new VariableMetaData(
                 variableName,
                 variableModuleName,
@@ -278,8 +245,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 optionalContextName,
                 optionalContextVisibility,
                 optionalContextModule,
-                type,
-                eventType,
+                variableClass,
+                variableEventType,
                 preconfigured,
                 constant,
                 compileTimeConstant,
@@ -307,9 +274,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "' of declared event type '" +
                         eventType.Name +
                         "' underlying type '" +
-                        eventType.UnderlyingType.CleanName() +
+                        eventType.UnderlyingType.TypeSafeName() +
                         "' cannot be assigned a value of type '" +
-                        value.GetType().CleanName() +
+                        value.GetType().TypeSafeName() +
                         "'");
                 }
 
@@ -331,7 +298,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                             "Variable '" +
                             variableName +
                             "' of declared type " +
-                            variableType.CleanName() +
+                            variableType.TypeSafeName() +
                             " cannot be initialized by value '" +
                             coercedValue +
                             "': " +
@@ -352,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         coercedValueType.GetElementType().GetBoxedType() == variableType.GetElementType()) {
                         var coercedSourceArray = (Array) coercedValue;
                         var coercedDestArray = Arrays.CreateInstanceChecked(variableType.GetElementType(), coercedSourceArray.Length);
-                        for (int ii = 0; ii < coercedSourceArray.Length; ii++) {
+                        for (var ii = 0; ii < coercedSourceArray.Length; ii++) {
                             coercedDestArray.SetValue(coercedSourceArray.GetValue(ii), ii);
                         }
 
@@ -386,9 +353,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 "Variable '" +
                 variableName +
                 "' of declared type " +
-                variableType.CleanName() +
+                variableType.TypeSafeName() +
                 " cannot be initialized by a value of type " +
-                initValueClass.CleanName());
+                initValueClass.TypeSafeName());
         }
     }
 } // end of namespace

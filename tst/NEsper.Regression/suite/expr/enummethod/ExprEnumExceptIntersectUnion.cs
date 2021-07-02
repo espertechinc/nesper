@@ -41,49 +41,49 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
 		public static IList<RegressionExecution> WithUnionWhere(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumUnionWhere());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSetLogicWithEvents(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSetLogicWithEvents());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInheritance(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumInheritance());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSetLogicWithScalar(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSetLogicWithScalar());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSetLogicWithContained(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSetLogicWithContained());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithStringArrayIntersection(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumStringArrayIntersection());
 			return execs;
 		}
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[1], "Contained.intersect(ContainedTwo)");
 				builder.WithExpression(fields[2], "Contained.union(ContainedTwo)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				IList<SupportBean_ST0> first = SupportBean_ST0_Container.Make2ValueList("E1,1", "E2,10", "E3,1", "E4,10", "E5,11");
 				IList<SupportBean_ST0> second = SupportBean_ST0_Container.Make2ValueList("E1,1", "E3,1", "E4,10");
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"last10A().union(last10NonZero()) as val2 " +
 					"from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
-				LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, "val0".SplitCsv(), new[] {typeof(ICollection<object>)});
+				SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, "val0".SplitCsv(), new[] {typeof(ICollection<SupportBean_ST0>)});
 
 				env.SendEventBean(new SupportBean_ST0("E1", "A1", 10)); // in both
 				env.SendEventBean(new SupportBean());
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[1], "Strvals.intersect(Strvalstwo)");
 				builder.WithExpression(fields[2], "Strvals.union(Strvalstwo)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2", "E3,E4"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2"))
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				             "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, "val0".SplitCsv(), new[] {typeof(ICollection<object>)});
+				SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, "val0".SplitCsv(), new[] {typeof(ICollection<SupportBean_ST0>)});
 
 				env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,10", "E3,1", "E4,10", "E5,11"));
 				AssertST0Id(env.Listener("s0"), "val0", "E2,E4,E5");

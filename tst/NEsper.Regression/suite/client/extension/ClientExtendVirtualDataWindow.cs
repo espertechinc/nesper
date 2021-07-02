@@ -603,9 +603,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env,
                 epl,
                 "Failed to validate data window declaration: Virtual data window forge class " +
-                typeof(SupportBean).Name +
+                nameof(SupportBean) +
                 " does not implement the interface " +
-                typeof(VirtualDataWindowForge).Name);
+                nameof(VirtualDataWindowForge));
 
             epl = "select * from SupportBean.test:vdw()";
             TryInvalidCompile(

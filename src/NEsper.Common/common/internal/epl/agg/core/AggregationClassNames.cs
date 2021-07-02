@@ -21,12 +21,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         private const string CLASSNAME_AGGREGATIONROWFACTORY_LVL = "AggRowFactoryLvl";
 
         private readonly string _optionalPostfix;
-        private string _rowTop = CLASSNAME_AGGREGATIONROW_TOP;
-        private string _rowFactory = CLASSNAME_AGGREGATIONROWFACTORY;
-        private string _rowSerde = CLASSNAME_AGGREGATIONROWSERDE;
-        private string _provider = CLASSNAME_AGGREGATIONSERVICEFACTORYPROVIDER;
-        private string _service = CLASSNAME_AGGREGATIONSERVICE;
-        private string _serviceFactory = CLASSNAME_AGGREGATIONSERVICEFACTORY;
+        private readonly string _rowTop = CLASSNAME_AGGREGATIONROW_TOP;
+        private readonly string _rowFactory = CLASSNAME_AGGREGATIONROWFACTORY;
+        private readonly string _rowSerde = CLASSNAME_AGGREGATIONROWSERDE;
+        private readonly string _provider = CLASSNAME_AGGREGATIONSERVICEFACTORYPROVIDER;
+        private readonly string _service = CLASSNAME_AGGREGATIONSERVICE;
+        private readonly string _serviceFactory = CLASSNAME_AGGREGATIONSERVICEFACTORY;
 
         public AggregationClassNames()
             : this(null)

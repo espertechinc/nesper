@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public EventTypeNestableGetterFactoryJson(JsonEventTypeDetail detail)
 		{
-			this._detail = detail;
+			_detail = detail;
 		}
 
 		public EventPropertyGetterSPI GetPropertyDynamicGetter(
@@ -81,11 +81,12 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				}
 
 				if (type is Type asType && asType.IsArray) {
+					var componentType = asType.GetElementType();
 					return GetGetterIndexedClassArray(
 						prop.PropertyNameAtomic,
 						indexed.Index,
 						eventBeanTypedEventFactory,
-						asType.GetElementType(),
+						componentType,
 						beanEventTypeFactory);
 				}
 
@@ -345,8 +346,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			BeanEventPropertyGetter nestedGetter,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory,
-			Type nestedReturnType,
-			Type nestedComponentType)
+			Type nestedValueType)
 		{
 			var field = FindField(propertyName);
 			if (field == null || field.OptionalField == null) {
@@ -356,8 +356,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			return new JsonGetterNestedPONOPropProvided(
 				eventBeanTypedEventFactory,
 				beanEventTypeFactory,
-				nestedReturnType,
-				nestedComponentType,
+				nestedValueType,
 				field.OptionalField,
 				nestedGetter);
 		}

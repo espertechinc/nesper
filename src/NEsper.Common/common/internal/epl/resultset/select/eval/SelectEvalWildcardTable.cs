@@ -39,10 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, GetType());
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);

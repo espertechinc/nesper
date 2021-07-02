@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.rollup;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.output.polled;
 using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.core;
@@ -94,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGJOINRESULTKEYEDJOIN,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -155,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -238,7 +239,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 MEMBER_AGGREGATIONSVC,
                                 "SetCurrentAccess",
                                 Ref("groupKey"),
-                                ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                                 Ref("level"))
                             .AssignArrayElement(
                                 Ref("eventsPerStream"),
@@ -255,8 +256,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             having,
                                             "EvaluateHaving",
                                             REF_EPS,
-                                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                            MEMBER_AGENTINSTANCECONTEXT)))
+                                            ExprForgeCodegenNames.REF_ISNEWDATA,
+                                            MEMBER_EXPREVALCONTEXT)))
                                 .BlockContinue();
                         }
 
@@ -269,9 +270,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("level"), "LevelNumber")),
                                 "Process",
                                 Ref("eventsPerStream"),
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
 
                         if (forge.IsSorting) {
                             forEvents.DeclareVar<EventBean[]>(
@@ -303,8 +304,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "SortRollup",
                                 Ref("outgoing"),
                                 Ref("currentGenerators"),
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                MEMBER_AGENTINSTANCECONTEXT,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
+                                MEMBER_EXPREVALCONTEXT,
                                 MEMBER_AGGREGATIONSVC));
                 }
 
@@ -316,7 +317,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "GenerateOutputEventsView",
                 CodegenNamedParam.From(
                     typeof(IDictionary<object, EventBean>[]), "keysAndEvents",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,
@@ -354,7 +355,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 MEMBER_AGGREGATIONSVC,
                                 "SetCurrentAccess",
                                 Ref("groupKey"),
-                                ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                                 Ref("level"))
                             .DeclareVar<EventBean[]>(
                                 "eventsPerStream", ExprDotName(Ref("entry"), "Value"));
@@ -369,8 +370,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             having,
                                             "EvaluateHaving",
                                             REF_EPS,
-                                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                            MEMBER_AGENTINSTANCECONTEXT)))
+                                            ExprForgeCodegenNames.REF_ISNEWDATA,
+                                            MEMBER_EXPREVALCONTEXT)))
                                 .BlockContinue();
                         }
 
@@ -383,9 +384,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("level"), "LevelNumber")),
                                 "Process",
                                 Ref("eventsPerStream"),
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
 
                         if (forge.IsSorting) {
                             forEvents.ExprDotMethod(
@@ -413,8 +414,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "SortRollup",
                                 Ref("outgoing"),
                                 Ref("currentGenerators"),
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                MEMBER_AGENTINSTANCECONTEXT,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
+                                MEMBER_EXPREVALCONTEXT,
                                 MEMBER_AGGREGATIONSVC));
                 }
 
@@ -426,7 +427,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "GenerateOutputEventsJoin",
                 CodegenNamedParam.From(
                     typeof(IDictionary<object, EventBean[]>[]), "eventPairs",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA, 
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA, 
                     typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,
@@ -445,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 return;
             }
 
-            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
+            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_EXPREVALCONTEXT)
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .DeclareVar<object[]>(
@@ -474,7 +475,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         "ApplyEnter",
                         Ref("eventsPerStream"),
                         Ref("groupKeys"),
-                        MEMBER_AGENTINSTANCECONTEXT)
+                        MEMBER_EXPREVALCONTEXT)
                     .BlockEnd();
             }
 
@@ -484,7 +485,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(ResultSetProcessorUtil),
                         METHOD_ITERATORTODEQUE,
                         LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method, instance), REF_VIEWABLE)))
-                .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
+                .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_EXPREVALCONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
@@ -560,7 +561,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
         internal static void ClearMethodCodegen(CodegenMethod method)
         {
-            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT);
+            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_EXPREVALCONTEXT);
         }
 
         public static void ProcessOutputLimitedJoinCodegen(
@@ -778,7 +779,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -803,7 +804,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
 
                         var ifNewFirst = forEach.IfCondition(NotEqualsNull(Ref("newData")));
@@ -825,7 +826,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
@@ -836,7 +837,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantTrue(),
-                                                MEMBER_AGENTINSTANCECONTEXT)))
+                                                MEMBER_EXPREVALCONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -844,7 +845,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -896,7 +897,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
@@ -907,7 +908,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantFalse(),
-                                                MEMBER_AGENTINSTANCECONTEXT)))
+                                                MEMBER_EXPREVALCONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -915,7 +916,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1025,7 +1026,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1061,7 +1062,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -1088,7 +1089,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1124,7 +1125,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                     }
                 }
@@ -1202,7 +1203,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -1229,7 +1230,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
 
                         var ifNewFirst = forEach.IfCondition(NotEqualsNull(Ref("newData")));
@@ -1256,7 +1257,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
@@ -1267,7 +1268,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantTrue(),
-                                                MEMBER_AGENTINSTANCECONTEXT)))
+                                                MEMBER_EXPREVALCONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -1275,7 +1276,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1332,7 +1333,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
@@ -1343,7 +1344,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantFalse(),
-                                                MEMBER_AGENTINSTANCECONTEXT)))
+                                                MEMBER_EXPREVALCONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -1351,7 +1352,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1460,7 +1461,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1496,7 +1497,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -1521,7 +1522,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            MEMBER_AGENTINSTANCECONTEXT,
+                                            MEMBER_EXPREVALCONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1557,7 +1558,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                     }
                 }
@@ -1633,7 +1634,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(ResultSetProcessorGroupedUtil),
                         METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
                         MEMBER_AGGREGATIONSVC,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         Ref("newData"),
                         Ref("newDataMultiKey"),
                         Ref("oldData"),
@@ -1712,7 +1713,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(ResultSetProcessorGroupedUtil),
                         METHOD_APPLYAGGJOINRESULTKEYEDJOIN,
                         MEMBER_AGGREGATIONSVC,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         Ref("newData"),
                         Ref("newDataMultiKey"),
                         Ref("oldData"),
@@ -1769,7 +1770,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     Ref("mk"),
                     Ref("level"),
                     Ref("eventsPerStream"),
-                    ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                    ExprForgeCodegenNames.REF_ISNEWDATA,
                     REF_ISSYNTHESIZE,
                     Ref("resultList"),
                     Ref("sortKeys"));
@@ -1781,7 +1782,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(object), "mk",
                     typeof(AggregationGroupByRollupLevel), "level",
                     typeof(EventBean[]), "eventsPerStream",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
                     typeof(IList<EventBean>[]), "resultEvents",
                     typeof(IList<object>[]), "optSortKeys"),
@@ -1800,7 +1801,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     MEMBER_AGGREGATIONSVC,
                     "SetCurrentAccess",
                     Ref("mk"),
-                    ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                    ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                     Ref("level"));
 
                 if (forge.PerLevelForges.OptionalHavingForges != null) {
@@ -1812,8 +1813,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         ExprDotName(Ref("level"), "LevelNumber")),
                                     "EvaluateHaving",
                                     Ref("eventsPerStream"),
-                                    ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                    MEMBER_AGENTINSTANCECONTEXT)))
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    MEMBER_EXPREVALCONTEXT)))
                         .BlockReturnNoValue();
                 }
 
@@ -1827,9 +1828,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         selectExprProcessor,
                         "Process",
                         Ref("eventsPerStream"),
-                        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
-                        MEMBER_AGENTINSTANCECONTEXT));
+                        MEMBER_EXPREVALCONTEXT));
 
                 if (forge.IsSorting) {
                     methodNode.Block.ExprDotMethod(
@@ -1839,8 +1840,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             REF_ORDERBYPROCESSOR,
                             "GetSortKeyRollup",
                             Ref("eventsPerStream"),
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                            MEMBER_AGENTINSTANCECONTEXT,
+                            ExprForgeCodegenNames.REF_ISNEWDATA,
+                            MEMBER_EXPREVALCONTEXT,
                             Ref("level")));
                 }
             };
@@ -1851,7 +1852,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(object), "mk",
                     typeof(AggregationGroupByRollupLevel), "level",
                     typeof(EventBean[]), "eventsPerStream",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
                     typeof(IList<EventBean>), "resultEvents",
                     typeof(IList<object>), "optSortKeys"),
@@ -1870,7 +1871,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     MEMBER_AGGREGATIONSVC,
                     "SetCurrentAccess",
                     Ref("mk"),
-                    ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                    ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"),
                     Ref("level"));
 
                 if (forge.PerLevelForges.OptionalHavingForges != null) {
@@ -1881,8 +1882,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     having,
                                     "EvaluateHaving",
                                     REF_EPS,
-                                    ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                    MEMBER_AGENTINSTANCECONTEXT)))
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    MEMBER_EXPREVALCONTEXT)))
                         .BlockReturnNoValue();
                 }
 
@@ -1897,9 +1898,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         selectExprProcessor,
                         "Process",
                         Ref("eventsPerStream"),
-                        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
-                        MEMBER_AGENTINSTANCECONTEXT));
+                        MEMBER_EXPREVALCONTEXT));
             };
 
             instance.Methods.AddMethod(
@@ -1910,7 +1911,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(object), "mk",
                     typeof(AggregationGroupByRollupLevel), "level",
                     typeof(EventBean[]), "eventsPerStream",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
                     typeof(IDictionary<object, EventBean>), "resultEvents"),
                 typeof(ResultSetProcessorUtil),
@@ -1998,7 +1999,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2043,7 +2044,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
             }
@@ -2136,7 +2137,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2183,7 +2184,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
             }
@@ -2290,7 +2291,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2335,7 +2336,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
             }
@@ -2446,7 +2447,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2493,7 +2494,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
             }
@@ -2531,7 +2532,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             ExprDotName(Ref("pair"), "Key"),
                             Ref("level"),
                             Ref("eventsPerStream"),
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                            ExprForgeCodegenNames.REF_ISNEWDATA,
                             REF_ISSYNTHESIZE,
                             Ref("events"),
                             Ref("sortKey"));
@@ -2543,7 +2544,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "GenerateOutputBatchedCollectView",
                 CodegenNamedParam.From(
                     typeof(IDictionary<object, EventBean>[]), "eventPairs",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE, 
                     typeof(IList<EventBean>), "events",
                     typeof(IList<object>), "sortKey",
@@ -2578,7 +2579,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ExprDotName(Ref("pair"), "Key"),
                         Ref("level"),
                         ExprDotName(Ref("pair"), "Value"),
-                        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
                         Ref("events"),
                         Ref("sortKey"));
@@ -2590,7 +2591,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "GenerateOutputBatchedCollectJoin",
                 CodegenNamedParam.From(
                     typeof(IDictionary<object, EventBean[]>[]), "eventPairs",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
                     typeof(IList<EventBean>), "events",
                     typeof(IList<object>), "sortKey"),
@@ -2642,7 +2643,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             LocalMethod(
                                 forge.GenerateGroupKeySingle,
                                 Ref("eventsPerStream"),
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA))
+                                ExprForgeCodegenNames.REF_ISNEWDATA))
                         .AssignArrayElement(
                             "result",
                             Ref("i"),
@@ -2675,7 +2676,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 CodegenNamedParam.From(
                     typeof(EventBean[]), "events",
                     typeof(IDictionary<object, EventBean>[]), "eventPerKey",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,
                 code);
@@ -2707,7 +2708,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             LocalMethod(
                                 forge.GenerateGroupKeySingle,
                                 Ref("eventsPerStream"),
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA))
+                                ExprForgeCodegenNames.REF_ISNEWDATA))
                         .AssignArrayElement(
                             "result",
                             Ref("count"),
@@ -2740,7 +2741,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 CodegenNamedParam.From(
                     typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), "events",
                     typeof(IDictionary<object, EventBean[]>[]), "eventPerKey",
-                    typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,
                 code);
@@ -2818,7 +2819,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "SortWOrderKeys",
                                 Ref("newEventsArr"),
                                 Ref("sortKeysNew"),
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     if (forge.IsSelectRStream) {
                         methodNode.Block.AssignRef(
                             "oldEventsArr",
@@ -2827,7 +2828,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("oldEventSortKeys"),
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                 }
 
@@ -2875,7 +2876,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                 }
             }
             {
@@ -2891,7 +2892,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                 }
             }
         }
@@ -2918,7 +2919,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                 }
             }
             {
@@ -2934,7 +2935,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                 }
             }
         }
@@ -2953,16 +2954,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
 
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
+                var stateMgmtSettings = forge.OutputAllSettings.Invoke();
                 instance.AddMember(NAME_OUTPUTALLHELPER, typeof(ResultSetProcessorRowPerGroupRollupOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLHELPER,
                     ExprDotMethod(
                         factory,
                         "MakeRSRowPerGroupRollupAll",
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
-                        eventTypes));
+                        eventTypes,
+                        stateMgmtSettings.ToExpression()));
                 method.Block.ExprDotMethod(
                     Member(NAME_OUTPUTALLHELPER),
                     methodName,
@@ -2971,16 +2974,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     REF_ISSYNTHESIZE);
             }
             else if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST) {
+                var stateMgmtSettings = forge.OutputLastSettings.Invoke();
                 instance.AddMember(NAME_OUTPUTLASTHELPER, typeof(ResultSetProcessorRowPerGroupRollupOutputLastHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTLASTHELPER,
                     ExprDotMethod(
                         factory,
                         "MakeRSRowPerGroupRollupLast",
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
-                        eventTypes));
+                        eventTypes,
+                        stateMgmtSettings.ToExpression()));
                 method.Block.ExprDotMethod(
                     Member(NAME_OUTPUTLASTHELPER),
                     methodName,
@@ -3060,7 +3065,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     LocalMethod(
                         forge.GenerateGroupKeySingle,
                         Ref("eventsPerStream"),
-                        ResultSetProcessorCodegenNames.REF_ISNEWDATA))
+                        ExprForgeCodegenNames.REF_ISNEWDATA))
                 .DeclareVar<AggregationGroupByRollupLevel[]>(
                     "levels",
                     ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
@@ -3080,7 +3085,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(EventBean[]),
                     "eventsPerStream",
                     typeof(bool),
-                    ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -3125,6 +3130,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             if (!instance.HasMember(NAME_OUTPUTFIRSTHELPERS)) {
                 var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+                var stateMgmtSettings = forge.OutputFirstSettings.Invoke();
                 instance.AddMember(NAME_OUTPUTFIRSTHELPERS, typeof(ResultSetProcessorGroupedOutputFirstHelper[]));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTFIRSTHELPERS,
@@ -3132,10 +3138,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(ResultSetProcessorRowPerGroupRollupUtil),
                         "InitializeOutputFirstHelpers",
                         factory,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         Constant(forge.GroupKeyTypes),
                         ExprDotName(Ref("this"), "GroupByRollupDesc"),
-                        outputConditionFactory));
+                        outputConditionFactory,
+                        stateMgmtSettings.ToExpression()));
             }
         }
     }

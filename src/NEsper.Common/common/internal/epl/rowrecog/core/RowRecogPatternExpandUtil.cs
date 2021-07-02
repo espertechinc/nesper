@@ -283,7 +283,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     GetPatternQuantifierExpressionText(repeat) + " must return a constant value");
             }
 
-            if (repeat.Forge.EvaluationType.GetBoxedType() != typeof(int?)) {
+            if (!repeat.Forge.EvaluationType.IsInt32()) {
                 throw new ExprValidationException(
                     GetPatternQuantifierExpressionText(repeat) + " must return an integer-type value");
             }

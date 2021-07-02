@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
     /// </summary>
     public class FullTableScanLookupStrategy : JoinExecTableLookupStrategy
     {
-        private UnindexedEventTable eventIndex;
+        private readonly UnindexedEventTable eventIndex;
 
         /// <summary>
         /// Ctor.

@@ -363,8 +363,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompiler configuration,
             XmlElement element)
         {
-            String methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
-            String forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
+            string methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
+            string forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInDateTimeMethod(methodName, forgeClassName);
         }
 
@@ -372,8 +372,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompiler configuration,
             XmlElement element)
         {
-            String methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
-            String forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
+            string methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
+            string forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInEnumMethod(methodName, forgeClassName);
         }
 
@@ -470,7 +470,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompiler configuration,
             XmlElement parentElement)
         {
-            String text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-serializable");
+            string text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-serializable");
             if (text != null) {
                 configuration.Serde.IsEnableSerializable = bool.Parse(text);
             }

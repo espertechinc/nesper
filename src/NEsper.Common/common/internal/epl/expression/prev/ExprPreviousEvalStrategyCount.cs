@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             RandomAccessByIndexGetter randomAccessGetter,
             RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
-            this._streamNumber = streamNumber;
-            this._randomAccessGetter = randomAccessGetter;
-            this._relativeAccessGetter = relativeAccessGetter;
+            _streamNumber = streamNumber;
+            _randomAccessGetter = randomAccessGetter;
+            _relativeAccessGetter = relativeAccessGetter;
         }
 
         public object Evaluate(

@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class ExprSubselectRowNode : ExprSubselectNode
     {
-        private SubselectForgeRow evalStrategy;
+        private SubselectForgeRow _evalStrategy;
         internal EventType subselectMultirowType;
 
         /// <summary>
@@ -98,28 +98,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 if (SelectClause == null) {
                     var table = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(RawEventType);
                     if (table != null) {
-                        evalStrategy = new SubselectForgeStrategyRowUnfilteredUnselectedTable(this, table);
+                        _evalStrategy = new SubselectForgeStrategyRowUnfilteredUnselectedTable(this, table);
                     }
                     else {
-                        evalStrategy = new SubselectForgeStrategyRowPlain(this);
+                        _evalStrategy = new SubselectForgeStrategyRowPlain(this);
                     }
                 }
                 else {
                     if (StatementSpecCompiled.Raw.GroupByExpressions != null &&
                         StatementSpecCompiled.Raw.GroupByExpressions.Count > 0) {
                         if (HavingExpr != null) {
-                            evalStrategy = new SubselectForgeRowUnfilteredSelectedGroupedWHaving(this);
+                            _evalStrategy = new SubselectForgeRowUnfilteredSelectedGroupedWHaving(this);
                         }
                         else {
-                            evalStrategy = new SubselectForgeRowUnfilteredSelectedGroupedNoHaving(this);
+                            _evalStrategy = new SubselectForgeRowUnfilteredSelectedGroupedNoHaving(this);
                         }
                     }
                     else {
                         if (HavingExpr != null) {
-                            evalStrategy = new SubselectForgeRowHavingSelected(this);
+                            _evalStrategy = new SubselectForgeRowHavingSelected(this);
                         }
                         else {
-                            evalStrategy = new SubselectForgeStrategyRowPlain(this);
+                            _evalStrategy = new SubselectForgeStrategyRowPlain(this);
                         }
                     }
                 }
@@ -128,14 +128,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 if (SelectClause == null) {
                     var table = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(RawEventType);
                     if (table != null) {
-                        evalStrategy = new SubselectForgeStrategyRowFilteredUnselectedTable(this, table);
+                        _evalStrategy = new SubselectForgeStrategyRowFilteredUnselectedTable(this, table);
                     }
                     else {
-                        evalStrategy = new SubselectForgeStrategyRowPlain(this);
+                        _evalStrategy = new SubselectForgeStrategyRowPlain(this);
                     }
                 }
                 else {
-                    evalStrategy = new SubselectForgeStrategyRowPlain(this);
+                    _evalStrategy = new SubselectForgeStrategyRowPlain(this);
                 }
             }
         }
@@ -237,8 +237,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 if (selectClause.Length > 1) {
                     return null;
                 }
-
-                return selectClause[0].Forge.EvaluationType;
+                
+                var type = selectClause[0].Forge.EvaluationType;
+                if (type.IsNullTypeSafe()) {
+                    throw new ExprValidationException("Null-type value is not allowed");
+                }
+                
+                return type;   
             }
         }
 
@@ -247,13 +252,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (EvaluationType.IsNullTypeSafe()) {
+                return ConstantNull();
+            }
+            
             var method = parent.MakeChild(EvaluationType, GetType(), classScope);
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), ConstantNull()),
                     method,
                     symbols)
-                .MethodReturn(evalStrategy.EvaluateCodegen(method, symbols, classScope));
+                .MethodReturn(_evalStrategy.EvaluateCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
 
@@ -272,7 +281,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         EnumValue(typeof(FlexCollection), "Empty")),
                     method,
                     symbols)
-                .MethodReturn(evalStrategy.EvaluateGetCollEventsCodegen(method, symbols, classScope));
+                .MethodReturn(_evalStrategy.EvaluateGetCollEventsCodegen(method, symbols, classScope));
 
             return LocalMethod(method);
         }
@@ -283,12 +292,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), CollectionUtil.EMPTY_LIST_EXPRESSION),
                     method,
                     symbols)
-                .MethodReturn(evalStrategy.EvaluateGetCollScalarCodegen(method, symbols, classScope));
+                .MethodReturn(_evalStrategy.EvaluateGetCollScalarCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
 
@@ -303,7 +313,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), ConstantNull()),
                     method,
                     symbols)
-                .MethodReturn(evalStrategy.EvaluateGetBeanCodegen(method, symbols, classScope));
+                .MethodReturn(_evalStrategy.EvaluateGetBeanCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
 
@@ -353,7 +363,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         PublicConstValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY")),
                     method,
                     symbols)
-                .MethodReturn(evalStrategy.EvaluateTypableSinglerowCodegen(method, symbols, classScope));
+                .MethodReturn(_evalStrategy.EvaluateTypableSinglerowCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
 
@@ -370,7 +380,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         PublicConstValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY")),
                     method,
                     symbols)
-                .MethodReturn(evalStrategy.EvaluateTypableMultirowCodegen(method, symbols, classScope));
+                .MethodReturn(_evalStrategy.EvaluateTypableMultirowCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
     }

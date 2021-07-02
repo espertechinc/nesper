@@ -10,11 +10,14 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -22,14 +25,16 @@ namespace com.espertech.esper.common.@internal.view.prior
 {
     public class PriorEventViewForge : ViewFactoryForgeBase
     {
-        private readonly bool unbound;
+        private readonly bool _unbound;
 
         public PriorEventViewForge(
             bool unbound,
-            EventType eventType)
+            EventType eventType,
+            StateMgmtSetting stateMgmtSettings)
         {
-            this.unbound = unbound;
+            this._unbound = unbound;
             this.eventType = eventType;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
 
         public override void SetViewParameters(
@@ -39,19 +44,21 @@ namespace com.espertech.esper.common.@internal.view.prior
         {
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
+            throw new IllegalStateException("Should not be called for 'prior'");
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(PriorEventViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Prior";
         }
@@ -62,11 +69,16 @@ namespace com.espertech.esper.common.@internal.view.prior
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(factory, "IsUnbound", Constant(unbound));
+            method.Block.SetProperty(factory, "IsUnbound", Constant(_unbound));
         }
 
         public override string ViewName {
             get => "prior";
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_PRIOR;
         }
     }
 } // end of namespace

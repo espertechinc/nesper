@@ -25,18 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly Type returnType;
-        private readonly TableMetaData tableMetadata;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
+        private readonly TableMetaData _tableMetadata;
 
         public BindProcessorStreamTable(
             int streamNum,
             Type returnType,
             TableMetaData tableMetadata)
         {
-            this.streamNum = streamNum;
-            this.returnType = returnType;
-            this.tableMetadata = tableMetadata;
+            this._streamNum = streamNum;
+            this._returnType = returnType;
+            this._tableMetadata = tableMetadata;
         }
 
         public object Evaluate(
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(BindProcessorStreamTable),
                 "EvaluateConvertTableEventToUnd",
-                Constant(streamNum),
+                Constant(_streamNum),
                 eventToPublic,
                 refEPS,
                 refIsNewData,
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

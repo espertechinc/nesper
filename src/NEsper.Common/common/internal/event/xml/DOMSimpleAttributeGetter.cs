@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class DOMSimpleAttributeGetter : EventPropertyGetterSPI,
         DOMPropertyGetter
     {
-        private readonly string propertyName;
+        private readonly string _propertyName;
 
         /// <summary>
         ///     Ctor.
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="propertyName">property name</param>
         public DOMSimpleAttributeGetter(string propertyName)
         {
-            this.propertyName = propertyName;
+            this._propertyName = propertyName;
         }
 
         public object GetValueAsFragment(XmlNode node)
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public XmlNode GetValueAsNode(XmlNode node)
         {
-            return GetNodePropertyValue(node, propertyName);
+            return GetNodePropertyValue(node, _propertyName);
         }
 
         public CodegenExpression GetValueAsNodeCodegen(
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "GetNodePropertyValue", underlyingExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetNodePropertyValue", underlyingExpression, Constant(_propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

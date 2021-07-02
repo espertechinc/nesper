@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanCopyMethodForge : EventBeanCopyMethodForge
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly ObjectArrayEventType objectArrayEventType;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly ObjectArrayEventType _objectArrayEventType;
 
         /// <summary>
         ///     Ctor.
@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             ObjectArrayEventType objectArrayEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.objectArrayEventType = objectArrayEventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._objectArrayEventType = objectArrayEventType;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
@@ -42,13 +42,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return NewInstance<ObjectArrayEventBeanCopyMethod>(
                 Cast(
                     typeof(ObjectArrayEventType),
-                    EventTypeUtility.ResolveTypeCodegen(objectArrayEventType, EPStatementInitServicesConstants.REF)),
+                    EventTypeUtility.ResolveTypeCodegen(_objectArrayEventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new ObjectArrayEventBeanCopyMethod(objectArrayEventType, eventBeanTypedEventFactory);
+            return new ObjectArrayEventBeanCopyMethod(_objectArrayEventType, eventBeanTypedEventFactory);
         }
     }
 } // end of namespace

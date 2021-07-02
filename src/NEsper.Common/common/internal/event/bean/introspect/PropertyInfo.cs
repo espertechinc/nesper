@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             EventPropertyGetterSPIFactory getterFactory,
             PropertyStem stem)
         {
-            Clazz = clazz;
+            Clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
             GetterFactory = getterFactory;
             Descriptor = stem;
         }

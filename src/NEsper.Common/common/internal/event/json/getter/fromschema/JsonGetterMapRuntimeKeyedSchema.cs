@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public JsonGetterMapRuntimeKeyedSchema(JsonUnderlyingField field)
         {
-            this._field = field;
+            _field = field;
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(

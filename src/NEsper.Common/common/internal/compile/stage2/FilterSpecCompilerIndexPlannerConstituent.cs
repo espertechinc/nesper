@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 		{
 			// Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
 			if ((constituent is ExprEqualsNode) || (constituent is ExprRelationalOpNode)) {
-				FilterSpecParamForge param = HandleEqualsAndRelOp(
+				var param = HandleEqualsAndRelOp(
 					constituent,
 					taggedEventTypes,
 					arrayEventTypes,
@@ -75,14 +75,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
 			// Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
 			if (constituent is ExprInNode) {
-				FilterSpecParamForge param = HandleInSetNode((ExprInNode) constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, raw, services);
+				var param = HandleInSetNode((ExprInNode) constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, raw, services);
 				if (param != null) {
 					return new FilterSpecPlanPathTripletForge(param, null);
 				}
 			}
 
 			if (constituent is ExprBetweenNode) {
-				FilterSpecParamForge param = HandleRangeNode(
+				var param = HandleRangeNode(
 					(ExprBetweenNode) constituent,
 					taggedEventTypes,
 					arrayEventTypes,
@@ -96,14 +96,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			}
 
 			if (constituent is ExprPlugInSingleRowNode) {
-				FilterSpecParamForge param = HandlePlugInSingleRow((ExprPlugInSingleRowNode) constituent);
+				var param = HandlePlugInSingleRow((ExprPlugInSingleRowNode) constituent);
 				if (param != null) {
 					return new FilterSpecPlanPathTripletForge(param, null);
 				}
 			}
 
 			if (constituent is FilterSpecCompilerAdvIndexDescProvider) {
-				FilterSpecParamForge param = HandleAdvancedIndexDescProvider(
+				var param = HandleAdvancedIndexDescProvider(
 					(FilterSpecCompilerAdvIndexDescProvider) constituent,
 					arrayEventTypes,
 					statementName);
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 					services);
 			}
 
-			FilterSpecParamForge paramX = HandleBooleanLimited(
+			var paramX = HandleBooleanLimited(
 				constituent,
 				taggedEventTypes,
 				arrayEventTypes,
@@ -152,8 +152,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			StatementCompileTimeServices services)
 		{
 			IList<ExprNode> valueExpressions = new List<ExprNode>(orNode.ChildNodes.Length);
-			foreach (ExprNode child in orNode.ChildNodes) {
-				FilterSpecExprNodeVisitorValueLimitedExpr visitor = new FilterSpecExprNodeVisitorValueLimitedExpr();
+			foreach (var child in orNode.ChildNodes) {
+				var visitor = new FilterSpecExprNodeVisitorValueLimitedExpr();
 				child.Accept(visitor);
 				if (visitor.IsLimited) {
 					valueExpressions.Add(child);
@@ -171,9 +171,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				throw new IllegalStateException("Found multiple constituents");
 			}
 
-			ExprNode constituent = constituents[0];
+			var constituent = constituents[0];
 
-			FilterSpecPlanPathTripletForge triplet = MakeFilterParam(
+			var triplet = MakeFilterParam(
 				constituent,
 				performConditionPlanning,
 				taggedEventTypes,
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				return null;
 			}
 
-			ExprNode controlConfirm = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(valueExpressions);
+			var controlConfirm = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(valueExpressions);
 			return new FilterSpecPlanPathTripletForge(triplet.Param, controlConfirm);
 		}
 	}

@@ -25,13 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		EnumForge,
 		EnumEval
 	{
-		private readonly EPType _resultType;
+		private readonly EPChainableType _resultType;
 
 		public EnumFirstOf(
 			int streamCountIncoming,
-			EPType resultType) : base(streamCountIncoming)
+			EPChainableType resultType) : base(streamCountIncoming)
 		{
-			this._resultType = resultType;
+			_resultType = resultType;
 		}
 
 		public override EnumEval EnumEvaluator => this;

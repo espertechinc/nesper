@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public DefaultSupportGraphOpProvider(object op)
         {
-            this.ops = new object[] {op};
+            ops = new object[] {op};
         }
 
         public DefaultSupportGraphOpProvider(params object[] ops)

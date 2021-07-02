@@ -23,43 +23,43 @@ namespace com.espertech.esper.common.@internal.@event.xml
 {
     public class XMLFragmentEventTypeFactory
     {
-        private readonly BeanEventTypeFactory eventTypeFactory;
-        private readonly EventTypeNameResolver eventTypeNameResolver;
-        private readonly EventTypeCompileTimeRegistry optionalCompileTimeRegistry;
-        private IDictionary<string, SchemaXMLEventType> derivedTypes;
+        private readonly BeanEventTypeFactory _eventTypeFactory;
+        private readonly EventTypeNameResolver _eventTypeNameResolver;
+        private readonly EventTypeCompileTimeRegistry _optionalCompileTimeRegistry;
+        private IDictionary<string, SchemaXMLEventType> _derivedTypes;
 
-        private IDictionary<string, SchemaXMLEventType> rootTypes;
+        private IDictionary<string, SchemaXMLEventType> _rootTypes;
 
         public XMLFragmentEventTypeFactory(
             BeanEventTypeFactory eventTypeFactory,
             EventTypeCompileTimeRegistry optionalCompileTimeRegistry,
             EventTypeNameResolver eventTypeNameResolver)
         {
-            this.eventTypeFactory = eventTypeFactory;
-            this.optionalCompileTimeRegistry = optionalCompileTimeRegistry;
-            this.eventTypeNameResolver = eventTypeNameResolver;
+            this._eventTypeFactory = eventTypeFactory;
+            this._optionalCompileTimeRegistry = optionalCompileTimeRegistry;
+            this._eventTypeNameResolver = eventTypeNameResolver;
         }
 
         public void AddRootType(SchemaXMLEventType type)
         {
-            if (rootTypes == null) {
-                rootTypes = new Dictionary<string, SchemaXMLEventType>();
+            if (_rootTypes == null) {
+                _rootTypes = new Dictionary<string, SchemaXMLEventType>();
             }
 
-            if (rootTypes.ContainsKey(type.Name)) {
+            if (_rootTypes.ContainsKey(type.Name)) {
                 throw new IllegalStateException("Type '" + type.Name + "' already exists");
             }
 
-            rootTypes.Put(type.Name, type);
+            _rootTypes.Put(type.Name, type);
         }
 
         public EventType GetTypeByName(string derivedEventTypeName)
         {
-            if (derivedTypes == null) {
-                derivedTypes = new Dictionary<string, SchemaXMLEventType>();
+            if (_derivedTypes == null) {
+                _derivedTypes = new Dictionary<string, SchemaXMLEventType>();
             }
 
-            return derivedTypes.Get(derivedEventTypeName);
+            return _derivedTypes.Get(derivedEventTypeName);
         }
 
         public EventType GetCreateXMLDOMType(
@@ -69,15 +69,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             SchemaElementComplex complex,
             string representsFragmentOfProperty)
         {
-            if (rootTypes == null) {
-                rootTypes = new Dictionary<string, SchemaXMLEventType>();
+            if (_rootTypes == null) {
+                _rootTypes = new Dictionary<string, SchemaXMLEventType>();
             }
 
-            if (derivedTypes == null) {
-                derivedTypes = new Dictionary<string, SchemaXMLEventType>();
+            if (_derivedTypes == null) {
+                _derivedTypes = new Dictionary<string, SchemaXMLEventType>();
             }
 
-            var type = rootTypes.Get(rootTypeName);
+            var type = _rootTypes.Get(rootTypeName);
             if (type == null) {
                 throw new IllegalStateException("Failed to find XML root event type '" + rootTypeName + "'");
             }
@@ -108,25 +108,25 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 EventTypeBusModifier.BUS,
                 false,
                 new EventTypeIdPair(CRC32Util.ComputeCRC32(derivedEventTypeName), -1));
-            var eventType = (SchemaXMLEventType) eventTypeFactory.EventTypeFactory.CreateXMLType(
+            var eventType = (SchemaXMLEventType) _eventTypeFactory.EventTypeFactory.CreateXMLType(
                 metadata,
                 xmlDom,
                 type.SchemaModel,
                 representsFragmentOfProperty,
                 rootTypeName,
-                eventTypeFactory,
+                _eventTypeFactory,
                 this,
-                eventTypeNameResolver);
-            derivedTypes.Put(derivedEventTypeName, eventType);
+                _eventTypeNameResolver);
+            _derivedTypes.Put(derivedEventTypeName, eventType);
 
-            optionalCompileTimeRegistry?.NewType(eventType);
+            _optionalCompileTimeRegistry?.NewType(eventType);
 
             return eventType;
         }
 
         public SchemaXMLEventType GetRootTypeByName(string representsOriginalTypeName)
         {
-            return rootTypes == null ? null : rootTypes.Get(representsOriginalTypeName);
+            return _rootTypes == null ? null : _rootTypes.Get(representsOriginalTypeName);
         }
     }
 } // end of namespace

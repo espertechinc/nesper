@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 AgentInstanceContext agentInstanceContext,
                 JoinPreloadMethod joinPreloadMethod)
             {
-                this._nwActivator = nwActivator;
-                this._consumer = consumer;
-                this._agentInstanceContext = agentInstanceContext;
-                this._joinPreloadMethod = joinPreloadMethod;
+                _nwActivator = nwActivator;
+                _consumer = consumer;
+                _agentInstanceContext = agentInstanceContext;
+                _joinPreloadMethod = joinPreloadMethod;
             }
 
             public void ExecutePreload()

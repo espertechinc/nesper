@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalSystemProperty(string systemPropertyName)
         {
-            this._systemPropertyName = systemPropertyName;
+            _systemPropertyName = systemPropertyName;
         }
 
         public override ExprForge Forge => this;
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable {
-                    ProcToEPL = (
+                    procToEPL = (
                         writer,
                         parentPrecedence,
                         flags) => {

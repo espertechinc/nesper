@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -22,17 +23,17 @@ using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
-{
+{   
     /// <summary>
     ///     Result-set processor prototype for the aggregate-grouped case:
     ///     there is a group-by and one or more non-aggregation event properties in the select clause are not listed in the
-    ///     group by,
-    ///     and there are aggregation functions.
+    ///     group by, and there are aggregation functions.
     /// </summary>
     public class ResultSetProcessorAggregateGroupedForge : ResultSetProcessorFactoryForge
     {
@@ -48,7 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             EventType[] eventTypes,
-            MultiKeyClassRef multiKeyClassRef)
+            MultiKeyClassRef multiKeyClassRef,
+            Supplier<StateMgmtSetting> outputFirstHelperSettings,
+            Supplier<StateMgmtSetting> outputAllHelperSettings,
+            Supplier<StateMgmtSetting> outputAllOptSettings,
+            Supplier<StateMgmtSetting> outputLastOptSettings)
         {
             ResultEventType = resultEventType;
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
@@ -63,6 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             EventTypes = eventTypes;
             GroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
             MultiKeyClassRef = multiKeyClassRef;
+            this.OutputFirstHelperSettings = outputFirstHelperSettings;
+            this.OutputAllHelperSettings = outputAllHelperSettings;
+            this.OutputAllOptSettings = outputAllOptSettings;
+            this.OutputLastOptSettings = outputLastOptSettings;
         }
 
         public EventType ResultEventType { get; }
@@ -106,6 +115,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         public CodegenMethod GenerateGroupKeyArrayView { get; private set; }
         public CodegenMethod GenerateGroupKeyArrayJoin { get; private set; }
 
+        public Supplier<StateMgmtSetting> OutputFirstHelperSettings { get; }
+        public Supplier<StateMgmtSetting> OutputAllHelperSettings { get; }
+        public Supplier<StateMgmtSetting> OutputAllOptSettings { get; }
+        public Supplier<StateMgmtSetting> OutputLastOptSettings { get; }
+
         public void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
@@ -124,13 +138,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 GetType(),
                 classScope,
                 propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
+                propertyNode => propertyNode.GetterBlock.ReturnMethodOrBlock(MEMBER_EXPREVALCONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",

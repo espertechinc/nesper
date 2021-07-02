@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             var method = parent.MakeChild(typeof(VariableTriggerWriteCurly), GetType(), classScope);
             method.Block
-                .DeclareVar<VariableTriggerWriteCurly>("desc", NewInstance(typeof(VariableTriggerWriteCurly)))
+                .DeclareVarNewInstance<VariableTriggerWriteCurly>("desc")
                 .SetProperty(Ref("desc"), "VariableName", Constant(variableName))
                 .SetProperty(Ref("desc"), "Expression",
                     ExprNodeUtilityCodegen.CodegenEvaluator(expression, method, typeof(VariableTriggerWriteCurlyForge), classScope))

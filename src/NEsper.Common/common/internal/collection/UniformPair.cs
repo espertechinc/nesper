@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.collection
             T first,
             T second)
         {
-            this.First = first;
-            this.Second = second;
+            First = first;
+            Second = second;
         }
 
         /// <summary>

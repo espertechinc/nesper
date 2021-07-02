@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -23,11 +25,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
     /// </summary>
     public class VariantPropResolutionStrategyDefault : VariantPropResolutionStrategy
     {
-        private readonly VariantEventType variantEventType;
+        private readonly VariantEventType _variantEventType;
 
         public VariantPropResolutionStrategyDefault(VariantEventType variantEventType)
         {
-            this.variantEventType = variantEventType;
+            _variantEventType = variantEventType;
         }
 
         public VariantPropertyDesc ResolveProperty(
@@ -38,49 +40,52 @@ namespace com.espertech.esper.common.@internal.@event.variant
             Type commonType = null;
             var mustCoerce = false;
             for (var i = 0; i < variants.Length; i++) {
-                var type = variants[i].GetPropertyType(propertyName).GetBoxedType();
-                if (type == null) {
+                var propertyType = variants[i].GetPropertyType(propertyName).GetBoxedType();
+                if (propertyType == null) {
                     existsInAll = false;
                     continue;
                 }
 
                 if (commonType == null) {
-                    commonType = type;
+                    commonType = propertyType;
                     continue;
                 }
 
                 // compare types
-                if (type == commonType) {
+                if (propertyType == commonType) {
+                    continue;
+                }
+                if (commonType.IsNullType()) {
                     continue;
                 }
 
                 // coercion
-                if (type.IsNumeric()) {
-                    if (type.CanCoerce(commonType)) {
+                if (propertyType.IsNumeric()) {
+                    if (propertyType.CanCoerce(commonType)) {
                         mustCoerce = true;
                         continue;
                     }
 
-                    if (commonType.CanCoerce(type)) {
+                    if (commonType.CanCoerce(propertyType)) {
                         mustCoerce = true;
-                        commonType = type;
+                        commonType = propertyType;
                     }
                 }
                 else if (commonType == typeof(object)) {
                     continue;
                 }
-                else if (!type.IsBuiltinDataType()) {
+                else if (!propertyType.IsBuiltinDataType()) {
                     // common interface or base class
                     ISet<Type> supersForType = new LinkedHashSet<Type>();
-                    TypeHelper.GetBase(type, supersForType);
+                    TypeHelper.GetBase(propertyType, supersForType);
                     supersForType.Remove(typeof(object));
 
                     if (supersForType.Contains(commonType)) {
                         continue; // type implements or : common type
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(commonType, type)) {
-                        commonType = type; // common type implements type
+                    if (TypeHelper.IsSubclassOrImplementsInterface(commonType, propertyType)) {
+                        commonType = propertyType; // common type implements type
                         continue;
                     }
 
@@ -110,8 +115,6 @@ namespace com.espertech.esper.common.@internal.@event.variant
                         }
                     }
                 }
-
-                commonType = typeof(object);
             }
 
             if (!existsInAll) {
@@ -123,16 +126,16 @@ namespace com.espertech.esper.common.@internal.@event.variant
             }
 
             // property numbers should start at zero since the serve as array index
-            var propertyGetterCache = variantEventType.VariantPropertyGetterCache;
+            var propertyGetterCache = _variantEventType.VariantPropertyGetterCache;
             propertyGetterCache.AddGetters(propertyName);
 
             EventPropertyGetterSPI getter;
             if (mustCoerce) {
-                var caster = SimpleTypeCasterFactory.GetCaster(null, commonType);
-                getter = new VariantEventPropertyGetterAnyWCast(variantEventType, propertyName, caster);
+                var caster = SimpleTypeCasterFactory.GetCaster(TypeHelper.NullType, commonType);
+                getter = new VariantEventPropertyGetterAnyWCast(_variantEventType, propertyName, caster);
             }
             else {
-                getter = new VariantEventPropertyGetterAny(variantEventType, propertyName);
+                getter = new VariantEventPropertyGetterAny(_variantEventType, propertyName);
             }
 
             return new VariantPropertyDesc(commonType, getter, true);

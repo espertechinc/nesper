@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
         public ExprPriorEvalStrategyRandomAccess(RandomAccessByIndex randomAccess)
         {
-            this._randomAccess = randomAccess;
+            _randomAccess = randomAccess;
         }
 
         public EventBean GetSubstituteEvent(

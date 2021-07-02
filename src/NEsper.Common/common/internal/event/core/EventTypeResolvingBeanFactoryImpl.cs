@@ -23,22 +23,22 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventTypeResolvingBeanFactoryImpl : EventTypeResolvingBeanFactory
     {
-        private readonly EventTypeAvroHandler avroHandler;
-        private readonly EventTypeRepository eventTypeRepository;
+        private readonly EventTypeAvroHandler _avroHandler;
+        private readonly EventTypeRepository _eventTypeRepository;
 
         public EventTypeResolvingBeanFactoryImpl(
             EventTypeRepository eventTypeRepository,
             EventTypeAvroHandler avroHandler)
         {
-            this.eventTypeRepository = eventTypeRepository;
-            this.avroHandler = avroHandler;
+            this._eventTypeRepository = eventTypeRepository;
+            this._avroHandler = avroHandler;
         }
 
         public EventBean AdapterForObjectArray(
             object[] theEvent,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeObjectArray(eventTypeName, type);
             return new ObjectArrayEventBean(theEvent, type);
         }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             object data,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeBean(eventTypeName, type);
             return new BeanEventBean(data, type);
         }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             IDictionary<string, object> map,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeMap(eventTypeName, type);
             return new MapEventBean(map, type);
         }
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             XmlNode node,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeXMLDOM(eventTypeName, type);
             var namedNode = GetXMLNodeFromDocument(node);
             return new XMLEventBean(namedNode, type);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             XNode node,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeXMLDOM(eventTypeName, type);
             var namedNode = GetXElementFromNode(node);
             return new XEventBean(namedNode, type);
@@ -85,16 +85,16 @@ namespace com.espertech.esper.common.@internal.@event.core
             object avroGenericDataDotRecord,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeAvro(eventTypeName, type);
-            return avroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, type);
+            return _avroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, type);
         }
 
         public EventBean AdapterForJson(
             string json,
             string eventTypeName)
         {
-            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            var type = _eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeJson(eventTypeName, type);
             var jsonEventType = (JsonEventType) type;
             var underlying = jsonEventType.Parse(json);

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
@@ -200,88 +201,41 @@ namespace com.espertech.esper.common.@internal.@event.property
             throw new EPRuntimeException("unable to determine property array accessor");
         }
 
-        public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            var descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
-            if (descriptor == null) {
-                return null;
-            }
-
-            if (descriptor.IsIndexedReadMethod) {
-                return new GenericPropertyDesc(descriptor.ReturnType);
-            }
-
-            // Check if this is an method returning array which is a type of simple property
-            if (!descriptor.PropertyType.IsSimple()) {
-                return null;
-            }
-
-            var returnType = descriptor.ReturnType;
-            if (returnType.IsArray) {
-                return new GenericPropertyDesc(returnType.GetElementType());
-            }
-
-            if (returnType.IsGenericEnumerable() || TypeHelper.IsImplementsInterface(returnType, typeof(IEnumerable))) {
-                if (descriptor.AccessorProp != null) {
-                    var genericType = TypeHelper.GetGenericPropertyType(descriptor.AccessorProp, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                if (descriptor.ReadMethod != null) {
-                    var genericType = TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                if (descriptor.AccessorField != null) {
-                    var genericType = TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                return null;
-            }
-
-            return null;
-        }
-
         public override Type GetPropertyType(
             BeanEventType eventType,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
-            if (descriptor == null) {
-                return null;
-            }
-
-            if (descriptor.IsIndexedReadMethod) {
-                return descriptor.ReturnType;
-            }
-
-            // Check if this is an method returning a simple property
-            if (!descriptor.PropertyType.IsSimple()) {
-                return null;
-            }
-
-            var returnType = descriptor.ReturnType;
-            if (returnType.IsArray) {
-                return returnType.GetElementType();
-            }
-
-            if (returnType.IsGenericEnumerable() || TypeHelper.IsImplementsInterface(returnType, typeof(IEnumerable))) {
-                if (descriptor.AccessorProp != null) {
-                    return TypeHelper.GetGenericPropertyType(descriptor.AccessorProp, false);
+            if (descriptor != null) {
+                if (descriptor.IsIndexedReadMethod) {
+                    return descriptor.ReturnType;
                 }
 
-                if (descriptor.ReadMethod != null) {
-                    return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
+                // Check if this is an method returning array which is a type of simple property
+                if (!descriptor.PropertyType.IsSimple()) {
+                    return null;
                 }
 
-                if (descriptor.AccessorField != null) {
-                    return TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
+                var returnType = descriptor.ReturnType;
+                if (returnType.IsArray) {
+                    return returnType.GetElementType();
                 }
 
-                return null;
+                if (returnType.IsGenericEnumerable() || TypeHelper.IsImplementsInterface(returnType, typeof(IEnumerable))) {
+                    if (descriptor.AccessorProp != null) {
+                        return TypeHelper.GetGenericPropertyType(descriptor.AccessorProp, false);
+                    }
+
+                    if (descriptor.ReadMethod != null) {
+                        return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
+                    }
+
+                    if (descriptor.AccessorField != null) {
+                        return TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
+                    }
+
+                    return null;
+                }
             }
 
             return null;
@@ -303,11 +257,11 @@ namespace com.espertech.esper.common.@internal.@event.property
                     : null;
             }
 
-            if (type is Type asType && asType.IsArray) {
-                return asType.GetElementType();
-            }
-
-            return null;
+            return type switch {
+                Type asType when asType.IsArray => asType.GetElementType(),
+                Type asType => null,
+                _ => null
+            };
         }
 
         // MapEventPropertyGetterAndIndexed

@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             var method = parent.MakeChild(typeof(DataflowDesc), GetType(), classScope);
             method.Block
-                .DeclareVar<DataflowDesc>("df", NewInstance(typeof(DataflowDesc)))
+                .DeclareVarNewInstance<DataflowDesc>("df")
                 .SetProperty(Ref("df"), "DataflowName", Constant(_dataflowName))
                 .SetProperty(Ref("df"), "DeclaredTypes", MakeTypes(_declaredTypes, method, symbols, classScope))
                 .SetProperty(Ref("df"), "OperatorMetadata", MakeOpMeta(_operatorMetadata, method, symbols, classScope))

@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 
@@ -23,7 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             int indexedStreamNum,
             EventType eventType,
             string[] indexProps,
-            Type[] indexTypes,
             MultiKeyFromObjectArray transformFireAndForget,
             DataInputOutputSerde keySerde,
             bool unique,
@@ -31,14 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventPropertyValueGetter getter,
             DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext);
+            StateMgmtSetting stateMgmtSettings);
 
         EventTableFactory CreateUnindexed(
             int indexedStreamNum,
             EventType eventType,
             DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext);
+            StateMgmtSetting stateMgmtSettings);
+
 
         EventTableFactory CreateSorted(
             int indexedStreamNum,
@@ -49,7 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             DataInputOutputSerde serde,
             DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext,
+            StateMgmtSetting stateMgmtSettings);
 
         EventTableFactory CreateComposite(
             int indexedStreamNum,
@@ -75,7 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             bool unique,
             EventPropertyValueGetter[] getters,
             bool isFireAndForget,
-            EventTableFactoryFactoryContext eventTableFactoryContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext,
+            StateMgmtSetting stateMgmtSettings);
 
         EventTableFactory CreateCustom(
             string optionalIndexName,

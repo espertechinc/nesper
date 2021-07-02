@@ -55,14 +55,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static IList<RegressionExecution> WithCreateSchemaModelAfter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCreateSchemaModelAfter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEventTypeColumnDef(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraEventTypeColumnDef(rep));
             }
@@ -72,77 +72,77 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static IList<RegressionExecution> WithCreateTableArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCreateTableArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWildcardWithFields(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraWildcardWithFields());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoSpecificationBean(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNoSpecificationBean());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWildcardInheritance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraWildcardInheritance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithModelAfterMap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraModelAfterMap());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWildcardNoFieldsNoAs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraWildcardNoFieldsNoAs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCreateTableSyntax(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCreateTableSyntax());
             return execs;
         }
 
         public static IList<RegressionExecution> WithConstantsAs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraConstantsAs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoWildcardNoAs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNoWildcardNoAs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoWildcardWithAs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNoWildcardWithAs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMapTranspose(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMapTranspose());
             return execs;
         }

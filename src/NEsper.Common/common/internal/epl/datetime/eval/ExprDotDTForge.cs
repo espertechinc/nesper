@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.datetime.dtlocal;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.@event.core;
@@ -31,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 {
     public class ExprDotDTForge : ExprDotForge
     {
-        private readonly DTLocalForge forge;
-        private readonly EPType _returnType;
+        private readonly DTLocalForge _forge;
+        private readonly EPChainableTypeClass _returnType;
 
         public ExprDotDTForge(
             IList<CalendarForge> calendarForges,
@@ -43,27 +45,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             EventType inputEventType)
         {
             if (intervalForge != null) {
-                _returnType = EPTypeHelper.SingleValue(typeof(bool?));
+                _returnType = EPChainableTypeHelper.SingleValueNonNull(typeof(bool?));
             }
             else if (reformatForge != null) {
-                _returnType = EPTypeHelper.SingleValue(reformatForge.ReturnType);
+                _returnType = EPChainableTypeHelper.SingleValueNonNull(reformatForge.ReturnType);
             }
             else { // only calendar op
                 if (inputEventType != null) {
-                    _returnType = EPTypeHelper.SingleValue(
+                    _returnType = EPChainableTypeHelper.SingleValueNonNull(
                         inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName));
                 }
                 else {
-                    _returnType = EPTypeHelper.SingleValue(inputType);
+                    _returnType = EPChainableTypeHelper.SingleValueNonNull(inputType);
                 }
             }
 
-            forge = GetForge(calendarForges, timeAbacus, inputType, inputEventType, reformatForge, intervalForge);
+            _forge = GetForge(calendarForges, timeAbacus, inputType, inputEventType, reformatForge, intervalForge);
         }
 
         public ExprDotEval DotEvaluator {
             get {
-                var evaluator = forge.DTEvaluator;
+                var evaluator = _forge.DTEvaluator;
                 ExprDotForge exprDotForge = this;
                 return new ProxyExprDotEval {
                     ProcEvaluate = (
@@ -90,18 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            Type methodReturnType;
-            if (_returnType is ClassEPType classEPType) {
-                methodReturnType = classEPType.Clazz.GetBoxedType();
-            }
-            else {
-                methodReturnType = ((ClassMultiValuedEPType) _returnType).Container;
-            }
-
             var methodNode = parent
-                .MakeChild(methodReturnType, typeof(ExprDotDTForge), classScope)
+                .MakeChild(_returnType.Clazz, typeof(ExprDotDTForge), classScope)
                 .AddParam(innerType, "target");
-            
+
             var targetValue = Unbox(Ref("target"), innerType);
 
             var block = methodNode.Block;
@@ -111,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             }
 
             block.MethodReturn(
-                forge.Codegen(
+                _forge.Codegen(
                     targetValue,
                     innerType,
                     methodNode,
@@ -121,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo => _returnType;
+        public EPChainableType TypeInfo => _returnType;
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
@@ -222,12 +216,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     }
                 }
 
-                throw new ArgumentException("Invalid input type '" + inputTypeBoxed + "'");
+                throw new ExprValidationException("Invalid input type '" + inputTypeBoxed + "'");
             }
 
-            var getter = ((EventTypeSPI) inputEventType).GetGetterSPI(inputEventType.StartTimestampPropertyName);
-            var getterResultType = inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName);
-
+            var propertyNameStart = inputEventType.StartTimestampPropertyName;
+            var getter = ((EventTypeSPI) inputEventType).GetGetterSPI(propertyNameStart);
+            var getterResultType = inputEventType.GetPropertyType(propertyNameStart);
+            CheckNotNull(getterResultType, propertyNameStart);
+            
             if (reformatForge != null) {
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, reformatForge, null);
                 return new DTLocalBeanReformatForge(getter, getterResultType, inner, reformatForge.ReturnType);
@@ -239,23 +235,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     getter,
                     getterResultType,
                     inner,
-                    EPTypeHelper.GetNormalizedClass(TypeInfo));
+                    EPChainableTypeHelper.GetNormalizedClass(TypeInfo));
             }
 
             // have interval op but no end timestamp
-            if (inputEventType.EndTimestampPropertyName == null) {
+            var propertyNameEnd = inputEventType.EndTimestampPropertyName;
+            if (propertyNameEnd == null) {
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, null, intervalForge);
                 return new DTLocalBeanIntervalNoEndTSForge(
                     getter,
                     getterResultType,
                     inner,
-                    EPTypeHelper.GetNormalizedClass(TypeInfo));
+                    EPChainableTypeHelper.GetNormalizedClass(TypeInfo));
             }
 
             // interval op and have end timestamp
             var getterEndTimestamp =
-                ((EventTypeSPI) inputEventType).GetGetterSPI(inputEventType.EndTimestampPropertyName);
-            var getterEndType = inputEventType.GetPropertyType(inputEventType.EndTimestampPropertyName);
+                ((EventTypeSPI) inputEventType).GetGetterSPI(propertyNameEnd);
+            var getterEndType = inputEventType.GetPropertyType(propertyNameEnd);
+            CheckNotNull(getterEndType, propertyNameEnd);
+
             var innerX = (DTLocalForgeIntervalComp) GetForge(
                 calendarForges,
                 timeAbacus,
@@ -269,6 +268,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 getterEndTimestamp,
                 getterEndType,
                 innerX);
+        }
+        
+        private void CheckNotNull(Type getterResultType, string propertyName)
+        {
+            if (getterResultType.IsNullTypeSafe()) {
+                throw new ExprValidationException("Invalid null-type input for property '" + propertyName + "'");
+            }
         }
     }
 } // end of namespace

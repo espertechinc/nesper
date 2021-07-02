@@ -32,10 +32,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 		}
 
 
-		public override EPType TypeInfo => 
-			EPTypeHelper.CollectionOfSingleValue(
-				forge.Method.ReturnType.GetElementType(),
-				forge.Method.ReturnType);
+		public override EPChainableType TypeInfo {
+			get {
+				var returnType = forge.Method.ReturnType;
+				var componentType = returnType.GetElementType();
+				return EPChainableTypeHelper.CollectionOfSingleValue(componentType);
+			}
+		}
 
 		public override object Evaluate(
 			object target,
@@ -59,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			var methodNode = codegenMethodScope.MakeChild(
+			var methodNode = codegenMethodScope
+				.MakeChild(
 					typeof(ICollection<object>),
 					typeof(ExprDotMethodForgeNoDuckEvalWrapArray),
 					codegenClassScope)

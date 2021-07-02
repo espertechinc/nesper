@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             DateTimeFieldEnum fieldNum,
             TimeAbacus timeAbacus)
         {
-            this._fieldNum = fieldNum;
-            this._timeAbacus = timeAbacus;
+            _fieldNum = fieldNum;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;

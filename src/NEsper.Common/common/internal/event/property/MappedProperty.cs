@@ -178,44 +178,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             throw new IllegalStateException($"invalid property descriptor: {propertyDesc}");
         }
 
-        public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
-            if (propertyDesc == null) {
-                return null;
-            }
-
-            if (propertyDesc.IsMappedReadMethod) {
-                return new GenericPropertyDesc(propertyDesc.ReadMethod.ReturnType);
-            }
-
-            if (!propertyDesc.PropertyType.IsSimple()) {
-                return null;
-            }
-
-            var returnType = propertyDesc.ReturnType;
-            if (returnType.IsGenericStringDictionary()) {
-                if (propertyDesc.AccessorProp != null) {
-                    var genericType = TypeHelper.GetGenericPropertyTypeMap(propertyDesc.AccessorProp, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                if (propertyDesc.ReadMethod != null) {
-                    var genericType = TypeHelper.GetGenericReturnTypeMap(propertyDesc.ReadMethod, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                if (propertyDesc.AccessorField != null) {
-                    var genericType = TypeHelper.GetGenericFieldTypeMap(propertyDesc.AccessorField, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-            }
-
-            return null;
-        }
-
         public override Type GetPropertyTypeMap(
             IDictionary<string, object> optionalMapPropTypes,
             BeanEventTypeFactory beanEventTypeFactory)

@@ -14,6 +14,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -187,7 +188,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			Assert.IsFalse(lvl2Fragment.IsIndexed);
 			Assert.AreEqual(isNative, lvl2Fragment.IsNative);
 
-			Assert.AreEqual(new EventPropertyDescriptor("L1", nestedClass, null, false, false, false, false, true), eventType.GetPropertyDescriptor("L1"));
+			Type componentType = null;
+			if ((typeName == MAP_TYPENAME) || (typeName == OA_TYPENAME) || (typeName == JSON_TYPENAME)) {
+				componentType = typeof(object);
+			}
+
+			SupportEventPropUtil.AssertPropEquals(
+				new SupportEventPropDesc("l1", nestedClass)
+					.WithComponentType(componentType)
+					.WithFragment()
+					.WithIndexed(false)
+					.WithMapped(false),
+				eventType.GetPropertyDescriptor("l1"));
 		}
 
 		private void RunAssertionTypeInvalidProp(

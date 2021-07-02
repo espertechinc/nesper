@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.view.core
 {
-    public interface IntersectViewMarker
+    public interface IntersectViewMarker : RelatedView
     {
     }
 }

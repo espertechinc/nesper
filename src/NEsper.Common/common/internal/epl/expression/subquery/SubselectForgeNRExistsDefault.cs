@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsDefault : SubselectForgeNR
     {
-        private readonly ExprForge filterEval;
-        private readonly ExprForge havingEval;
+        private readonly ExprForge _filterEval;
+        private readonly ExprForge _havingEval;
 
         public SubselectForgeNRExistsDefault(
             ExprForge filterEval,
             ExprForge havingEval)
         {
-            this.filterEval = filterEval;
-            this.havingEval = havingEval;
+            this._filterEval = filterEval;
+            this._havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -39,17 +39,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
             method.Block.ApplyTri(new ReturnIfNoMatch(ConstantFalse(), ConstantFalse()), method, symbols);
 
-            if (filterEval == null && havingEval == null) {
+            if (_filterEval == null && _havingEval == null) {
                 method.Block.MethodReturn(ConstantTrue());
                 return LocalMethod(method);
             }
 
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
-            if (havingEval != null) {
+            if (_havingEval != null) {
                 throw new UnsupportedOperationException();
             }
 
-            var filter = CodegenLegoMethodExpression.CodegenExpression(filterEval, method, classScope, true);
+            var filter = CodegenLegoMethodExpression.CodegenExpression(_filterEval, method, classScope);
             method.Block
                 .ForEach(typeof(EventBean), "subselectEvent", symbols.GetAddMatchingEvents(method))
                 .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("subselectEvent"))

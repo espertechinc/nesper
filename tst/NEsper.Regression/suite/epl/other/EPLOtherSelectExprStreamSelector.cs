@@ -52,119 +52,119 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithInvalidSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAloneJoinNoAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherAloneJoinNoAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAloneJoinAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherAloneJoinAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAloneNoJoinAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherAloneNoJoinAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAloneNoJoinNoAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherAloneNoJoinNoAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinNoAliasWithProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinNoAliasWithProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoJoinNoAliasWithProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNoJoinNoAliasWithProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinWithAliasWithProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinWithAliasWithProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoJoinWithAliasWithProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNoJoinWithAliasWithProperties());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinWildcardWithAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinWildcardWithAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoJoinWildcardWithAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNoJoinWildcardWithAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinWildcardNoAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinWildcardNoAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoJoinWildcardNoAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherNoJoinWildcardNoAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithObjectModelJoinAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherObjectModelJoinAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertFromPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInsertFromPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertTransposeNestedProperty(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInsertTransposeNestedProperty());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidSelectWildcardProperty(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidSelectWildcardProperty());
             return execs;
         }

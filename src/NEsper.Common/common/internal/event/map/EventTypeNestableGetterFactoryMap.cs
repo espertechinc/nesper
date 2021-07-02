@@ -136,15 +136,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type nestedReturnType,
-            Type nestedComponentType)
+            Type nestedValueType)
         {
             return new MapPONOEntryPropertyGetter(
                 propertyName,
                 nestedGetter,
                 eventBeanTypedEventFactory,
-                nestedReturnType,
-                nestedComponentType,
+                nestedValueType,
                 beanEventTypeFactory);
         }
 

@@ -34,12 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ModuleDependenciesCompileTime moduleDependencies,
             bool isFireAndForget)
         {
-            this._moduleName = moduleName;
-            this._moduleUses = moduleUses;
-            this._locals = locals;
-            this._path = path;
-            this._moduleDependencies = moduleDependencies;
-            this._isFireAndForget = isFireAndForget;
+            _moduleName = moduleName;
+            _moduleUses = moduleUses;
+            _locals = locals;
+            _path = path;
+            _moduleDependencies = moduleDependencies;
+            _isFireAndForget = isFireAndForget;
         }
 
         public ExpressionDeclItem Resolve(string name)

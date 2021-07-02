@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class SelectClauseStreamCompiledSpec : SelectClauseElementCompiled
     {
-        private bool isFragmentEvent;
-        private int streamNumber = -1;
+        private bool _isFragmentEvent;
+        private int _streamNumber = -1;
 
         /// <summary>
         ///     Ctor.
@@ -51,13 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         /// <value>true for tagged event in pattern, false for stream</value>
         public bool IsFragmentEvent {
             get {
-                if (streamNumber == -1) {
+                if (_streamNumber == -1) {
                     throw new IllegalStateException("Not initialized for stream number and tagged event");
                 }
 
-                return isFragmentEvent;
+                return _isFragmentEvent;
             }
-            set => isFragmentEvent = value;
+            set => _isFragmentEvent = value;
         }
 
         /// <summary>
@@ -65,13 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         /// </summary>
         /// <value>to set</value>
         public int StreamNumber {
-            set => streamNumber = value;
+            set => _streamNumber = value;
             get {
-                if (streamNumber == -1) {
+                if (_streamNumber == -1) {
                     throw new IllegalStateException("Not initialized for stream number and tagged event");
                 }
 
-                return streamNumber;
+                return _streamNumber;
             }
         }
 

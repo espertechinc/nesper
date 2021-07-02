@@ -18,6 +18,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
+
 namespace com.espertech.esper.common.@internal.epl.index.sorted
 {
     /// <summary>
@@ -235,7 +237,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
         public string ToQueryPlan()
         {
-            return this.GetType().GetSimpleName() +
+            return GetType().GetSimpleName() +
                    " streamNum=" +
                    factory.Organization.StreamNum;
         }

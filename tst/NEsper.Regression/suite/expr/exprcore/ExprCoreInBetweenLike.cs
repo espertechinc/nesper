@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             bool[] input,
             bool[] result)
         {
-            var epl = "@Name('s0') select " + expr + " as result from " + typeof(SupportBean).Name;
+            var epl = "@Name('s0') select " + expr + " as result from " + nameof(SupportBean);
             env.CompileDeploy(epl).AddListener("s0");
             Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
 
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string[] input,
             bool?[] result)
         {
-            var epl = "@Name('s0') select " + expression + " as result from " + typeof(SupportBean).Name;
+            var epl = "@Name('s0') select " + expression + " as result from " + nameof(SupportBean);
             env.CompileDeploy(epl).AddListener("s0");
 
             Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -317,10 +317,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             )));
                 env.AddListener("s0");
 
-                env.SendEventBean(new SupportBean("E1", 10), typeof(SupportBean).Name);
+                env.SendEventBean(new SupportBean("E1", 10), nameof(SupportBean));
                 Assert.IsTrue((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                env.SendEventBean(new SupportBean("E2", 9), typeof(SupportBean).Name);
+                env.SendEventBean(new SupportBean("E2", 9), nameof(SupportBean));
                 Assert.IsFalse((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
                 env.UndeployAll();
@@ -611,11 +611,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var caseExpr = "@Name('s0') select TheString in (\"a\",\"b\",\"c\") as result from " +
-                               typeof(SupportBean).Name;
+                               nameof(SupportBean);
                 var model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 model.SelectClause = SelectClause.Create().Add(Expressions.In("TheString", "a", "b", "c"), "result");
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 
                 TryString(
                     env,
@@ -627,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 model.SelectClause = SelectClause.Create().Add(Expressions.NotIn("TheString", "a", "b", "c"), "result");
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 env.CopyMayFail(model);
 
                 TryString(
@@ -855,7 +855,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select IntPrimitive in (ShortBoxed, IntBoxed, LongBoxed) as result from " +
-                          typeof(SupportBean).Name;
+                          nameof(SupportBean);
 
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -877,7 +877,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select IntBoxed in (FloatBoxed, DoublePrimitive, LongBoxed) as result from " +
-                          typeof(SupportBean).Name;
+                          nameof(SupportBean);
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -899,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select IntPrimitive between ShortBoxed and LongBoxed as result from " +
-                          typeof(SupportBean).Name;
+                          nameof(SupportBean);
 
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -1048,7 +1048,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select IntBoxed between FloatBoxed and DoublePrimitive as result from " +
-                          typeof(SupportBean).Name;
+                          nameof(SupportBean);
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -1078,7 +1078,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

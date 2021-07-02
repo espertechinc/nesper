@@ -15,20 +15,18 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-//GETSTATEMENTRESULTSERVICE
-
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
 	public class ListenerOnlySelectExprProcessorForge : SelectExprProcessorForge
 	{
-		private readonly SelectExprProcessorForge syntheticProcessorForge;
+		private readonly SelectExprProcessorForge _syntheticProcessorForge;
 
 		public ListenerOnlySelectExprProcessorForge(SelectExprProcessorForge syntheticProcessorForge)
 		{
-			this.syntheticProcessorForge = syntheticProcessorForge;
+			_syntheticProcessorForge = syntheticProcessorForge;
 		}
 
-		public EventType ResultEventType => syntheticProcessorForge.ResultEventType;
+		public EventType ResultEventType => _syntheticProcessorForge.ResultEventType;
 
 		public CodegenMethod ProcessCodegen(
 			CodegenExpression resultEventType,
@@ -38,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 			ExprForgeCodegenSymbol exprSymbol,
 			CodegenClassScope codegenClassScope)
 		{
-			var processMethod = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+			var processMethod = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
 
 			var isSythesize = selectSymbol.GetAddSynthesize(processMethod);
-			var syntheticMethod = syntheticProcessorForge.ProcessCodegen(
+			var syntheticMethod = _syntheticProcessorForge.ProcessCodegen(
 				resultEventType,
 				eventBeanFactory,
 				processMethod,
@@ -60,5 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
 			return processMethod;
 		}
+		
+		public SelectExprProcessorForge SyntheticProcessorForge => _syntheticProcessorForge;
 	}
 } // end of namespace

@@ -45,126 +45,126 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithGroupedWHavingWExists(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWHavingWExists());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWOHavingWExists(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWOHavingWExists());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWHavingWEqualsAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWHavingWRelOpAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWHavingWIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWHavingWIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWHavingWRelOpAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWHavingWEqualsAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWHavingWIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWHavingWIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWOHavingWIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWOHavingWIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWOHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWOHavingWEqualsAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedWOHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWOHavingWRelOpAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWHavingWExists(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWHavingWExists());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWOHavingWExists(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWOHavingWExists());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWOHavingWIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWOHavingWIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWOHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWOHavingWEqualsAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWOHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedWOHavingWRelOpAllAnySome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExistsSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectExistsSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInSimple());
             return execs;
         }

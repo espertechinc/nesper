@@ -19,28 +19,28 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public abstract class ContextControllerKeyed : ContextControllerBase
     {
-        private readonly ContextControllerKeyedFactory factory;
-        private EventBean lastTerminatingEvent;
+        private readonly ContextControllerKeyedFactory _factory;
+        private EventBean _lastTerminatingEvent;
 
         public ContextControllerKeyed(
             ContextManagerRealization realization,
             ContextControllerKeyedFactory factory)
             : base(realization)
         {
-            this.factory = factory;
+            this._factory = factory;
         }
 
         public AgentInstanceContext AgentInstanceContextCreate => realization.AgentInstanceContextCreate;
 
-        public ContextControllerKeyedFactory KeyedFactory => factory;
+        public ContextControllerKeyedFactory KeyedFactory => _factory;
 
-        public override ContextControllerFactory Factory => factory;
+        public override ContextControllerFactory Factory => _factory;
 
         public override ContextManagerRealization Realization => realization;
 
         public EventBean LastTerminatingEvent {
-            get => lastTerminatingEvent;
-            set => lastTerminatingEvent = value;
+            get => _lastTerminatingEvent;
+            set => _lastTerminatingEvent = value;
         }
 
         protected abstract void VisitPartitions(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 }
 
                 foreach (var key in partitioned.PartitionKeys) {
-                    var keyForLookup = factory.KeyedSpec.MultiKeyFromObjectArray.From(key);
+                    var keyForLookup = _factory.KeyedSpec.MultiKeyFromObjectArray.From(key);
                     var subpathOrCPId = GetSubpathOrCPId(path, keyForLookup);
                     if (subpathOrCPId != -1) {
                         realization.ContextPartitionRecursiveVisit(
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     (
                         key,
                         subpathOrCPId) => {
-                        if (factory.FactoryEnv.IsLeaf) {
+                        if (_factory.FactoryEnv.IsLeaf) {
                             identifier.ContextPartitionId = subpathOrCPId;
                         }
 

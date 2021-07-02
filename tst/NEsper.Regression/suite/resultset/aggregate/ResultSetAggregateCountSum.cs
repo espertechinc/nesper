@@ -42,89 +42,97 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             WithCountDistinctGrouped(execs);
             WithSumNamedWindowRemoveGroup(execs);
             WithCountDistinctMultikeyWArray(execs);
+            WithCountSumInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountSumInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountSumInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountDistinctMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountDistinctMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSumNamedWindowRemoveGroup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateSumNamedWindowRemoveGroup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountDistinctGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountDistinctGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountOneView(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountOneView());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountOneViewCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountOneViewCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupByCountNestedAggregationAvg(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateGroupByCountNestedAggregationAvg());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountOneViewOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountOneViewOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSumHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateSumHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountPlusStar(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountPlusStar());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCountSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountSimple());
             return execs;
         }
@@ -283,6 +291,27 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {expectedC0, expectedC1});
         }
 
+        internal class ResultSetAggregateCountSumInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
+
+                string message =
+                    "Failed to validate select-clause expression 'XXX': Implicit conversion from datatype 'null' to numeric is not allowed for aggregation function '";
+                epl = "select avg(null) from SupportBean";
+                SupportMessageAssertUtil.TryInvalidCompile(env, epl, message.Replace("XXX", "avg(null)"));
+                epl = "select avg(distinct null) from SupportBean";
+                SupportMessageAssertUtil.TryInvalidCompile(env, epl, message.Replace("XXX", "avg(distinct null)"));
+                epl = "select median(null) from SupportBean";
+                SupportMessageAssertUtil.TryInvalidCompile(env, epl, message.Replace("XXX", "median(null)"));
+                epl = "select sum(null) from SupportBean";
+                SupportMessageAssertUtil.TryInvalidCompile(env, epl, message.Replace("XXX", "sum(null)"));
+                epl = "select stddev(null) from SupportBean";
+                SupportMessageAssertUtil.TryInvalidCompile(env, epl, message.Replace("XXX", "stddev(null)"));
+            }
+        }
+
         internal class ResultSetAggregateCountDistinctMultikeyWArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -416,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     .Add(Expressions.Count("Volume"), "countVol");
                 model.FromClause = FromClause
                     .Create(
-                        FilterStream.Create(typeof(SupportMarketDataBean).Name)
+                        FilterStream.Create(nameof(SupportMarketDataBean))
                             .AddView("length", Expressions.Constant(3)));
                 model.WhereClause = Expressions.Or()
                     .Add(Expressions.Eq("Symbol", "DELL"))
@@ -430,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
                           " from " +
-                          typeof(SupportMarketDataBean).Name +
+                          nameof(SupportMarketDataBean) +
                           "#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";

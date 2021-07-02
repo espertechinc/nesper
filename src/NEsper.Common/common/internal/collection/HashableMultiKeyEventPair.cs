@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             _hashCode = total;
-            this._keys = keys;
-            this._eventBean = eventBean;
+            _keys = keys;
+            _eventBean = eventBean;
         }
 
         /// <summary>

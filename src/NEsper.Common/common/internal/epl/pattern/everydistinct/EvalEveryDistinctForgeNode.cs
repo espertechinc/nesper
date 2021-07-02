@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -142,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// <param name="convertor">convertor</param>
         public EvalEveryDistinctForgeNode SetConvertor(MatchedEventConvertorForge convertor)
         {
-            this._convertor = convertor;
+            _convertor = convertor;
             return this;
         }
 
@@ -153,9 +154,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
             ExprNode expiryTimeExp)
         {
             DistinctExpressions = distinctExpressions;
-            this._distinctMultiKey = distincMultiKey;
-            this._timePeriodComputeForge = timePeriodComputeForge;
-            this._expiryTimeExp = expiryTimeExp;
+            _distinctMultiKey = distincMultiKey;
+            _timePeriodComputeForge = timePeriodComputeForge;
+            _expiryTimeExp = expiryTimeExp;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -169,6 +170,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
             writer.Write(") ");
             ChildNodes[0].ToEPL(writer, Precedence);
+        }
+
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_EVERYDISTINCT;
         }
     }
 } // end of namespace

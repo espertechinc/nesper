@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator optionalEscapeEval)
         {
             _form = forge;
-            this._lhsEval = lhsEval;
-            this._patternEval = patternEval;
-            this._optionalEscapeEval = optionalEscapeEval;
+            _lhsEval = lhsEval;
+            _patternEval = patternEval;
+            _optionalEscapeEval = optionalEscapeEval;
         }
 
         public object Evaluate(

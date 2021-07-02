@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -116,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         public ExprEvaluator ExprEvaluator {
             get {
                 return new ProxyExprEvaluator {
-                    ProcEvaluate = (
+                    procEvaluate = (
                         eventsPerStream,
                         isNewData,
                         context) => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime()
@@ -221,9 +223,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             // Determine declared return type
             var declaredReturnType = GetDeclaredReturnType(Script.OptionalReturnTypeName, validationContext);
-            if (Script.IsOptionalReturnTypeIsArray && declaredReturnType != null) {
-                declaredReturnType = TypeHelper.GetArrayType(declaredReturnType);
-            }
 
             Type returnType;
             if (compiled.KnownReturnType == null && Script.OptionalReturnTypeName == null) {
@@ -360,17 +359,20 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return returnType;
             }
 
-            if (returnTypeName.Equals("EventBean")) {
+            if (string.Equals(returnTypeName, "EventBean", StringComparison.OrdinalIgnoreCase)) {
                 return typeof(EventBean);
             }
-
-            try {
-                return validationContext.ImportService.ResolveClass(
-                    returnTypeName,
-                    false,
-                    ExtensionClassEmpty.INSTANCE);
+            if (string.Equals(returnTypeName, "EventBean[]", StringComparison.OrdinalIgnoreCase)) {
+                return typeof(EventBean[]);
             }
-            catch (ImportException) {
+
+            var classDescriptor = ClassDescriptor.ParseTypeText(returnTypeName);
+            returnType = ImportTypeUtil.ResolveClassIdentifierToType(
+                classDescriptor,
+                false,
+                validationContext.ImportService,
+                validationContext.ClassProvidedExtension);
+            if (returnType == null) {
                 throw new ExprValidationException(
                     "Failed to resolve return type '" +
                     returnTypeName +
@@ -378,6 +380,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     Script.Name +
                     "'");
             }
+
+            return returnType;
         }
     }
 } // end of namespace

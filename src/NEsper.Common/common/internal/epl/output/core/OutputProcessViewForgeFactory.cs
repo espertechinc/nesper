@@ -39,18 +39,18 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            InsertIntoDesc insertIntoDesc = statementSpec.Raw.InsertIntoDesc;
-            SelectClauseStreamSelectorEnum selectStreamSelector = statementSpec.Raw.SelectStreamSelectorEnum;
-            OutputLimitSpec outputLimitSpec = statementSpec.Raw.OutputLimitSpec;
-            int streamCount = statementSpec.StreamSpecs.Length;
-            bool isDistinct = statementSpec.Raw.SelectClauseSpec.IsDistinct;
-            bool isGrouped = statementSpec.GroupByExpressions != null &&
-                             statementSpec.GroupByExpressions.GroupByNodes.Length > 0;
-            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            var insertIntoDesc = statementSpec.Raw.InsertIntoDesc;
+            var selectStreamSelector = statementSpec.Raw.SelectStreamSelectorEnum;
+            var outputLimitSpec = statementSpec.Raw.OutputLimitSpec;
+            var streamCount = statementSpec.StreamSpecs.Length;
+            var isDistinct = statementSpec.Raw.SelectClauseSpec.IsDistinct;
+            var isGrouped = statementSpec.GroupByExpressions != null &&
+                            statementSpec.GroupByExpressions.GroupByNodes.Length > 0;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // determine routing
-            bool isRouted = false;
-            bool routeToFront = false;
+            var isRouted = false;
+            var routeToFront = false;
             if (insertIntoDesc != null) {
                 isRouted = true;
                 routeToFront = services.NamedWindowCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName) != null;
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     }
                 }
 
-                bool audit = AuditEnum.INSERT.GetAudit(statementSpec.Annotations) != null;
+                var audit = AuditEnum.INSERT.GetAudit(statementSpec.Annotations) != null;
                 outputStrategyPostProcessForge = new OutputStrategyPostProcessForge(
                     isRouted,
                     insertIntoStreamSelector,
@@ -84,12 +84,12 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     audit);
             }
 
-            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
+            var multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
                 isDistinct,
                 resultEventType,
                 statementRawInfo,
                 SerdeCompileTimeResolverNonHA.INSTANCE);
-            MultiKeyClassRef distinctMultiKey = multiKeyPlan.ClassRef;
+            var distinctMultiKey = multiKeyPlan.ClassRef;
             additionalForgeables.AddRange(multiKeyPlan.MultiKeyForgeables);
 
             OutputProcessViewFactoryForge outputProcessViewFactoryForge;
@@ -126,9 +126,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             }
             else {
                 try {
-                    bool isWithHavingClause = statementSpec.Raw.HavingClause != null;
-                    bool isStartConditionOnCreation = HasOnlyTables(statementSpec.StreamSpecs);
-                    OutputConditionFactoryForge outputConditionFactoryForge =
+                    var isWithHavingClause = statementSpec.Raw.HavingClause != null;
+                    var isStartConditionOnCreation = HasOnlyTables(statementSpec.StreamSpecs);
+                    var outputConditionFactoryForge =
                         OutputConditionFactoryFactory.CreateCondition(
                             outputLimitSpec,
                             isGrouped,
@@ -136,14 +136,14 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                             isStartConditionOnCreation,
                             statementRawInfo,
                             services);
-                    bool hasOrderBy = statementSpec.Raw.OrderByList != null && statementSpec.Raw.OrderByList.Count > 0;
-                    bool hasAfter = outputLimitSpec.AfterNumberOfEvents != null ||
-                                    outputLimitSpec.AfterTimePeriodExpr != null;
+                    var hasOrderBy = statementSpec.Raw.OrderByList != null && statementSpec.Raw.OrderByList.Count > 0;
+                    var hasAfter = outputLimitSpec.AfterNumberOfEvents != null ||
+                                   outputLimitSpec.AfterTimePeriodExpr != null;
 
                     // hint checking with order-by
-                    bool hasOptHint = ResultSetProcessorOutputConditionTypeExtensions
+                    var hasOptHint = ResultSetProcessorOutputConditionTypeExtensions
                         .GetOutputLimitOpt(statementSpec.Annotations, services.Configuration, hasOrderBy);
-                    ResultSetProcessorOutputConditionType conditionType =
+                    var conditionType =
                         ResultSetProcessorOutputConditionTypeExtensions
                             .GetConditionType(
                                 outputLimitSpec.DisplayLimit,
@@ -153,8 +153,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                                 resultSetProcessorType.IsGrouped());
 
                     // plan serdes
-                    foreach (EventType eventType in typesPerStream) {
-                        IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+                    foreach (var eventType in typesPerStream) {
+                        var serdeForgeables = SerdeEventTypeUtility.Plan(
                             eventType,
                             statementRawInfo,
                             services.SerdeEventTypeRegistry,
@@ -162,8 +162,11 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         additionalForgeables.AddRange(serdeForgeables);
                     }
                     
-                    bool terminable = outputLimitSpec.RateType == OutputLimitRateType.TERM ||
-                                      outputLimitSpec.IsAndAfterTerminate;
+                    var terminable =
+                        outputLimitSpec.RateType == OutputLimitRateType.TERM ||
+                        outputLimitSpec.IsAndAfterTerminate;
+                    
+                    var changeSetStateMgmtSettings = services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_OUTPUTLIMIT);
                     outputProcessViewFactoryForge = new OutputProcessViewConditionForge(
                         outputStrategyPostProcessForge,
                         isDistinct,
@@ -178,7 +181,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         resultSetProcessorType.IsUnaggregatedUngrouped(),
                         selectStreamSelector,
                         typesPerStream,
-                        resultEventType);
+                        resultEventType,
+                        changeSetStateMgmtSettings);
                 }
                 catch (Exception ex) {
                     throw new ExprValidationException("Failed to validate the output rate limiting clause: " + ex.Message, ex);
@@ -199,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 return false;
             }
 
-            foreach (StreamSpecCompiled streamSpec in streamSpecs) {
+            foreach (var streamSpec in streamSpecs) {
                 if (!(streamSpec is TableQueryStreamSpec)) {
                     return false;
                 }

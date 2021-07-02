@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 
@@ -27,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             int numStreams,
             ExprEvaluator keyEval)
         {
-            this._lookupStream = lookupStream;
-            this._keyEval = keyEval;
-            this._isNwOnTrigger = isNWOnTrigger;
+            _lookupStream = lookupStream;
+            _keyEval = keyEval;
+            _isNwOnTrigger = isNWOnTrigger;
             if (lookupStream != -1) {
                 _events = new EventBean[lookupStream + 1];
             }

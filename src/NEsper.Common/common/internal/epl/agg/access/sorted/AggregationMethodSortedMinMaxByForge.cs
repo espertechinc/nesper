@@ -19,19 +19,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
 	public class AggregationMethodSortedMinMaxByForge : AggregationMethodForge
 	{
-		private readonly Type resultType;
-		private readonly bool max;
+		private readonly Type _resultType;
+		private readonly bool _max;
 
 		public AggregationMethodSortedMinMaxByForge(
 			Type resultType,
 			bool max)
 		{
-			this.resultType = resultType;
-			this.max = max;
+			this._resultType = resultType;
+			this._max = max;
 		}
 
 		public Type ResultType {
-			get { return resultType; }
+			get { return _resultType; }
 		}
 
 		public CodegenExpression CodegenCreateReader(
@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AggregationMethodSortedMinMaxBy), GetType(), classScope);
 			method.Block
-				.DeclareVar<AggregationMethodSortedMinMaxBy>("strat", NewInstance(typeof(AggregationMethodSortedMinMaxBy)))
-				.SetProperty(Ref("strat"), "Max", Constant(max))
+				.DeclareVarNewInstance<AggregationMethodSortedMinMaxBy>("strat")
+				.SetProperty(Ref("strat"), "Max", Constant(_max))
 				.MethodReturn(Ref("strat"));
 			return LocalMethod(method);
 		}

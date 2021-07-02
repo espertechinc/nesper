@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
     public class CompositeAccessStrategyRangeNormal : CompositeAccessStrategyRangeBase,
         CompositeAccessStrategy
     {
-        private bool _allowReverseRange;
+        private readonly bool _allowReverseRange;
 
         public CompositeAccessStrategyRangeNormal(
             bool isNWOnTrigger,
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             bool allowReverseRange)
             : base(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd)
         {
-            this._allowReverseRange = allowReverseRange;
+            _allowReverseRange = allowReverseRange;
         }
 
         public ICollection<EventBean> Lookup(
@@ -42,14 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            object comparableStart = base.EvaluateLookupStart(theEvent, context);
+            object comparableStart = EvaluateLookupStart(theEvent, context);
             optionalKeyCollector?.Add(comparableStart);
 
             if (comparableStart == null) {
                 return null;
             }
 
-            object comparableEnd = base.EvaluateLookupEnd(theEvent, context);
+            object comparableEnd = EvaluateLookupEnd(theEvent, context);
             optionalKeyCollector?.Add(comparableEnd);
 
             if (comparableEnd == null) {
@@ -83,14 +83,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            object comparableStart = base.EvaluatePerStreamStart(eventPerStream, context);
+            object comparableStart = EvaluatePerStreamStart(eventPerStream, context);
             optionalKeyCollector?.Add(comparableStart);
 
             if (comparableStart == null) {
                 return null;
             }
 
-            object comparableEnd = base.EvaluatePerStreamEnd(eventPerStream, context);
+            object comparableEnd = EvaluatePerStreamEnd(eventPerStream, context);
             optionalKeyCollector?.Add(comparableEnd);
 
             if (comparableEnd == null) {

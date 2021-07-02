@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 
 		    CodegenSharableSerdeName(string methodName)
 		    {
-			    this.MethodName = methodName;
+			    MethodName = methodName;
 		    }
 
 	    }

@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
 
         protected void ApplyEnterTableKey(
             EventBean[] eventsPerStream,
-            Object tableKey,
+            object tableKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             ObjectArrayBackedEventBean bean = tableInstance.GetCreateRowIntoTable(tableKey, exprEvaluatorContext);
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             for (int i = 0; i < methodPairs.Length; i++) {
                 TableColumnMethodPairEval methodPair = methodPairs[i];
                 instrumentationCommon.QAggNoAccessEnterLeave(true, i, null, null);
-                Object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 currentAggregationRow.EnterAgg(methodPair.Column, columnResult);
                 instrumentationCommon.AAggNoAccessEnterLeave(true, i, null);
             }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
 
         protected void ApplyLeaveTableKey(
             EventBean[] eventsPerStream,
-            Object tableKey,
+            object tableKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             ObjectArrayBackedEventBean bean = tableInstance.GetCreateRowIntoTable(tableKey, exprEvaluatorContext);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             for (int i = 0; i < methodPairs.Length; i++) {
                 TableColumnMethodPairEval methodPair = methodPairs[i];
                 instrumentationCommon.QAggNoAccessEnterLeave(false, i, null, null);
-                Object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
+                object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
                 currentAggregationRow.LeaveAgg(methodPair.Column, columnResult);
                 instrumentationCommon.AAggNoAccessEnterLeave(false, i, null);
             }

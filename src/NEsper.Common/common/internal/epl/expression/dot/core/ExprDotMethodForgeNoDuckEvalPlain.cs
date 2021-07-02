@@ -13,6 +13,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			return null;
 		}
 
-		public virtual EPType TypeInfo => forge.TypeInfo;
+		public virtual EPChainableType TypeInfo => forge.TypeInfo;
 
 		public ExprDotForge DotForge => forge;
 
@@ -89,7 +90,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			CodegenClassScope codegenClassScope)
 		{
 			var method = forge.Method;
-			var returnType = method.ReturnType.GetBoxedType();
+			
+			Type returnType;
+			if (forge.WrapType == ExprDotMethodForgeNoDuck.DuckType.WRAPARRAY) {
+				returnType = method.ReturnType;
+			} else {
+				var result = forge.TypeInfo.GetNormalizedClass();
+				if (result.IsNullType()) {
+					return ConstantNull();
+				}
+
+				returnType = result.GetBoxedType();
+			}
 			
             Type instanceType;
 
@@ -104,13 +116,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 instanceType = method.DeclaringType;
             }
 
-			var methodNode = codegenMethodScope
+            var methodNode = codegenMethodScope
 				.MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
 				.AddParam(innerType, "target");
 
 			var block = methodNode.Block;
 
-            if (innerType.CanBeNull() && returnType != typeof(void)) {
+            if (innerType.CanBeNull() && !returnType.IsVoid()) {
 				block.IfRefNullReturnNull("target");
 			}
 
@@ -118,16 +130,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			for (var i = 0; i < forge.Parameters.Length; i++) {
 				var name = "p" + i;
 				var evaluationType = forge.Parameters[i].EvaluationType;
-				block.DeclareVar(
-					evaluationType,
-					name,
-					forge.Parameters[i]
-						.EvaluateCodegen(
-							evaluationType,
-							methodNode,
-							exprSymbol,
-							codegenClassScope));
-				
+				if (evaluationType.IsNullTypeSafe()) {
+					block.DeclareVar<object>(name, ConstantNull());
+				}
+				else {
+					block.DeclareVar(
+						evaluationType,
+						name,
+						forge.Parameters[i]
+							.EvaluateCodegen(
+								evaluationType,
+								methodNode,
+								exprSymbol,
+								codegenClassScope));
+				}
+
 				CodegenExpression reference = Ref(name);
 				if (evaluationType.IsNullable() && !methodParameters[i].IsNullable()) {
 					reference = Unbox(reference);
@@ -138,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			
 			CodegenExpression target = Ref("target");
 			if ((instanceType != innerType) && (innerType == instanceType.GetBoxedType())) {
-				target = CodegenExpressionBuilder.Unbox(target);
+				target = Unbox(target);
 			}
 
 			var tryBlock = block.TryCatch();
@@ -164,10 +181,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 
 			CodegenStatementTryCatch tryCatch;
-			if (returnType == typeof(void)) {
+			if (returnType.IsVoid()) {
 				tryCatch = tryBlock.Expression(invocation).TryEnd();
 			} else {
-				tryCatch = tryBlock.TryReturn(invocation);
+				tryCatch = tryBlock.TryReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, invocation));
 			}
 			var catchBlock = tryCatch.AddCatch(typeof(Exception), "t");
 			catchBlock.DeclareVar<object[]>(
@@ -188,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				Ref("t"),
 				exprSymbol.GetAddExprEvalCtx(methodNode));
 			
-			if (returnType == typeof(void)) {
+			if (returnType.IsVoid()) {
 				block.MethodEnd();
 			} else {
 				block.MethodReturn(ConstantNull());

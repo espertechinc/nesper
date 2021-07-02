@@ -57,33 +57,33 @@ namespace com.espertech.esper.common.@internal.view.derived
             object[] decoration)
         {
             IDictionary<string, object> result = new Dictionary<string, object>();
-            result.Put(ViewFieldEnum.REGRESSION__SLOPE.GetName(), baseStatisticsBean.Slope);
-            result.Put(ViewFieldEnum.REGRESSION__YINTERCEPT.GetName(), baseStatisticsBean.YIntercept);
-            result.Put(ViewFieldEnum.REGRESSION__XAVERAGE.GetName(), baseStatisticsBean.XAverage);
+            result.Put(ViewFieldEnum.REGRESSION_SLOPE.GetName(), baseStatisticsBean.Slope);
+            result.Put(ViewFieldEnum.REGRESSION_YINTERCEPT.GetName(), baseStatisticsBean.YIntercept);
+            result.Put(ViewFieldEnum.REGRESSION_XAVERAGE.GetName(), baseStatisticsBean.XAverage);
             result.Put(
-                ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP.GetName(),
+                ViewFieldEnum.REGRESSION_XSTANDARDDEVIATIONPOP.GetName(),
                 baseStatisticsBean.XStandardDeviationPop);
             result.Put(
-                ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE.GetName(),
+                ViewFieldEnum.REGRESSION_XSTANDARDDEVIATIONSAMPLE.GetName(),
                 baseStatisticsBean.XStandardDeviationSample);
-            result.Put(ViewFieldEnum.REGRESSION__XSUM.GetName(), baseStatisticsBean.XSum);
-            result.Put(ViewFieldEnum.REGRESSION__XVARIANCE.GetName(), baseStatisticsBean.XVariance);
-            result.Put(ViewFieldEnum.REGRESSION__YAVERAGE.GetName(), baseStatisticsBean.YAverage);
+            result.Put(ViewFieldEnum.REGRESSION_XSUM.GetName(), baseStatisticsBean.XSum);
+            result.Put(ViewFieldEnum.REGRESSION_XVARIANCE.GetName(), baseStatisticsBean.XVariance);
+            result.Put(ViewFieldEnum.REGRESSION_YAVERAGE.GetName(), baseStatisticsBean.YAverage);
             result.Put(
-                ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP.GetName(),
+                ViewFieldEnum.REGRESSION_YSTANDARDDEVIATIONPOP.GetName(),
                 baseStatisticsBean.YStandardDeviationPop);
             result.Put(
-                ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE.GetName(),
+                ViewFieldEnum.REGRESSION_YSTANDARDDEVIATIONSAMPLE.GetName(),
                 baseStatisticsBean.YStandardDeviationSample);
-            result.Put(ViewFieldEnum.REGRESSION__YSUM.GetName(), baseStatisticsBean.YSum);
-            result.Put(ViewFieldEnum.REGRESSION__YVARIANCE.GetName(), baseStatisticsBean.YVariance);
-            result.Put(ViewFieldEnum.REGRESSION__DATAPOINTS.GetName(), baseStatisticsBean.DataPoints);
-            result.Put(ViewFieldEnum.REGRESSION__N.GetName(), baseStatisticsBean.N);
-            result.Put(ViewFieldEnum.REGRESSION__SUMX.GetName(), baseStatisticsBean.SumX);
-            result.Put(ViewFieldEnum.REGRESSION__SUMXSQ.GetName(), baseStatisticsBean.SumXSq);
-            result.Put(ViewFieldEnum.REGRESSION__SUMXY.GetName(), baseStatisticsBean.SumXY);
-            result.Put(ViewFieldEnum.REGRESSION__SUMY.GetName(), baseStatisticsBean.SumY);
-            result.Put(ViewFieldEnum.REGRESSION__SUMYSQ.GetName(), baseStatisticsBean.SumYSq);
+            result.Put(ViewFieldEnum.REGRESSION_YSUM.GetName(), baseStatisticsBean.YSum);
+            result.Put(ViewFieldEnum.REGRESSION_YVARIANCE.GetName(), baseStatisticsBean.YVariance);
+            result.Put(ViewFieldEnum.REGRESSION_DATAPOINTS.GetName(), baseStatisticsBean.DataPoints);
+            result.Put(ViewFieldEnum.REGRESSION_N.GetName(), baseStatisticsBean.N);
+            result.Put(ViewFieldEnum.REGRESSION_SUMX.GetName(), baseStatisticsBean.SumX);
+            result.Put(ViewFieldEnum.REGRESSION_SUMXSQ.GetName(), baseStatisticsBean.SumXSq);
+            result.Put(ViewFieldEnum.REGRESSION_SUMXY.GetName(), baseStatisticsBean.SumXY);
+            result.Put(ViewFieldEnum.REGRESSION_SUMY.GetName(), baseStatisticsBean.SumY);
+            result.Put(ViewFieldEnum.REGRESSION_SUMYSQ.GetName(), baseStatisticsBean.SumYSq);
             additionalProps?.AddProperties(result, decoration);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
@@ -95,30 +95,30 @@ namespace com.espertech.esper.common.@internal.view.derived
             int streamNum)
         {
             LinkedHashMap<string, object> eventTypeMap = new LinkedHashMap<string, object>();
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__SLOPE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__YINTERCEPT.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__XAVERAGE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__XSUM.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__XVARIANCE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__YAVERAGE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__YSUM.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__YVARIANCE.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__DATAPOINTS.GetName(), typeof(long?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__N.GetName(), typeof(long?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMX.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMXSQ.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMXY.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMY.GetName(), typeof(double?));
-            eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMYSQ.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_SLOPE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_YINTERCEPT.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_XAVERAGE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_XSTANDARDDEVIATIONPOP.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_XSTANDARDDEVIATIONSAMPLE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_XSUM.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_XVARIANCE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_YAVERAGE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_YSTANDARDDEVIATIONPOP.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_YSTANDARDDEVIATIONSAMPLE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_YSUM.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_YVARIANCE.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_DATAPOINTS.GetName(), typeof(long?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_N.GetName(), typeof(long?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_SUMX.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_SUMXSQ.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_SUMXY.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_SUMY.GetName(), typeof(double?));
+            eventTypeMap.Put(ViewFieldEnum.REGRESSION_SUMYSQ.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
                 eventTypeMap,
                 additionalProps,
-                ViewFieldEnum.REGRESSION__SLOPE,
-                ViewFieldEnum.REGRESSION__YINTERCEPT);
+                ViewFieldEnum.REGRESSION_SLOPE,
+                ViewFieldEnum.REGRESSION_YINTERCEPT);
             return DerivedViewTypeUtil.NewType("regview", eventTypeMap, env, streamNum);
         }
     }

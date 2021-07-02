@@ -18,6 +18,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         string PropertyName { get; }
 
-        Type Type { get; }
+        Type ValueType { get; }
     }
 } // end of namespace

@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public class OutputProcessViewSimpleWProcessor : OutputProcessView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly ResultSetProcessor resultSetProcessor;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly ResultSetProcessor _resultSetProcessor;
 
         public OutputProcessViewSimpleWProcessor(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessor resultSetProcessor)
         {
-            this.agentInstanceContext = agentInstanceContext;
-            this.resultSetProcessor = resultSetProcessor;
+            this._agentInstanceContext = agentInstanceContext;
+            this._resultSetProcessor = resultSetProcessor;
         }
 
         public override int NumChangesetRows => 0;
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             EventBean[] newData,
             EventBean[] oldData)
         {
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
@@ -59,13 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 return;
             }
 
-            var result = resultSetProcessor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
+            var result = _resultSetProcessor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
             child?.NewResult(result);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, resultSetProcessor, parentView, false, null);
+            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, _resultSetProcessor, parentView, false, null);
         }
 
         public override void Terminated()

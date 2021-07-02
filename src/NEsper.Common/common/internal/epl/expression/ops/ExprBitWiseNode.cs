@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -62,25 +63,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("BitWise node must have 2 parameters");
             }
 
-            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-            var typeTwo = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
-            CheckNumericOrBoolean(typeOne);
-            CheckNumericOrBoolean(typeTwo);
+            var lhsType = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            var rhsType = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
+            CheckNumericOrBoolean(lhsType);
+            CheckNumericOrBoolean(rhsType);
 
-            if (typeOne.IsFloatingPointClass() || typeTwo.IsFloatingPointClass()) {
+            if (lhsType.IsFloatingPointClass() || rhsType.IsFloatingPointClass()) {
                 throw new ExprValidationException(
                     "Invalid type for bitwise " + BitWiseOpEnum.ComputeDescription + " operator");
             }
 
-            if (typeOne != typeTwo) {
+            if (lhsType != rhsType) {
                 throw new ExprValidationException(
                     "Bitwise expressions must be of the same type for bitwise " +
                     BitWiseOpEnum.ComputeDescription +
                     " operator");
             }
 
-            var computer = BitWiseOpEnum.GetComputer(typeOne);
-            _forge = new ExprBitWiseNodeForge(this, typeOne, computer);
+            var computer = BitWiseOpEnum.GetComputer(lhsType);
+            _forge = new ExprBitWiseNodeForge(this, lhsType, computer);
             return null;
         }
 
@@ -88,17 +89,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprBitWiseNode)) {
+            if (!(node is ExprBitWiseNode other)) {
                 return false;
             }
 
-            var other = (ExprBitWiseNode) node;
-
-            if (other.BitWiseOpEnum != BitWiseOpEnum) {
-                return false;
-            }
-
-            return true;
+            return other.BitWiseOpEnum == BitWiseOpEnum;
         }
 
         public override void ToPrecedenceFreeEPL(
@@ -112,11 +107,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private void CheckNumericOrBoolean(Type childType)
         {
-            if (!childType.IsBoolean() && !childType.IsNumeric()) {
+            if (childType.IsNullTypeSafe() || (!childType.IsBoolean() && !childType.IsNumeric())) {
                 throw new ExprValidationException(
-                    "Invalid datatype for binary operator, " +
-                    childType.CleanName() +
-                    " is not allowed");
+                    "Invalid datatype for binary operator, " + childType.TypeSafeName() + " is not allowed");
             }
         }
     }

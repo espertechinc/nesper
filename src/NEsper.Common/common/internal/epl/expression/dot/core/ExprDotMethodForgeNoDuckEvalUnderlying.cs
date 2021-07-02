@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				.MakeChild(returnType.GetBoxedType(), typeof(ExprDotMethodForgeNoDuckEvalUnderlying), codegenClassScope)
 				.AddParam(typeof(EventBean), "target");
 
-			var eval = ExprDotMethodForgeNoDuckEvalPlain.CodegenPlain(
+			var eval = CodegenPlain(
 				forge,
 				Ref("underlying"),
 				underlyingType,

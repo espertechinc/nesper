@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNamePrior(int streamNumber)
         {
-            this._streamNumber = streamNumber;
+            _streamNumber = streamNumber;
         }
 
         public string Name {

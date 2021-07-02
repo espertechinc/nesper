@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.hook.enummethod
             Type stateClass,
             Type serviceClass,
             string methodName,
-            EPType returnType,
+            EPChainableType returnType,
             bool earlyExit)
         {
             if (stateClass == null) {
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.client.hook.enummethod
 	    ///     Returns the return type of the enumeration method.
 	    /// </summary>
 	    /// <returns>type</returns>
-	    public EPType ReturnType { get; set; }
+	    public EPChainableType ReturnType { get; set; }
 
 	    /// <summary>
 	    ///     Returns indicator whether the compiler should consider the

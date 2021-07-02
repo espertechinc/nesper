@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < threads.Length; i++) {
                 runnables[i] = new WriteRunnable(env, path, numEvents, i);
                 threads[i] = new Thread(runnables[i].Run) {
-                    Name = typeof(InfraTableMTUngroupedIntoTableWriteMultiWriterAgg).Name + "-write"
+                    Name = nameof(InfraTableMTUngroupedIntoTableWriteMultiWriterAgg) + "-write"
                 };
                 threads[i].Start();
             }

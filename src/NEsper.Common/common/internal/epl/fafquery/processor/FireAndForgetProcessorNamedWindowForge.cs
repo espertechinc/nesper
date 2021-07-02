@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(FireAndForgetProcessorNamedWindow),
-                this.GetType(),
+                GetType(),
                 classScope);
             CodegenExpressionRef nw = Ref("nw");
             method.Block

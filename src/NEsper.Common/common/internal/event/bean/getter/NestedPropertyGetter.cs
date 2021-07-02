@@ -32,14 +32,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public NestedPropertyGetter(
             IList<EventPropertyGetter> getterChain,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            Type finalPropertyType,
-            Type finalGenericType,
+            Type type,
             BeanEventTypeFactory beanEventTypeFactory)
-            : base(
-                eventBeanTypedEventFactory,
-                beanEventTypeFactory,
-                finalPropertyType,
-                finalGenericType)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, type)
         {
             _getterChain = new BeanEventPropertyGetter[getterChain.Count];
 
@@ -96,8 +91,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return IsBeanExistsProperty(eventBean.Underlying);
         }
 
-        public override Type BeanPropType => _getterChain[_getterChain.Length - 1].BeanPropType;
-
         public override Type TargetType => _getterChain[0].TargetType;
 
         public override CodegenExpression EventBeanGetCodegen(
@@ -143,11 +136,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope,
             bool exists)
         {
-            var block = codegenMethodScope.MakeChild(
-                    exists ? typeof(bool) : _getterChain[_getterChain.Length - 1].BeanPropType.GetBoxedType(),
-                    GetType(),
-                    codegenClassScope)
-                .AddParam(_getterChain[0].TargetType, "value")
+            var typeClass = _getterChain[_getterChain.Length - 1].BeanPropType;
+            var typeClassBoxed = typeClass.GetBoxedType();
+            var targetType = _getterChain[0].TargetType;
+            var block = codegenMethodScope
+                .MakeChild(exists ? typeof(bool) : typeClassBoxed, GetType(), codegenClassScope)
+                .AddParam(targetType, "value")
                 .Block;
             if (!exists) {
                 block.IfRefNullReturnNull("value");

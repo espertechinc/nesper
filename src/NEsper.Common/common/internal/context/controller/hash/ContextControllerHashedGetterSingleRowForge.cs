@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -31,12 +32,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashedGetterSingleRowForge : EventPropertyValueGetterForge
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly MethodInfo reflectionMethod;
-        private readonly ExprForge[] nodes;
-        private readonly int granularity;
-        private readonly string statementName;
+        private readonly MethodInfo _reflectionMethod;
+        private readonly ExprForge[] _nodes;
+        private readonly int _granularity;
+        private readonly string _statementName;
 
         public ContextControllerHashedGetterSingleRowForge(
             Pair<Type, ImportSingleRowDesc> func,
@@ -46,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprNodeUtilMethodDesc staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
+            var staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
                 func.First.Name,
                 null,
                 func.Second.MethodName,
@@ -57,10 +56,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 func.Second.MethodName,
                 statementRawInfo,
                 services);
-            this.granularity = granularity;
-            this.nodes = staticMethodDesc.ChildForges;
-            this.reflectionMethod = staticMethodDesc.ReflectionMethod;
-            this.statementName = statementRawInfo.StatementName;
+            this._granularity = granularity;
+            _nodes = staticMethodDesc.ChildForges;
+            _reflectionMethod = staticMethodDesc.ReflectionMethod;
+            _statementName = statementRawInfo.StatementName;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -68,60 +67,62 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
             method.Block.DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
 
             // method to evaluate expressions and compute hash
-            ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, true);
-            CodegenMethod exprMethod = method
+            var exprSymbol = new ExprForgeCodegenSymbol(true, true);
+            var returnType = _reflectionMethod.ReturnType;
+            var exprMethod = method
                 .MakeChildWithScope(
-                    reflectionMethod.ReturnType,
+                    returnType,
                     typeof(CodegenLegoMethodExpression),
                     exprSymbol,
                     classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             // generate args
-            StaticMethodCodegenArgDesc[] args = AllArgumentExpressions(
-                nodes,
-                reflectionMethod,
+            var args = AllArgumentExpressions(
+                _nodes,
+                _reflectionMethod,
                 exprMethod,
                 exprSymbol,
                 classScope);
             AppendArgExpressions(args, exprMethod.Block);
 
             // try block
-            CodegenBlock tryBlock = exprMethod.Block.TryCatch();
-            CodegenExpression invoke = CodegenInvokeExpression(null, reflectionMethod, args, classScope);
+            var tryBlock = exprMethod.Block.TryCatch();
+            var invoke = CodegenInvokeExpression(null, _reflectionMethod, args, classScope);
             tryBlock.BlockReturn(invoke);
 
             // exception handling
             AppendCatch(
                 tryBlock,
-                reflectionMethod,
-                statementName,
-                reflectionMethod.DeclaringType.CleanName(),
+                _reflectionMethod,
+                _statementName,
+                _reflectionMethod.DeclaringType.TypeSafeName(),
                 true,
                 args);
 
             exprMethod.Block.MethodReturn(Constant(0));
 
+            var returnTypeMethod = _reflectionMethod.ReturnType;
             method.Block.DeclareVar(
-                reflectionMethod.ReturnType,
+                returnTypeMethod,
                 "result",
                 LocalMethod(exprMethod, Ref("events"), ConstantTrue(), ConstantNull()));
-            if (reflectionMethod.ReturnType.CanBeNull()) {
+            if (_reflectionMethod.ReturnType.CanBeNull()) {
                 method.Block.IfRefNull("result").BlockReturn(Constant(0));
             }
 
             method.Block.DeclareVar<int>(
                     "value",
-                    SimpleNumberCoercerFactory.GetCoercer(reflectionMethod.ReturnType, typeof(int?))
-                        .CoerceCodegen(Ref("result"), reflectionMethod.ReturnType))
+                    SimpleNumberCoercerFactory.GetCoercer(returnTypeMethod, typeof(int?))
+                        .CoerceCodegen(Ref("result"), returnTypeMethod))
                 .IfCondition(Relational(Ref("value"), CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
-                .BlockReturn(Op(Ref("value"), "%", Constant(granularity)))
-                .MethodReturn(Op(Op(Ref("value"), "%", Constant(granularity)), "*", Constant(-1)));
+                .BlockReturn(Op(Ref("value"), "%", Constant(_granularity)))
+                .MethodReturn(Op(Op(Ref("value"), "%", Constant(_granularity)), "*", Constant(-1)));
             return LocalMethod(method, beanExpression);
         }
     }

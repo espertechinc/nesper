@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Runtime.Threading.ListenerDispatchLocking = locking;
             configuration.Common.AddEventType(typeof(SupportBean));
 
-            var runtime = EPRuntimeProvider.GetRuntime(typeof(MultithreadDeterminismListener).Name, configuration);
+            var runtime = EPRuntimeProvider.GetRuntime(nameof(MultithreadDeterminismListener), configuration);
             runtime.Initialize();
 
             // setup statements

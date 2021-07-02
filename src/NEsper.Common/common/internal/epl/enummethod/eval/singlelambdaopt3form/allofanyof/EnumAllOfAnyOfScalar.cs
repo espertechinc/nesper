@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 								}
 							}
 							else {
-								if (pass != null && ((Boolean) pass)) {
+								if (pass != null && ((bool) pass)) {
 									return true;
 								}
 							}
@@ -78,9 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
-			return typeof(bool?);
+			return typeof(bool);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()

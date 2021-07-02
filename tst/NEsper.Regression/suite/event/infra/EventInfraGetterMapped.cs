@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -31,6 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 	{
 		public void Run(RegressionEnvironment env)
 		{
+#if false
 			// Bean
 			BiConsumer<EventType, IDictionary<string, string>> bean = (
 				type,
@@ -39,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			};
 			var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()}";
 			RunAssertion(env, beanepl, bean);
-
+#endif
 			var properties = typeof(IDictionary<string, string>).CleanName();
 			
 			// Map
@@ -102,7 +104,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			string createSchemaEPL,
 			BiConsumer<EventType, IDictionary<string, string>> sender)
 		{
-
 			var path = new RegressionPath();
 			env.CompileDeploy(createSchemaEPL, path);
 
@@ -111,9 +112,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var g0 = eventType.GetGetter("Mapped('a')");
 			var g1 = eventType.GetGetter("Mapped('b')");
 
-			var propepl = "@Name('s1') select Mapped('a') as c0, Mapped('b') as c1," +
-			              "exists(Mapped('a')) as c2, exists(Mapped('b')) as c3, " +
-			              "typeof(Mapped('a')) as c4, typeof(Mapped('b')) as c5 from LocalEvent;\n";
+			var propepl =
+				"@Name('s1') select " +
+				"Mapped('a') as c0, " +
+				"Mapped('b') as c1, " +
+			    "exists(Mapped('a')) as c2, " +
+				"exists(Mapped('b')) as c3, " +
+			    "typeof(Mapped('a')) as c4, " +
+				"typeof(Mapped('b')) as c5 from LocalEvent;\n";
 			env.CompileDeploy(propepl, path).AddListener("s1");
 
 			IDictionary<string, string> values = new Dictionary<string, string>();

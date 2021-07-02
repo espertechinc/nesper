@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
@@ -104,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 			var pair = col?.Pair;
 			if (pair?.Column is TableMetadataColumnAggregation) {
 				var agg = (TableMetadataColumnAggregation) pair.Column;
-				var returnType = pair.TableMetadata.PublicEventType.GetPropertyType(pair.Column.ColumnName);
+				var returnType = pair.TableMetadata.PublicEventType.GetPropertyType(pair.Column.ColumnName).TypeNormalized();
 				var node = new ExprTableIdentNode(
 					pair.TableMetadata,
 					null,
@@ -345,9 +346,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 				TableMetadataColumn column,
 				TableMetaData tableMetadata)
 			{
-				this.StreamNum = streamNum;
-				this.Column = column;
-				this.TableMetadata = tableMetadata;
+				StreamNum = streamNum;
+				Column = column;
+				TableMetadata = tableMetadata;
 			}
 
 			public int StreamNum { get; }

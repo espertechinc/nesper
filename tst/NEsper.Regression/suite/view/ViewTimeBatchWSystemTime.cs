@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             EventBean values,
             double avgE)
         {
-            var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
+            var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE, values);
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
         }
 

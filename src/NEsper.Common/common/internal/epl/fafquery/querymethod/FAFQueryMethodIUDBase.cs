@@ -200,6 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var subselectActivations = SubSelectHelperStart.StartSubselects(
                 _subselects,
                 agentInstanceContext,
+                agentInstanceContext,
                 subselectStopCallbacks,
                 false);
 

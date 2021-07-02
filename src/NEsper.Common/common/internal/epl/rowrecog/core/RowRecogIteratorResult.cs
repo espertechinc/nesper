@@ -17,8 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     /// </summary>
     public class RowRecogIteratorResult
     {
-        private IList<RowRecogNFAStateEntry> endStates;
-        private int eventSequenceNum;
+        private readonly IList<RowRecogNFAStateEntry> endStates;
+        private readonly int eventSequenceNum;
 
         /// <summary>
         /// Ctor.

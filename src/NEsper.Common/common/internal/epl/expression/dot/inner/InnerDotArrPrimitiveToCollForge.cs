@@ -77,10 +77,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             get => null;
         }
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(
-                rootForge.EvaluationType.GetElementType(),
-                rootForge.EvaluationType);
+        public EPChainableType TypeInfo {
+            get {
+                var componentType = rootForge.EvaluationType.GetElementType();
+                return EPChainableTypeHelper.CollectionOfSingleValue(componentType);
+              
+                // return EPChainableTypeHelper.CollectionOfSingleValue(
+                //     rootForge.EvaluationType.GetElementType(),
+                //     rootForge.EvaluationType);
+            }
         }
     }
 } // end of namespace

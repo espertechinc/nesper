@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermDistinctSvcNonNested : ContextControllerInitTermDistinctSvc
     {
-        private readonly ISet<object> distinctContexts = new HashSet<object>();
+        private readonly ISet<object> _distinctContexts = new HashSet<object>();
 
         public ContextControllerInitTermDistinctSvcNonNested()
         {
@@ -24,24 +24,24 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             object key)
         {
-            return distinctContexts.Add(key);
+            return _distinctContexts.Add(key);
         }
 
         public void Remove(
             IntSeqKey controllerPath,
             object key)
         {
-            distinctContexts.Remove(key);
+            _distinctContexts.Remove(key);
         }
 
         public void Clear(IntSeqKey path)
         {
-            distinctContexts.Clear();
+            _distinctContexts.Clear();
         }
 
         public void Destroy()
         {
-            distinctContexts.Clear();
+            _distinctContexts.Clear();
         }
     }
 } // end of namespace

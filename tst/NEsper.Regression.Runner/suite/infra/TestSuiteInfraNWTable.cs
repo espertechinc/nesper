@@ -154,6 +154,11 @@ namespace com.espertech.esper.regressionrun.suite.infra
         {
             RegressionRunner.Run(_session, InfraNWTableSubquery.Executions());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestInfraNWTableCreate() {
+            RegressionRunner.Run(_session, InfraNWTableCreate.Executions());
+        }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubqueryAtEventBean()

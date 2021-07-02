@@ -33,6 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public Attribute[] Annotations { get; set; }
 
         public string ContextName { get; set; }
+        
+        public string ContextModuleName { get; set; }
 
         public ExprEvaluator WhereClause { get; set; }
 
@@ -52,8 +54,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
         public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses { get; set; }
         
-        public bool IsDistinct { get; set; }
-
         public EventPropertyValueGetter DistinctKeyGetter { get; set; }
         
         public IDictionary<int, SubSelectFactory> Subselects { get; set; }
@@ -72,7 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             if (ContextName == null) {
-                if (Processors.Length == 1) {
+                if (Processors.Length == 0) {
+                    SelectExec = new FAFQueryMethodSelectExecNoContextNoFromClause(services);
+                }
+                else if (Processors.Length == 1) {
                     if (!hasContext) {
                         SelectExec = FAFQueryMethodSelectExecNoContextNoJoin.INSTANCE;
                     }
@@ -90,15 +93,20 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 }
             }
             else {
-                if (Processors.Length != 1) {
-                    throw new UnsupportedOperationException("Context name is not supported in a join");
+                if (Processors.Length == 0) {
+                    SelectExec = new FAFQueryMethodSelectExecGivenContextNoFromClause(services);
                 }
+                else {
+                    if (Processors.Length != 1) {
+                        throw new UnsupportedOperationException("Context name is not supported in a join");
+                    }
 
-                if (!hasContext) {
-                    throw new UnsupportedOperationException("Query target is unpartitioned");
+                    if (!hasContext) {
+                        throw new UnsupportedOperationException("Query target is unpartitioned");
+                    }
+
+                    SelectExec = FAFQueryMethodSelectExecGivenContextNoJoin.INSTANCE;
                 }
-
-                SelectExec = FAFQueryMethodSelectExecGivenContextNoJoin.INSTANCE;
             }
             
             if (!Subselects.IsEmpty()) {
@@ -116,7 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 throw FAFQueryMethodUtil.RuntimeDestroyed();
             }
 
-            if (contextPartitionSelectors != null && contextPartitionSelectors.Length != Processors.Length) {
+            if (Processors.Length > 0 && 
+                contextPartitionSelectors != null && 
+                contextPartitionSelectors.Length != Processors.Length) {
                 throw new ArgumentException(
                     "The number of context partition selectors does not match the number of named windows or tables in the from-clause");
             }
@@ -126,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
             finally {
                 if (HasTableAccess) {
-                    Processors[0].StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                    SelectExec.ReleaseTableLocks(Processors);
                 }
             }
         }

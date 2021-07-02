@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -32,23 +33,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 else {
                     var namedParameterNode = (ExprNamedParameterNode) node;
                     var paramNameLower = namedParameterNode.ParameterName.ToLowerInvariant();
-                    if (paramNameLower.Equals("group_by")) {
-                        optionalLocalGroupBy = new ExprAggregateLocalGroupByDesc(namedParameterNode.ChildNodes);
-                    }
-                    else if (paramNameLower.Equals("filter")) {
-                        if ((namedParameterNode.ChildNodes.Length != 1) |
-                            (namedParameterNode.ChildNodes[0].Forge.EvaluationType.GetBoxedType() != typeof(bool?))) {
+                    switch (paramNameLower) {
+                        case "group_by":
+                            optionalLocalGroupBy = new ExprAggregateLocalGroupByDesc(namedParameterNode.ChildNodes);
+                            break;
+
+                        case "filter" when (namedParameterNode.ChildNodes.Length != 1) |
+                                           (!namedParameterNode.ChildNodes[0].Forge.EvaluationType.IsBoolean()):
                             throw new ExprValidationException(
                                 "Filter named parameter requires a single expression returning a boolean-typed value");
-                        }
 
-                        optionalFilter = namedParameterNode.ChildNodes[0];
-                    }
-                    else if (builtinAggregationFunc) {
-                        throw new ExprValidationException(
-                            "Invalid named parameter '" +
-                            namedParameterNode.ParameterName +
-                            "' (did you mean 'group_by' or 'filter'?)");
+                        case "filter":
+                            optionalFilter = namedParameterNode.ChildNodes[0];
+                            break;
+
+                        default: {
+                            if (builtinAggregationFunc) {
+                                throw new ExprValidationException(
+                                    "Invalid named parameter '" +
+                                    namedParameterNode.ParameterName +
+                                    "' (did you mean 'group_by' or 'filter'?)");
+                            }
+
+                            break;
+                        }
                     }
                 }
             }

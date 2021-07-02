@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             VariableNames = new HashSet<string>();
             MapEnv = mapEnv;
             ContextCompileTimeDescriptor = contextCompileTimeDescriptor;
-            this.PlugInAggregations = plugInAggregations;
+            PlugInAggregations = plugInAggregations;
             Scripts = scriptExpressions;
         }
 

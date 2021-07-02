@@ -41,17 +41,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             this.method = method;
 
             var last = evaluators[evaluators.Length - 1];
+            var lastType = last.TypeInfo;
+            Type evaluationTypeUnboxed;
+            
             if (!method) {
-                if (last.TypeInfo is ClassMultiValuedEPType) {
-                    EvaluationType = EPTypeHelper.GetClassMultiValuedContainer(last.TypeInfo).GetBoxedType();
-                }
-                else {
-                    EvaluationType = EPTypeHelper.GetClassSingleValued(last.TypeInfo).GetBoxedType();
-                }
+                evaluationTypeUnboxed = ((EPChainableTypeClass) lastType).Clazz;
+            } else {
+                evaluationTypeUnboxed = lastType.GetNormalizedClass();
             }
-            else {
-                EvaluationType = EPTypeHelper.GetNormalizedClass(last.TypeInfo).GetBoxedType();
-            }
+            
+            EvaluationType = evaluationTypeUnboxed.GetBoxedType();
         }
 
         public override ExprEvaluator ExprEvaluator {

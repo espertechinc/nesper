@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.IsFirst = isFirst;
+            IsFirst = isFirst;
         }
 
         public bool IsFirst { get; set; }

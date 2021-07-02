@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumArrayOfScalar : ThreeFormScalar
 	{
-		private readonly Type arrayComponentType;
+		private readonly Type _arrayComponentType;
 
 		public EnumArrayOfScalar(
 			ExprDotEvalParamLambda lambda,
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			: base(lambda, fieldEventType, numParameters)
 		{
 
-			this.arrayComponentType = arrayComponentType;
+			this._arrayComponentType = arrayComponentType;
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -47,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						int length = enumcoll.Count;
-						var array = Arrays.CreateInstanceChecked(arrayComponentType, length);
+						var length = enumcoll.Count;
+						var array = Arrays.CreateInstanceChecked(_arrayComponentType, length);
 						if (enumcoll.IsEmpty()) {
 							return array;
 						}
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						evalProps[2] = enumcoll.Count;
 						var count = -1;
 
-						foreach (object next in enumcoll) {
+						foreach (var next in enumcoll) {
 							count++;
 							evalProps[0] = next;
 							evalProps[1] = count;
@@ -72,14 +73,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
-			return TypeHelper.GetArrayType(arrayComponentType);
+			return TypeHelper.GetArrayType(_arrayComponentType);
 		}
 
 		public override CodegenExpression ReturnIfEmptyOptional()
 		{
-			return NewArrayByLength(arrayComponentType, Constant(0));
+			return NewArrayByLength(_arrayComponentType, Constant(0));
 		}
 
 		public override void InitBlock(
@@ -88,9 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			var arrayType = TypeHelper.GetArrayType(arrayComponentType);
+			var arrayType = ReturnTypeOfMethod();
 			block
-				.DeclareVar(arrayType, "result", NewArrayByLength(arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
+				.DeclareVar(arrayType, "result", NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
 				.DeclareVar<int>("index", Constant(0));
 		}
 
@@ -102,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			block
 				.DeclareVar<object>("item", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.AssignArrayElement(Ref("result"), Ref("index"), Cast(arrayComponentType, Ref("item")))
+				.AssignArrayElement(Ref("result"), Ref("index"), Cast(_arrayComponentType, Ref("item")))
 				.IncrementRef("index");
 		}
 

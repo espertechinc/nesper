@@ -33,49 +33,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithOnSelectProperty(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherOnSelectProperty());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithnMergeAndUpdateAndSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOthernMergeAndUpdateAndSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUpdateIStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateIStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnTrigger(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherOnTrigger());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFromClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherFromClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFAFUpdateDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherFAFUpdateDelete());
             return execs;
         }

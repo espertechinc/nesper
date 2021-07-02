@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -52,10 +53,11 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
@@ -69,7 +71,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if (validated[0].Forge.EvaluationType.GetBoxedType() != typeof(long?)) {
+            if (!validated[0].Forge.EvaluationType.IsInt64()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
@@ -77,12 +79,12 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(TimeOrderViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Timeorder";
         }
@@ -104,6 +106,11 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(factory, "TimeToLive", ConstantTrue());
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_TIMETOLIVE;
         }
     }
 } // end of namespace

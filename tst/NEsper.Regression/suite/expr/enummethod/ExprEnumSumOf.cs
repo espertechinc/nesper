@@ -31,49 +31,49 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			WithSumEventsPlus(execs);
 			WithSumScalar(execs);
 			WithSumScalarStringValue(execs);
-			WithInvalid(execs);
+			WithSumInvalid(execs);
 			WithSumArray(execs);
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSumArray(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSumArray());
 			return execs;
 		}
 
-		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		public static IList<RegressionExecution> WithSumInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSumScalarStringValue(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSumScalarStringValue());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSumScalar(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSumScalar());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSumEventsPlus(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSumEventsPlus());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSumEvents(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumSumEvents());
 			return execs;
 		}
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Beans.sumOf(x => BigInteger)");
 
 				builder.WithStatementConsumer(
-					stmt => AssertTypes(
+					stmt => SupportEventPropUtil.AssertTypes(
 						stmt.EventType,
 						fields,
 						new[] {typeof(int?), typeof(double?), typeof(long?), typeof(decimal?), typeof(BigInteger?)}));
@@ -132,23 +132,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var fields = "c0,c1,c2".SplitCsv();
+				var fields = "c0,c1,c2,c3".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_Container");
 				builder.WithExpression(fields[0], "Beans.sumOf(x => IntBoxed)");
 				builder.WithExpression(fields[1], "Beans.sumOf( (x, i) => IntBoxed + i*10)");
 				builder.WithExpression(fields[2], "Beans.sumOf( (x, i, s) => IntBoxed + i*10 + s*100)");
+				builder.WithExpression(fields[3], "Beans.sumOf( (x, i) => case when i = 1 then null else 1 end)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
-				builder.WithAssertion(new SupportBean_Container(null)).Expect(fields, null, null, null);
+				builder.WithAssertion(new SupportBean_Container(null)).Expect(fields, null, null, null, null);
 
-				builder.WithAssertion(new SupportBean_Container(EmptyList<SupportBean>.Instance)).Expect(fields, null, null, null);
+				builder.WithAssertion(new SupportBean_Container(EmptyList<SupportBean>.Instance)).Expect(fields, null, null, null, null);
 
 				IList<SupportBean> listOne = new List<SupportBean>() {MakeSB("E1", 10)};
-				builder.WithAssertion(new SupportBean_Container(listOne)).Expect(fields, 10, 10, 110);
+				builder.WithAssertion(new SupportBean_Container(listOne)).Expect(fields, 10, 10, 110, 1);
 
 				IList<SupportBean> listTwo = new List<SupportBean>() {MakeSB("E1", 10), MakeSB("E2", 11)};
-				builder.WithAssertion(new SupportBean_Container(listTwo)).Expect(fields, 21, 31, 431);
+				builder.WithAssertion(new SupportBean_Container(listTwo)).Expect(fields, 21, 31, 431, 1);
 
 				builder.Run(env);
 			}
@@ -171,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				var builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Intvals.sumOf()");
 				builder.WithExpression(fields[1], "Bdvals.sumOf()");
-				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, fields, new[] {typeof(int?), typeof(decimal?)}));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypes(stmt.EventType, fields, new[] {typeof(int?), typeof(decimal?)}));
 				builder.WithAssertion(SupportCollection.MakeNumeric("1,4,5")).Expect(fields, 1 + 4 + 5, 1m + 4m + 5m);
 				builder.WithAssertion(SupportCollection.MakeNumeric("3,4")).Expect(fields, 3 + 4, 3m + 4m);
 				builder.WithAssertion(SupportCollection.MakeNumeric("3")).Expect(fields, 3, 3m);
@@ -192,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[2], "Strvals.sumOf( (v, i) => extractNum(v) + i*10)");
 				builder.WithExpression(fields[3], "Strvals.sumOf( (v, i, s) => extractNum(v) + i*10 + s*100)");
 				builder.WithStatementConsumer(
-					stmt => AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(int?), typeof(decimal?), typeof(int?), typeof(int?)}));
+					stmt => SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(int?), typeof(decimal?), typeof(int?), typeof(int?)}));
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Expect(fields, 2 + 1 + 5 + 4, 2m + 1m + 5m + 4m, 2 + 11 + 25 + 34, 402 + 411 + 425 + 434);
 				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, 1, 1m, 1, 101);
@@ -213,6 +214,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					env,
 					epl,
 					"Failed to validate select-clause expression 'Beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
+				
+				epl = "select Strvals.sumOf(v => null) from SupportCollection";
+				TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'Strvals.sumOf()': Failed to validate enumeration method 'sumOf', expected a non-null result for expression parameter 0 but received a null-typed expression");
 			}
 		}
 

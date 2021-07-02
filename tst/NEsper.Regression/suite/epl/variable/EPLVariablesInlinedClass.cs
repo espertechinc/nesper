@@ -24,8 +24,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 		public static IList<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLVariablesInlinedClassLocal());
+			WithLocal(execs);
+			WithGlobal(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithGlobal(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new EPLVariablesInlinedClassGlobal());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLocal(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new EPLVariablesInlinedClassLocal());
 			return execs;
 		}
 

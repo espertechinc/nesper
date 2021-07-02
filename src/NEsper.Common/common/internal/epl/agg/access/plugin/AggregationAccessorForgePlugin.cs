@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             AggregationForgeFactoryAccessPlugin parent,
             AggregationMultiFunctionAccessorModeManaged mode)
         {
-            this._parent = parent;
-            this._mode = mode;
+            _parent = parent;
+            _mode = mode;
         }
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)

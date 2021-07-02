@@ -47,6 +47,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
@@ -380,7 +381,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 isOnSelect,
                 services.ImportServiceCompileTime,
                 statementRawInfo,
-                services.SerdeResolver);
+                services.SerdeResolver,
+                services.StateMgmtSettingsProvider);
             additionalForgeables.AddRange(aggregationServiceForgeDesc.AdditionalForgeables);
 
             // Compare local-aggregation versus group-by
@@ -520,10 +522,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     !isOutputLimitingNoSnapshot &&
                     spec.RowLimitSpec == null) {
                     Log.Debug(".getProcessor Using no result processor");
-                    var throughFactoryForge = new ResultSetProcessorHandThroughFactoryForge(
-                        resultEventType,
-                        selectExprProcessorForge,
-                        isSelectRStream);
+                    var throughFactoryForge = new ResultSetProcessorHandThroughFactoryForge(isSelectRStream);
                     return new ResultSetProcessorDesc(
                         throughFactoryForge,
                         ResultSetProcessorType.HANDTHROUGH,
@@ -544,15 +543,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 // We need to process the select expression in a simple fashion, with each event (old and new)
                 // directly generating one row, and no need to update aggregate state since there is no aggregate function.
                 // There might be some order-by expressions.
+                Supplier<StateMgmtSetting> outputAllHelperSettings = () => services.StateMgmtSettingsProvider.GetResultSet(
+                    statementRawInfo,
+                    AppliesTo.RESULTSET_SIMPLE_OUTPUTALL);
                 var simpleForge = new ResultSetProcessorSimpleForge(
                     resultEventType,
-                    selectExprProcessorForge,
                     optionalHavingForge,
                     isSelectRStream,
                     outputLimitSpec,
                     outputConditionType,
                     hasOrderBy,
-                    typeService.EventTypes);
+                    typeService.EventTypes,
+                    outputAllHelperSettings);
                 return new ResultSetProcessorDesc(
                     simpleForge,
                     ResultSetProcessorType.UNAGGREGATED_UNGROUPED,
@@ -578,15 +580,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 havingAggregateExprNodes.IsEmpty() &&
                 !isLast &&
                 !isFirst) {
+                Supplier<StateMgmtSetting> outputAllHelperSettings = () => services.StateMgmtSettingsProvider.GetResultSet(
+                    statementRawInfo, AppliesTo.RESULTSET_SIMPLE_OUTPUTALL);
                 var simpleForge = new ResultSetProcessorSimpleForge(
                     resultEventType,
-                    selectExprProcessorForge,
                     optionalHavingForge,
                     isSelectRStream,
                     outputLimitSpec,
                     outputConditionType,
                     hasOrderBy,
-                    typeService.EventTypes);
+                    typeService.EventTypes,
+                    outputAllHelperSettings);
                 return new ResultSetProcessorDesc(
                     simpleForge,
                     ResultSetProcessorType.UNAGGREGATED_UNGROUPED,
@@ -615,16 +619,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     localGroupByMatchesGroupBy &&
                     (viewResourceDelegate == null || viewResourceDelegate.PreviousRequests.IsEmpty())) {
                     Log.Debug(".getProcessor Using ResultSetProcessorRowForAll");
+                    Supplier<StateMgmtSetting> outputAllHelperSettingsX = () => services.StateMgmtSettingsProvider.GetResultSet(
+                        statementRawInfo, AppliesTo.RESULTSET_FULLYAGGREGATED_OUTPUTALL);
                     var allForge = new ResultSetProcessorRowForAllForge(
                         resultEventType,
-                        selectExprProcessorForge,
                         optionalHavingForge,
                         isSelectRStream,
                         isUnidirectional,
                         isHistoricalOnly,
                         outputLimitSpec,
                         hasOrderBy,
-                        outputConditionType);
+                        outputAllHelperSettingsX);
                     return new ResultSetProcessorDesc(
                         allForge,
                         ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED,
@@ -645,16 +650,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
                 // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
                 Log.Debug(".getProcessor Using ResultSetProcessorRowPerEventImpl");
+                Supplier<StateMgmtSetting> outputAllHelperSettings = () => services.StateMgmtSettingsProvider.GetResultSet(
+                    statementRawInfo, AppliesTo.RESULTSET_ROWPEREVENT_OUTPUTALL);
                 var eventForge = new ResultSetProcessorRowPerEventForge(
                     selectExprProcessorForge.ResultEventType,
-                    selectExprProcessorForge,
                     optionalHavingForge,
                     isSelectRStream,
                     isUnidirectional,
                     isHistoricalOnly,
                     outputLimitSpec,
-                    outputConditionType,
-                    hasOrderBy);
+                    hasOrderBy,
+                    outputAllHelperSettings);
                 return new ResultSetProcessorDesc(
                     eventForge,
                     ResultSetProcessorType.AGGREGATED_UNGROUPED,
@@ -730,6 +736,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         PlanSerdes(typeService, additionalForgeables, statementRawInfo, services);
                     }
 
+                    Supplier<StateMgmtSetting> outputFirstSettings = () =>
+                        services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROLLUP_OUTPUTFIRST);
+                    Supplier<StateMgmtSetting> outputAllSettings = () =>
+                        services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROLLUP_OUTPUTALL);
+                    Supplier<StateMgmtSetting> outputLastSettings = () =>
+                        services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROLLUP_OUTPUTLAST);
+                    Supplier<StateMgmtSetting> outputSnapshotSettings = () =>
+                        services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROLLUP_OUTPUTSNAPSHOT);
+
                     factoryForge = new ResultSetProcessorRowPerGroupRollupForge(
                         resultEventType,
                         rollupPerLevelForges,
@@ -746,7 +761,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         outputConditionType,
                         optionalOutputFirstConditionFactoryForge,
                         typeService.EventTypes,
-                        groupByMultiKey);
+                        groupByMultiKey,
+                        outputFirstSettings,
+                        outputAllSettings,
+                        outputLastSettings,
+                        outputSnapshotSettings);
                     
                     type = ResultSetProcessorType.FULLYAGGREGATED_GROUPED_ROLLUP;
                     selectExprProcessorForges = rollupPerLevelForges.SelectExprProcessorForges;
@@ -758,6 +777,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     if (unboundedProcessor) {
                         PlanSerdes(typeService, additionalForgeables, statementRawInfo, services);
                     }
+                    
+                    Supplier<StateMgmtSetting> unboundGroupRepSettings = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROWPERGROUP_UNBOUND);
+                    Supplier<StateMgmtSetting> outputFirstSettings = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROWPERGROUP_OUTPUTFIRST);
+                    Supplier<StateMgmtSetting> outputAllSettings = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROWPERGROUP_OUTPUTALL);
+                    Supplier<StateMgmtSetting> outputAllOptSettings = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROWPERGROUP_OUTPUTALL_OPT);
+                    Supplier<StateMgmtSetting> outputLastOptSettings = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_ROWPERGROUP_OUTPUTLAST_OPT);
 
                     factoryForge = new ResultSetProcessorRowPerGroupForge(
                         resultEventType,
@@ -773,7 +798,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         typeService.EventTypes,
                         optionalOutputFirstConditionFactoryForge,
                         groupByMultiKey,
-                        unboundedProcessor);
+                        unboundedProcessor,
+                        unboundGroupRepSettings,
+                        outputFirstSettings,
+                        outputAllSettings,
+                        outputAllOptSettings,
+                        outputLastOptSettings);
 
                     type = ResultSetProcessorType.FULLYAGGREGATED_GROUPED;
                     selectExprProcessorForges = new[] {selectExprProcessorForge};
@@ -805,6 +835,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             // (6)
             // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
             // function are not listed in the group-by clause (output one row per event, not one row per group)
+            Supplier<StateMgmtSetting> outputFirstSettingsX = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_AGGREGATEGROUPED_OUTPUTFIRST);
+            Supplier<StateMgmtSetting> outputAllSettingsX = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_AGGREGATEGROUPED_OUTPUTALL);
+            Supplier<StateMgmtSetting> outputAllOptSettingsX = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_AGGREGATEGROUPED_OUTPUTALL_OPT);
+            Supplier<StateMgmtSetting> outputLastOptSettingsX = () => services.StateMgmtSettingsProvider.GetResultSet(statementRawInfo, AppliesTo.RESULTSET_AGGREGATEGROUPED_OUTPUTLAST_OPT);
+
             ResultSetProcessorAggregateGroupedForge forge = new ResultSetProcessorAggregateGroupedForge(
                 resultEventType,
                 groupByNodesValidated,
@@ -817,7 +852,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 outputConditionType,
                 optionalOutputFirstConditionFactoryForge,
                 typeService.EventTypes,
-                groupByMultiKey);
+                groupByMultiKey,
+                outputFirstSettingsX,
+                outputAllSettingsX,
+                outputAllOptSettingsX,
+                outputLastOptSettingsX);
 
             return new ResultSetProcessorDesc(
                 forge,

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateExpression),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<StatementAgentInstanceFactoryCreateExpression>(

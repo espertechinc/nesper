@@ -19,11 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 {
     public abstract class PropertyHashedEventTable : EventTable
     {
-        internal readonly PropertyHashedEventTableFactory Factory;
+        internal readonly PropertyHashedEventTableFactory factory;
 
         public PropertyHashedEventTable(PropertyHashedEventTableFactory factory)
         {
-            Factory = factory;
+            this.factory = factory;
         }
 
         public abstract void Add(
@@ -91,14 +91,14 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             }
         }
 
-        public EventTableOrganization Organization => Factory.Organization;
+        public EventTableOrganization Organization => factory.Organization;
 
         public string ToQueryPlan()
         {
-            return Factory.ToQueryPlan();
+            return factory.ToQueryPlan();
         }
 
-        public MultiKeyFromObjectArray MultiKeyTransform => Factory.MultiKeyTransform;
+        public MultiKeyFromObjectArray MultiKeyTransform => factory.multiKeyTransform;
 
         public abstract ISet<EventBean> Lookup(object key);
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         /// <returns>multi key</returns>
         protected object GetKey(EventBean theEvent)
         {
-            return Factory.PropertyGetter.Get(theEvent);
+            return factory.propertyGetter.Get(theEvent);
         }
 
         public override string ToString()

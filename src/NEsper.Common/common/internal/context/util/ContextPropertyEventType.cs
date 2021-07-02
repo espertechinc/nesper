@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -35,18 +36,38 @@ namespace com.espertech.esper.common.@internal.context.util
                 properties.Put(filter.OptionalFilterAsName, filter.FilterSpecCompiled.FilterForEventType);
             }
 
-            if (endpoint is ContextSpecConditionPattern) {
-                var pattern = (ContextSpecConditionPattern) endpoint;
-                foreach (var entry in pattern.PatternCompiled.TaggedEventTypes) {
-                    if (properties.ContainsKey(entry.Key) && !properties.Get(entry.Key).Equals(entry.Value.First)) {
-                        throw new ExprValidationException(
-                            "The stream or tag name '" + entry.Key + "' is already declared");
+            if (endpoint is ContextSpecConditionPattern pattern) {
+                if (pattern.AsName == null) {
+                    foreach (var entry in pattern.PatternCompiled.TaggedEventTypes) {
+                        if (properties.ContainsKey(entry.Key) && !properties.Get(entry.Key).Equals(entry.Value.First)) {
+                            throw new ExprValidationException(
+                                "The stream or tag name '" + entry.Key + "' is already declared");
+                        }
+
+                        allTags.Add(entry.Key);
+                        properties.Put(entry.Key, entry.Value.First);
+                    }
+                }
+                else {
+                    if (properties.ContainsKey(pattern.AsName) || allTags.Contains(pattern.AsName)) {
+                        throw new ExprValidationException("The stream or tag name '" + pattern.AsName + "' is already declared");
                     }
 
-                    allTags.Add(entry.Key);
-                    properties.Put(entry.Key, entry.Value.First);
+                    if (pattern.AsNameEventType == null) {
+                        throw new IllegalStateException("no event type assigned");
+                    }
+
+                    properties.Put(pattern.AsName, pattern.AsNameEventType);
+                    allTags.Add(pattern.AsName);
                 }
             }
+        }
+
+        public static int GetStreamNumberForNestingLevel(
+            int nestingLevel,
+            bool isStartCondition)
+        {
+            return nestingLevel * 10 + (isStartCondition ? 0 : 1);
         }
     }
 } // end of namespace

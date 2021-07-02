@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -56,12 +57,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (EvaluationType == typeof(void)) {
+            if (EvaluationType.IsVoid()) {
                 return Noop();
             }
 
             var initMethod = codegenClassScope.NamespaceScope.InitMethod;
-            var evaluate = CodegenLegoMethodExpression.CodegenExpression(_inner, initMethod, codegenClassScope, true);
+            var evaluate = CodegenLegoMethodExpression.CodegenExpression(_inner, initMethod, codegenClassScope);
             return codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 EvaluationType,

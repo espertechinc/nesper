@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationForgeFactoryAccessSorted : AggregationForgeFactoryAccessBase
     {
-        private readonly AggregationAgentForge optionalAgent;
+        private readonly AggregationAgentForge _optionalAgent;
 
-        private readonly AggregationMultiFunctionStateKey optionalStateKey;
+        private readonly AggregationMultiFunctionStateKey _optionalStateKey;
 
         public AggregationForgeFactoryAccessSorted(
             ExprAggMultiFunctionSortedMinMaxByNode parent,
@@ -40,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             AccessorForge = accessor;
             ResultType = accessorResultType;
             ContainedEventType = containedEventType;
-            this.optionalStateKey = optionalStateKey;
+            this._optionalStateKey = optionalStateKey;
             OptionalSortedStateDesc = optionalSortedStateDesc;
-            this.optionalAgent = optionalAgent;
+            this._optionalAgent = optionalAgent;
         }
 
         public override Type ResultType { get; }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public override AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-            return optionalStateKey;
+            return _optionalStateKey;
         }
 
         public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             ImportService importService,
             string statementName)
         {
-            return optionalAgent;
+            return _optionalAgent;
         }
     }
 } // end of namespace

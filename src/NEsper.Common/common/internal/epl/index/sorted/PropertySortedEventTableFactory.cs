@@ -9,7 +9,9 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.util;
 
@@ -22,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
     public class PropertySortedEventTableFactory : EventTableFactory
     {
         protected internal readonly EventPropertyValueGetter propertyGetter;
-        protected internal readonly string propertyName;
-        protected internal readonly int streamNum;
+        private readonly string propertyName;
+        private readonly int streamNum;
         protected internal readonly Type valueType;
 
         public PropertySortedEventTableFactory(
@@ -53,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             EventTableOrganizationType.BTREE);
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
             return new EventTable[] {new PropertySortedEventTableImpl(this)};

@@ -25,15 +25,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly int granularity;
-        private readonly ExprNode[] nodes;
+        private readonly int _granularity;
+        private readonly ExprNode[] _nodes;
 
         public ContextControllerHashedGetterHashMultiple(
             IList<ExprNode> expressions,
             int granularity)
         {
-            nodes = ExprNodeUtilityQuery.ToArray(expressions);
-            this.granularity = granularity;
+            _nodes = ExprNodeUtilityQuery.ToArray(expressions);
+            this._granularity = granularity;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -53,16 +53,16 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
-            var expressions = new CodegenExpression[nodes.Length];
-            for (var i = 0; i < nodes.Length; i++) {
-                expressions[i] = nodes[i].Forge.EvaluateCodegen(typeof(object), exprMethod, exprSymbol, classScope);
+            var expressions = new CodegenExpression[_nodes.Length];
+            for (var i = 0; i < _nodes.Length; i++) {
+                expressions[i] = _nodes[i].Forge.EvaluateCodegen(typeof(object), exprMethod, exprSymbol, classScope);
             }
 
             exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 
             var hashCode = Ref("hashCode");
             exprMethod.Block.DeclareVar<int>(hashCode.Ref, Constant(0));
-            for (var i = 0; i < nodes.Length; i++) {
+            for (var i = 0; i < _nodes.Length; i++) {
                 var result = Ref("result" + i);
                 exprMethod.Block
                     .DeclareVar<object>(result.Ref, expressions[i])
@@ -72,8 +72,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
             exprMethod.Block
                 .IfCondition(Relational(hashCode, CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
-                .BlockReturn(Op(hashCode, "%", Constant(granularity)))
-                .MethodReturn(Op(Op(hashCode, "%", Constant(granularity)), "*", Constant(-1)));
+                .BlockReturn(Op(hashCode, "%", Constant(_granularity)))
+                .MethodReturn(Op(Op(hashCode, "%", Constant(_granularity)), "*", Constant(-1)));
 
             method.Block.MethodReturn(LocalMethod(exprMethod, Ref("events"), ConstantTrue(), ConstantNull()));
             return LocalMethod(method, beanExpression);

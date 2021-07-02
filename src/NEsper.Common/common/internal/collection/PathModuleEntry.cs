@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.collection
             _modules = new Dictionary<string, PathDeploymentEntry<TE>>().WithNullKeySupport();
         }
 
-        public PathModuleEntry(IDictionary<String, PathDeploymentEntry<TE>> modules)
+        public PathModuleEntry(IDictionary<string, PathDeploymentEntry<TE>> modules)
         {
             _modules = modules;
         }
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.collection
         }
         
         public PathModuleEntry<TE> Copy() {
-            var copy = new HashMap<String, PathDeploymentEntry<TE>>();
+            var copy = new HashMap<string, PathDeploymentEntry<TE>>();
             foreach (var entry in _modules) {
                 PathDeploymentEntry<TE> copyEntry = entry.Value.Copy();
                 copy[entry.Key] = copyEntry;

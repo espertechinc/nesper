@@ -183,7 +183,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 					throw MakeUnboundValidationEx(stateType);
 				}
 
-				resultType = childNodes[0].Forge.EvaluationType;
+				var childType = childNodes[0].Forge.EvaluationType;
+				if (childType.IsNullType()) {
+					throw new ExprValidationException("Null-type is not allowed");
+				}
+				
+				resultType = childType;
 				forge = childNodes[0].Forge;
 				if (streamNum >= streamTypeService.EventTypes.Length) {
 					containedType = streamTypeService.EventTypes[0];
@@ -402,7 +407,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			ExprNodeRenderableFlags flags)
 		{
 			writer.Write(_stateType?.GetNameInvariant());
-			ExprNodeUtilityPrint.ToExpressionStringParams(writer, this.ChildNodes);
+			ExprNodeUtilityPrint.ToExpressionStringParams(writer, ChildNodes);
 		}
 
 		public AggregationAccessorLinearType? StateType => _stateType;

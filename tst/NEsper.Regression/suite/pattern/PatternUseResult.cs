@@ -41,42 +41,42 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithBooleanExprRemoveConsiderArrayTag(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternBooleanExprRemoveConsiderArrayTag());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBooleanExprRemoveConsiderTag(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternBooleanExprRemoveConsiderTag());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternTypeCacheForRepeat(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternPatternTypeCacheForRepeat());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedByFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedByFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithObjectId(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternObjectId());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNumeric(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternNumeric());
             return execs;
         }

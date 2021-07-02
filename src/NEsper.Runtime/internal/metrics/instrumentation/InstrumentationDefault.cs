@@ -1472,7 +1472,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
         }
 
         public void QExprDotChain(
-            EPType targetTypeInfo,
+            EPChainableType targetTypeInfo,
             object target,
             int numUnpacking)
         {
@@ -1506,7 +1506,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
         }
 
         public void AExprDotChainElement(
-            EPType typeInfo,
+            EPChainableType typeInfo,
             object result)
         {
         }

@@ -18,20 +18,20 @@ namespace com.espertech.esper.regressionlib.support.extend.view
     public class MyFlushedSimpleView : ViewSupport,
         AgentInstanceMgmtCallback
     {
-        private IList<EventBean> events;
-        private EventType eventType;
+        private IList<EventBean> _events;
+        private EventType _eventType;
 
         public MyFlushedSimpleView(AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
-            events = new List<EventBean>();
+            _events = new List<EventBean>();
         }
 
-        public override EventType EventType => eventType;
+        public override EventType EventType => _eventType;
 
         public void Stop(AgentInstanceStopServices services)
         {
-            child.Update(events.ToArray(), null);
-            events = new List<EventBean>();
+            child.Update(_events.ToArray(), null);
+            _events = new List<EventBean>();
         }
 
         public void Transfer(AgentInstanceTransferServices services)
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.extend.view
             set {
                 base.Parent = value;
                 if (value != null) {
-                    eventType = value.EventType;
+                    _eventType = value.EventType;
                 }
             }
         }
@@ -53,14 +53,14 @@ namespace com.espertech.esper.regressionlib.support.extend.view
         {
             if (newData != null) {
                 for (var i = 0; i < newData.Length; i++) {
-                    events.Add(newData[0]);
+                    _events.Add(newData[0]);
                 }
             }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return events.GetEnumerator();
+            return _events.GetEnumerator();
         }
 
         public override string ToString()

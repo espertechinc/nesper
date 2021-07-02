@@ -17,13 +17,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 {
     public class ResultSetProcessorRowPerEventOutputAllHelperImpl : ResultSetProcessorRowPerEventOutputAllHelper
     {
-        private readonly ResultSetProcessorRowPerEvent processor;
-        private readonly Deque<EventBean> eventsOld = new ArrayDeque<EventBean>(2);
-        private readonly Deque<EventBean> eventsNew = new ArrayDeque<EventBean>(2);
+        private readonly ResultSetProcessorRowPerEvent _processor;
+        private readonly Deque<EventBean> _eventsOld = new ArrayDeque<EventBean>(2);
+        private readonly Deque<EventBean> _eventsNew = new ArrayDeque<EventBean>(2);
 
         public ResultSetProcessorRowPerEventOutputAllHelperImpl(ResultSetProcessorRowPerEvent processor)
         {
-            this.processor = processor;
+            this._processor = processor;
         }
 
         public void ProcessView(
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             EventBean[] oldData,
             bool isGenerateSynthetic)
         {
-            UniformPair<EventBean[]> pair = processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
+            UniformPair<EventBean[]> pair = _processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
             Apply(pair);
         }
 
@@ -40,22 +40,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
-            UniformPair<EventBean[]> pair = processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+            UniformPair<EventBean[]> pair = _processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
             Apply(pair);
         }
 
         public UniformPair<EventBean[]> Output()
         {
-            EventBean[] oldEvents = EventBeanUtility.ToArrayNullIfEmpty(eventsOld);
-            EventBean[] newEvents = EventBeanUtility.ToArrayNullIfEmpty(eventsNew);
+            EventBean[] oldEvents = EventBeanUtility.ToArrayNullIfEmpty(_eventsOld);
+            EventBean[] newEvents = EventBeanUtility.ToArrayNullIfEmpty(_eventsNew);
 
             UniformPair<EventBean[]> result = null;
             if (oldEvents != null || newEvents != null) {
                 result = new UniformPair<EventBean[]>(newEvents, oldEvents);
             }
 
-            eventsOld.Clear();
-            eventsNew.Clear();
+            _eventsOld.Clear();
+            _eventsNew.Clear();
             return result;
         }
 
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 return;
             }
 
-            EventBeanUtility.AddToCollection(pair.First, eventsNew);
-            EventBeanUtility.AddToCollection(pair.Second, eventsOld);
+            EventBeanUtility.AddToCollection(pair.First, _eventsNew);
+            EventBeanUtility.AddToCollection(pair.Second, _eventsOld);
         }
     }
 } // end of namespace

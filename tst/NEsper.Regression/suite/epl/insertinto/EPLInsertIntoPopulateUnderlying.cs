@@ -14,6 +14,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -59,35 +60,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowAggregationAtEventBean(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoWindowAggregationAtEventBean());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayMapInsert(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoArrayMapInsert());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayPONOInsert(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoArrayPONOInsert());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBeanFactoryMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             //execs.Add(new EPLInsertIntoCharSequenceCompat());
             execs.Add(new EPLInsertIntoBeanFactoryMethod());
             return execs;
@@ -95,49 +96,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithPopulateUnderlyingSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoPopulateUnderlyingSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPopulateBeanObjects(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoPopulateBeanObjects());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBeanWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoBeanWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPopulateBeanSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoPopulateBeanSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBeanJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoBeanJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCtorWithPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoCtorWithPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCtor(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoCtor());
             return execs;
         }
@@ -527,7 +528,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // test local class and auto-import
                 stmtTextOne = "@Name('s0') insert into " +
-                              typeof(EPLInsertIntoPopulateUnderlying).Name +
+                              nameof(EPLInsertIntoPopulateUnderlying) +
                               "$MyLocalTarget select 1 as Value from SupportBean_N";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
                 env.SendEventBean(n1);
@@ -546,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    typeof(SupportBeanCtorOne).Name +
+                    nameof(SupportBeanCtorOne) +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanCtorOne).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.Int32'");
@@ -568,7 +569,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    typeof(SupportBeanReadOnly).Name +
+                    nameof(SupportBeanReadOnly) +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly select 'a' as geom from SupportBean]");
@@ -616,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    typeof(SupportBeanReadOnly).Name +
+                    nameof(SupportBeanReadOnly) +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]");

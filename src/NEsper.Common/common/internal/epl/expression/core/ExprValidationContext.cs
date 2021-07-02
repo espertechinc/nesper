@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprValidationContext
     {
-        private readonly ContextCompileTimeDescriptor contextDescriptor;
-        private readonly string intoTableName;
-        private readonly List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+        private readonly ContextCompileTimeDescriptor _contextDescriptor;
+        private readonly string _intoTableName;
+        private readonly List<StmtClassForgeableFactory> _additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
         public ExprValidationContext(
             StreamTypeService streamTypeService,
@@ -41,13 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             : this(
                 streamTypeService,
                 ctx.ViewResourceDelegate,
-                ctx.contextDescriptor,
+                ctx._contextDescriptor,
                 ctx.IsDisablePropertyExpressionEventCollCache,
                 ctx.IsAllowRollupFunctions,
                 ctx.IsAllowBindingConsumption,
                 ctx.IsAllowTableAggReset,
                 ctx.IsResettingAggregations,
-                ctx.intoTableName,
+                ctx._intoTableName,
                 ctx.IsFilterExpression,
                 ctx.MemberNames,
                 ctx.IsAggregationFutureNameAlreadySet,
@@ -74,13 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             StreamTypeService = streamTypeService;
             ViewResourceDelegate = viewResourceDelegate;
-            this.contextDescriptor = contextDescriptor;
+            this._contextDescriptor = contextDescriptor;
             IsDisablePropertyExpressionEventCollCache = disablePropertyExpressionEventCollCache;
             IsAllowRollupFunctions = allowRollupFunctions;
             IsAllowBindingConsumption = allowBindingConsumption;
             IsAllowTableAggReset = allowTableAggReset;
             IsResettingAggregations = isUnidirectionalJoin;
-            this.intoTableName = intoTableName;
+            this._intoTableName = intoTableName;
             IsFilterExpression = isFilterExpression;
             MemberNames = memberName;
             IsAggregationFutureNameAlreadySet = aggregationFutureNameAlreadySet;
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => StatementCompileTimeService.SerdeEventTypeRegistry;
 
-        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => _additionalForgeables;
 
         public bool IsAllowTableAggReset { get; }
     }

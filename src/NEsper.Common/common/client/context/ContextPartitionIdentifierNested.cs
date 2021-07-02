@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.context
         /// <value>identifiers</value>
         public ContextPartitionIdentifier[] Identifiers {
             get { return _identifiers; }
-            set { this._identifiers = value; }
+            set { _identifiers = value; }
         }
 
         public override bool CompareTo(ContextPartitionIdentifier other)

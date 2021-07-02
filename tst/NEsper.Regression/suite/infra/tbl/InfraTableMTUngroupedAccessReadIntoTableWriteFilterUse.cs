@@ -64,10 +64,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // start
             var t1 = new Thread(writeRunnable.Run) {
-                Name = typeof(InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse).Name + "-write"
+                Name = nameof(InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse) + "-write"
             };
             var t2 = new Thread(readRunnable.Run) {
-                Name = typeof(InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse).Name + "-read"
+                Name = nameof(InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse) + "-read"
             };
             t1.Start();
             t2.Start();

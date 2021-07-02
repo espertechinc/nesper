@@ -98,13 +98,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
                 var providerExplicitMembers = new List<CodegenTypedParam>();
                 providerExplicitMembers.Add(
-                    new CodegenTypedParam(typeof(StatementResultService), MEMBERNAME_STATEMENTRESULTSVC));
-                providerExplicitMembers.Add(
                     new CodegenTypedParam(typeof(OutputProcessViewFactory), MEMBERNAME_OPVFACTORY));
 
                 if (_spec.IsCodeGenerated) {
                     // make factory and view both, assign to member
-                    MakeOPVFactory(classScope, innerClasses, providerExplicitMembers, providerCtor, ClassName);
+                    providerExplicitMembers.Add(new CodegenTypedParam(typeof(StatementResultService), MEMBERNAME_STATEMENTRESULTSVC));
+                    MakeOPVFactory(classScope, innerClasses, providerCtor, ClassName);
                     MakeOPV(
                         classScope,
                         innerClasses,
@@ -178,19 +177,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         private static void MakeOPVFactory(
             CodegenClassScope classScope,
             ICollection<CodegenInnerClass> innerClasses,
-            ICollection<CodegenTypedParam> providerExplicitMembers,
             CodegenCtor providerCtor,
             string providerClassName)
         {
-            var makeViewMethod = CodegenMethod.MakeMethod(
-                    typeof(OutputProcessView),
-                    typeof(StmtClassForgeableOPVFactoryProvider),
-                    CodegenSymbolProviderEmpty.INSTANCE,
-                    classScope)
+            var makeViewMethod = CodegenMethod
+                .MakeMethod(typeof(OutputProcessView), typeof(StmtClassForgeableOPVFactoryProvider), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(ResultSetProcessor), NAME_RESULTSETPROCESSOR)
                 .AddParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
             makeViewMethod.Block.MethodReturn(
-                NewInstanceInner(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, MEMBER_AGENTINSTANCECONTEXT));
+                NewInstanceNamed(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, MEMBER_AGENTINSTANCECONTEXT));
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
 
@@ -210,7 +205,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             providerCtor.Block.AssignRef(
                     MEMBERNAME_OPVFACTORY,
-                    NewInstanceInner(CLASSNAME_OUTPUTPROCESSVIEWFACTORY, Ref("this")))
+                    NewInstanceNamed(CLASSNAME_OUTPUTPROCESSVIEWFACTORY, Ref("this")))
                 .AssignRef(
                     MEMBERNAME_STATEMENTRESULTSVC,
                     ExprDotName(

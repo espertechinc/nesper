@@ -15,8 +15,8 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
 {
     public class MyFileExistsObserver : EventObserver
     {
-        private readonly string filename;
-        private readonly ObserverEventEvaluator observerEventEvaluator;
+        private readonly string _filename;
+        private readonly ObserverEventEvaluator _observerEventEvaluator;
 
         public MyFileExistsObserver(
             MatchedEventMap beginState,
@@ -24,20 +24,20 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
             string filename)
         {
             BeginState = beginState;
-            this.observerEventEvaluator = observerEventEvaluator;
-            this.filename = filename;
+            this._observerEventEvaluator = observerEventEvaluator;
+            this._filename = filename;
         }
 
         public MatchedEventMap BeginState { get; }
 
         public void StartObserve()
         {
-            var file = new FileInfo(filename);
+            var file = new FileInfo(_filename);
             if (file.Exists) {
-                observerEventEvaluator.ObserverEvaluateTrue(BeginState, true);
+                _observerEventEvaluator.ObserverEvaluateTrue(BeginState, true);
             }
             else {
-                observerEventEvaluator.ObserverEvaluateFalse(true);
+                _observerEventEvaluator.ObserverEvaluateFalse(true);
             }
         }
 

@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.select;
+using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
@@ -56,6 +57,18 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             Annotations = statementSpec.Annotations;
             ContextName = statementSpec.Raw.OptionalContextName;
 
+            if (ContextName != null) {
+                var contextMetaData = services.ContextCompileTimeResolver.GetContextInfo(ContextName);
+                if (contextMetaData == null) {
+                    throw new ExprValidationException("Failed to find context '" + ContextName + "'");
+                }
+
+                ContextModuleName = contextMetaData.ContextModuleName;
+            }
+            else {
+                ContextModuleName = null;
+            }
+
             var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
             if (queryPlanLogging) {
                 QUERY_PLAN_LOG.Info("Query plans for Fire-and-forget query '" + compilable.ToEPL() + "'");
@@ -67,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             HasTableAccess |= StatementLifecycleSvcUtil.IsSubqueryWithTable(
-                statementSpec.SubselectNodes, services.TableCompileTimeResolver);
+                statementSpec.SubselectNodes,
+                services.TableCompileTimeResolver);
             IsDistinct = statementSpec.SelectClauseCompiled.IsDistinct;
 
             FAFQueryMethodHelper.ValidateFAFQuery(statementSpec);
@@ -146,18 +160,27 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     }
                 }
             }
-            
+
             // handle subselects
             // first we create streams for subselects, if there are any
             var @base = new StatementBaseInfo(compilable, statementSpec, null, statementRawInfo, null);
             var subqueryNamedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-            SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                EmptyList<FilterSpecCompiled>.Instance, subqueryNamedWindowConsumers, @base, services);
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
+            var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
+                true,
+                EmptyList<FilterSpecCompiled>.Instance,
+                subqueryNamedWindowConsumers,
+                @base,
+                services);
+            var subselectActivation = subSelectActivationDesc.Subselects;
             AdditionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, namesPerStream, typesPerStream, eventTypeNames, services);
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                @base,
+                subselectActivation,
+                namesPerStream,
+                typesPerStream,
+                eventTypeNames,
+                services);
             SubselectForges = subSelectForgePlan.Subselects;
             AdditionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
 
@@ -219,9 +242,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             else {
                 Joins = null;
             }
-            
+
+            // no-from-clause with context does not currently allow order-by
+            if (Processors.Length == 0 && ContextName != null && ResultSetProcessor.OrderByProcessorFactoryForge != null) {
+                throw new ExprValidationException("Fire-and-forget queries without a from-clause and with context do not allow order-by");
+            }
+
             var multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
-                IsDistinct, ResultSetProcessor.ResultEventType, statementRawInfo, SerdeCompileTimeResolverNonHA.INSTANCE);
+                IsDistinct,
+                ResultSetProcessor.ResultEventType,
+                statementRawInfo,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
             AdditionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
             DistinctMultiKey = multiKeyPlan.ClassRef;
         }
@@ -243,6 +274,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public Attribute[] Annotations { get; }
 
         public string ContextName { get; }
+        
+        public string ContextModuleName { get; }
 
         public IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> TableAccessForges { get; }
 

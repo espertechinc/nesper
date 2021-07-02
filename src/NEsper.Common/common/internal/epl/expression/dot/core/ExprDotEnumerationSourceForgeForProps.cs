@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         public ExprDotEnumerationSourceForgeForProps(
             ExprEnumerationForge enumeration,
-            EPType returnType,
+            EPChainableType returnType,
             int? streamOfProviderIfApplicable,
             ExprEnumerationGivenEventForge enumerationGivenEvent)
             : base(returnType, streamOfProviderIfApplicable, enumeration)

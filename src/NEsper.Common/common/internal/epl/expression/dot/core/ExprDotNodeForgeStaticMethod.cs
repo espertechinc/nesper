@@ -90,11 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override Type EvaluationType {
             get {
+                Type type;
                 if (ChainForges.Length == 0) {
-                    return StaticMethod.ReturnType.GetBoxedType();
+                    type = StaticMethod.ReturnType.GetBoxedType();
+                } else {
+                    var lastInChain = ChainForges[ChainForges.Length - 1];
+                    var chainableType = lastInChain.TypeInfo;
+                    type = chainableType.GetNormalizedClass();
                 }
-
-                return ChainForges[ChainForges.Length - 1].TypeInfo.GetNormalizedClass();
+                return type.GetBoxedType();
             }
         }
 

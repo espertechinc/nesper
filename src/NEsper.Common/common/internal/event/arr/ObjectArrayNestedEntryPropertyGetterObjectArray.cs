@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayNestedEntryPropertyGetterObjectArray : ObjectArrayNestedEntryPropertyGetterBase
     {
-        private readonly ObjectArrayEventPropertyGetter arrayGetter;
+        private readonly ObjectArrayEventPropertyGetter _arrayGetter;
 
         public ObjectArrayNestedEntryPropertyGetterObjectArray(
             int propertyIndex,
@@ -30,27 +30,27 @@ namespace com.espertech.esper.common.@internal.@event.arr
             ObjectArrayEventPropertyGetter arrayGetter)
             : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
         {
-            this.arrayGetter = arrayGetter;
+            this._arrayGetter = arrayGetter;
         }
 
         public override object HandleNestedValue(object value)
         {
             if (!(value is object[])) {
                 if (value is EventBean) {
-                    return arrayGetter.Get((EventBean) value);
+                    return _arrayGetter.Get((EventBean) value);
                 }
 
                 return null;
             }
 
-            return arrayGetter.GetObjectArray((object[]) value);
+            return _arrayGetter.GetObjectArray((object[]) value);
         }
 
         public override object HandleNestedValueFragment(object value)
         {
             if (!(value is object[])) {
                 if (value is EventBean) {
-                    return arrayGetter.GetFragment((EventBean) value);
+                    return _arrayGetter.GetFragment((EventBean) value);
                 }
 
                 return null;
@@ -58,20 +58,20 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             // If the map does not contain the key, this is allowed and represented as null
             EventBean eventBean = EventBeanTypedEventFactory.AdapterForTypedObjectArray((object[]) value, FragmentType);
-            return arrayGetter.GetFragment(eventBean);
+            return _arrayGetter.GetFragment(eventBean);
         }
 
         public override bool HandleNestedValueExists(object value)
         {
             if (!(value is object[])) {
                 if (value is EventBean) {
-                    return arrayGetter.IsExistsProperty((EventBean) value);
+                    return _arrayGetter.IsExistsProperty((EventBean) value);
                 }
 
                 return false;
             }
 
-            return arrayGetter.IsObjectArrayExistsProperty((object[]) value);
+            return _arrayGetter.IsObjectArrayExistsProperty((object[]) value);
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 codegenMethodScope,
                 codegenClassScope,
                 typeof(object[]),
-                arrayGetter,
+                _arrayGetter,
                 accessType,
                 GetType());
         }

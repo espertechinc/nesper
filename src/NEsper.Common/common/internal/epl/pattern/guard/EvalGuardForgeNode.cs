@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -122,6 +123,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             writer.Write("(");
             ExprNodeUtilityPrint.ToExpressionStringParameterList(PatternGuardSpec.ObjectParameters, writer);
             writer.Write(")");
+        }
+
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_GUARD;
         }
     }
 } // end of namespace

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -30,9 +32,8 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         DataWindowViewForge,
         DataWindowViewForgeWithPrevious
     {
-        internal TimePeriodComputeForge timePeriodComputeForge;
-
-        internal ExprNode timestampExpression;
+        private TimePeriodComputeForge timePeriodComputeForge;
+        private ExprNode timestampExpression;
         private IList<ExprNode> viewParameters;
 
         public override string ViewName => "Externally-timed";
@@ -48,10 +49,11 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
@@ -81,12 +83,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(ExternallyTimedWindowViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Exttime";
         }
@@ -100,11 +102,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             method.Block
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
-                .SetProperty(
-                    factory,
-                    "TimestampEval",
-                    ExprNodeUtilityCodegen
-                        .CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
+                .SetProperty(factory, "TimestampEval", ExprNodeUtilityCodegen.CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_EXTTIMED;
         }
     }
 } // end of namespace

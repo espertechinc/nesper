@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -25,6 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			List<RegressionExecution> execs = new List<RegressionExecution>();
 			execs.Add(new ExprEnumTakeEvents());
 			execs.Add(new ExprEnumTakeScalar());
+			execs.Add(new ExprEnumTakeInvalid());
 			return execs;
 		}
 
@@ -41,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Contained.takeLast(2)");
 				builder.WithExpression(fields[5], "Contained.takeLast(1)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3"))
 					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
@@ -92,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[2], "Strvals.takeLast(2)");
 				builder.WithExpression(fields[3], "Strvals.takeLast(1)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2"))
@@ -109,6 +111,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				AssertSingleAndEmptySupportColl(builder, fields);
 
 				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumTakeInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+
+				epl = "select Strvals.take(null) from SupportCollection";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'Strvals.take(null)': Failed to validate enumeration method 'take', expected a non-null result for expression parameter 0 but received a null-typed expression");
 			}
 		}
 	}

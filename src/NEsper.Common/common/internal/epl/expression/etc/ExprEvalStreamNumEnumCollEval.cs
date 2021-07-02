@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalStreamNumEnumCollEval(ExprEnumerationEval enumeration)
         {
-            this._enumeration = enumeration;
+            _enumeration = enumeration;
         }
 
         public object Evaluate(

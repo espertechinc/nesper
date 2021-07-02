@@ -193,6 +193,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             }
 
             [Test, RunInApplicationDomain]
+            public void WithCountSumInvalid() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountSumInvalid());
+
+            [Test, RunInApplicationDomain]
             public void WithCountDistinctMultikeyWArray() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountDistinctMultikeyWArray());
 
             [Test, RunInApplicationDomain]

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class ExprSubselectAllSomeAnyNode : ExprSubselectNode
     {
-        private SubselectForgeNR evalStrategy;
+        private SubselectForgeNR _evalStrategy;
 
         /// <summary>
         ///     Ctor.
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public override void ValidateSubquery(ExprValidationContext validationContext)
         {
-            evalStrategy = SubselectNRForgeFactory.CreateStrategyAnyAllIn(
+            _evalStrategy = SubselectNRForgeFactory.CreateStrategyAnyAllIn(
                 this,
                 IsNot,
                 IsAll,
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            return evalStrategy.EvaluateMatchesCodegen(parent, symbols, classScope);
+            return _evalStrategy.EvaluateMatchesCodegen(parent, symbols, classScope);
         }
 
         protected override CodegenExpression EvalMatchesTypableMultiCodegen(

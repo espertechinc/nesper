@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             var currentTime = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-1T08:00:01.999");
 
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowFlipTimer(0, "1", 1000));
             execs.Add(new ViewTimeWindowFlipTimer(123456789, "10", 123456789 + 10 * 1000));
             execs.Add(new ViewTimeWindowFlipTimer(0, "1 months 10 milliseconds", TimePlusMonth(0, 1) + 10));
@@ -60,91 +60,91 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithWindowTimePeriodParams(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowTimePeriodParams());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowVariableTimePeriodStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowVariableTimePeriodStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowTimePeriod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowTimePeriod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowVariableStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowVariableStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowPreparedStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowPreparedStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowWPrev(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowWPrev());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowMonthScoped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowMonthScoped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSumWFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeSumWFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSumGroupBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeSumGroupBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeSum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJustSelectStar(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeJustSelectStar());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeWindowSceneOne());
             return execs;
         }

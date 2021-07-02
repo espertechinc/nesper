@@ -27,14 +27,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithRowWhereAndUDF(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWithinFilterRowWhereAndUDF());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExistsWhereAndUDF(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWithinFilterExistsWhereAndUDF());
             return execs;
         }

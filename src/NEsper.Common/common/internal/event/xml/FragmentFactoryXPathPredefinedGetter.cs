@@ -22,12 +22,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly string eventTypeName;
-        private readonly EventTypeNameResolver eventTypeResolver;
-        private readonly string propertyName;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly string _eventTypeName;
+        private readonly EventTypeNameResolver _eventTypeResolver;
+        private readonly string _propertyName;
 
-        private volatile EventType eventType;
+        private volatile EventType _eventType;
 
         public FragmentFactoryXPathPredefinedGetter(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -35,36 +35,36 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string eventTypeName,
             string propertyName)
         {
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.eventTypeResolver = eventTypeResolver;
-            this.eventTypeName = eventTypeName;
-            this.propertyName = propertyName;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._eventTypeResolver = eventTypeResolver;
+            this._eventTypeName = eventTypeName;
+            this._propertyName = propertyName;
         }
 
         public EventBean GetEvent(XmlNode result)
         {
-            if (eventType == null) {
-                var candidateEventType = eventTypeResolver.GetTypeByName(eventTypeName);
+            if (_eventType == null) {
+                var candidateEventType = _eventTypeResolver.GetTypeByName(_eventTypeName);
                 if (candidateEventType == null) {
                     Log.Warn(
-                        "Event type by name '" + eventTypeName + "' was not found for property '" + propertyName + "'");
+                        "Event type by name '" + _eventTypeName + "' was not found for property '" + _propertyName + "'");
                     return null;
                 }
 
                 if (!(candidateEventType is BaseXMLEventType)) {
                     Log.Warn(
                         "Event type by name '" +
-                        eventTypeName +
+                        _eventTypeName +
                         "' is not an XML event type for property '" +
-                        propertyName +
+                        _propertyName +
                         "'");
                     return null;
                 }
 
-                eventType = candidateEventType;
+                _eventType = candidateEventType;
             }
 
-            return eventBeanTypedEventFactory.AdapterForTypedDOM(result, eventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedDOM(result, _eventType);
         }
     }
 } // end of namespace

@@ -21,6 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
-        ExprEvaluatorContext GetAgentInstanceContext();
+        ExprEvaluatorContext ExprEvaluatorContext { get; }
     }
 } // end of namespace

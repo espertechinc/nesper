@@ -35,28 +35,28 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithIgnorableUses(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleUsesIgnorableUses());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnresolvedUses(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleUsesUnresolvedUses());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCircular(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleUsesCircular());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrder(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileModuleUsesOrder());
             return execs;
         }

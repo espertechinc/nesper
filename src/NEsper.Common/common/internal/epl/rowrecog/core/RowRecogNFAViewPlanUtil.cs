@@ -29,6 +29,8 @@ using com.espertech.esper.common.@internal.epl.rowrecog.expr;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.statemgmtsettings;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -57,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // Expanded pattern already there
-            RowRecogExprNode expandedPatternNode = matchRecognizeSpec.Pattern;
+            var expandedPatternNode = matchRecognizeSpec.Pattern;
 
             // Determine single-row and multiple-row variables
             var variablesSingle = new LinkedHashSet<string>();
@@ -111,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var previousNodes = new OrderedListDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
 
             for (var defineIndex = 0; defineIndex < matchRecognizeSpec.Defines.Count; defineIndex++) {
-                MatchRecognizeDefineItem defineItem = matchRecognizeSpec.Defines[defineIndex];
+                var defineItem = matchRecognizeSpec.Defines[defineIndex];
                 if (definedVariables.Contains(defineItem.Identifier)) {
                     throw new ExprValidationException(
                         "Variable '" + defineItem.Identifier + "' has already been defined");
@@ -225,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     variablesMultiple,
                     @base,
                     services);
-                foreach (AggregationServiceForgeDesc svc in aggregationServices) {
+                foreach (var svc in aggregationServices) {
                     if (svc != null) {
                         additionalForgeables.AddAll(svc.AdditionalForgeables);
                     }
@@ -303,6 +305,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // validate partition-by expressions, if any
             ExprNode[] partitionBy;
             MultiKeyClassRef partitionMultiKey;
+            StateMgmtSetting partitionMgmtStateMgmtSettings = StateMgmtSettingDefault.INSTANCE;
+
             if (!matchRecognizeSpec.PartitionByExpressions.IsEmpty()) {
                 StreamTypeService typeServicePartition = new StreamTypeServiceImpl(
                     parentEventType,
@@ -323,16 +327,19 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 matchRecognizeSpec.PartitionByExpressions = validated;
                 partitionBy = ExprNodeUtilityQuery.ToArray(validated);
-                MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(partitionBy, false, @base.StatementRawInfo, services.SerdeResolver);
+                var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(partitionBy, false, @base.StatementRawInfo, services.SerdeResolver);
                 partitionMultiKey = multiKeyPlan.ClassRef;
                 additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
+                partitionMgmtStateMgmtSettings = services.StateMgmtSettingsProvider.GetRowRecog(statementRawInfo, AppliesTo.ROWRECOG_PARTITIONED);
             }
             else {
+                partitionMgmtStateMgmtSettings = services.StateMgmtSettingsProvider.GetRowRecog(statementRawInfo, AppliesTo.ROWRECOG_UNPARTITIONED);
                 partitionBy = null;
                 partitionMultiKey = null;
             }
 
             // validate interval if present
+            StateMgmtSetting scheduleMgmtStateMgmtSettings = StateMgmtSettingDefault.INSTANCE;
             if (matchRecognizeSpec.Interval != null) {
                 var validationContext =
                     new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services)
@@ -343,6 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     matchRecognizeSpec.Interval.TimePeriodExpr,
                     validationContext);
                 matchRecognizeSpec.Interval.TimePeriodExpr = validated;
+                scheduleMgmtStateMgmtSettings = services.StateMgmtSettingsProvider.GetRowRecog(statementRawInfo, AppliesTo.ROWRECOG_SCHEDULE);
             }
 
             // compile variable definition expressions
@@ -432,7 +440,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
             }
 
-            RowRecogDescForge forge = new RowRecogDescForge(
+            var forge = new RowRecogDescForge(
                 parentEventType,
                 rowEventType,
                 compositeEventType,
@@ -458,7 +466,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 columnNames,
                 intervalCompute,
                 previousRandomAccessIndexes,
-                aggregationServices);
+                aggregationServices,
+                partitionMgmtStateMgmtSettings,
+                scheduleMgmtStateMgmtSettings);
             
             return new RowRecogPlan(forge, additionalForgeables);
         }
@@ -561,7 +571,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var declareds = Arrays.AsList(@base.StatementSpec.DeclaredExpressions);
             foreach (var entry in measureExprAggNodesPerStream) {
                 EventType[] typesPerStream = {allTypes[entry.Key]};
-                AggregationServiceForgeDesc desc = AggregationServiceFactoryFactory.GetService(
+                var desc = AggregationServiceFactoryFactory.GetService(
                     entry.Value,
                     EmptyDictionary<ExprNode, string>.Instance, 
                     declareds,
@@ -586,7 +596,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     false,
                     services.ImportServiceCompileTime,
                     @base.StatementRawInfo,
-                    services.SerdeResolver);
+                    services.SerdeResolver,
+                    services.StateMgmtSettingsProvider);
 
                 aggServices[entry.Key] = desc;
             }
@@ -776,7 +787,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                             multievent.Put(identifier, new[] {parentViewType});
                         }
                         else {
-                            multievent.Put("esper_matchrecog_internal", null);
+                            multievent.Put("esper_matchrecog_internal", TypeHelper.NullType);
                         }
                     }
                 }

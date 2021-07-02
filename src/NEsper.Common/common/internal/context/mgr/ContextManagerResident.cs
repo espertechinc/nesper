@@ -72,8 +72,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             StatementContextCreate = value;
             ContextPartitionKeySerdes = StatementContextCreate.ContextServiceFactory
                 .GetContextPartitionKeyBindings(ContextDefinition);
-            ContextPartitionIdService = StatementContextCreate.ContextServiceFactory
-                .GetContextPartitionIdService(StatementContextCreate, ContextPartitionKeySerdes);
+            ContextPartitionIdService = StatementContextCreate.ContextServiceFactory.GetContextPartitionIdService(
+                StatementContextCreate,
+                ContextPartitionKeySerdes,
+                ContextDefinition.PartitionIdSvcStateMgmtSettings);
         }
 
         public void AddStatement(

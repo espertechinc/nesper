@@ -52,126 +52,126 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableBackwards(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableBackwards());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableFullOuterJoinBackwards(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableFullOuterJoinBackwards());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableFullOuterJoinOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableFullOuterJoinOM());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableFullOuterJoinCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableFullOuterJoinCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableFullOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableFullOuterJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> With3TableJoinVar3(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3TableJoinVar3());
             return execs;
         }
 
         public static IList<RegressionExecution> With3TableJoinVar2B(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3TableJoinVar2B());
             return execs;
         }
 
         public static IList<RegressionExecution> With3TableJoinVar2A(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3TableJoinVar2A());
             return execs;
         }
 
         public static IList<RegressionExecution> With3TableJoinVar1(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3TableJoinVar1());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternJoinOutputRate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPatternJoinOutputRate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPatternJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> With3TableOuterJoinVar2(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3TableOuterJoinVar2());
             return execs;
         }
 
         public static IList<RegressionExecution> With3TableOuterJoinVar1(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3TableOuterJoinVar1());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableJoinRowForAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableJoinRowForAll());
             return execs;
         }
 
         public static IList<RegressionExecution> With2TableJoinGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2TableJoinGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternUnidirectionalOuterJoinNoOn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPatternUnidirectionalOuterJoinNoOn());
             return execs;
         }
@@ -888,8 +888,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol", "Volume", "TheString", "IntPrimitive");
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name).Unidirectional(true));
-                model.FromClause.Add(FilterStream.Create(typeof(SupportBean).Name).AddView("keepall"));
+                    FilterStream.Create(nameof(SupportMarketDataBean)).Unidirectional(true));
+                model.FromClause.Add(FilterStream.Create(nameof(SupportBean)).AddView("keepall"));
                 model.FromClause.Add(OuterJoinQualifier.Create("TheString", OuterJoinType.FULL, "Symbol"));
 
                 var stmtText = "select Symbol, Volume, TheString, IntPrimitive " +

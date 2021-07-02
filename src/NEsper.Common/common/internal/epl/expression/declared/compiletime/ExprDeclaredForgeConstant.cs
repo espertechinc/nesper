@@ -9,12 +9,14 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.declared.compiletime.ExprDeclaredForgeBase;
@@ -24,11 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
     public class ExprDeclaredForgeConstant : ExprForgeInstrumentable,
         ExprEvaluator
     {
-        private readonly bool audit;
-        private readonly ExprDeclaredNodeImpl parent;
-        private readonly ExpressionDeclItem prototype;
-        private readonly string statementName;
-        private readonly object value;
+        private readonly bool _audit;
+        private readonly ExprDeclaredNodeImpl _parent;
+        private readonly Type _returnType;
+        private readonly ExpressionDeclItem _prototype;
+        private readonly string _statementName;
+        private readonly object _value;
 
         public ExprDeclaredForgeConstant(
             ExprDeclaredNodeImpl parent,
@@ -38,12 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             bool audit,
             string statementName)
         {
-            this.parent = parent;
-            EvaluationType = returnType;
-            this.prototype = prototype;
-            this.value = value;
-            this.audit = audit;
-            this.statementName = statementName;
+            this._parent = parent;
+            this._returnType = returnType;
+            this._prototype = prototype;
+            this._value = value;
+            this._audit = audit;
+            this._statementName = statementName;
         }
 
         public object Evaluate(
@@ -51,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return value;
+            return _value;
         }
 
         public ExprEvaluator ExprEvaluator => this;
@@ -62,12 +65,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (!audit) {
-                return Constant(value);
+            if (!_audit) {
+                return Constant(_value);
             }
 
+            if (_returnType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             var methodNode = codegenMethodScope.MakeChild(
-                EvaluationType,
+                _returnType,
                 typeof(ExprDeclaredForgeConstant),
                 codegenClassScope);
 
@@ -77,10 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         .Get("AuditProvider")
                         .Add(
                             "Exprdef",
-                            Constant(parent.Prototype.Name),
-                            Constant(value),
+                            Constant(_parent.Prototype.Name),
+                            Constant(_value),
                             exprSymbol.GetAddExprEvalCtx(methodNode)))
-                .MethodReturn(Constant(value));
+                .MethodReturn(Constant(_value));
             return LocalMethod(methodNode);
         }
 
@@ -98,13 +105,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     codegenMethodScope,
                     exprSymbol,
                     codegenClassScope)
-                .Qparams(GetInstrumentationQParams(parent, codegenClassScope))
+                .Qparams(GetInstrumentationQParams(_parent, codegenClassScope))
                 .Build();
         }
 
-        public Type EvaluationType { get; }
+        public Type EvaluationType => _returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => _parent;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.COMPILETIMECONST;
     }

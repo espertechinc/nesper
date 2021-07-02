@@ -21,38 +21,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprEnumerationGivenEventSymbol : CodegenSymbolProvider
     {
-        private CodegenExpressionRef optionalEventRef;
-        private CodegenExpressionRef optionalExprEvalCtxRef;
+        private CodegenExpressionRef _optionalEventRef;
+        private CodegenExpressionRef _optionalExprEvalCtxRef;
 
         public void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalExprEvalCtxRef != null) {
-                symbols.Put(optionalExprEvalCtxRef.Ref, typeof(ExprEvaluatorContext));
+            if (_optionalExprEvalCtxRef != null) {
+                symbols.Put(_optionalExprEvalCtxRef.Ref, typeof(ExprEvaluatorContext));
             }
 
-            if (optionalEventRef != null) {
-                symbols.Put(optionalEventRef.Ref, typeof(EventBean));
+            if (_optionalEventRef != null) {
+                symbols.Put(_optionalEventRef.Ref, typeof(EventBean));
             }
         }
 
         public CodegenExpressionRef GetAddExprEvalCtx(CodegenMethodScope scope)
         {
-            if (optionalExprEvalCtxRef == null) {
-                optionalExprEvalCtxRef = ExprForgeCodegenNames.REF_EXPREVALCONTEXT;
+            if (_optionalExprEvalCtxRef == null) {
+                _optionalExprEvalCtxRef = ExprForgeCodegenNames.REF_EXPREVALCONTEXT;
             }
 
-            scope.AddSymbol(optionalExprEvalCtxRef);
-            return optionalExprEvalCtxRef;
+            scope.AddSymbol(_optionalExprEvalCtxRef);
+            return _optionalExprEvalCtxRef;
         }
 
         public CodegenExpressionRef GetAddEvent(CodegenMethodScope scope)
         {
-            if (optionalEventRef == null) {
-                optionalEventRef = Ref("@event");
+            if (_optionalEventRef == null) {
+                _optionalEventRef = Ref("@event");
             }
 
-            scope.AddSymbol(optionalEventRef);
-            return optionalEventRef;
+            scope.AddSymbol(_optionalEventRef);
+            return _optionalEventRef;
         }
     }
 } // end of namespace

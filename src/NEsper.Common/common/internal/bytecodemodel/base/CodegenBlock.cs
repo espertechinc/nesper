@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         private readonly CodegenStatementWBlockBase _parentWBlock;
         private bool _closed;
 
-        private IList<CodegenStatement> _statements = new List<CodegenStatement>(4);
+        private readonly IList<CodegenStatement> _statements = new List<CodegenStatement>(4);
 
         /// <summary>
         /// Returns the current set of statements.
@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenMethod parentMethodNode,
             CodegenStatementWBlockBase parentWBlock)
         {
-            this._parentCtor = parentCtor;
-            this._parentMethodNode = parentMethodNode;
-            this._parentWBlock = parentWBlock;
+            _parentCtor = parentCtor;
+            _parentMethodNode = parentMethodNode;
+            _parentWBlock = parentWBlock;
         }
 
         public CodegenBlock()
@@ -342,18 +342,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-#if false
-        public CodegenBlock DeclareVar(
+        public CodegenBlock DeclareVarNewInstance<T>(
+            string var)
+        {
+            return DeclareVarNewInstance(typeof(T), var);
+        }
+
+        public CodegenBlock DeclareVarNewInstance(
             Type clazz,
-            Type optionalTypeVariable,
-            string var,
-            CodegenExpression initializer)
+            string var)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(clazz, optionalTypeVariable, var, initializer));
+            _statements.Add(new CodegenStatementDeclareVar(clazz, var, NewInstance(clazz)));
             return this;
         }
-#endif
 
         public CodegenBlock DeclareVarNoInit<T>(
             string var)
@@ -369,7 +371,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             _statements.Add(new CodegenStatementDeclareVar(clazz, var, null));
             return this;
         }
-
 
         public CodegenBlock DeclareVarNull<T>(
             string var)
@@ -829,7 +830,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenBlock AssignCompound(
             CodegenExpression expression,
-            String @operator,
+            string @operator,
             CodegenExpression assignment)
         {
             CheckClosed();
@@ -947,7 +948,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 statement.TraverseExpressions(consumer);
             }
         }
-
+        
         private class InstanceAccessConsumer
         {
             internal readonly Func<CodegenMethod, bool> permittedMethod;
@@ -973,7 +974,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                     }
                 }
 
-                codegenExpression.TraverseExpressions(this.Accept);
+                codegenExpression.TraverseExpressions(Accept);
             }
         }
     }

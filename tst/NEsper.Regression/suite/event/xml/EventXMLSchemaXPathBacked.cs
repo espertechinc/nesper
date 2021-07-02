@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -31,14 +32,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaXPathBackedCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaXPathBackedPreconfig());
             return execs;
         }
@@ -81,14 +82,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
 
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("prop4", typeof(string), typeof(char), false, false, false, false, false),
-                    new EventPropertyDescriptor("nested3", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false)
-                },
-                type.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                type.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("nested1", typeof(XmlNode)).WithFragment(!xpath),
+                new SupportEventPropDesc("prop4", typeof(string)).WithIndexed(false).WithComponentType(typeof(char)),
+                new SupportEventPropDesc("nested3", typeof(XmlNode)).WithFragment(!xpath),
+                new SupportEventPropDesc("customProp", typeof(double?)));
             env.UndeployModuleContaining("s0");
 
             var stmt = "@Name('s0') select nested1 as nodeProp," +
@@ -106,18 +105,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.CompileDeploy(stmt, path).AddListener("s0");
             type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nodeProp", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("nested1Prop", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("nested2Prop", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("complexProp", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("indexedProp", typeof(int?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attrOneProp", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attrTwoProp", typeof(string), typeof(char), false, false, true, false, false)
-                },
-                type.PropertyDescriptors);
+
+            SupportEventPropUtil.AssertPropsEquals(
+                type.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("nodeProp", typeof(XmlNode)).WithFragment(!xpath),
+                new SupportEventPropDesc("nested1Prop", typeof(string)).WithComponentType(typeof(char)),
+                new SupportEventPropDesc("nested2Prop", typeof(bool?)),
+                new SupportEventPropDesc("complexProp", typeof(string)).WithComponentType(typeof(char)),
+                new SupportEventPropDesc("indexedProp", typeof(int?)),
+                new SupportEventPropDesc("customProp", typeof(double?)),
+                new SupportEventPropDesc("attrOneProp", typeof(bool?)),
+                new SupportEventPropDesc("attrTwoProp", typeof(string)).WithComponentType(typeof(char))
+                );
 
             var eventDoc = SupportXML.SendDefaultEvent(env.EventService, "test", typeName);
 

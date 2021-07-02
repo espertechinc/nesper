@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         public void Attach(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             EventType = parentEventType;
         }

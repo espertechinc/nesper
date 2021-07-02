@@ -35,19 +35,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext context);
 
-        public EvaluateFunc ProcEvaluate;
+        public EvaluateFunc procEvaluate;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluate(eventsPerStream, isNewData, context);
+            return procEvaluate(eventsPerStream, isNewData, context);
         }
 
         public ProxyExprEvaluator(EvaluateFunc procEvaluate)
         {
-            ProcEvaluate = procEvaluate;
+            this.procEvaluate = procEvaluate;
         }
 
         public ProxyExprEvaluator()

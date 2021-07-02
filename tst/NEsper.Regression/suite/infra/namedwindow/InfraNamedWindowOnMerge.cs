@@ -51,63 +51,63 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static IList<RegressionExecution> WithOnMergeSetRHSEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOnMergeSetRHSEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnMergeNoWhereClauseInsertTranspose(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOnMergeNoWhereClauseInsertTranspose());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnMergeNoWhereClauseInsertSelectStar(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOnMergeNoWhereClauseInsertSelectStar());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnMergeWhere1Eq2InsertSelectStar(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOnMergeWhere1Eq2InsertSelectStar());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDocExample(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraDocExample());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPropertyInsertBean(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraPropertyInsertBean());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMergeTriggeredByAnotherWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMergeTriggeredByAnotherWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUpdateNonPropertySet(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateNonPropertySet());
             return execs;
         }

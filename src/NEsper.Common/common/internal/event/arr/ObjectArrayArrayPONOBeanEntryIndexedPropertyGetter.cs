@@ -26,10 +26,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
     public class ObjectArrayArrayPONOBeanEntryIndexedPropertyGetter : BaseNativePropertyGetter,
         ObjectArrayEventPropertyGetter
     {
-        private readonly int index;
-        private readonly BeanEventPropertyGetter nestedGetter;
+        private readonly int _index;
+        private readonly BeanEventPropertyGetter _nestedGetter;
 
-        private readonly int propertyIndex;
+        private readonly int _propertyIndex;
 
         public ObjectArrayArrayPONOBeanEntryIndexedPropertyGetter(
             int propertyIndex,
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
-            this.propertyIndex = propertyIndex;
-            this.index = index;
-            this.nestedGetter = nestedGetter;
+            this._propertyIndex = propertyIndex;
+            this._index = index;
+            this._nestedGetter = nestedGetter;
         }
 
         public override Type TargetType => typeof(object[]);
@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetObjectArray(object[] array)
         {
             // If the map does not contain the key, this is allowed and represented as null
-            var value = array[propertyIndex];
-            return BaseNestableEventUtil.GetBeanArrayValue(nestedGetter, value, index);
+            var value = array[_propertyIndex];
+            return BaseNestableEventUtil.GetBeanArrayValue(_nestedGetter, value, _index);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -114,14 +114,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array");
             method.Block
-                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueCodegen(
                             codegenMethodScope,
                             codegenClassScope,
-                            nestedGetter,
-                            index),
+                            _nestedGetter,
+                            _index),
                         Ref("value")));
             return method;
         }

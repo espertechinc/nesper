@@ -16,7 +16,22 @@ namespace com.espertech.esper.compiler.@internal.parse
 {
     public class ASTClassIdentifierHelper
     {
-        public static ClassIdentifierWArray Walk(EsperEPL2GrammarParser.ClassIdentifierWithDimensionsContext ctx)
+        public static ClassDescriptor Walk(EsperEPL2GrammarParser.ClassIdentifierNoDimensionsContext ctx)
+        {
+            if (ctx == null) {
+                return null;
+            }
+
+            string name = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
+            if (ctx.typeParameters() == null) {
+                return new ClassDescriptor(name);
+            }
+
+            var typeParameters = WalkTypeParameters(ctx.typeParameters());
+            return new ClassDescriptor(name, typeParameters, 0, false);
+        }
+
+        public static ClassDescriptor Walk(EsperEPL2GrammarParser.ClassIdentifierWithDimensionsContext ctx)
         {
             if (ctx == null)
             {
@@ -26,19 +41,43 @@ namespace com.espertech.esper.compiler.@internal.parse
             var name = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
             IList<EsperEPL2GrammarParser.DimensionsContext> dimensions = ctx.dimensions();
 
-            if (dimensions.IsEmpty())
+            if (dimensions.IsEmpty() && ctx.typeParameters() == null)
             {
-                return new ClassIdentifierWArray(name);
+                return new ClassDescriptor(name);
+            }
+            
+            var typeParameters = WalkTypeParameters(ctx.typeParameters());
+            if (dimensions.IsEmpty()) {
+                return new ClassDescriptor(name, typeParameters, 0, false);
             }
 
             var first = dimensions[0].IDENT();
             var keyword = first?.ToString().Trim().ToLowerInvariant();
-            if (keyword != null && !keyword.Equals(ClassIdentifierWArray.PRIMITIVE_KEYWORD))
-            {
-                throw ASTWalkException.From("Invalid array keyword '" + keyword + "', expected '" + ClassIdentifierWArray.PRIMITIVE_KEYWORD + "'");
+            if (keyword != null) {
+                if (!keyword.Equals(ClassDescriptor.PRIMITIVE_KEYWORD)) {
+                    throw ASTWalkException.From("Invalid array keyword '" + keyword + "', expected '" + ClassDescriptor.PRIMITIVE_KEYWORD + "'");
+                }
+                if (!typeParameters.IsEmpty()) {
+                    throw ASTWalkException.From("Cannot use the '" + ClassDescriptor.PRIMITIVE_KEYWORD + "' keyword with type parameters");
+                }
             }
 
-            return new ClassIdentifierWArray(name, dimensions.Count, keyword != null);
+            return new ClassDescriptor(name, typeParameters, dimensions.Count, keyword != null);
+        }
+
+        private static IList<ClassDescriptor> WalkTypeParameters(EsperEPL2GrammarParser.TypeParametersContext typeParameters)
+        {
+            if (typeParameters == null) {
+                return EmptyList<ClassDescriptor>.Instance;
+            }
+
+            var result = new List<ClassDescriptor>();
+            foreach (EsperEPL2GrammarParser.ClassIdentifierWithDimensionsContext typeParamCtx in typeParameters.classIdentifierWithDimensions()) {
+                ClassDescriptor typeParam = Walk(typeParamCtx);
+                result.Add(typeParam);
+            }
+
+            return result;
         }
     }
 } // end of namespace

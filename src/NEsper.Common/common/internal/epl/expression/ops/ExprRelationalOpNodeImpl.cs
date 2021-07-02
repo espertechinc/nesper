@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="relationalOpEnum">type of compare, ie. lt, gt, le, ge</param>
         public ExprRelationalOpNodeImpl(RelationalOpEnum relationalOpEnum)
         {
-            this._relationalOpEnum = relationalOpEnum;
+            _relationalOpEnum = relationalOpEnum;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -70,27 +71,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be either numeric or string
-            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-            var typeTwo = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
+            var lhsForge = ChildNodes[0].Forge;
+            var rhsForge = ChildNodes[1].Forge;
 
-            if ((typeOne != typeof(string)) || (typeTwo != typeof(string))) {
-                if (!typeOne.IsNumeric()) {
+            var lhsType = ValidateStringOrNumeric(lhsForge);
+            var rhsType = ValidateStringOrNumeric(rhsForge);
+            
+            if ((lhsType != typeof(string)) || (rhsType != typeof(string))) {
+                if (!lhsType.IsNumeric()) {
                     throw new ExprValidationException(
-                        "Implicit conversion from datatype '" +
-                        (typeOne == null ? "null" : typeOne.CleanName()) +
-                        "' to numeric is not allowed");
+                        "Implicit conversion from datatype '" + lhsType.TypeSafeName() + "' to numeric is not allowed");
                 }
 
-                if (!typeTwo.IsNumeric()) {
+                if (!rhsType.IsNumeric()) {
                     throw new ExprValidationException(
-                        "Implicit conversion from datatype '" +
-                        (typeTwo == null ? "null" : typeTwo.CleanName()) +
-                        "' to numeric is not allowed");
+                        "Implicit conversion from datatype '" + rhsType.TypeSafeName() + "' to numeric is not allowed");
                 }
             }
 
-            var coercionType = typeOne.GetCompareToCoercionType(typeTwo);
-            var computer = _relationalOpEnum.GetComputer(coercionType, typeOne, typeTwo);
+            var coercionType = lhsType.GetCompareToCoercionType(rhsType);
+            var computer = _relationalOpEnum.GetComputer(coercionType, lhsType, rhsType);
             _forge = new ExprRelationalOpNodeForge(this, computer, coercionType);
             return null;
         }
@@ -115,13 +115,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return false;
             }
 
-            ExprRelationalOpNodeImpl other = (ExprRelationalOpNodeImpl) node;
+            var other = (ExprRelationalOpNodeImpl) node;
+            return other._relationalOpEnum == _relationalOpEnum;
+        }
 
-            if (other._relationalOpEnum != _relationalOpEnum) {
-                return false;
+        private Type ValidateStringOrNumeric(ExprForge forge)
+        {
+            var type = forge.EvaluationType;
+            if (type.IsNullTypeSafe()) {
+                throw new ExprValidationException("Null-type value is not allow for relational operator");
             }
 
-            return true;
+            if (type == typeof(string)) {
+                return typeof(string);
+            }
+
+            return ExprNodeUtilityValidate.ValidateReturnsNumeric(forge).GetBoxedType();
         }
     }
 } // end of namespace

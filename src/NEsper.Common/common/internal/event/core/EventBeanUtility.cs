@@ -14,6 +14,7 @@ using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -569,39 +570,43 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <returns>fragment type</returns>
         public static FragmentEventType CreateNativeFragmentType(
             Type propertyType,
-            Type genericType,
             BeanEventTypeFactory beanEventTypeFactory,
             bool publicFields)
         {
+            if (propertyType == null) {
+                return null;
+            }
+
             var isIndexed = false;
 
+            Type fragmentableType = null;
+
+            if (propertyType.IsNullTypeSafe()) {
+                return null;
+            }
+            
             if (propertyType.IsArray) {
                 isIndexed = true;
-                propertyType = propertyType.GetElementType();
+                fragmentableType = propertyType.GetElementType();
             }
             else if (propertyType.IsGenericDictionary()) {
                 // Ignore this - technically enumerable
             }
             else if (propertyType.IsGenericEnumerable()) {
-                propertyType = GenericExtensions
+                fragmentableType = GenericExtensions
                     .FindGenericEnumerationInterface(propertyType)
                     .GetGenericArguments()[0];
                 isIndexed = true;
-
-#if false
-                if (genericType == null) {
-                    return null;
-                }
-
-                propertyType = genericType;
-#endif
+            }
+            else {
+                fragmentableType = propertyType;
             }
 
-            if (!propertyType.IsFragmentableType()) {
+            if (!fragmentableType.IsFragmentableType()) {
                 return null;
             }
 
-            EventType type = beanEventTypeFactory.GetCreateBeanType(propertyType, publicFields);
+            EventType type = beanEventTypeFactory.GetCreateBeanType(fragmentableType, publicFields);
             return new FragmentEventType(type, isIndexed, true);
         }
 

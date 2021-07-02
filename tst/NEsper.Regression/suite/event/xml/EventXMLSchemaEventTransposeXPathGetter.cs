@@ -33,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeXPathGetterCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeXPathGetterPreconfig());
             return execs;
         }
@@ -83,11 +83,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             // note class not a fragment
             env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, false)
-                },
-                env.Statement("s0").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("nested1", typeof(XmlNode)));
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);

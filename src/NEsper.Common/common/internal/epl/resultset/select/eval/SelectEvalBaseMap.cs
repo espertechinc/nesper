@@ -52,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenBlock block = methodNode.Block;
-            if (this.context.ExprForges.Length == 0) {
+            if (context.ExprForges.Length == 0) {
                 block.DeclareVar<IDictionary<string, object>>(
                     "props", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }));
             }
@@ -64,15 +64,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     "props", NewInstance(typeof(HashMap<string, object>)));
             }
 
-            for (int i = 0; i < this.context.ColumnNames.Length; i++) {
+            for (int i = 0; i < context.ColumnNames.Length; i++) {
                 CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
                     typeof(object),
-                    this.context.ExprForges[i],
+                    context.ExprForges[i],
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
                 block.Expression(
-                    ExprDotMethod(Ref("props"), "Put", Constant(this.context.ColumnNames[i]), expression));
+                    ExprDotMethod(Ref("props"), "Put", Constant(context.ColumnNames[i]), expression));
             }
 
             block.MethodReturn(

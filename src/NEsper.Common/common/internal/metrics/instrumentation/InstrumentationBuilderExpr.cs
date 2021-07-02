@@ -10,10 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -22,14 +25,14 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 {
     public class InstrumentationBuilderExpr
     {
-        private readonly Type generator;
-        private readonly ExprForgeInstrumentable forge;
-        private readonly string qname;
-        private readonly Type requiredType;
-        private readonly CodegenMethodScope codegenMethodScope;
-        private readonly ExprForgeCodegenSymbol exprSymbol;
-        private readonly CodegenClassScope codegenClassScope;
-        private readonly IList<CodegenExpression> qParams = new List<CodegenExpression>();
+        private readonly Type _generator;
+        private readonly ExprForgeInstrumentable _forge;
+        private readonly string _qname;
+        private readonly Type _requiredType;
+        private readonly CodegenMethodScope _codegenMethodScope;
+        private readonly ExprForgeCodegenSymbol _exprSymbol;
+        private readonly CodegenClassScope _codegenClassScope;
+        private readonly IList<CodegenExpression> _qParams = new List<CodegenExpression>();
 
         public InstrumentationBuilderExpr(
             Type generator,
@@ -40,63 +43,63 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            this.generator = generator;
-            this.forge = forge;
-            this.qname = qname;
-            this.requiredType = requiredType;
-            this.codegenMethodScope = codegenMethodScope;
-            this.exprSymbol = exprSymbol;
-            this.codegenClassScope = codegenClassScope;
+            this._generator = generator;
+            this._forge = forge;
+            this._qname = qname;
+            this._requiredType = requiredType;
+            this._codegenMethodScope = codegenMethodScope;
+            this._exprSymbol = exprSymbol;
+            this._codegenClassScope = codegenClassScope;
 
-            string text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge);
-            this.qParams.Insert(0, Constant(text));
+            var text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge);
+            _qParams.Insert(0, Constant(text));
         }
 
         public CodegenExpression Build()
         {
-            if (!codegenClassScope.IsInstrumented) {
-                return forge.EvaluateCodegenUninstrumented(
-                    requiredType,
-                    codegenMethodScope,
-                    exprSymbol,
-                    codegenClassScope);
+            if (!_codegenClassScope.IsInstrumented) {
+                return _forge.EvaluateCodegenUninstrumented(
+                    _requiredType,
+                    _codegenMethodScope,
+                    _exprSymbol,
+                    _codegenClassScope);
             }
 
-            var evaluationType = forge.EvaluationType;
-            if (evaluationType == typeof(void)) {
+            var evaluationType = _forge.EvaluationType;
+            if (evaluationType != null && evaluationType.IsVoid()) {
                 return ConstantNull();
             }
 
-            if (evaluationType == null) {
-                CodegenMethod methodX = codegenMethodScope.MakeChild(typeof(object), generator, codegenClassScope);
+            if (evaluationType.IsNullTypeSafe()) {
+                var methodX = _codegenMethodScope.MakeChild(typeof(object), _generator, _codegenClassScope);
                 methodX.Block
                     .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                     .Expression(
                         ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
-                            .Add("q" + qname, qParams.ToArray()))
+                            .Add("q" + _qname, _qParams.ToArray()))
                     .Expression(
                         ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
-                            .Add("a" + qname, ConstantNull()))
+                            .Add("a" + _qname, ConstantNull()))
                     .BlockEnd()
                     .MethodReturn(ConstantNull());
                 return LocalMethod(methodX);
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(evaluationType, generator, codegenClassScope);
-            CodegenExpression expr = forge.EvaluateCodegenUninstrumented(
+            var method = _codegenMethodScope.MakeChild(evaluationType, _generator, _codegenClassScope);
+            var expr = _forge.EvaluateCodegenUninstrumented(
                 evaluationType,
                 method,
-                exprSymbol,
-                codegenClassScope);
+                _exprSymbol,
+                _codegenClassScope);
             method.Block
                 .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                 .Expression(
                     ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
-                        .Add("q" + qname, qParams.ToArray()))
+                        .Add("q" + _qname, _qParams.ToArray()))
                 .DeclareVar(evaluationType, "result", expr)
                 .Expression(
                     ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
-                        .Add("a" + qname, Ref("result")))
+                        .Add("a" + _qname, Ref("result")))
                 .BlockReturn(Ref("result"))
                 .MethodReturn(expr);
             return LocalMethod(method);
@@ -104,19 +107,19 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         public InstrumentationBuilderExpr Noqparam()
         {
-            qParams.Clear();
+            _qParams.Clear();
             return this;
         }
 
         public InstrumentationBuilderExpr Qparam(CodegenExpression qparam)
         {
-            this.qParams.Add(qparam);
+            _qParams.Add(qparam);
             return this;
         }
 
         public InstrumentationBuilderExpr Qparams(params CodegenExpression[] qparams)
         {
-            this.qParams.AddAll(qparams);
+            _qParams.AddAll(qparams);
             return this;
         }
     }

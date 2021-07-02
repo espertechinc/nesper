@@ -49,63 +49,63 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithSplitStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSplitStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoSameModuleKeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoSameModuleKeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoFromNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoFromNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowMergeInsertIntoTable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNamedWindowMergeInsertIntoTable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoSelfAccess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoSelfAccess());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoTwoModulesUnkeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoTwoModulesUnkeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoSameModuleUnkeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoSameModuleUnkeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoAndDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraInsertIntoAndDelete());
             return execs;
         }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             EPCompiled schemaCompiled;
             if (bean) {
                 schemaCompiled = env.Compile(
-                    "create schema MySchema as " + typeof(MyP0P1Event).Name,
+                    "create schema MySchema as " + nameof(MyP0P1Event),
                     options => {
                         options.BusModifierEventType = ctx => EventTypeBusModifier.BUS;
                         options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 ConfigurationCommonMethodRef configCache =
                     agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
                 ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
-                this.DataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
+                DataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
                     dataCacheDesc,
                     agentInstanceContext,
                     factory.StreamNumber,

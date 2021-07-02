@@ -8,8 +8,10 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -23,10 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
         /// <summary>
         ///     Generates code like this (premade expr assumed):
-        ///     boolean/Boolean result = expression.evaluate(eps, isNewData, context);
-        ///     if (result == null (optional early exit if null)  ||   (!? (Boolean) result)) {
-        ///     return false/true;
+        /// <code>
+        ///     bool? result = expression.Evaluate(eps, isNewData, context);
+        ///     if (result == null || (true|false).Equals(result)) {
+        ///        return false/true;
         ///     }
+        /// </code>
         /// </summary>
         /// <param name="block">block</param>
         /// <param name="earlyExitIfNull">indicator</param>
@@ -44,10 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             bool checkFor,
             bool resultIfCheckPasses)
         {
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
-                throw new IllegalStateException("Invalid non-boolean expression");
-            }
-
+            CheckBooleanEvalType(evaluationType);
             var unboxPass = Unbox(Ref(PASS_NAME), evaluationType);
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
@@ -178,11 +179,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             // if ((pass != null) && (pass == false))
             //   equivalent
             // if (false.Equals(pass))
-            
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
-                throw new IllegalStateException("Invalid non-boolean expression");
-            }
 
+            CheckBooleanEvalType(evaluationType);
             block.DeclareVar(evaluationType, PASS_NAME, expression);
 
 #if DEPRECATED
@@ -223,10 +221,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             //   equivalent
             // if (!true.Equals(pass))
 
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
-                throw new IllegalStateException("Invalid non-boolean expression");
-            }
-
+            CheckBooleanEvalType(evaluationType);
             block.DeclareVar(evaluationType, PASS_NAME, expression);
 
 #if DEPRECATED
@@ -252,6 +247,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
             else {
                 block.IfCondition(condition).BlockReturn(returnValue);
+            }
+        }
+
+        private static void CheckBooleanEvalType(Type evaluationType)
+        {
+            if (evaluationType.IsNullTypeSafe()) {
+                throw new IllegalStateException("Invalid non-boolean expression");
+            }
+
+            if (!evaluationType.IsBoolean()) {
+                throw new IllegalStateException("Invalid non-boolean expression: \"" + evaluationType.TypeSafeName() + "\"");
             }
         }
     }

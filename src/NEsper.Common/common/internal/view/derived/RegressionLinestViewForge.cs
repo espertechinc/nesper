@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -29,29 +31,30 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// </summary>
     public class RegressionLinestViewForge : ViewFactoryForgeBase
     {
-        private IList<ExprNode> viewParameters;
+        private IList<ExprNode> _viewParameters;
 
-        private ExprNode expressionX;
-        private ExprNode expressionY;
-        internal StatViewAdditionalPropsForge additionalProps;
+        private ExprNode _expressionX;
+        private ExprNode _expressionY;
+        private StatViewAdditionalPropsForge _additionalProps;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            this.viewParameters = parameters;
+            _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             ExprNode[] validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 true,
                 viewForgeEnv,
                 streamNumber);
@@ -65,11 +68,11 @@ namespace com.espertech.esper.common.@internal.view.derived
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            expressionX = validated[0];
-            expressionY = validated[1];
+            _expressionX = validated[0];
+            _expressionY = validated[1];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
-            eventType = RegressionLinestView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+            _additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
+            eventType = RegressionLinestView.CreateEventType(_additionalProps, viewForgeEnv, streamNumber);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -81,12 +84,12 @@ namespace com.espertech.esper.common.@internal.view.derived
                 viewForgeEnv.SerdeResolver);
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(RegressionLinestViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Regression";
         }
@@ -97,19 +100,19 @@ namespace com.espertech.esper.common.@internal.view.derived
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (additionalProps != null) {
-                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
+            if (_additionalProps != null) {
+                method.Block.SetProperty(factory, "AdditionalProps", _additionalProps.Codegen(method, classScope));
             }
 
             method.Block
                 .SetProperty(
                     factory,
                     "ExpressionXEval",
-                    CodegenEvaluator(expressionX.Forge, method, this.GetType(), classScope))
+                    CodegenEvaluator(_expressionX.Forge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "ExpressionYEval",
-                    CodegenEvaluator(expressionY.Forge, method, this.GetType(), classScope));
+                    CodegenEvaluator(_expressionY.Forge, method, GetType(), classScope));
         }
 
         public override string ViewName {
@@ -118,6 +121,11 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         private string ViewParamMessage {
             get { return ViewName + " view requires two expressions providing x and y values as properties"; }
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_REGRESSIONLINEST;
         }
     }
 } // end of namespace

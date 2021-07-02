@@ -491,6 +491,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var compilerServices = new CompilerServicesImpl();
 
             var targetHA = configuration.GetType().Name.EndsWith("ConfigurationHA");
+            var stateMgmtSettingsProvider = configuration.InternalUseGetStmtMgmtProvider(options.StateMgmtSetting);
             var serdeEventTypeRegistry = new SerdeEventTypeCompileTimeRegistryImpl(targetHA);
             SerdeCompileTimeResolver serdeResolver = targetHA
                 ? MakeSerdeResolver(configuration.Compiler.Serde, configuration.Common.TransientConfiguration)
@@ -500,12 +501,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 container,
                 compilerServices,
                 configuration,
+                classProvidedCompileTimeRegistry,
+                classProvidedCompileTimeResolver,
                 contextCompileTimeRegistry,
                 contextCompileTimeResolver,
                 beanEventTypeStemService,
                 beanEventTypeFactoryPrivate,
-                classProvidedCompileTimeRegistry,
-                classProvidedCompileTimeResolver,
                 databaseConfigServiceCompileTime,
                 importServiceCompileTime,
                 exprDeclaredCompileTimeRegistry,
@@ -520,6 +521,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 moduleVisibilityRules,
                 namedWindowCompileTimeResolver,
                 namedWindowCompileTimeRegistry,
+                stateMgmtSettingsProvider,
                 classLoaderParent,
                 patternResolutionService,
                 scriptCompileTimeRegistry,
@@ -534,7 +536,6 @@ namespace com.espertech.esper.compiler.@internal.util
                 viewResolutionService,
                 xmlFragmentEventTypeFactory);
         }
-
 
         internal static ScriptCompiler MakeScriptCompiler(Configuration configuration)
         {

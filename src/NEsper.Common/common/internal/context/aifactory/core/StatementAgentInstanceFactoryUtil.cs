@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.order;
 using com.espertech.esper.compat.collections;
@@ -18,15 +19,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
     {
         public static Pair<ResultSetProcessor, AggregationService> StartResultSetAndAggregation(
             ResultSetProcessorFactoryProvider resultSetProcessorPrototype,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             bool isSubquery,
             int? subqueryNumber)
         {
             AggregationService aggregationService = null;
             if (resultSetProcessorPrototype.AggregationServiceFactory != null) {
                 aggregationService = resultSetProcessorPrototype.AggregationServiceFactory.MakeService(
-                    agentInstanceContext,
-                    null,
+                    exprEvaluatorContext,
                     isSubquery,
                     subqueryNumber,
                     null);
@@ -35,13 +35,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             OrderByProcessor orderByProcessor = null;
             if (resultSetProcessorPrototype.OrderByProcessorFactory != null) {
                 orderByProcessor = resultSetProcessorPrototype.OrderByProcessorFactory
-                    .Instantiate(agentInstanceContext);
+                    .Instantiate(exprEvaluatorContext);
             }
 
             var resultSetProcessor = resultSetProcessorPrototype.ResultSetProcessorFactory.Instantiate(
                 orderByProcessor,
                 aggregationService,
-                agentInstanceContext);
+                exprEvaluatorContext);
 
             return new Pair<ResultSetProcessor, AggregationService>(resultSetProcessor, aggregationService);
         }

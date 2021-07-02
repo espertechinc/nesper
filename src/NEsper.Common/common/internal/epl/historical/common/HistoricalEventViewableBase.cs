@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         private static readonly PollResultIndexingStrategy IteratorIndexingStrategy =
             new ProxyPollResultIndexingStrategy {
-                ProcIndex = (
+                procIndex = (
                     pollResult,
                     _,
                     __) => new EventTable[] {

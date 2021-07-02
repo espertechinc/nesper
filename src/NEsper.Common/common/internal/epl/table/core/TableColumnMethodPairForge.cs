@@ -67,14 +67,14 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 eval = ExprNodeUtilityCodegen.CodegenEvaluator(
                     new ExprConstantNodeImpl((object) null).Forge,
                     method,
-                    this.GetType(),
+                    GetType(),
                     classScope);
             }
             else if (forges.Length == 1) {
-                eval = ExprNodeUtilityCodegen.CodegenEvaluator(forges[0], method, this.GetType(), classScope);
+                eval = ExprNodeUtilityCodegen.CodegenEvaluator(forges[0], method, GetType(), classScope);
             }
             else {
-                eval = ExprNodeUtilityCodegen.CodegenEvaluatorObjectArray(forges, method, this.GetType(), classScope);
+                eval = ExprNodeUtilityCodegen.CodegenEvaluatorObjectArray(forges, method, GetType(), classScope);
             }
 
             return NewInstance<TableColumnMethodPairEval>(eval, Constant(column));

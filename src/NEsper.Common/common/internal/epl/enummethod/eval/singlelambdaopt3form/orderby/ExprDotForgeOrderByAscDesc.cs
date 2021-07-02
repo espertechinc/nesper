@@ -18,28 +18,31 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ExprDotForgeOrderByAscDesc : ExprDotForgeLambdaThreeForm
 	{
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+			return EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			return streamCountIncoming => new EnumOrderByScalarNoParams(streamCountIncoming, enumMethod == EnumMethodEnum.ORDERBYDESC);
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return lambda => inputEventType == null
-				? EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null)
-				: EPTypeHelper.CollectionOfEvents(inputEventType);
+			return lambda => {
+				ValidateNonNull(lambda.BodyForge.EvaluationType);
+				return inputEventType == null
+					? EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType)
+					: EPChainableTypeHelper.CollectionOfEvents(inputEventType);
+			};
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)

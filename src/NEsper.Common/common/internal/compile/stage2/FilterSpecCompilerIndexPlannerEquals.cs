@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var ctxNode = (ExprContextPropertyNode) right;
                 var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
-                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.Type, lookupableX.Expression);
+                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.ValueType, lookupableX.Expression);
                     return new FilterSpecParamContextPropForge(lookupableX, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
             }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     op = GetReversedOperator(constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
-                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.Type, lookupableX.Expression);
+                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.ValueType, lookupableX.Expression);
                     return new FilterSpecParamContextPropForge(lookupableX, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
             }
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var lookupableType = lookupable.Forge.EvaluationType;
             var valueType = value.Forge.EvaluationType;
             if (lookupable is ExprIdentNode) {
-                if (!FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services)) {
+                if (!HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services)) {
                     return null;
                 }
 
@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 lookupableForge = identNode.FilterLookupable;
             }
             else {
-                if (!FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services)) {
+                if (!HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services)) {
                     return null;
                 }
 
@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var numberCoercer = GetNumberCoercer(leftType, rightType, propertyName);
             var isMustCoerce = numberCoercer != null;
-            Type numericCoercionType = Boxing.GetBoxedType(leftType);
+            var numericCoercionType = Boxing.GetBoxedType(leftType);
 
             var streamName = identNodeRight.ResolvedStreamName;
             if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(streamName)) {
@@ -273,8 +273,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     innerEventType,
                     isMustCoerce,
                     numberCoercer,
-                    numericCoercionType,
-                    statementName);
+                    numericCoercionType);
             }
 
             return new FilterSpecParamEventPropForge(
@@ -285,8 +284,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 identNodeRight.ExprEvaluatorIdent,
                 isMustCoerce,
                 numberCoercer,
-                numericCoercionType,
-                statementName);
+                numericCoercionType);
         }
     }
 } // end of namespace

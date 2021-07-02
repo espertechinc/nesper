@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

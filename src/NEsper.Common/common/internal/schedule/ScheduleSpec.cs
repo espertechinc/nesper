@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.@internal.schedule
         {
             var method = parent.MakeChild(typeof(ScheduleSpec), GetType(), classScope);
             var spec = Ref("spec");
-            method.Block.DeclareVar<ScheduleSpec>(spec.Ref, NewInstance(typeof(ScheduleSpec)));
+            method.Block.DeclareVarNewInstance<ScheduleSpec>(spec.Ref);
             if (_optionalTimeZone != null) {
                 method.Block.SetProperty(spec, "OptionalTimeZone", Constant(_optionalTimeZone));
             }

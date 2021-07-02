@@ -14,6 +14,8 @@ using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
@@ -124,7 +126,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			string runtimeURI,
 			EventBeanService eventBeanService,
 			ExceptionHandlingService exceptionHandlingService,
-			SchedulingService schedulingService)
+			SchedulingService schedulingService,
+			TimeZoneInfo timeZone,
+			TimeAbacus timeAbacus,
+			VariableManagementService variableManagementService)
 		{
 			return new FastThreadLocal<EPEventServiceThreadLocalEntry>(
 				() => {
@@ -147,7 +152,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						runtimeURI,
 						eventBeanService,
 						exceptionHandlingService,
-						schedulingService);
+						schedulingService,
+						timeZone,
+						timeAbacus,
+						variableManagementService);
 					return new EPEventServiceThreadLocalEntry(
 						dualWorkQueue,
 						filterHandles,

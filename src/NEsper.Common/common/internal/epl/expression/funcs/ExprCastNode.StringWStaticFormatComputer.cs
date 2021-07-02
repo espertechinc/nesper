@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             public StringWStaticFormatComputer(string format)
             {
                 this.format = format;
-                this.dateFormat = DateTimeFormat.For(format);
+                dateFormat = DateTimeFormat.For(format);
             }
 
             public object Compute(

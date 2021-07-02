@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util

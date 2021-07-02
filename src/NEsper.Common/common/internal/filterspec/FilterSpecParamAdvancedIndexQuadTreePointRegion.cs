@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             var x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var point = new XYPoint(x, y);
-            var lookupable = this.lkupable.Make(matchedEvents, exprEvaluatorContext);
+            var lookupable = lkupable.Make(matchedEvents, exprEvaluatorContext);
             return new FilterValueSetParamImpl(lookupable, FilterOperator, point);
         }
 

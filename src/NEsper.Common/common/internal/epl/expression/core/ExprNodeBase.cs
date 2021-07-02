@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     [Serializable]
     public abstract class ExprNodeBase : ExprNode
     {
-        private static readonly ExprNode[] EMPTY_EXPR_ARRAY = new ExprNode[0];
+        private static readonly ExprNode[] EmptyExprArray = new ExprNode[0];
 
         public ExprNode[] ChildNodes { get; set; }
 
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         protected ExprNodeBase()
         {
-            ChildNodes = EMPTY_EXPR_ARRAY;
+            ChildNodes = EmptyExprArray;
         }
 
         public virtual void Accept(ExprNodeVisitor visitor)

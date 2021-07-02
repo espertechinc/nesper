@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             cache = new Dictionary<Type, MethodInfo>();
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -176,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 var message = TypeHelper.GetMessageInvocationTarget(
                     statementName,
                     method,
-                    target.GetType().CleanName(),
+                    target.GetType().TypeSafeName(),
                     args,
                     e);
                 Log.Error(message, e);

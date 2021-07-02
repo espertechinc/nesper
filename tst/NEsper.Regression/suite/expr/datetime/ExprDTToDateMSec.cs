@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
+                SupportEventPropUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {

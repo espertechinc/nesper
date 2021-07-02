@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             return FlexCollection.Of(
-                EvaluateEnumMethodTakeLast(enumcoll.ObjectCollection, size));
+                EvaluateEnumMethodTakeLast(enumcoll.ValueCollection, size));
         }
     }
 } // end of namespace

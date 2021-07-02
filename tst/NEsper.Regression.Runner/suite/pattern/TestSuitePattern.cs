@@ -722,10 +722,10 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             }
 
             [Test, RunInApplicationDomain]
-            public void Withragment() => RegressionRunner.Run(_session, PatternCompositeSelect.Withragment());
+            public void WithFragment() => RegressionRunner.Run(_session, PatternCompositeSelect.WithFragment());
 
             [Test, RunInApplicationDomain]
-            public void WithollowedByFilter() => RegressionRunner.Run(_session, PatternCompositeSelect.WithollowedByFilter());
+            public void WithFollowedByFilter() => RegressionRunner.Run(_session, PatternCompositeSelect.WithFollowedByFilter());
         }
 
         /// <summary>

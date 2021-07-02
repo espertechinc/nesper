@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.compile.faf
             FAFQueryMethodForge forge)
         {
             ClassName = className;
-            this._namespaceScope = namespaceScope;
-            this._forge = forge;
+            _namespaceScope = namespaceScope;
+            _forge = forge;
         }
 
         public CodegenClass Forge(

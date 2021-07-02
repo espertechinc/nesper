@@ -15,30 +15,31 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
 {
 	public class ExprDotForgeAverage : ExprDotForgeLambdaThreeForm
 	{
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			if (collectionComponentType.IsBigInteger()) {
-				return EPTypeHelper.SingleValue(typeof(BigInteger?));
+				return EPChainableTypeHelper.SingleValueNonNull(typeof(BigInteger?));
 			}
 			else if (collectionComponentType.IsDecimal()) {
-				return EPTypeHelper.SingleValue(typeof(decimal?));
+				return EPChainableTypeHelper.SingleValueNonNull(typeof(decimal?));
 			}
 			else {
-				return EPTypeHelper.SingleValue(typeof(double?));
+				return EPChainableTypeHelper.SingleValueNonNull(typeof(double?));
 			}
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			if (type.GetNormalizedClass().IsBigInteger()) {
@@ -58,20 +59,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => {
 				var returnType = lambda.BodyForge.EvaluationType;
 				if (returnType.IsBigInteger()) {
-					return EPTypeHelper.SingleValue(typeof(BigInteger?));
+					return EPChainableTypeHelper.SingleValueNonNull(typeof(BigInteger?));
 				}
 				else if (returnType.IsDecimal()) {
-					return EPTypeHelper.SingleValue(typeof(decimal?));
+					return EPChainableTypeHelper.SingleValueNonNull(typeof(decimal?));
 				}
 				else {
-					return EPTypeHelper.SingleValue(typeof(double?));
+					return EPChainableTypeHelper.SingleValueNonNull(typeof(double?));
 				}
 			};
 		}

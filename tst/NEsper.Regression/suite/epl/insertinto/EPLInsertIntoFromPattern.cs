@@ -29,28 +29,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithFromPatternNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoFromPatternNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoProps(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNoProps());
             return execs;
         }
 
         public static IList<RegressionExecution> WithProps(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoProps());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPropsWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoPropsWildcard());
             return execs;
         }

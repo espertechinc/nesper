@@ -73,24 +73,26 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             foreach (var entry in _namespaceScope.FieldsUnshared) {
                 initMethod.Block.AssignRef(entry.Key.Name, entry.Value);
             }
-
-            // assignment methods
-            var assignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
-                .WithStatic(false);
-            var unassignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .WithStatic(false);
-            GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
-
+            
             // build methods
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
-
             CodegenStackGenerator.RecursiveBuildStack(initMethod, "Init", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+
+            // assignment methods
+            if (_namespaceScope.HasStatementFields) {
+                var assignMethod = CodegenMethod
+                    .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
+                    .WithStatic(false);
+                var unassignMethod = CodegenMethod
+                    .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .WithStatic(false);
+                GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
+
+                CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+            }
 
             return new CodegenClass(
                 CodegenClassType.STATEMENTFIELDS,
@@ -294,8 +296,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             //     .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             // assignerSetterClass.AddMethod("assign", assignMethod);
 
-            assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", Ref("assignments"));
-            // assignMethod.Block.StaticMethod(namespaceScope.FieldsClassNameOptional, "assign", Ref("assignments"));
+            if (!namespaceScope.FieldsNamed.IsEmpty()) {
+                assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", Ref("assignments"));
+                // assignMethod.Block.StaticMethod(namespaceScope.FieldsClassNameOptional, "assign", Ref("assignments"));
+            }
 
             var setValueMethod = new CodegenExpressionLambda(enclosingBlock)
                 .WithParam(typeof(int), "index")

@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class DOMIndexedGetter : EventPropertyGetterSPI,
         DOMPropertyGetter
     {
-        private readonly FragmentFactoryDOMGetter fragmentFactory;
-        private readonly int index;
-        private readonly string propertyName;
+        private readonly FragmentFactoryDOMGetter _fragmentFactory;
+        private readonly int _index;
+        private readonly string _propertyName;
 
         /// <summary>
         ///     Ctor.
@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             int index,
             FragmentFactoryDOMGetter fragmentFactory)
         {
-            this.propertyName = propertyName;
-            this.index = index;
-            this.fragmentFactory = fragmentFactory;
+            this._propertyName = propertyName;
+            this._index = index;
+            this._fragmentFactory = fragmentFactory;
         }
 
         public XmlNode[] GetValueAsNodeArray(XmlNode node)
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public object GetValueAsFragment(XmlNode node)
         {
-            if (fragmentFactory == null) {
+            if (_fragmentFactory == null) {
                 return null;
             }
 
@@ -59,12 +59,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return null;
             }
 
-            return fragmentFactory.GetEvent(result);
+            return _fragmentFactory.GetEvent(result);
         }
 
         public XmlNode GetValueAsNode(XmlNode node)
         {
-            return GetNodeValue(node, propertyName, index);
+            return GetNodeValue(node, _propertyName, _index);
         }
 
         public CodegenExpression GetValueAsNodeCodegen(
@@ -166,8 +166,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 GetType(),
                 "GetNodeValue",
                 underlyingExpression,
-                Constant(propertyName),
-                Constant(index));
+                Constant(_propertyName),
+                Constant(_index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -179,8 +179,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 GetType(),
                 "GetNodeValueExists",
                 underlyingExpression,
-                Constant(propertyName),
-                Constant(index));
+                Constant(_propertyName),
+                Constant(_index));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (fragmentFactory == null) {
+            if (_fragmentFactory == null) {
                 return ConstantNull();
             }
 
@@ -202,7 +202,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var member = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+                _fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node");
             method.Block
@@ -212,8 +212,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         typeof(DOMIndexedGetter),
                         "GetNodeValue",
                         Ref("node"),
-                        Constant(propertyName),
-                        Constant(index)))
+                        Constant(_propertyName),
+                        Constant(_index)))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(ExprDotMethod(member, "GetEvent", Ref("result")));
             return method;

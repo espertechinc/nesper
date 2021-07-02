@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -89,14 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Coercer coercer = null;
             try {
                 if (_optionalRequiredType == null) {
-                    arrayReturnType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
+                    var coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
+                    arrayReturnType = coercionType.IsNullTypeSafe() ? null : coercionType;
 
                     // Determine if we need to coerce numbers when one type doesn't match any other type
                     if (arrayReturnType.IsNumeric()) {
-                        mustCoerce = false;
                         foreach (var comparedType in comparedTypes) {
                             if (comparedType != arrayReturnType) {
                                 mustCoerce = true;
+                                break;
                             }
                         }
 
@@ -107,11 +109,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 else {
                     arrayReturnType = _optionalRequiredType;
-                    var arrayBoxedType = arrayReturnType.GetBoxedType();
+                    var arrayBoxedType = _optionalRequiredType.GetBoxedType();
                     foreach (var comparedType in comparedTypes) {
                         if (!comparedType.GetBoxedType().IsAssignmentCompatible(arrayBoxedType)) {
                             throw new ExprValidationException(
-                                "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() + " but received type " + comparedType.CleanName());
+                                "Array element type mismatch: Expecting type " + arrayReturnType.TypeSafeName() + " but received type " + comparedType.TypeSafeName());
                         }
                     }
                 }
@@ -146,14 +148,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     if (mustCoerce) {
                         var boxed = results[i];
                         if (boxed != null) {
-                            object coercedResult = coercer.CoerceBoxed(boxed);
+                            var coercedResult = coercer.CoerceBoxed(boxed);
                             constantResult.SetValue(coercedResult, i);
                         }
                     }
                     else {
                         if (arrayReturnType.IsPrimitive && results[i] == null) {
                             throw new ExprValidationException(
-                                "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() + " but received null");
+                                "Array element type mismatch: Expecting type " + arrayReturnType.TypeSafeName() + " but received null");
                         }
 
                         try {
@@ -161,8 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                         catch (ArgumentException) {
                             throw new ExprValidationException(
-                                "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() +
-                                " but received type " + results[i].GetType().CleanName());
+                                "Array element type mismatch: Expecting type " + arrayReturnType.TypeSafeName() +
+                                " but received type " + results[i].GetType().TypeSafeName());
                         }
                     }
                 }

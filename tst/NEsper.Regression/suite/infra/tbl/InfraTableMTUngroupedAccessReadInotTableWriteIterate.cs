@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             // setup writer
             var writeRunnable = new WriteRunnable(env);
             var writeThread = new Thread(writeRunnable.Run) {
-                Name = typeof(InfraTableMTUngroupedAccessReadInotTableWriteIterate).Name + "-write"
+                Name = nameof(InfraTableMTUngroupedAccessReadInotTableWriteIterate) + "-write"
             };
 
             // setup readers
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < readThreads.Length; i++) {
                 readRunnables[i] = new ReadRunnable(env.Statement("iterate"));
                 readThreads[i] = new Thread(readRunnables[i].Run) {
-                    Name = typeof(InfraTableMTUngroupedAccessReadInotTableWriteIterate).Name + "-read"
+                    Name = nameof(InfraTableMTUngroupedAccessReadInotTableWriteIterate) + "-read"
                 };
             }
 

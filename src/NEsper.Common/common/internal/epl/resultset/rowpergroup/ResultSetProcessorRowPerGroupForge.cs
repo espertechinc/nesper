@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -25,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.resultset.rowforall;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -39,11 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
     public class ResultSetProcessorRowPerGroupForge : ResultSetProcessorFactoryForge
     {
         private const string NAME_GROUPREPS = "groupReps";
+        
         private readonly Type[] groupKeyTypes;
-
         private readonly EventType[] typesPerStream;
         private readonly bool unboundedProcessor;
         private readonly MultiKeyClassRef multiKeyClassRef;
+        private readonly Supplier<StateMgmtSetting> unboundGroupRepSettings;
 
         public ResultSetProcessorRowPerGroupForge(
             EventType resultEventType,
@@ -59,7 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             EventType[] eventTypes,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             MultiKeyClassRef multiKeyClassRef,
-            bool unboundedProcessor)
+            bool unboundedProcessor,
+            Supplier<StateMgmtSetting> unboundGroupRepSettings,
+            Supplier<StateMgmtSetting> outputFirstSettings,
+            Supplier<StateMgmtSetting> outputAllHelperSettings,
+            Supplier<StateMgmtSetting> outputAllOptHelperSettings,
+            Supplier<StateMgmtSetting> outputLastOptHelperSettings)
         {
             ResultEventType = resultEventType;
             this.typesPerStream = typesPerStream;
@@ -75,7 +83,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
             groupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
             this.multiKeyClassRef = multiKeyClassRef;
+            this.unboundGroupRepSettings = unboundGroupRepSettings;
             this.unboundedProcessor = unboundedProcessor;
+            this.OutputFirstSettings = outputFirstSettings;
+            this.OutputAllHelperSettings = outputAllHelperSettings;
+            this.OutputAllOptHelperSettings = outputAllOptHelperSettings;
+            this.OutputLastOptHelperSettings = outputLastOptHelperSettings;
         }
 
         public EventType ResultEventType { get; }
@@ -110,6 +123,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
         public MultiKeyClassRef MultiKeyClassRef => multiKeyClassRef;
 
+        public Supplier<StateMgmtSetting> OutputFirstSettings { get; }
+
+        public Supplier<StateMgmtSetting> OutputAllHelperSettings { get; }
+
+        public Supplier<StateMgmtSetting> OutputAllOptHelperSettings { get; }
+
+        public Supplier<StateMgmtSetting> OutputLastOptHelperSettings { get; }
+
         public void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
@@ -128,13 +149,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 GetType(),
                 classScope,
                 propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",
@@ -157,9 +177,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             ResultSetProcessorRowPerGroupImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 
             if (unboundedProcessor) {
+                var stateMgmtSettings = unboundGroupRepSettings.Invoke();
                 var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
                 instance.AddMember(NAME_GROUPREPS, typeof(ResultSetProcessorRowPerGroupUnboundHelper));
-                CodegenExpression groupKeySerde = MultiKeyClassRef.GetExprMKSerde(classScope.NamespaceScope.InitMethod, classScope);
+                var groupKeySerde = MultiKeyClassRef.GetExprMKSerde(classScope.NamespaceScope.InitMethod, classScope);
 
                 var eventType = classScope.AddDefaultFieldUnshared(
                     true,
@@ -175,7 +196,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             Constant(groupKeyTypes),
                             groupKeySerde,
                             eventType,
-                            MEMBER_AGENTINSTANCECONTEXT))
+                            stateMgmtSettings.ToExpression(),
+                            MEMBER_EXPREVALCONTEXT))
                     .ExprDotMethod(MEMBER_AGGREGATIONSVC, "SetRemovedCallback", Member(NAME_GROUPREPS));
             }
             else {

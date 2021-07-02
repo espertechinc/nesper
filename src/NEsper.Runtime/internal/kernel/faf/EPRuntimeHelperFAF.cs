@@ -68,7 +68,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             }
 
             if (classLoader is ClassProvidedImportClassLoader importClassLoader) {
-                importClassLoader.Imported = fafProvider.ModuleDependencies.PathClasses;
+                importClassLoader.Imported = fafProvider.GetModuleDependencies().PathClasses;
             }
 
             // initialize event types

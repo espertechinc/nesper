@@ -136,12 +136,13 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			var @params = new CodegenExpression[types.Length];
 			for (var i = 0; i < types.Length; i++) {
 				CodegenExpression serde = Ref("s" + i);
-				@params[i] = Cast(
-					types[i].GetBoxedType(),
-					ExprDotMethod(serde, "Read", Ref(INPUT_NAME), Ref(UNITKEY_NAME)));
+
+				var read = ExprDotMethod(serde, "Read", Ref(INPUT_NAME), Ref(UNITKEY_NAME));
+				var boxed = types[i].GetBoxedType();
+				@params[i] = boxed != null ? Cast(boxed, read) : read;
 			}
 
-			readMethod.Block.MethodReturn(NewInstanceInner(classNameMK, @params));
+			readMethod.Block.MethodReturn(NewInstanceNamed(classNameMK, @params));
 		}
 	}
 } // end of namespace

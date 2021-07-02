@@ -48,7 +48,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementCompileTimeServices compileTimeServices)
         {
             IList<StreamSpecCompiled> compiledStreams;
-            ISet<string> eventTypeReferences = new HashSet<string>();
             IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
             if (!isOnDemandQuery && spec.FireAndForgetSpec != null) {
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 !isOnDemandQuery &&
                 (tableAccessNodes == null || tableAccessNodes.IsEmpty())) {
                 bool disqualified;
-                ExprNode whereClause = spec.WhereClause;
+                var whereClause = spec.WhereClause;
 
                 var visitorX = new ExprNodeSubselectDeclaredDotVisitor();
                 whereClause.Accept(visitorX);
@@ -189,8 +188,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     streamNum++;
                     var desc = StreamSpecCompiler.Compile(
                         rawSpec,
-                        eventTypeReferences,
-                        spec.InsertIntoDesc != null,
                         spec.StreamSpecs.Count > 1,
                         false,
                         spec.OnTriggerDesc != null,

@@ -117,11 +117,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 TryInvalidCompile(
                     env,
                     "select `select` from SupportBean",
-                    "Failed to validate select-clause expression 'select': Property named 'select' is not valid in any stream [");
+                    "Failed to validate select-clause expression 'select': Property named '`select`' is not valid in any stream [");
                 TryInvalidCompile(
                     env,
                     "select `ab cd` from SupportBean",
-                    "Failed to validate select-clause expression 'ab cd': Property named 'ab cd' is not valid in any stream [");
+                    "Failed to validate select-clause expression 'ab cd': Property named '`ab cd`' is not valid in any stream [");
 
                 // test resolution as nested property
                 var path = new RegressionPath();

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(TimerScheduleSpecComputeFromExpr),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<TimerScheduleSpecComputeFromExpr>(
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     "Date",
                     dateNode == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, this.GetType(), classScope))
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, GetType(), classScope))
                 .SetProperty(
                     Ref("compute"),
                     "Repetitions",
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             repetitionsNode.Forge,
                             method,
-                            this.GetType(),
+                            GetType(),
                             classScope));
             if (periodNode != null) {
                 method.Block.SetProperty(

@@ -28,12 +28,12 @@ WithSODA(execs);
         }
 public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowSODA());
     return execs;
 }public static IList<RegressionExecution> WithDocSamplesRun(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowDocSamplesRun());
     return execs;
 }

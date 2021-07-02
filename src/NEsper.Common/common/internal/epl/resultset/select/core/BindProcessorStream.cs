@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly Type returnType;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
 
         public BindProcessorStream(
             int streamNum,
             Type returnType)
         {
-            this.streamNum = streamNum;
-            this.returnType = returnType;
+            this._streamNum = streamNum;
+            this._returnType = returnType;
         }
 
         public object Evaluate(
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean theEvent = eventsPerStream[streamNum];
+            EventBean theEvent = eventsPerStream[_streamNum];
             return theEvent?.Underlying;
         }
 
@@ -57,13 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(returnType, this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(_returnType, GetType(), codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(Ref("@event"), "Underlying")));
+                    CodegenLegoCast.CastSafeFromObjectType(_returnType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 
@@ -72,14 +72,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public void ToEPL(TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name + " stream " + streamNum);
+            writer.Write(GetType().Name + " stream " + _streamNum);
         }
     }
 } // end of namespace

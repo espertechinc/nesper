@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorNested), GetType(), classScope);
             method.Block
-                .DeclareVar<PropertyEvaluatorNested>("pe", NewInstance(typeof(PropertyEvaluatorNested)))
+                .DeclareVarNewInstance<PropertyEvaluatorNested>("pe")
                 .SetProperty(
                     Ref("pe"),
                     "ResultEventType",

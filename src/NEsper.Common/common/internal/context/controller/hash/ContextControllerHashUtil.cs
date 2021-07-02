@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -73,6 +75,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 var paramType = paramExpr.Forge.EvaluationType;
                 EventPropertyValueGetterForge getter;
 
+                if (paramType.IsNullTypeSafe()) {
+                    throw new ExprValidationException("Expression returns a null-type value");     
+                }
+                
                 if (hashFunction == HashFunctionEnum.CONSISTENT_HASH_CRC32) {
                     if (hashFuncParams.Count > 1 || paramType != typeof(string)) {
                         getter = new ContextControllerHashedGetterCRC32SerializedForge(

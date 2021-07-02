@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             builder.Append("default");
             if (_type != null) {
                 builder.Append("(");
-                builder.Append(_type.CleanName());
+                builder.Append(_type.TypeSafeName());
                 builder.Append(")");
             }
         }

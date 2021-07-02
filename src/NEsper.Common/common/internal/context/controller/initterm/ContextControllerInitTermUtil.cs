@@ -64,8 +64,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
 
-            if (startCondition.Descriptor is ContextConditionDescriptorTimePeriod) {
-                var descriptor = (ContextConditionDescriptorTimePeriod) startCondition.Descriptor;
+            if (startCondition.Descriptor is ContextConditionDescriptorTimePeriod descriptor) {
                 var endTime = descriptor.GetExpectedEndTime(controller.Realization);
                 if (endTime != null && endTime <= 0) {
                     return true;
@@ -115,7 +114,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
         
         public static long ComputeScheduleMinimumNextOccurance(ScheduleSpec[] schedules, long time, ImportServiceRuntime classpathImportService) {
-            var value = Int64.MaxValue;
+            var value = long.MaxValue;
             foreach (var spec in schedules) {
                 var computed = ScheduleComputeHelper.ComputeNextOccurance(
                     spec,
@@ -130,7 +129,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         public static long ComputeScheduleMinimumDelta(ScheduleSpec[] schedules, long time, ImportServiceRuntime classpathImportService) {
-            var value = Int64.MaxValue;
+            var value = long.MaxValue;
             foreach (ScheduleSpec spec in schedules) {
                 long computed = ScheduleComputeHelper.ComputeDeltaNextOccurance(
                     spec,

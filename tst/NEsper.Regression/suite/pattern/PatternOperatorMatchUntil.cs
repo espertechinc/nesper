@@ -45,63 +45,63 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBoundRepeatWithNot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternBoundRepeatWithNot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionBounds(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternExpressionBounds());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayFunctionRepeat(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternArrayFunctionRepeat());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRepeatUseTags(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternRepeatUseTags());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUseFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternUseFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternSelectArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMatchUntilSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternMatchUntilSimple());
             return execs;
         }
@@ -1054,7 +1054,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     env,
                     "(a=SupportBean_A until c=SupportBean_B) -> c=SupportBean_C",
                     "Tag 'c' for event 'SupportBean_C' has already been declared for events of type " +
-                    typeof(SupportBean_B).Name);
+                    nameof(SupportBean_B));
                 TryInvalidPattern(
                     env,
                     "((a=SupportBean_A until b=SupportBean_B) until a=SupportBean_A)",

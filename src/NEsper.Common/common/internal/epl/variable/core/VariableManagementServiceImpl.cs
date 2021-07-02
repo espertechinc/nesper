@@ -13,6 +13,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
@@ -467,7 +468,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "' of declared event type '" +
                         variable.MetaData.EventType.Name +
                         "' underlying type '" +
-                        variable.MetaData.EventType.UnderlyingType.CleanName() +
+                        variable.MetaData.EventType.UnderlyingType.TypeSafeName() +
                         "' cannot be assigned a value of type '" +
                         valueType.Name +
                         "'");

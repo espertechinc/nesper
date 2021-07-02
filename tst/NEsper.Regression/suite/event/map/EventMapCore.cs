@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -147,38 +148,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 Assert.AreEqual(EventTypeApplicationType.MAP, type.Metadata.ApplicationType);
                 Assert.AreEqual("myMapEvent", type.Metadata.Name);
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("MyInt", typeof(int?), null, false, false, false, false, false),
-                        new EventPropertyDescriptor(
-                            "MyString",
-                            typeof(string),
-                            typeof(char),
-                            false,
-                            false,
-                            true,
-                            false,
-                            false),
-                        new EventPropertyDescriptor(
-                            "beanA",
-                            typeof(SupportBeanComplexProps),
-                            null,
-                            false,
-                            false,
-                            false,
-                            false,
-                            true),
-                        new EventPropertyDescriptor(
-                            "MyStringArray",
-                            typeof(string[]),
-                            typeof(string),
-                            false,
-                            false,
-                            true,
-                            false,
-                            false)
-                    },
-                    type.PropertyDescriptors);
+                SupportEventPropUtil.AssertPropsEquals(
+                    type.PropertyDescriptors.ToArray(),
+                    new SupportEventPropDesc("MyInt", typeof(int?)),
+                    new SupportEventPropDesc("MyString", typeof(string)).WithComponentType(typeof(char)).WithIndexed(),
+                    new SupportEventPropDesc("beanA", typeof(SupportBeanComplexProps)).WithFragment(),
+                    new SupportEventPropDesc("MyStringArray", typeof(string[])).WithComponentType(typeof(string)).WithIndexed());
             }
         }
 

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.composite;
 using com.espertech.esper.common.@internal.util;
@@ -24,12 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
     ///     Organizes into a TreeMap&lt;key, TreeMap&lt;key2, Set&lt;EventBean&gt;&gt;, for short. The top level can also be
     ///     just Map&lt;HashableMultiKey, TreeMap...&gt;.
     ///     Expected at least either (A) one key and one range or (B) zero keys and 2 ranges.
-    ///     <para />
-    ///     An alternative implementatation could have been based on "TreeMap&lt;ComparableMultiKey, Set&lt;EventBean&gt;&gt;
+    ///     <para>
+    ///     An alternative implementation could have been based on "TreeMap&lt;ComparableMultiKey, Set&lt;EventBean&gt;&gt;
     ///     &gt;", however the following implication arrive
     ///     - not applicable for range-only lookups (since there the key can be the value itself
     ///     - not applicable for multiple nested range as ordering not nested
     ///     - each add/remove and lookup would also need to construct a key object.
+    ///     </para>
     /// </summary>
     public class PropertyCompositeEventTableFactory : EventTableFactory
     {
@@ -52,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             Type[] optRangeCoercedTypes,
             EventPropertyValueGetter[] rangeGetters)
         {
-            this.StreamNum = streamNum;
-            this.OptionalKeyedProps = optionalKeyedProps;
-            this.OptKeyCoercedTypes = optKeyCoercedTypes;
-            this.HashGetter = hashGetter;
-            this.TransformFireAndForget = transformFireAndForget;
-            this.RangeProps = rangeProps;
-            this.OptRangeCoercedTypes = optRangeCoercedTypes;
-            this.RangeGetters = rangeGetters;
+            StreamNum = streamNum;
+            OptionalKeyedProps = optionalKeyedProps;
+            OptKeyCoercedTypes = optKeyCoercedTypes;
+            HashGetter = hashGetter;
+            TransformFireAndForget = transformFireAndForget;
+            RangeProps = rangeProps;
+            OptRangeCoercedTypes = optRangeCoercedTypes;
+            RangeGetters = rangeGetters;
 
             // construct chain
             IList<CompositeIndexEnterRemove> enterRemoves = new List<CompositeIndexEnterRemove>();
@@ -95,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             EventTableOrganizationType.COMPOSITE);
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
             return new EventTable[] {new PropertyCompositeEventTableImpl(this)};

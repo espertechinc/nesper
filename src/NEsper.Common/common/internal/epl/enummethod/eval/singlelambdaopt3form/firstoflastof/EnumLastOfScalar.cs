@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumLastOfScalar : ThreeFormScalar
 	{
-		private readonly EPType _resultType;
+		private readonly EPChainableType _resultType;
 
 		public EnumLastOfScalar(
 			ExprDotEvalParamLambda lambda,
 			ObjectArrayEventType fieldEventType,
 			int numParameters,
-			EPType resultType) : base(lambda, fieldEventType, numParameters)
+			EPChainableType resultType) : base(lambda, fieldEventType, numParameters)
 		{
 			_resultType = resultType;
 		}
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return _resultType.GetCodegenReturnType().GetBoxedType();
 		}
@@ -97,13 +97,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
 				block,
 				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+				InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope));
 			block.AssignRef("result", Ref("next"));
 		}
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(Cast(ReturnType(), Ref("result")));
+			block.MethodReturn(Cast(ReturnTypeOfMethod(), Ref("result")));
 		}
 	}
 } // end of namespace

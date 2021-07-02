@@ -120,7 +120,6 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                                 streamNo,
                                 items.Get(entry.Key),
                                 streamTypes[streamNo],
-                                false,
                                 entry.Value.IsUnique,
                                 null,
                                 null,

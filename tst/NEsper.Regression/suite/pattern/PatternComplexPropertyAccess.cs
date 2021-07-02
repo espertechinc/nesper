@@ -33,35 +33,35 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithIndexedValuePropCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternIndexedValuePropCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIndexedValuePropOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternIndexedValuePropOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIndexedValueProp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternIndexedValueProp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIndexedFilterProp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternIndexedFilterProp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithComplexProperties(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternComplexProperties());
             return execs;
         }
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var type = typeof(SupportBeanComplexProps).Name;
+                var type = nameof(SupportBeanComplexProps);
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();

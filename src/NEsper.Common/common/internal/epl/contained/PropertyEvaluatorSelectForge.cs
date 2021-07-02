@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 symbols.GetAddInitSvc(method),
                 classScope);
             method.Block
-                .DeclareVar<PropertyEvaluatorSelect>("pe", NewInstance(typeof(PropertyEvaluatorSelect)))
+                .DeclareVarNewInstance<PropertyEvaluatorSelect>("pe")
                 .SetProperty(
                     Ref("pe"),
                     "ResultEventType",

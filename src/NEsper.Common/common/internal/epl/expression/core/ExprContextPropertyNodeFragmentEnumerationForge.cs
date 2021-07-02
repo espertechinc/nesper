@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 		public ExprNodeRenderable EnumForgeRenderable {
 			get {
 				return new ProxyExprNodeRenderable() {
-					ProcToEPL = (
+					procToEPL = (
 						writer,
 						parentPrecedence,
 						flags) => {
@@ -99,21 +99,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 		public ExprEnumerationEval ExprEvaluatorEnumeration {
 			get {
 				return new ProxyExprEnumerationEval() {
-					ProcEvaluateGetROCollectionEvents = (
+					procEvaluateGetRoCollectionEvents = (
 						eventsPerStream,
 						isNewData,
 						context) => {
 						return null;
 					},
 
-					ProcEvaluateGetROCollectionScalar = (
+					procEvaluateGetRoCollectionScalar = (
 						eventsPerStream,
 						isNewData,
 						context) => {
 						return null;
 					},
 
-					ProcEvaluateGetEventBean = (
+					procEvaluateGetEventBean = (
 						eventsPerStream,
 						isNewData,
 						context) => {

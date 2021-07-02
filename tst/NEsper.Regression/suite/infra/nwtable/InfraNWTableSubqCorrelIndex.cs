@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithIndexShareMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqIndexShareMultikeyWArrayTwoArray(true));
             execs.Add(new InfraNWTableSubqIndexShareMultikeyWArrayTwoArray(false));
             return execs;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithIndexShareMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqIndexShareMultikeyWArraySingleArray(true));
             execs.Add(new InfraNWTableSubqIndexShareMultikeyWArraySingleArray(false));
             return execs;
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithCorrelIndexNoIndexShareIndexChoice(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice(true));
             execs.Add(new InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice(false));
             return execs;
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithCorrelIndexShareIndexChoice(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelIndexShareIndexChoice(true));
             execs.Add(new InfraNWTableSubqCorrelIndexShareIndexChoice(false));
             return execs;
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithCorrelIndexMultipleIndexHints(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelIndexMultipleIndexHints(true));
             execs.Add(new InfraNWTableSubqCorrelIndexMultipleIndexHints(false));
             return execs;
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithCorrelIndexAssertion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             
             // named window tests
             execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, false, false)); // testNoShare

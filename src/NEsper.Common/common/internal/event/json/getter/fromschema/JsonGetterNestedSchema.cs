@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             JsonUnderlyingField field)
             : base(innerGetter, underlyingClassName)
         {
-            this._field = field;
+            _field = field;
         }
 
         public override string FieldName => _field.FieldName;

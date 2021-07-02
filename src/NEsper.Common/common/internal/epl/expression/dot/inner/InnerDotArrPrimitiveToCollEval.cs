@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotArrPrimitiveToCollEval : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
 
         public InnerDotArrPrimitiveToCollEval(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            this._rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = _rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             return CollectionUtil.ArrayToCollectionAllowNull<object>(array);
         }
 
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type evaluationType = forge.rootForge.EvaluationType;
+            var evaluationType = forge.rootForge.EvaluationType;
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
                 codegenMethodScope,
                 evaluationType,

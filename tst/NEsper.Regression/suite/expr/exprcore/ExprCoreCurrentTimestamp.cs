@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				var model = new EPStatementObjectModel();
 				model.SelectClause = SelectClause.Create().Add(Expressions.CurrentTimestamp(), "t0");
-				model.FromClause = FromClause.Create().Add(FilterStream.Create(typeof(SupportBean).Name));
+				model.FromClause = FromClause.Create().Add(FilterStream.Create(nameof(SupportBean)));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 				Assert.AreEqual(stmtText, model.ToEPL());
 

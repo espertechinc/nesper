@@ -44,49 +44,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public static IList<RegressionExecution> WithContext(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexContext());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexPatternSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTypeAssertion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexTypeAssertion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnoptimized(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexUnoptimized());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerfPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexPerfPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerfContextPartition(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexPerfContextPartition());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerfStatement(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexPerfStatement());
             return execs;
         }
@@ -261,7 +261,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.CompileDeploy(epl).AddListener("out");
 
                 IList<SupportSpatialPoint> points = new List<SupportSpatialPoint>();
-                var count = 0;
                 var milestone = new AtomicLong();
                 for (var iteration = 0; iteration < NUM_ITERATIONS; iteration++) {
                     Query(env, points);

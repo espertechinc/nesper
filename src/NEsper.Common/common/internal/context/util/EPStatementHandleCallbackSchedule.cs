@@ -12,8 +12,8 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class EPStatementHandleCallbackSchedule : ScheduleHandle
     {
-        private EPStatementAgentInstanceHandle agentInstanceHandle;
-        private ScheduleHandleCallback scheduleCallback;
+        private readonly EPStatementAgentInstanceHandle agentInstanceHandle;
+        private readonly ScheduleHandleCallback scheduleCallback;
 
         /// <summary>
         /// Ctor.
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.context.util
             ScheduleHandleCallback callback)
         {
             this.agentInstanceHandle = agentInstanceHandle;
-            this.scheduleCallback = callback;
+            scheduleCallback = callback;
         }
 
         public int StatementId {

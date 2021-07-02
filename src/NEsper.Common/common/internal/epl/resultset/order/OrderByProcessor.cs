@@ -67,14 +67,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="outgoingEvents">the events to sort</param>
         /// <param name="currentGenerators">the events that generated the output events (each event has a corresponding array of generating events per different event streams)</param>
         /// <param name="newData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
-        /// <param name="agentInstanceContext">context for expression evaluation</param>
+        /// <param name="exprEvaluatorContext"></param>
         /// <param name="aggregationService">aggregation svc</param>
         /// <returns>an array containing the output events in sorted order</returns>
         EventBean[] SortRollup(
             EventBean[] outgoingEvents,
             IList<GroupByRollupKey> currentGenerators,
             bool newData,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             AggregationService aggregationService);
 
         /// <summary>

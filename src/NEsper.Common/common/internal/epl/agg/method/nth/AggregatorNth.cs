@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             ExprNode optionalFilter)
             : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            this._factory = factory;
+            _factory = factory;
             _circularBuffer = membersColumnized.AddMember(col, typeof(object[]), "buf");
             _currentBufferElementPointer = membersColumnized.AddMember(col, typeof(int), "cbep");
             _numDataPoints = membersColumnized.AddMember(col, typeof(long), "cnt");

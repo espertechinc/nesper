@@ -25,14 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool distinct,
             EventPropertyValueGetter distinctKeyGetter,
             TimePeriodCompute afterTimePeriod,
-            int? afterConditionNumberOfEvents,
-            EventType resultEventType)
+            int? afterConditionNumberOfEvents)
             : base(postProcessFactory)
         {
             IsDistinct = distinct;
             DistinctKeyGetter = distinctKeyGetter;
-            this.AfterTimePeriod = afterTimePeriod;
-            this.AfterConditionNumberOfEvents = afterConditionNumberOfEvents;
+            AfterTimePeriod = afterTimePeriod;
+            AfterConditionNumberOfEvents = afterConditionNumberOfEvents;
         }
         public EventPropertyValueGetter DistinctKeyGetter { get; set; }
         

@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             var method = parent.MakeChild(typeof(VariableTriggerWriteDesc), GetType(), classScope);
             method.Block
-                .DeclareVar<VariableTriggerWriteDesc>("desc", NewInstance(typeof(VariableTriggerWriteDesc)))
+                .DeclareVarNewInstance<VariableTriggerWriteDesc>("desc")
                 .SetProperty(
                     Ref("desc"),
                     "Type",

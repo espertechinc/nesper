@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class EventUnderlyingCollection : ICollection<EventBean>, ICollection<object>
     {
-        private ICollection<EventBean> _underlyingCollection;
+        private readonly ICollection<EventBean> _underlyingCollection;
 
         public EventUnderlyingCollection(FlexCollection flexCollection)
         {

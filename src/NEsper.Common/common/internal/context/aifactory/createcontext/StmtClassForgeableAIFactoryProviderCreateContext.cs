@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -28,6 +29,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         private readonly EventType eventTypeContextProperties;
         private readonly StatementAgentInstanceFactoryCreateContextForge forge;
         private readonly ContextControllerFactoryForge[] forges;
+        private readonly StateMgmtSetting partitionIdSvcStateMgmtSettings;
 
         public StmtClassForgeableAIFactoryProviderCreateContext(
             string className,
@@ -35,13 +37,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             string contextName,
             ContextControllerFactoryForge[] forges,
             EventType eventTypeContextProperties,
-            StatementAgentInstanceFactoryCreateContextForge forge)
+            StatementAgentInstanceFactoryCreateContextForge forge,
+            StateMgmtSetting partitionIdSvcStateMgmtSettings)
             : base(className, namespaceScope)
         {
             this.contextName = contextName;
             this.forges = forges;
             this.eventTypeContextProperties = eventTypeContextProperties;
             this.forge = forge;
+            this.partitionIdSvcStateMgmtSettings = partitionIdSvcStateMgmtSettings;
         }
 
         protected override Type TypeOfFactory()
@@ -92,15 +96,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         forges[i].FactoryEnv.ToExpression());
             }
 
-            method.Block.DeclareVar<ContextDefinition>("def", NewInstance(typeof(ContextDefinition)))
+            var eventTypeContextPropertiesExpr = EventTypeUtility.ResolveTypeCodegen(
+                eventTypeContextProperties,
+                EPStatementInitServicesConstants.REF);
+            
+            method.Block.DeclareVarNewInstance<ContextDefinition>("def")
                 .SetProperty(Ref("def"), "ContextName", Constant(contextName))
                 .SetProperty(Ref("def"), "ControllerFactories", Ref("controllers"))
-                .SetProperty(
-                    Ref("def"),
-                    "EventTypeContextProperties",
-                    EventTypeUtility.ResolveTypeCodegen(
-                        eventTypeContextProperties,
-                        EPStatementInitServicesConstants.REF))
+                .SetProperty(Ref("def"), "EventTypeContextProperties", eventTypeContextPropertiesExpr)
+                .SetProperty(Ref("def"), "PartitionIdSvcStateMgmtSettings", partitionIdSvcStateMgmtSettings.ToExpression())
                 .MethodReturn(Ref("def"));
             return LocalMethod(method);
         }

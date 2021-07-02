@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
                 ExprNode optionalFilter)
             : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            this._factory = factory;
+            _factory = factory;
             _refSet = membersColumnized.AddMember(col, typeof(SortedRefCountedSet<object>), "refSet");
             _serde = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeClassTyped(

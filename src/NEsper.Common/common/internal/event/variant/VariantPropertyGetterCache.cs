@@ -22,10 +22,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
     /// </summary>
     public class VariantPropertyGetterCache
     {
-        private readonly IList<string> properties;
-        private IDictionary<EventType, VariantPropertyGetterRow> allGetters;
-        private volatile EventType[] knownTypes;
-        private volatile VariantPropertyGetterRow lastUsedGetters;
+        private readonly IList<string> _properties;
+        private IDictionary<EventType, VariantPropertyGetterRow> _allGetters;
+        private volatile EventType[] _knownTypes;
+        private volatile VariantPropertyGetterRow _lastUsedGetters;
 
         /// <summary>
         ///     Ctor.
@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// <param name="knownTypes">types known at cache construction type, may be an empty list for the ANY type variance.</param>
         public VariantPropertyGetterCache(EventType[] knownTypes)
         {
-            this.knownTypes = knownTypes;
-            allGetters = new Dictionary<EventType, VariantPropertyGetterRow>();
-            properties = new List<string>();
+            this._knownTypes = knownTypes;
+            _allGetters = new Dictionary<EventType, VariantPropertyGetterRow>();
+            _properties = new List<string>();
         }
 
         /// <summary>
@@ -45,21 +45,21 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// <param name="propertyName">to add</param>
         public void AddGetters(string propertyName)
         {
-            foreach (var type in knownTypes) {
+            foreach (var type in _knownTypes) {
                 var getter = type.GetGetter(propertyName);
 
-                var row = allGetters.Get(type);
+                var row = _allGetters.Get(type);
                 if (row == null) {
                     lock (this) {
                         row = new VariantPropertyGetterRow(type, new Dictionary<string, EventPropertyGetter>());
-                        allGetters.Put(type, row);
+                        _allGetters.Put(type, row);
                     }
                 }
 
                 row.AddGetter(propertyName, getter);
             }
 
-            properties.Add(propertyName);
+            _properties.Add(propertyName);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             string propertyName,
             EventType eventType)
         {
-            var lastGetters = lastUsedGetters;
+            var lastGetters = _lastUsedGetters;
             if (lastGetters != null && lastGetters.EventType == eventType) {
                 var getterInner = lastGetters.GetterPerProp.Get(propertyName);
                 if (getterInner == null) {
@@ -83,13 +83,13 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 return getterInner;
             }
 
-            var row = allGetters.Get(eventType);
+            var row = _allGetters.Get(eventType);
 
             // newly seen type (Using ANY type variance or as a subtype of an existing variance type)
             // synchronized add, if added twice then that is ok too
             if (row == null) {
                 lock (this) {
-                    row = allGetters.Get(eventType);
+                    row = _allGetters.Get(eventType);
                     if (row == null) {
                         row = AddType(eventType);
                     }
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             }
 
             var getter = row.GetterPerProp.Get(propertyName);
-            lastUsedGetters = row;
+            _lastUsedGetters = row;
 
             if (getter == null) {
                 getter = eventType.GetGetter(propertyName);
@@ -109,13 +109,13 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         private VariantPropertyGetterRow AddType(EventType eventType)
         {
-            var newKnownTypes = (EventType[]) ResizeArray(knownTypes, knownTypes.Length + 1);
+            var newKnownTypes = (EventType[]) ResizeArray(_knownTypes, _knownTypes.Length + 1);
             newKnownTypes[newKnownTypes.Length - 1] = eventType;
 
             // create getters
             IDictionary<string, EventPropertyGetter> getters = new Dictionary<string, EventPropertyGetter>();
-            for (var i = 0; i < properties.Count; i++) {
-                var propertyName = properties[i];
+            for (var i = 0; i < _properties.Count; i++) {
+                var propertyName = _properties[i];
                 var getter = eventType.GetGetter(propertyName);
                 getters.Put(propertyName, getter);
             }
@@ -124,12 +124,12 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
             IDictionary<EventType, VariantPropertyGetterRow> newAllGetters =
                 new Dictionary<EventType, VariantPropertyGetterRow>();
-            newAllGetters.PutAll(allGetters);
+            newAllGetters.PutAll(_allGetters);
             newAllGetters.Put(eventType, row);
 
             // overlay volatiles
-            knownTypes = newKnownTypes;
-            allGetters = newAllGetters;
+            _knownTypes = newKnownTypes;
+            _allGetters = newAllGetters;
 
             return row;
         }

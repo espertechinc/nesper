@@ -8,14 +8,17 @@
 
 using System;
 using System.IO;
+using System.Xml.XPath;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -30,6 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
         ExprForgeInstrumentable
     {
         private CodegenFieldName _priorStrategyFieldName;
+        private Type _resultType;
 
         public int StreamNumber { get; private set; }
 
@@ -38,6 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
         public ExprForge InnerForge { get; private set; }
 
         public override ExprForge Forge => this;
+
+        public Type EvaluationType {
+            get => _resultType;
+            private set => _resultType = value;
+        }
 
         public bool IsConstantResult => false;
 
@@ -55,8 +64,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType { get; private set; }
-
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
@@ -65,8 +72,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var method = parent.MakeChild(EvaluationType, GetType(), codegenClassScope);
-            var innerEval = CodegenLegoMethodExpression.CodegenExpression(InnerForge, method, codegenClassScope, true);
+            if (_resultType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var method = parent.MakeChild(_resultType, GetType(), codegenClassScope);
+            var innerEval = CodegenLegoMethodExpression.CodegenExpression(InnerForge, method, codegenClassScope);
             var eps = exprSymbol.GetAddEPS(method);
 
             // see ExprPriorEvalStrategyBase
@@ -134,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
             var constantNode = ChildNodes[0];
             var constantNodeType = constantNode.Forge.EvaluationType;
-            if (constantNodeType != typeof(int?) && constantNodeType != typeof(int)) {
+            if (constantNodeType.IsNotInt32()) {
                 throw new ExprValidationException("Prior function requires an integer index parameter");
             }
 

@@ -49,17 +49,17 @@ namespace com.espertech.esper.common.@internal.view.union
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set { eventType = value; }
         }
 
         public ViewFactory[] Unioned {
             get => unioned;
-            set { this.unioned = value; }
+            set { unioned = value; }
         }
 
         public bool HasAsymetric {
             get => hasAsymetric;
-            set { this.hasAsymetric = value; }
+            set { hasAsymetric = value; }
         }
 
         public string ViewName {

@@ -9,10 +9,12 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -66,8 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            if (_resultType.IsNullTypeSafe()) {
+                return ConstantNull();
+            }
+            
+            var methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             methodNode.Block
                 .IfCondition(NotEqualsNull(refExprEvalCtx))

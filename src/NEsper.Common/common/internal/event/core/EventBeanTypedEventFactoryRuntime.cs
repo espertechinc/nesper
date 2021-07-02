@@ -22,11 +22,11 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventBeanTypedEventFactoryRuntime : EventBeanTypedEventFactory
     {
-        private readonly EventTypeAvroHandler eventTypeAvroHandler;
+        private readonly EventTypeAvroHandler _eventTypeAvroHandler;
 
         public EventBeanTypedEventFactoryRuntime(EventTypeAvroHandler eventTypeAvroHandler)
         {
-            this.eventTypeAvroHandler = eventTypeAvroHandler;
+            this._eventTypeAvroHandler = eventTypeAvroHandler;
         }
 
         public MappedEventBean AdapterForTypedMap(
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             object avroGenericDataDotRecord,
             EventType eventType)
         {
-            return eventTypeAvroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, eventType);
+            return _eventTypeAvroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, eventType);
         }
 
         public EventBean AdapterForTypedWrapper(

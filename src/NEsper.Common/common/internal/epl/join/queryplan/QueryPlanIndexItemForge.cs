@@ -10,14 +10,19 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -30,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// </summary>
     public class QueryPlanIndexItemForge : CodegenMakeable
     {
-        private readonly EventType eventType;
+        private readonly EventType _eventType;
+        private StateMgmtSetting _stateMgmtSettings;
 
         public QueryPlanIndexItemForge(
             string[] hashProps,
@@ -69,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             RangeTypes = rangeTypes;
             IsUnique = unique;
             AdvancedIndexProvisionDesc = advancedIndexProvisionDesc;
-            this.eventType = eventType;
+            this._eventType = eventType;
         }
 
         public QueryPlanIndexItemForge(
@@ -173,10 +179,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             var method = parent.MakeChild(typeof(QueryPlanIndexItem), GetType(), classScope);
 
-            var propertyGetters = EventTypeUtility.GetGetters(eventType, HashProps);
-            var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, HashProps);
+            var propertyGetters = EventTypeUtility.GetGetters(_eventType, HashProps);
+            var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, HashProps);
             var valueGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
-                eventType, propertyGetters, propertyTypes, HashTypes, HashMultiKeyClasses, method, classScope);
+                _eventType, propertyGetters, propertyTypes, HashTypes, HashMultiKeyClasses, method, classScope);
 
             CodegenExpression rangeGetters;
             if (RangeProps.Length == 0) {
@@ -188,8 +194,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                     "getters",
                     NewArrayByLength(typeof(EventPropertyValueGetter), Constant(RangeProps.Length)));
                 for (var i = 0; i < RangeProps.Length; i++) {
-                    var getter = ((EventTypeSPI) eventType).GetGetterSPI(RangeProps[i]);
-                    var getterType = eventType.GetPropertyType(RangeProps[i]);
+                    var getter = ((EventTypeSPI) _eventType).GetGetterSPI(RangeProps[i]);
+                    var getterType = _eventType.GetPropertyType(RangeProps[i]);
                     var coercionType = RangeTypes == null ? null : RangeTypes[i];
                     var eval = EventTypeUtility.CodegenGetterWCoerce(
                         getter,
@@ -222,7 +228,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                     Constant(IsUnique),
                     AdvancedIndexProvisionDesc == null
                         ? ConstantNull()
-                        : AdvancedIndexProvisionDesc.CodegenMake(method, classScope)));
+                        : AdvancedIndexProvisionDesc.CodegenMake(method, classScope),
+                    _stateMgmtSettings.ToExpression()));
             return LocalMethod(method);
         }
 
@@ -263,7 +270,34 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 null,
                 null,
                 IsUnique,
-                AdvancedIndexProvisionDesc.ToRuntime());
+                AdvancedIndexProvisionDesc.ToRuntime(),
+                _stateMgmtSettings);
+        }
+
+
+        public void PlanStateMgmtSettings(
+            StatementRawInfo raw,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            AppliesTo appliesTo;
+            if (HashProps.Length > 0 && RangeProps.Length == 0) {
+                appliesTo = AppliesTo.INDEX_HASH;
+            }
+            else if (HashProps.Length == 0 && RangeProps.Length > 0) {
+                appliesTo = AppliesTo.INDEX_SORTED;
+            }
+            else if (HashProps.Length > 0) {
+                _stateMgmtSettings = StateMgmtSettingDefault.INSTANCE;
+                return;
+            }
+            else if (AdvancedIndexProvisionDesc == null) {
+                appliesTo = AppliesTo.INDEX_UNINDEXED;
+            }
+            else {
+                appliesTo = AppliesTo.INDEX_OTHER;
+            }
+
+            _stateMgmtSettings = compileTimeServices.StateMgmtSettingsProvider.GetIndex(raw, appliesTo);
         }
     }
 } // end of namespace

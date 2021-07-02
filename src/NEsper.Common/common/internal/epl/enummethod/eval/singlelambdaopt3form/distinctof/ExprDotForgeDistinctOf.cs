@@ -9,38 +9,43 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof
 {
 	public class ExprDotForgeDistinctOf : ExprDotForgeLambdaThreeForm
 	{
-
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+			return EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
-			return streamCountIncoming => new EnumDistinctOfScalarNoParams(streamCountIncoming, ((ClassMultiValuedEPType) type).Component);
+			return streamCountIncoming => {
+				var typeClass = (EPChainableTypeClass) type;
+				var component = TypeHelper.GetSingleParameterTypeOrObject(typeClass.Clazz);
+				return new EnumDistinctOfScalarNoParams(streamCountIncoming, component);
+			};
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => inputEventType == null
-				? EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null)
-				: EPTypeHelper.CollectionOfEvents(inputEventType);
+				? EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType)
+				: EPChainableTypeHelper.CollectionOfEvents(inputEventType);
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)

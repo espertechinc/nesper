@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -24,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprEvaluator,
             ExprNodeRenderable
         {
-            private readonly Type returnType;
+            private readonly Type _returnType;
 
-            private readonly int streamNumEval;
+            private readonly int _streamNumEval;
 
             public ExprForgeStreamUnderlying(
                 int streamNumEval,
                 Type returnType)
             {
-                this.streamNumEval = streamNumEval;
-                this.returnType = returnType;
+                this._streamNumEval = streamNumEval;
+                this._returnType = returnType;
             }
 
             public object Evaluate(
@@ -41,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var theEvent = eventsPerStream[streamNumEval];
+                var theEvent = eventsPerStream[_streamNumEval];
                 return theEvent?.Underlying;
             }
 
@@ -53,17 +54,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                var methodNode = codegenMethodScope.MakeChild(returnType, GetType(), codegenClassScope);
+                var methodNode = codegenMethodScope.MakeChild(_returnType, GetType(), codegenClassScope);
 
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 methodNode.Block
                     .DeclareVar<EventBean>(
                         "theEvent",
-                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNumEval)))
+                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNumEval)))
                     .IfRefNullReturnNull("theEvent")
                     .MethodReturn(
                         CodegenExpressionBuilder.Cast(
-                            returnType,
+                            _returnType,
                             CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("theEvent"))));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }

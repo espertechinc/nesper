@@ -16,6 +16,8 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
+using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -46,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             testTypesMap.Put("MySupportBean", typeof(SupportBean));
             testTypesMap.Put("MyComplexBean", typeof(SupportBeanComplexProps));
             testTypesMap.Put("MyNullableSupportBean", typeof(SupportBean));
-            testTypesMap.Put("MyNullType", null);
+            testTypesMap.Put("MyNullType", TypeHelper.NullType);
             eventType = new MapEventType(metadata, testTypesMap, null, null, null, null,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
         }

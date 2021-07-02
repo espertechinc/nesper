@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -82,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             if (eventType.PropertyDescriptors.Count == 0 &&
                 columnNames.Length == 1 &&
                 columnNames[0].Equals("null") &&
-                expressionReturnTypes[0] == null &&
+                expressionReturnTypes[0].IsNullTypeSafe() &&
                 !isUsingWildcard) {
                 EventBeanManufacturerForge eventManufacturer;
                 try {
@@ -348,23 +350,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var inner = forge;
                         forge = new ExprForgeStreamWithInner(inner, componentReturnType);
                     }
-                    else if (!(columnType is Type columnAsType)) {
-                        var message = "Invalid assignment of column '" +
-                                      columnNames[i] +
-                                      "' of type '" +
-                                      columnType +
-                                      "' to event property '" +
-                                      desc.PropertyName +
-                                      "' typed as '" +
-                                      desc.PropertyType.CleanName() +
-                                      "', column and parameter types mismatch";
-                        throw new ExprValidationException(message);
-                    }
-                    else {
+                    else if (columnType is Type columnAsType) {
                         try {
                             widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                                 columnNames[i],
-                                (Type) columnType,
+                                columnAsType,
                                 desc.PropertyType,
                                 desc.PropertyName,
                                 false,
@@ -374,6 +364,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         catch (TypeWidenerException ex) {
                             throw new ExprValidationException(ex.Message, ex);
                         }
+                    } else {
+                        var message = "Invalid assignment of column '" +
+                                      columnNames[i] +
+                                      "' of type '" +
+                                      columnType +
+                                      "' to event property '" +
+                                      desc.PropertyName +
+                                      "' typed as '" +
+                                      desc.PropertyType.TypeSafeName() +
+                                      "', column and parameter types mismatch";
+                        throw new ExprValidationException(message);
                     }
 
                     selectedWritable = desc;

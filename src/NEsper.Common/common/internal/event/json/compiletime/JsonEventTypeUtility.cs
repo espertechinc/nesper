@@ -29,14 +29,15 @@ using com.espertech.esper.common.@internal.@event.json.forge;
 using com.espertech.esper.common.@internal.@event.json.serializers.forge;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.util.IdentifierUtil; // getIdentifierMayStartNumeric
+using static com.espertech.esper.common.@internal.bytecodemodel.util.IdentifierUtil;
 using static com.espertech.esper.common.@internal.@event.core.BaseNestableEventUtil;
 
-using TypeExtensions = com.espertech.esper.compat.TypeExtensions; // resolvePropertyTypes
+using TypeExtensions = com.espertech.esper.compat.TypeExtensions;
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
@@ -331,12 +332,12 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				"Public field '" +
 				insertedName +
 				"' of class '" +
-				declaredClass.CleanName() +
+				declaredClass.TypeSafeName() +
 				"' declared as type " +
 				"'" +
 				TypeExtensions.CleanName(field.FieldType) +
 				"' cannot receive a value of type '" +
-				insertedClass.CleanName() +
+				insertedClass.TypeSafeName() +
 				"'");
 		}
 
@@ -480,13 +481,19 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 						JsonSerializerForgeNull.INSTANCE);
 				}
 				else if (type is Type clazz) {
-					forgeDesc = JsonForgeFactoryBuiltinClassTyped.INSTANCE.Forge(
-						clazz,
-						entry.Key,
-						optionalField,
-						deepClasses,
-						annotations,
-						services);
+					if (clazz.IsNullType()) {
+						forgeDesc = new JsonForgeDesc(
+							JsonDeserializerForgeNull.INSTANCE,
+							JsonSerializerForgeNull.INSTANCE);
+					} else {
+						forgeDesc = JsonForgeFactoryBuiltinClassTyped.INSTANCE.Forge(
+							clazz,
+							entry.Key,
+							optionalField,
+							deepClasses,
+							annotations,
+							services);
+					}
 				}
 				else if (type is TypeBeanOrUnderlying typeBeanOrUnderlying) {
 					var eventType = typeBeanOrUnderlying.EventType;
@@ -564,8 +571,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				if (type == null) {
 					assignedType = typeof(object);
 				}
-				else if (type is Type) {
-					assignedType = (Type) type;
+				else if (type is Type trueType) {
+					assignedType = trueType.IsNullType() ? typeof(object) : trueType;
 				}
 				else if (type is TypeBeanOrUnderlying) {
 					var other = ((TypeBeanOrUnderlying) type).EventType;
@@ -591,12 +598,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 		private static Type GetAssignedType(EventType type)
 		{
-			if (type is JsonEventType) {
+			if (type is JsonEventType || type is MapEventType) {
 				return type.UnderlyingType;
-			}
-
-			if (type is MapEventType) {
-				return typeof(IDictionary<string, object>);
 			}
 
 			throw new ExprValidationException("Incompatible type '" + type.Name + "' encountered, expected a Json or Map event type");

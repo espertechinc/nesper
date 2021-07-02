@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             DotMethodFP footprint,
             IList<ExprNode> parameters,
             EnumMethodEnum enumMethod,
-            String enumMethodUsedName,
+            string enumMethodUsedName,
             EventType inputEventType,
             Type collectionComponentType,
             ExprValidationContext validationContext)
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 StatementCompileTimeServices services)
             {
                 var body = bodiesAndParameters[0].BodyForge;
-                var type = EPTypeHelper.SingleValue(typeof(bool?));
+                var type = EPChainableTypeHelper.SingleValueNonNull(typeof(bool?));
                 EnumForge forge = new EnumSequenceEqualForge(body, streamCountIncoming, _isScalar);
                 return new EnumForgeDesc(type, forge);
             }

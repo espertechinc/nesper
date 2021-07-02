@@ -12,6 +12,7 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;

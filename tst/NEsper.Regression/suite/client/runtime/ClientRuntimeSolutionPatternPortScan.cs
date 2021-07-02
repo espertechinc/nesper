@@ -31,21 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithFallsUnderThreshold(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimePortScanFallsUnderThreshold());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeepAlerting(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimePortScanKeepAlerting());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrimarySuccess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimePortScanPrimarySuccess());
             return execs;
         }

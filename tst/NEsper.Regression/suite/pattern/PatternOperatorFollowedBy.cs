@@ -47,70 +47,70 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithFollowedOrPermFalse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedOrPermFalse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFilterGreaterThen(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFilterGreaterThen());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedEveryMultiple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedEveryMultiple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedNotEvery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedNotEvery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRFIDZoneEnter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternRFIDZoneEnter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRFIDZoneExit(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternRFIDZoneExit());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMemoryRFIDEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternMemoryRFIDEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedByTimer(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedByTimer());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedByWithNot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedByWithNot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOpWHarness(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOpWHarness());
             return execs;
         }
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             long endTime)
         {
             var theEvent = new SupportCallEvent(callId, source, destination, startTime, endTime);
-            runtime.SendEventBean(theEvent, typeof(SupportCallEvent).Name);
+            runtime.SendEventBean(theEvent, nameof(SupportCallEvent));
             return theEvent;
         }
 

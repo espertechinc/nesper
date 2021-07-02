@@ -153,11 +153,27 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return EnumValue(typeof(T), enumValue.GetName());
         }
 
+        public static CodegenExpression EnumValue<T>(string enumName)
+            where T : struct
+        {
+            if (!typeof(T).IsEnum) {
+                throw new ArgumentException("type is not an enumeration");
+            }
+
+            return EnumValue(typeof(T), enumName);
+        }
+
         public static CodegenExpression EnumValue(
             Type enumType,
             string enumValue)
         {
             return new CodegenExpressionEnumOrPublicConstantValue(enumType, enumValue);
+        }
+
+        public static CodegenExpression PublicConstValue<T>(
+            string enumValue)
+        {
+            return new CodegenExpressionEnumOrPublicConstantValue(typeof(T), enumValue);
         }
 
         public static CodegenExpression PublicConstValue(
@@ -484,14 +500,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 ConstantTrue());
         }
 
-        
-        public static CodegenExpression ClassMethod(
-            string method,
-            params CodegenExpression[] @params)
-        {
-            return new CodegenExpressionClassMethod(method, @params);
-        }
-
         public static CodegenExpression Clazz(Type clazz)
         {
             return new CodegenExpressionClass(clazz);
@@ -529,7 +537,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionNewInstance(clazz, @params);
         }
 
-        public static CodegenExpression NewInstanceInner(
+        public static CodegenExpression NewInstanceNamed(
             string name,
             params CodegenExpression[] @params)
         {

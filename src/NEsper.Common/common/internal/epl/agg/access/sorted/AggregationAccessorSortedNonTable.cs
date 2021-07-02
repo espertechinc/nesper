@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.util;
 
@@ -22,31 +23,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     /// </summary>
     public class AggregationAccessorSortedNonTable : AggregationAccessorForge
     {
-        private readonly Type componentType;
-        private readonly bool max;
+        private readonly Type _componentType;
+        private readonly bool _max;
 
         public AggregationAccessorSortedNonTable(
             bool max,
             Type componentType)
         {
-            this.max = max;
-            this.componentType = componentType;
+            _max = max;
+            _componentType = componentType;
         }
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             var size = sorted.SizeCodegen();
-            var enumerator = max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
+            var enumerator = _max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+            var arrayType = TypeHelper.GetArrayType(_componentType);
+            context.Method.Block
+                .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(TypeHelper.GetArrayType(componentType), "array", NewArrayByLength(componentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(_componentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
                 .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
-                .AssignArrayElement(Ref("array"), Ref("count"), FlexCast(componentType, ExprDotUnderlying(Ref("bean"))))
+                .AssignArrayElement(Ref("array"), Ref("count"), FlexCast(_componentType, ExprDotUnderlying(Ref("bean"))))
                 .IncrementRef("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));

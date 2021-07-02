@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public static readonly CodegenExpressionRef REF_LEFTRESULT = Ref(NAME_LEFTRESULT);
 
-        private CodegenExpressionRef optionalLeftResult;
+        private CodegenExpressionRef _optionalLeftResult;
 
         public SubselectForgeNRSymbol(Type leftResultType)
         {
@@ -34,18 +34,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public CodegenExpressionRef GetAddLeftResult(CodegenMethodScope scope)
         {
-            if (optionalLeftResult == null) {
-                optionalLeftResult = REF_LEFTRESULT;
+            if (_optionalLeftResult == null) {
+                _optionalLeftResult = REF_LEFTRESULT;
             }
 
-            scope.AddSymbol(optionalLeftResult);
-            return optionalLeftResult;
+            scope.AddSymbol(_optionalLeftResult);
+            return _optionalLeftResult;
         }
 
         public override void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalLeftResult != null) {
-                symbols.Put(optionalLeftResult.Ref, LeftResultType);
+            if (_optionalLeftResult != null) {
+                symbols.Put(_optionalLeftResult.Ref, LeftResultType);
             }
 
             base.Provide(symbols);

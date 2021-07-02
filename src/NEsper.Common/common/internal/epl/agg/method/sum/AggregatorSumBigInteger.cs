@@ -78,11 +78,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            //var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
-            method.Block.AssignRef(sum, 
-                StaticMethod(typeof(BigInteger), "Add", 
-                    sum, FlexCast(evaluationTypes[0], value)));
-            // ExprDotMethod(sum, "Add", FlexCast(evaluationTypes[0], value)));
+            if (evaluationTypes[0] != null) {
+                //var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
+                method.Block.AssignRef(
+                    sum,
+                    StaticMethod(
+                        typeof(BigInteger),
+                        "Add",
+                        sum,
+                        FlexCast(evaluationTypes[0], value)));
+                // ExprDotMethod(sum, "Add", FlexCast(evaluationTypes[0], value)));
+            }
         }
 
         protected override void ApplyTableLeaveSum(
@@ -91,10 +97,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            //var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
-            method.Block.AssignRef(sum,
-                StaticMethod(typeof(BigInteger), "Subtract",
-                    sum, FlexCast(evaluationTypes[0], value)));
+            if (evaluationTypes[0] != null) {
+                //var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
+                method.Block.AssignRef(
+                    sum,
+                    StaticMethod(
+                        typeof(BigInteger),
+                        "Subtract",
+                        sum,
+                        FlexCast(evaluationTypes[0], value)));
+            }
         }
 
         protected override void WriteSum(

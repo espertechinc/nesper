@@ -18,7 +18,6 @@ using static com.espertech.esper.regressionlib.support.filter.FilterTestMultiStm
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
-    [TestFixture]
     public class ExprFilterPlanTwoFilterNestedTwoSame
     {
         public static IList<FilterTestMultiStmtExecution> Executions(bool withStats)

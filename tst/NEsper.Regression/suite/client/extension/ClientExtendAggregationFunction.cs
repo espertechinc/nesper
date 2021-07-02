@@ -31,22 +31,87 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationManagedWindow());
-			execs.Add(new ClientExtendAggregationManagedGrouped());
-			execs.Add(new ClientExtendAggregationManagedDistinctAndStarParam());
-			execs.Add(new ClientExtendAggregationManagedDotMethod());
-			execs.Add(new ClientExtendAggregationManagedMappedPropertyLookAlike());
-			execs.Add(new ClientExtendAggregationMultiParamMulti());
-			execs.Add(new ClientExtendAggregationMultiParamNoParam());
-			execs.Add(new ClientExtendAggregationMultiParamSingleArray());
-			execs.Add(new ClientExtendAggregationCodegeneratedCount());
-			execs.Add(new ClientExtendAggregationFailedValidation());
-			execs.Add(new ClientExtendAggregationInvalidUse());
-			execs.Add(new ClientExtendAggregationInvalidCannotResolve());
-			execs.Add(new ClientExtendAggregationTable());
+WithManagedWindow(execs);
+WithManagedGrouped(execs);
+WithManagedDistinctAndStarParam(execs);
+WithManagedDotMethod(execs);
+WithManagedMappedPropertyLookAlike(execs);
+WithMultiParamMulti(execs);
+WithMultiParamNoParam(execs);
+WithMultiParamSingleArray(execs);
+WithCodegeneratedCount(execs);
+WithFailedValidation(execs);
+WithInvalidUse(execs);
+WithInvalidCannotResolve(execs);
+WithTable(execs);
 			return execs;
 		}
-
+public static IList<RegressionExecution> WithTable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationTable());
+    return execs;
+}public static IList<RegressionExecution> WithInvalidCannotResolve(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationInvalidCannotResolve());
+    return execs;
+}public static IList<RegressionExecution> WithInvalidUse(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationInvalidUse());
+    return execs;
+}public static IList<RegressionExecution> WithFailedValidation(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationFailedValidation());
+    return execs;
+}public static IList<RegressionExecution> WithCodegeneratedCount(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationCodegeneratedCount());
+    return execs;
+}public static IList<RegressionExecution> WithMultiParamSingleArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationMultiParamSingleArray());
+    return execs;
+}public static IList<RegressionExecution> WithMultiParamNoParam(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationMultiParamNoParam());
+    return execs;
+}public static IList<RegressionExecution> WithMultiParamMulti(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationMultiParamMulti());
+    return execs;
+}public static IList<RegressionExecution> WithManagedMappedPropertyLookAlike(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationManagedMappedPropertyLookAlike());
+    return execs;
+}public static IList<RegressionExecution> WithManagedDotMethod(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationManagedDotMethod());
+    return execs;
+}public static IList<RegressionExecution> WithManagedDistinctAndStarParam(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationManagedDistinctAndStarParam());
+    return execs;
+}public static IList<RegressionExecution> WithManagedGrouped(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationManagedGrouped());
+    return execs;
+}public static IList<RegressionExecution> WithManagedWindow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendAggregationManagedWindow());
+    return execs;
+}
 		internal class ClientExtendAggregationTable : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)

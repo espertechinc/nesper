@@ -665,5 +665,18 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void AJoinCompositionHistorical(
             ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
             ISet<MultiKeyArrayOfKeys<EventBean>> oldResults);
+
+
+        void QOutputProcessNonBuffered(
+            EventBean[] newData,
+            EventBean[] oldData);
+
+        void AOutputProcessNonBuffered();
+
+        void QOutputProcessNonBufferedJoin(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
+
+        void AOutputProcessNonBufferedJoin();
     }
 } // end of namespace

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	public class EnumMinMaxByScalar : ThreeFormScalar
 	{
 		private readonly bool _max;
-		private readonly EPType _resultType;
+		private readonly EPChainableType _resultType;
 		private readonly Type _innerTypeBoxed;
 		private readonly Type _resultTypeBoxed;
 
@@ -36,17 +36,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ObjectArrayEventType fieldEventType,
 			int numParameters,
 			bool max,
-			EPType resultType) : base(lambda, fieldEventType, numParameters)
+			EPChainableType resultType) : base(lambda, fieldEventType, numParameters)
 		{
-			this._max = max;
-			this._resultType = resultType;
-			this._innerTypeBoxed = Boxing.GetBoxedType(InnerExpression.EvaluationType);
-			this._resultTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
+			_max = max;
+			_resultType = resultType;
+			_innerTypeBoxed = Boxing.GetBoxedType(InnerExpression.EvaluationType);
+			_resultTypeBoxed = Boxing.GetBoxedType(EPChainableTypeHelper.GetCodegenReturnType(resultType));
 		}
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
 					ProcEvaluateEnumMethod = (
 						eventsLambda,
@@ -55,19 +55,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						context) => {
 						IComparable minKey = null;
 						object result = null;
-						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
-						object[] props = resultEvent.Properties;
+						var props = resultEvent.Properties;
 						props[2] = enumcoll.Count;
-						ICollection<object> values = (ICollection<object>) enumcoll;
+						var values = (ICollection<object>) enumcoll;
 
-						int count = -1;
-						foreach (object next in values) {
+						var count = -1;
+						foreach (var next in values) {
 							count++;
 							props[1] = count;
 							props[0] = next;
 
-							object comparable = inner.Evaluate(eventsLambda, isNewData, context);
+							var comparable = inner.Evaluate(eventsLambda, isNewData, context);
 							if (comparable == null) {
 								continue;
 							}
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return _resultTypeBoxed;
 		}

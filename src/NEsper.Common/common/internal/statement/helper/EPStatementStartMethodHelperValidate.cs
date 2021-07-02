@@ -119,8 +119,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         ExprNodeOrigin.FILTER,
                         whereClause,
                         validationContext);
-                    if (whereClause.Forge.EvaluationType != typeof(bool) &&
-                        whereClause.Forge.EvaluationType != typeof(bool?)) {
+                    if (!whereClause.Forge.EvaluationType.IsBoolean()) {
                         throw new ExprValidationException(
                             "The where-clause filter expression must return a boolean value");
                     }
@@ -169,7 +168,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         validationContext);
                     statementSpec.OutputLimitSpec.WhenExpressionNode = outputLimitWhenNode;
 
-                    if (outputLimitWhenNode.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
+                    if (!outputLimitWhenNode.Forge.EvaluationType.IsBoolean()) {
                         throw new ExprValidationException(
                             "The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value");
                     }
@@ -193,7 +192,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         validationContext);
                     statementSpec.OutputLimitSpec.AndAfterTerminateExpr = validated;
 
-                    if (validated.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
+                    if (!validated.Forge.EvaluationType.IsBoolean()) {
                         throw new ExprValidationException(
                             "The terminated-and expression must return a boolean-type value");
                     }
@@ -204,10 +203,10 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
 
                 // validate then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext, false);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext);
 
                 // validate after-terminated then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions, validationContext, false);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions, validationContext);
             }
 
             for (var outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Count; outerJoinCount++) {
@@ -338,8 +337,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
         private static void ValidateThenSetAssignments(
             IList<OnTriggerSetAssignment> assignments,
-            ExprValidationContext validationContext,
-            bool allowRHSAggregation)
+            ExprValidationContext validationContext)
         {
             if (assignments == null || assignments.IsEmpty()) {
                 return;

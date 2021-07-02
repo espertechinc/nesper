@@ -22,6 +22,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
     public class StageRuntimeServices
     {
         public StageRuntimeServices(
+            ImportServiceRuntime importServiceRuntime,
             DispatchService dispatchService,
             EventBeanService eventBeanService,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -36,6 +37,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
             ThreadingService threadingService,
             VariableManagementService variableManagementService)
         {
+            ImportServiceRuntime = importServiceRuntime;
             DispatchService = dispatchService;
             EventBeanService = eventBeanService;
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
@@ -51,6 +53,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
             VariableManagementService = variableManagementService;
         }
 
+        public ImportServiceRuntime ImportServiceRuntime { get; }
+        
         public DispatchService DispatchService { get; }
 
         public EventBeanService EventBeanService { get; }

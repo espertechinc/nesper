@@ -39,70 +39,70 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithRefPoint(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchRefPoint());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoRefPoint(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchNoRefPoint());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiBatch(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchMultiBatch());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultirow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchMultirow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLonger(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchLonger());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEagerForceUpdate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchStartEagerForceUpdate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchMonthScoped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEagerForceUpdateSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchStartEagerForceUpdateSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> With10Sec(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatch10Sec());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeBatchSceneOne());
             return execs;
         }

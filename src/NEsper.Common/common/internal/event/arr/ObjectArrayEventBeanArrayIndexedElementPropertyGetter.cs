@@ -20,9 +20,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanArrayIndexedElementPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly int index;
-        private readonly EventPropertyGetterSPI nestedGetter;
-        private readonly int propertyIndex;
+        private readonly int _index;
+        private readonly EventPropertyGetterSPI _nestedGetter;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -35,16 +35,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int index,
             EventPropertyGetterSPI nestedGetter)
         {
-            this.propertyIndex = propertyIndex;
-            this.index = index;
-            this.nestedGetter = nestedGetter;
+            this._propertyIndex = propertyIndex;
+            this._index = index;
+            this._nestedGetter = nestedGetter;
         }
 
         public object GetObjectArray(object[] array)
         {
             // If the map does not contain the key, this is allowed and represented as null
-            var wrapper = (EventBean[]) array[propertyIndex];
-            return BaseNestableEventUtil.GetArrayPropertyValue(wrapper, index, nestedGetter);
+            var wrapper = (EventBean[]) array[_propertyIndex];
+            return BaseNestableEventUtil.GetArrayPropertyValue(wrapper, _index, _nestedGetter);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object GetFragment(EventBean obj)
         {
-            var wrapper = (EventBean[]) BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[propertyIndex];
-            return BaseNestableEventUtil.GetArrayPropertyFragment(wrapper, index, nestedGetter);
+            var wrapper = (EventBean[]) BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[_propertyIndex];
+            return BaseNestableEventUtil.GetArrayPropertyFragment(wrapper, _index, _nestedGetter);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -131,14 +131,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",
-                    Cast(typeof(EventBean[]), ArrayAtIndex(Ref("array"), Constant(propertyIndex))))
+                    Cast(typeof(EventBean[]), ArrayAtIndex(Ref("array"), Constant(_propertyIndex))))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetArrayPropertyValueCodegen(
                             codegenMethodScope,
                             codegenClassScope,
-                            index,
-                            nestedGetter),
+                            _index,
+                            _nestedGetter),
                         Ref("wrapper")));
         }
 
@@ -151,14 +151,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",
-                    Cast(typeof(EventBean[]), ArrayAtIndex(Ref("array"), Constant(propertyIndex))))
+                    Cast(typeof(EventBean[]), ArrayAtIndex(Ref("array"), Constant(_propertyIndex))))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetArrayPropertyFragmentCodegen(
                             codegenMethodScope,
                             codegenClassScope,
-                            index,
-                            nestedGetter),
+                            _index,
+                            _nestedGetter),
                         Ref("wrapper")));
         }
     }

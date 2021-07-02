@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 classScope);
 
             method.Block
-                .DeclareVar<InternalEventRouterWriterCurly>("desc", NewInstance(typeof(InternalEventRouterWriterCurly)))
+                .DeclareVarNewInstance<InternalEventRouterWriterCurly>("desc")
                 .SetProperty(Ref("desc"), "Expression", descExpr)
                 .MethodReturn(Ref("desc"));
             return LocalMethod(method);

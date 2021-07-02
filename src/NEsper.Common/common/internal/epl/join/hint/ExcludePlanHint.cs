@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
         {
             this.streamNames = streamNames;
             this.evaluators = evaluators;
-            this.queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
+            queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
         }
 
         public static ExcludePlanHint GetHint(
@@ -55,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
                 }
 
                 ExprForge forge = ExcludePlanHintExprUtil.ToExpression(hint, rawInfo, services);
-                if (Boxing.GetBoxedType(forge.EvaluationType) != typeof(bool?)) {
+                if (!forge.EvaluationType.IsBoolean()) {
                     throw new ExprValidationException(
                         "Expression provided for hint " + HintEnum.EXCLUDE_PLAN + " must return a boolean value");
                 }

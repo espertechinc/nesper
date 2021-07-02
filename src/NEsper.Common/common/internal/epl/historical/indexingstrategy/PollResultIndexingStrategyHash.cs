@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyHash : PollResultIndexingStrategy
     {
-        private PropertyHashedEventTableFactory factory;
+        private PropertyHashedEventTableFactory _factory;
 
         public int StreamNum { get; set; }
 
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
             }
 
-            var tables = factory.MakeEventTables(agentInstanceContext, null);
+            var tables = _factory.MakeEventTables(agentInstanceContext, null);
             foreach (var table in tables) {
                 table.Add(pollResult.ToArray(), agentInstanceContext);
             }
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Init()
         {
-            factory = new PropertyHashedEventTableFactory(StreamNum, PropertyNames, false, null, ValueGetter, null);
+            _factory = new PropertyHashedEventTableFactory(StreamNum, PropertyNames, false, null, ValueGetter, null);
         }
     }
 } // end of namespace

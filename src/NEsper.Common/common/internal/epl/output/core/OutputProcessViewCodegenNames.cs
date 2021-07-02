@@ -18,8 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         public const string NAME_STATEMENTRESULTSVC = "statementResultService";
         public const string NAME_PARENTVIEW = "parentView";
         public const string NAME_JOINEXECSTRATEGY = "joinExecutionStrategy";
+        public const string NAME_AGENTINSTANCECONTEXT = "agentInstanceContext";
         
         public static readonly CodegenExpressionMember MEMBER_CHILD = Member("child");
         public static readonly CodegenExpressionMember MEMBER_RESULTSETPROCESSOR = Member(NAME_RESULTSETPROCESSOR);
+        public static readonly CodegenExpressionMember MEMBER_AGENTINSTANCECONTEXT = Member(NAME_AGENTINSTANCECONTEXT);
     }
 } // end of namespace

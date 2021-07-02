@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.etc;
 using com.espertech.esper.common.@internal.epl.expression.ops;
@@ -39,11 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool[] isDescendingValues)
         {
             // determine string-type sorting
-            bool hasStringTypes = false;
-            bool[] stringTypes = new bool[sortCriteriaTypes.Length];
+            var hasStringTypes = false;
+            var stringTypes = new bool[sortCriteriaTypes.Length];
 
-            int count = 0;
-            for (int i = 0; i < sortCriteriaTypes.Length; i++) {
+            var count = 0;
+            for (var i = 0; i < sortCriteriaTypes.Length; i++) {
                 if (sortCriteriaTypes[i] == typeof(string)) {
                     hasStringTypes = true;
                     stringTypes[count] = true;
@@ -54,11 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             if (sortCriteriaTypes.Length > 1) {
                 if ((!hasStringTypes) || (!isSortUsingCollator)) {
-                    ComparatorHashableMultiKey comparatorMK = new ComparatorHashableMultiKey(isDescendingValues);
+                    var comparatorMK = new ComparatorHashableMultiKey(isDescendingValues);
                     return new ComparatorHashableMultiKeyCasting(comparatorMK);
                 }
                 else {
-                    ComparatorHashableMultiKeyCollating comparatorMk =
+                    var comparatorMk =
                         new ComparatorHashableMultiKeyCollating(isDescendingValues, stringTypes);
                     return new ComparatorHashableMultiKeyCasting(comparatorMk);
                 }
@@ -86,11 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool[] isDescendingValues)
         {
             // determine string-type sorting
-            bool hasStringTypes = false;
-            bool[] stringTypes = new bool[sortCriteriaTypes.Length];
+            var hasStringTypes = false;
+            var stringTypes = new bool[sortCriteriaTypes.Length];
 
-            int count = 0;
-            for (int i = 0; i < sortCriteriaTypes.Length; i++) {
+            var count = 0;
+            for (var i = 0; i < sortCriteriaTypes.Length; i++) {
                 if (sortCriteriaTypes[i] == typeof(string)) {
                     hasStringTypes = true;
                     stringTypes[count] = true;
@@ -101,11 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             if (sortCriteriaTypes.Length > 1) {
                 if ((!hasStringTypes) || (!isSortUsingCollator)) {
-                    ComparatorObjectArray comparatorMK = new ComparatorObjectArray(isDescendingValues);
+                    var comparatorMK = new ComparatorObjectArray(isDescendingValues);
                     return new ComparatorObjectArrayCasting(comparatorMK);
                 }
                 else {
-                    ComparatorObjectArrayCollating comparatorMk =
+                    var comparatorMk =
                         new ComparatorObjectArrayCollating(isDescendingValues, stringTypes);
                     return new ComparatorObjectArrayCasting(comparatorMk);
                 }
@@ -137,20 +138,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForge[] childForges)
         {
             var methodParameterTypes = method.GetParameterTypes();
-            ExprEvaluator[] evals = new ExprEvaluator[methodParameterTypes.Length];
-            ExprForge[] forges = new ExprForge[methodParameterTypes.Length];
-            Type varargClass = methodParameterTypes[methodParameterTypes.Length - 1].GetElementType();
-            Type varargClassBoxed = varargClass.GetBoxedType();
+            var evals = new ExprEvaluator[methodParameterTypes.Length];
+            var forges = new ExprForge[methodParameterTypes.Length];
+
+            var parameterType = methodParameterTypes[methodParameterTypes.Length - 1];
+            var varargClass = parameterType.GetElementType();
+            var varargClassBoxed = varargClass.GetBoxedType();
             if (methodParameterTypes.Length > 1) {
                 Array.Copy(childForges, 0, forges, 0, forges.Length - 1);
             }
 
-            int varargArrayLength = childForges.Length - methodParameterTypes.Length + 1;
+            var varargArrayLength = childForges.Length - methodParameterTypes.Length + 1;
 
             // handle passing array along
             if (varargArrayLength == 1) {
-                ExprForge lastForge = childForges[methodParameterTypes.Length - 1];
-                Type lastReturns = lastForge.EvaluationType;
+                var lastForge = childForges[methodParameterTypes.Length - 1];
+                var lastReturns = lastForge.EvaluationType;
                 if (lastReturns != null && lastReturns.IsArray) {
                     forges[methodParameterTypes.Length - 1] = lastForge;
                     return forges;
@@ -158,16 +161,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             // handle parameter conversion to vararg parameter
-            ExprForge[] varargForges = new ExprForge[varargArrayLength];
-            Coercer[] coercers = new Coercer[varargForges.Length];
-            bool needCoercion = false;
-            for (int i = 0; i < varargArrayLength; i++) {
-                int childIndex = i + methodParameterTypes.Length - 1;
-                Type resultType = childForges[childIndex].EvaluationType;
+            var varargForges = new ExprForge[varargArrayLength];
+            var coercers = new Coercer[varargForges.Length];
+            var needCoercion = false;
+            for (var i = 0; i < varargArrayLength; i++) {
+                var childIndex = i + methodParameterTypes.Length - 1;
+                var resultType = childForges[childIndex].EvaluationType;
                 varargForges[i] = childForges[childIndex];
 
-                if (resultType == null && varargClass.CanBeNull()) {
-                    continue;
+                if (resultType.IsNullTypeSafe()) {
+                    if (varargClass.CanBeNull()) {
+                        continue;
+                    }
+                    
+                    throw new ExprValidationException("Expression returns null-typed value and varargs does not accept null values");
                 }
 
                 if (TypeHelper.IsSubclassOrImplementsInterface(resultType, varargClass)) {
@@ -194,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode[] expressions,
             ExprNode expression)
         {
-            ExprNode[] target = new ExprNode[expressions.Length + 1];
+            var target = new ExprNode[expressions.Length + 1];
             Array.Copy(expressions, 0, target, 0, expressions.Length);
             target[expressions.Length] = expression;
             return target;
@@ -262,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return ConnectExpressionsByLogicalAnd(Collections.List(nodes[0], optionalAdditionalFilter));
             }
 
-            ExprAndNode andNode = ConnectExpressionsByLogicalAnd(nodes);
+            var andNode = ConnectExpressionsByLogicalAnd(nodes);
             andNode.AddChildNode(optionalAdditionalFilter);
             return andNode;
         }
@@ -274,7 +281,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             ExprAndNode andNode = new ExprAndNodeImpl();
-            foreach (ExprNode node in nodes) {
+            foreach (var node in nodes) {
                 andNode.AddChildNode(node);
             }
 
@@ -300,8 +307,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ArgumentException("Invalid empty or 1-element list of nodes");
             }
 
-            ExprOrNode orNode = new ExprOrNode();
-            foreach (ExprNode node in nodes) {
+            var orNode = new ExprOrNode();
+            foreach (var node in nodes) {
                 orNode.AddChildNode(node);
             }
 
@@ -310,17 +317,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static void SetChildIdentNodesOptionalEvent(ExprNode exprNode)
         {
-            ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+            var visitor = new ExprNodeIdentifierCollectVisitor();
             exprNode.Accept(visitor);
-            foreach (ExprIdentNode node in visitor.ExprProperties) {
+            foreach (var node in visitor.ExprProperties) {
                 node.IsOptionalEvent = true;
             }
         }
 
         public static string GetSubqueryInfoText(ExprSubselectNode subselect)
         {
-            string text = "subquery number " + (subselect.SubselectNumber + 1);
-            StreamSpecRaw streamRaw = subselect.StatementSpecRaw.StreamSpecs[0];
+            var text = "subquery number " + (subselect.SubselectNumber + 1);
+            var streamRaw = subselect.StatementSpecRaw.StreamSpecs[0];
             if (streamRaw is FilterStreamSpecRaw) {
                 text += " querying " + ((FilterStreamSpecRaw) streamRaw).RawFilterSpec.EventTypeName;
             }

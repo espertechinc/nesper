@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			return collection.Skip(indexNum).FirstOrDefault();
 		}
 
-		public EPType TypeInfo {
+		public EPChainableType TypeInfo {
 			get { return forge.TypeInfo; }
 		}
 
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				block.IfRefNullReturnNull("target");
 			}
 
-			var targetType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
+			var targetType = forge.TypeInfo.GetCodegenReturnType();
 			block.DeclareVar<int>("index", forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
 				.MethodReturn(
 					CodegenLegoCast.CastSafeFromObjectType(

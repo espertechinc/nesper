@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.dot.inner;
 using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,9 +30,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotNodeForgeRootChild : ExprDotNodeForge,
         ExprEnumerationForge
     {
-        internal static int _gid = 0;
-        internal int _uid = ++_gid;
-        
         internal readonly ExprDotForge[] forgesIteratorEventBean;
         internal readonly ExprDotForge[] forgesUnpacking;
         internal readonly ExprDotEvalRootChildInnerForge innerForge;
@@ -43,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool hasEnumerationMethod,
             ExprForge rootNodeForge,
             ExprEnumerationForge rootLambdaEvaluator,
-            EPType typeInfo,
+            EPChainableType typeInfo,
             ExprDotForge[] forgesIteratorEventBean,
             ExprDotForge[] forgesUnpacking,
             bool checkedUnpackEvent)
@@ -57,20 +56,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             StreamNumReferenced = streamNumReferenced;
             RootPropertyName = rootPropertyName;
             if (rootLambdaEvaluator != null) {
-                if (typeInfo is EventMultiValuedEPType eventMultiValuedEpType) {
+                if (typeInfo is EPChainableTypeEventMulti typeEventMulti) {
                     innerForge = new InnerDotEnumerableEventCollectionForge(
                         rootLambdaEvaluator,
-                        eventMultiValuedEpType.Component);
+                        typeEventMulti.Component);
                 }
-                else if (typeInfo is EventEPType eventEpType) {
+                else if (typeInfo is EPChainableTypeEventSingle typeEventSingle) {
                     innerForge = new InnerDotEnumerableEventBeanForge(
                         rootLambdaEvaluator,
-                        eventEpType.EventType);
+                        typeEventSingle.EventType);
                 }
                 else {
+                    var type = (EPChainableTypeClass) typeInfo;
+                    var component = TypeHelper.GetSingleParameterTypeOrObject(type.Clazz);
                     innerForge = new InnerDotEnumerableScalarCollectionForge(
                         rootLambdaEvaluator,
-                        ((ClassMultiValuedEPType) typeInfo).Component);
+                        component);
                 }
             }
             else {
@@ -109,8 +110,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override Type EvaluationType =>
-            forgesUnpacking[forgesUnpacking.Length - 1].TypeInfo.GetNormalizedClass();
+        public override Type EvaluationType {
+            get {
+                var lastDotForge = forgesUnpacking[forgesUnpacking.Length - 1];
+                var lastTypeInfo = lastDotForge.TypeInfo;
+                return lastTypeInfo.GetNormalizedClass();
+            }
+        }
 
         public ExprDotNodeImpl Parent { get; }
 

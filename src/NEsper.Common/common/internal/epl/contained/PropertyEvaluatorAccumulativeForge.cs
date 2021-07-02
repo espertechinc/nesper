@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), GetType(), classScope);
             method.Block
-                .DeclareVar<PropertyEvaluatorAccumulative>("pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
+                .DeclareVarNewInstance<PropertyEvaluatorAccumulative>("pe")
                 .SetProperty(
                     Ref("pe"),
                     "ContainedEventEvals",

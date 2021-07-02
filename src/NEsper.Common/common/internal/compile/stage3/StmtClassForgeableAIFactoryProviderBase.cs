@@ -88,19 +88,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // REGION: Methods
             var methods = new CodegenClassMethods();
-
+            
             var assignMethod = CodegenMethod
                 .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
-            if (_namespaceScope.FieldsClassName != null) {
+            var unassignMethod = CodegenMethod
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+
+            if (_namespaceScope.FieldsClassName != null && _namespaceScope.HasStatementFields) {
                 //assignMethod.Block..Debug("Assign", Ref("assignments"))
                 assignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Assign", Ref("assignments"));
                 //assignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
-            }
-
-            var unassignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            if (_namespaceScope.FieldsClassName != null) {
                 unassignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Unassign");
                 //unassignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Unassign");
             }
@@ -109,16 +107,26 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .MakeMethod(typeof(void), typeof(StmtClassForgeableStmtFields), classScope)
                 .AddParam(typeof(int), "index")
                 .AddParam(typeof(object), "value");
-            CodegenSubstitutionParamEntry.CodegenSetterBody(
-                classScope, setValueMethod.Block, Ref(MEMBERNAME_STATEMENT_FIELDS));
+            if (classScope.NamespaceScope.HasSubstitution) {
+                CodegenSubstitutionParamEntry.CodegenSetterBody(
+                    classScope,
+                    setValueMethod.Block,
+                    Ref(MEMBERNAME_STATEMENT_FIELDS));
+            }
 
             // Assignment, not sure why this is being done... TBD - Burn this
 
             CodegenStackGenerator.RecursiveBuildStack(factoryProp, "Factory", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(ctor, "Ctor", methods, properties);
+            if (assignMethod != null) {
+                CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
+            }
+            if (unassignMethod != null) {
+                CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+            }
+            if (setValueMethod != null) {
+                CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
+            }
 
             return new CodegenClass(
                 CodegenClassType.STATEMENTAIFACTORYPROVIDER,

@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.type
                 BigIntegerCoercer convOne,
                 BigIntegerCoercer convTwo)
             {
-                this._convOne = convOne;
-                this._convTwo = convTwo;
+                _convOne = convOne;
+                _convTwo = convTwo;
             }
 
             public object Compute(

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -20,17 +21,17 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             this.timePeriodCompute = timePeriodCompute;
         }
 
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
-            return new OutputConditionPolledTime(this, agentInstanceContext, new OutputConditionPolledTimeState(null));
+            return new OutputConditionPolledTime(this, exprEvaluatorContext, new OutputConditionPolledTimeState(null));
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
             OutputConditionPolledTimeState timeState = (OutputConditionPolledTimeState) state;
-            return new OutputConditionPolledTime(this, agentInstanceContext, timeState);
+            return new OutputConditionPolledTime(this, exprEvaluatorContext, timeState);
         }
     }
 } // end of namespace

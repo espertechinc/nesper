@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -24,31 +25,36 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumToMap
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-WithEvent(execs);
-WithScalar(execs);
-WithInvalid(execs);
+			WithEvent(execs);
+			WithScalar(execs);
+			WithInvalid(execs);
 			return execs;
 		}
-public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprEnumToMapInvalid());
-    return execs;
-}public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprEnumToMapScalar());
-    return execs;
-}public static IList<RegressionExecution> WithEvent(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprEnumToMapEvent());
-    return execs;
-}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs ??= new List<RegressionExecution>();
+			execs.Add(new ExprEnumToMapInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs ??= new List<RegressionExecution>();
+			execs.Add(new ExprEnumToMapScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvent(IList<RegressionExecution> execs = null)
+		{
+			execs ??= new List<RegressionExecution>();
+			execs.Add(new ExprEnumToMapEvent());
+			return execs;
+		}
+
 		internal class ExprEnumToMapEvent : RegressionExecution
 		{
 			public bool ExcludeWhenInstrumented()
@@ -66,7 +72,7 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
 					fields[2],
 					"Contained.toMap((c, index, size) => Id || '_' || Convert.ToString(index) || '_' || Convert.ToString(size), (d, index, size) => P00 + 10*index + 100*size)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"))
 					.Verify("c0", val => CompareMap(val, "E1,E3,E2", 1, 12, 5))
@@ -104,7 +110,7 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
 					fields[2],
 					"Strvals.toMap((k, i, s) => k || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<object, object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E3"))
 					.Verify("c0", val => CompareMap(val, "E1,E2,E3", 1, 2, 3))

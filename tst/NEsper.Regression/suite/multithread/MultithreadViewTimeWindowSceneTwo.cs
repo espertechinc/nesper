@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var i = 0; i < threads.Length; i++) {
                 runnables[i] = new TimeWinRunnable(i, env, @lock, symbols, numEvents);
                 threads[i] = new Thread(runnables[i].Run) {
-                    Name = typeof(MultithreadViewTimeWindowSceneTwo).Name
+                    Name = nameof(MultithreadViewTimeWindowSceneTwo)
                 };
             }
         }

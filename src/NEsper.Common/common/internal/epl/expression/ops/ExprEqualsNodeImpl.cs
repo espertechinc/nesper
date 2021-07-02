@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -69,16 +70,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Must be the same boxed type returned by expressions under this
             var lhs = ChildNodes[0];
             var rhs = ChildNodes[1];
-            var typeOne = lhs.Forge.EvaluationType.GetBoxedType();
-            var typeTwo = rhs.Forge.EvaluationType.GetBoxedType();
+            var lhsType = lhs.Forge.EvaluationType.GetBoxedType();
+            var rhsType = rhs.Forge.EvaluationType.GetBoxedType();
 
             // Null constants can be compared for any type
-            if (typeOne == null || typeTwo == null) {
+            if (lhsType.IsNullTypeSafe() || rhsType.IsNullTypeSafe()) {
                 _forge = new ExprEqualsNodeForgeNC(this);
                 return null;
             }
 
-            if (typeOne.Equals(typeTwo) || typeOne.IsAssignableFrom(typeTwo)) {
+            if ((lhsType == rhsType) || (lhsType.IsAssignableFrom(rhsType))) {
                 _forge = new ExprEqualsNodeForgeNC(this);
                 return null;
             }
@@ -86,33 +87,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Get the common type such as Bool, String or Double and Long
             Type coercionType;
             try {
-                coercionType = typeOne.GetCompareToCoercionType(typeTwo);
+                coercionType = lhsType.GetCompareToCoercionType(rhsType);
             }
             catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
-                    typeTwo.CleanName() +
+                    rhsType.TypeSafeName() +
                     "' to '" +
-                    typeOne.CleanName() +
+                    lhsType.TypeSafeName() +
                     "' is not allowed");
             }
 
             // Check if we need to coerce
-            if (coercionType == typeOne.GetBoxedType() &&
-                coercionType == typeTwo.GetBoxedType()) {
+            if (coercionType == lhsType.GetBoxedType() &&
+                coercionType == rhsType.GetBoxedType()) {
                 _forge = new ExprEqualsNodeForgeNC(this);
             }
             else {
-                if (typeOne.IsArray && typeTwo.IsArray) {
-                    var typeOneElement = typeOne.GetElementType();
-                    var typeTwoElement = typeTwo.GetElementType();
+                if (lhsType.IsArray && rhsType.IsArray) {
+                    var typeOneElement = lhsType.GetElementType();
+                    var typeTwoElement = rhsType.GetElementType();
                     // Check to see if we have a "boxed" element trying to compare against an unboxed element.  We can
                     // coerce this with a custom widener.
                     if (typeOneElement.GetBoxedType() == typeTwoElement.GetBoxedType()) {
                         coercionType = typeOneElement.GetBoxedType().MakeArrayType();
-                        var coercerLhs = ArrayCoercerFactory.GetCoercer(typeOne, coercionType);
-                        var coercerRhs = ArrayCoercerFactory.GetCoercer(typeTwo, coercionType);
-                        _forge = new ExprEqualsNodeForgeCoercion(this, coercerLhs, coercerRhs);
+                        var coercerLhs = ArrayCoercerFactory.GetCoercer(lhsType, coercionType);
+                        var coercerRhs = ArrayCoercerFactory.GetCoercer(rhsType, coercionType);
+                        _forge = new ExprEqualsNodeForgeCoercion(this, coercerLhs, coercerRhs, lhsType, rhsType);
                         return null;
                     }
                 }
@@ -120,17 +121,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 if (!coercionType.IsNumeric()) {
                     throw new ExprValidationException(
                         "Cannot convert datatype '" +
-                        coercionType.CleanName() +
+                        coercionType.TypeSafeName() +
                         "' to a value that fits both type '" +
-                        typeOne.CleanName() +
+                        lhsType.TypeSafeName() +
                         "' and type '" +
-                        typeTwo.CleanName() +
+                        rhsType.TypeSafeName() +
                         "'");
                 }
 
-                var numberCoercerLHS = SimpleNumberCoercerFactory.GetCoercer(typeOne, coercionType);
-                var numberCoercerRHS = SimpleNumberCoercerFactory.GetCoercer(typeTwo, coercionType);
-                _forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS);
+                var numberCoercerLHS = SimpleNumberCoercerFactory.GetCoercer(lhsType, coercionType);
+                var numberCoercerRHS = SimpleNumberCoercerFactory.GetCoercer(rhsType, coercionType);
+                _forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS, lhsType, rhsType);
             }
 
             return null;

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -46,8 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericReturnType(method, false),
-                null)
+                TypeHelper.GetGenericReturnType(method, false))
         {
             _index = index;
             _method = method;
@@ -77,8 +77,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-
-        public override Type BeanPropType => TypeHelper.GetGenericReturnType(_method, false);
 
         public override Type TargetType => _method.DeclaringType;
 

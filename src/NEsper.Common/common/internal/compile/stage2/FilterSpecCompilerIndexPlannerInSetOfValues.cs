@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
@@ -27,7 +28,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 	/// </summary>
 	public class FilterSpecCompilerIndexPlannerInSetOfValues
 	{
-
 		internal static FilterSpecParamForge HandleInSetNode(
 			ExprInNode constituent,
 			IDictionary<string, Pair<EventType, string>> taggedEventTypes,
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				var filterOptimizableNode = (ExprFilterOptimizableNode) left;
 				lookupable = filterOptimizableNode.FilterLookupable;
 			}
-			else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services) &&
+			else if (HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services) &&
 			         IsLimitedLookupableExpression(left)) {
 				lookupable = MakeLimitedLookupableForgeMayNull(left, raw, services);
 			}
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			}
 
 			var expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
-			IList<FilterSpecParamInValueForge> listofValues = new List<FilterSpecParamInValueForge>();
+			var listofValues = new List<FilterSpecParamInValueForge>();
 			var it = Arrays.AsList(constituent.ChildNodes).GetEnumerator();
 			it.MoveNext(); // ignore the first node as it's the identifier
 			while (it.MoveNext()) {
@@ -90,14 +90,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				}
 				else if (subNode is ExprContextPropertyNode) {
 					var contextPropertyNode = (ExprContextPropertyNode) subNode;
-					var returnType = contextPropertyNode.Type;
+					var returnType = contextPropertyNode.ValueType;
+					if (returnType.IsNullTypeSafe()) {
+						return null;
+					}
+					
 					Coercer coercer;
 					if (TypeHelper.IsCollectionMapOrArray(returnType)) {
 						CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
 						coercer = null;
 					}
 					else {
-						coercer = GetNumberCoercer(left.Forge.EvaluationType, contextPropertyNode.Type, lookupable.Expression);
+						coercer = GetNumberCoercer(left.Forge.EvaluationType, contextPropertyNode.ValueType, lookupable.Expression);
 					}
 
 					var finalReturnType = coercer != null ? coercer.ReturnType : returnType;
@@ -169,7 +173,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
 					listofValues.Add(inValue);
 				}
-				else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services) &&
+				else if (HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services) &&
 				         IsLimitedValueExpression(subNode)) {
 					var convertor = GetMatchEventConvertor(subNode, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
 					var valueType = subNode.Forge.EvaluationType;
@@ -193,7 +197,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			Type returnTypeLookupable,
 			string propertyName)
 		{
-			if (returnTypeValue == null || !returnTypeValue.IsArray) {
+			if (returnTypeValue.IsNullTypeSafe() || !returnTypeValue.IsArray) {
 				return;
 			}
 

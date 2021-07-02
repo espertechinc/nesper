@@ -47,10 +47,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventType eventType,
             BeanEventTypeFactory beanEventTypeFactory);
 
-        public abstract GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory);
-
         public abstract EventPropertyGetterSPI GetGetter(
             BeanEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,

@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util
@@ -135,11 +136,12 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Serializer GetSerializer(Type type)
         {
-            if (type == null) {
+            if (type.IsNullTypeSafe()) {
                 return NULL_SERIALIZER;
             }
 
-            foreach (var serializer in Serializers.Where(serializer => serializer.Accepts(type.GetBoxedType()))) {
+            var boxed = type.GetBoxedType();
+            foreach (var serializer in Serializers.Where(serializer => serializer.Accepts(boxed))) {
                 return serializer;
             }
 

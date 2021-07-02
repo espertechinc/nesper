@@ -21,12 +21,12 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
     public class ContextControllerHashFilterEntry : FilterHandleCallback,
         ContextControllerFilterEntry
     {
-        private readonly ContextControllerHashImpl callback;
-        private readonly IntSeqKey controllerPath;
-        private readonly ContextControllerDetailHashItem item;
+        private readonly ContextControllerHashImpl _callback;
+        private readonly IntSeqKey _controllerPath;
+        private readonly ContextControllerDetailHashItem _item;
 
-        private readonly EPStatementHandleCallbackFilter filterHandle;
-        private readonly FilterValueSetParam[][] filterValueSet;
+        private readonly EPStatementHandleCallbackFilter _filterHandle;
+        private readonly FilterValueSetParam[][] _filterValueSet;
 
         public ContextControllerHashFilterEntry(
             ContextControllerHashImpl callback,
@@ -34,27 +34,27 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             ContextControllerDetailHashItem item,
             object[] parentPartitionKeys)
         {
-            this.callback = callback;
-            this.controllerPath = controllerPath;
-            this.item = item;
+            this._callback = callback;
+            this._controllerPath = controllerPath;
+            this._item = item;
 
             AgentInstanceContext agentInstanceContext = callback.AgentInstanceContextCreate;
-            this.filterHandle = new EPStatementHandleCallbackFilter(
+            _filterHandle = new EPStatementHandleCallbackFilter(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 this);
             FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
                 parentPartitionKeys,
                 item.FilterSpecActivatable,
                 callback.Realization);
-            this.filterValueSet = item.FilterSpecActivatable.GetValueSet(
+            _filterValueSet = item.FilterSpecActivatable.GetValueSet(
                 null,
                 addendum,
                 agentInstanceContext,
                 agentInstanceContext.StatementContextFilterEvalEnv);
             agentInstanceContext.FilterService.Add(
                 item.FilterSpecActivatable.FilterForEventType,
-                filterValueSet,
-                filterHandle);
+                _filterValueSet,
+                _filterHandle);
             long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
             agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
                 filtersVersion;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             EventBean theEvent,
             ICollection<FilterHandleCallback> allStmtMatches)
         {
-            callback.MatchFound(item, theEvent, controllerPath);
+            _callback.MatchFound(_item, theEvent, _controllerPath);
         }
 
         public bool IsSubSelect {
@@ -72,31 +72,31 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         }
 
         public int StatementId {
-            get => callback.AgentInstanceContextCreate.StatementContext.StatementId;
+            get => _callback.AgentInstanceContextCreate.StatementContext.StatementId;
         }
 
         public void Destroy()
         {
-            AgentInstanceContext agentInstanceContext = callback.AgentInstanceContextCreate;
+            AgentInstanceContext agentInstanceContext = _callback.AgentInstanceContextCreate;
             agentInstanceContext.FilterService.Remove(
-                filterHandle,
-                item.FilterSpecActivatable.FilterForEventType,
-                filterValueSet);
+                _filterHandle,
+                _item.FilterSpecActivatable.FilterForEventType,
+                _filterValueSet);
             long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
             agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
                 filtersVersion;
         }
 
         public EPStatementHandleCallbackFilter FilterHandle {
-            get => filterHandle;
+            get => _filterHandle;
         }
 
         public void Transfer(
             FilterSpecActivatable activatable,
             AgentInstanceTransferServices xfer)
         {
-            xfer.AgentInstanceContext.FilterService.Remove(filterHandle, activatable.FilterForEventType, filterValueSet);
-            xfer.TargetFilterService.Add(activatable.FilterForEventType, filterValueSet, filterHandle);
+            xfer.AgentInstanceContext.FilterService.Remove(_filterHandle, activatable.FilterForEventType, _filterValueSet);
+            xfer.TargetFilterService.Add(activatable.FilterForEventType, _filterValueSet, _filterHandle);
         }
     }
 } // end of namespace

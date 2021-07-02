@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -32,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprEnumerationEval,
         ExprForge
     {
-        [NonSerialized] private EPType _optionalEnumerationType;
+        [NonSerialized] private EPChainableType _optionalEnumerationType;
         [NonSerialized] private ExprEnumerationGivenEventForge _optionalPropertyEnumEvaluator;
         private Type _evaluationType;
 
@@ -89,16 +91,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return EPTypeHelper.OptionalIsEventTypeColl(_optionalEnumerationType);
+            return EPChainableTypeHelper.OptionalIsEventTypeColl(_optionalEnumerationType);
         }
 
-        public Type ComponentTypeCollection => EPTypeHelper.OptionalIsComponentTypeColl(_optionalEnumerationType);
+        public Type ComponentTypeCollection => EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(_optionalEnumerationType);
 
         public EventType GetEventTypeSingle(
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return EPTypeHelper.OptionalIsEventTypeSingle(_optionalEnumerationType);
+            return EPChainableTypeHelper.OptionalIsEventTypeSingle(_optionalEnumerationType);
         }
 
         public override ExprEvaluator ExprEvaluator => this;
@@ -135,9 +137,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             var tableMeta = TableMeta;
             ValidateGroupKeys(tableMeta, validationContext);
             var column = ValidateSubpropertyGetCol(tableMeta, SubpropName);
-            _evaluationType = tableMeta.PublicEventType.GetPropertyType(SubpropName);
+            var propType = tableMeta.PublicEventType.GetPropertyType(SubpropName);
+            _evaluationType = propType.TypeNormalized();
             if (column is TableMetadataColumnPlain) {
-                ExprDotEnumerationSourceForgeForProps enumerationSource =
+                var enumerationSource =
                     ExprDotNodeUtility.GetPropertyEnumerationSource(
                         SubpropName,
                         0,

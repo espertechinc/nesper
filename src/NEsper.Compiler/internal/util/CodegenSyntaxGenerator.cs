@@ -315,6 +315,22 @@ namespace com.espertech.esper.compiler.@internal.util
             CodegenCtor optionalCtor,
             int additionalIndent)
         {
+            if (optionalCtor == null) {
+                return;
+            }
+            
+            bool hasAssignments = false;
+            foreach (CodegenTypedParam param in optionalCtor.CtorParams) {
+                if (param.IsMemberWhenCtorParam) {
+                    hasAssignments = true;
+                    break;
+                }
+            }
+            
+            if (optionalCtor.Block.IsEmpty() && !hasAssignments && optionalCtor.CtorParams.IsEmpty()) {
+                return;
+            }
+            
             INDENT.Indent(builder, 1 + additionalIndent);
             builder.Append("public ").Append(className).Append("(");
             var delimiter = "";

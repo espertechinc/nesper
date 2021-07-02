@@ -10,6 +10,7 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -94,7 +95,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CoercerNull.INSTANCE;
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.CleanName());
+            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.TypeSafeName());
         }
 
         private static CodegenExpression CodegenCoerceNonNull(
@@ -104,6 +105,9 @@ namespace com.espertech.esper.common.@internal.util
             CodegenExpression param,
             Type type)
         {
+            if (type.IsNullTypeSafe()) {
+                return ConstantNull();
+            }
             if (type == primitive) {
                 return param;
             }
@@ -131,7 +135,7 @@ namespace com.espertech.esper.common.@internal.util
                 return param;
             }
 
-            if (type == null) {
+            if (type.IsNullTypeSafe()) {
                 return ConstantNull();
             }
 

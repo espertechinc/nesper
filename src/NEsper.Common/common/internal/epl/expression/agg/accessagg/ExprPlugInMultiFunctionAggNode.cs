@@ -46,9 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			string functionName)
 			: base(distinct)
 		{
-			this._aggregationMultiFunctionForge = aggregationMultiFunctionForge;
-			this._functionName = functionName;
-			this._config = config;
+			_aggregationMultiFunctionForge = aggregationMultiFunctionForge;
+			_functionName = functionName;
+			_config = config;
 		}
 
 		public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			ValidatePositionals(validationContext);
 			// validate using the context provided by the 'outside' streams to determine parameters
 			// at this time 'inside' expressions like 'window(intPrimitive)' are not handled
-			ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, this.ChildNodes, validationContext);
+			ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
 			AggregationMultiFunctionValidationContext ctx = new AggregationMultiFunctionValidationContext(
 				_functionName,
 				validationContext.StreamTypeService.EventTypes,

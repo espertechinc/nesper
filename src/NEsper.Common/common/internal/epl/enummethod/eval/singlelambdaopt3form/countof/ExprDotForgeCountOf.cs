@@ -19,26 +19,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	public class ExprDotForgeCountOf : ExprDotForgeLambdaThreeForm
 	{
 
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return EPTypeHelper.SingleValue(typeof(int?));
+			return EPChainableTypeHelper.SingleValueNonNull(typeof(int?));
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			return _ => new EnumCountOfNoParams(_);
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return lambda => EPTypeHelper.SingleValue(typeof(int?));
+			return lambda => EPChainableTypeHelper.SingleValueNonNull(typeof(int?));
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -77,6 +78,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             IList<FilterSpecCompiled> filters,
             IList<ScheduleHandleCallbackProvider> schedules)
         {
+        }
+
+        protected override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_AND;
         }
     }
 } // end of namespace

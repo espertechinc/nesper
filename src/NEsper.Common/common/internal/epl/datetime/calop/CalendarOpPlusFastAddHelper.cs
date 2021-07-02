@@ -59,10 +59,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var multiplierRoundedLong = (long) multiplierDbl;
 
             // handle integer max
-            while (multiplierRoundedLong > Int32.MaxValue) {
-                CalendarPlusMinusForgeOp.ActionSafeOverflow(work, Int32.MaxValue, timePeriod);
-                factor += Int32.MaxValue;
-                multiplierRoundedLong -= Int32.MaxValue;
+            while (multiplierRoundedLong > int.MaxValue) {
+                CalendarPlusMinusForgeOp.ActionSafeOverflow(work, int.MaxValue, timePeriod);
+                factor += int.MaxValue;
+                multiplierRoundedLong -= int.MaxValue;
                 if (DEBUG && Log.IsDebugEnabled) {
                     Log.Debug("Work date is {0} factor {1}", work, factor);
                 }

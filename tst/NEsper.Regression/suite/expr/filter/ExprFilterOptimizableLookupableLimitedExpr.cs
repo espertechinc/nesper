@@ -35,11 +35,62 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             executions.Add(new ExprFilterOptLkupInSetOfValue());
             executions.Add(new ExprFilterOptLkupInRangeWCoercion());
             executions.Add(new ExprFilterOptLkupDisqualify());
-            executions.Add(new ExprFilterOptLkupCurrentTimestamp());
+            executions.Add(new ExprFilterOptLkupCurrentTimestampWEquals());
+            executions.Add(new ExprFilterOptLkupCurrentTimestampCompare());
+            executions.Add(new ExprFilterOptLkupConstantEqualsNull());
             return executions;
         }
 
-        private class ExprFilterOptLkupCurrentTimestamp : RegressionExecution
+        private class ExprFilterOptLkupConstantEqualsNull : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select * from SupportBean(null = 'a');\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ExprFilterOptLkupCurrentTimestampCompare : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select * from SupportBean(current_timestamp().getSecondOfMinute()%2=0);\n";
+                env.AdvanceTime(0);
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendSBAssert(env, true);
+                env.AdvanceTime(999);
+                SendSBAssert(env, true);
+
+                env.AdvanceTime(1000);
+                SendSBAssert(env, false);
+                env.AdvanceTime(1999);
+                SendSBAssert(env, false);
+
+                env.AdvanceTime(2000);
+                SendSBAssert(env, true);
+
+                env.AdvanceTime(3000);
+                SendSBAssert(env, false);
+
+                env.UndeployAll();
+            }
+
+            private void SendSBAssert(
+                RegressionEnvironment env,
+                bool received)
+            {
+                env.SendEventBean(new SupportBean());
+                Assert.AreEqual(received, env.Listener("s0").GetAndClearIsInvoked());
+            }
+        }
+
+        private class ExprFilterOptLkupCurrentTimestampWEquals : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -80,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
                 env.Compile(objects, path);
 
-                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
 
                 AssertDisqualified(
                     env,
@@ -107,7 +158,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     path,
                     "SupportBean",
                     hook + "select * from pattern[s0=SupportBean_S0 -> SupportBean(MyJavaScript(TheString)='x')]");
-
+                AssertDisqualified(
+                    env,
+                    path,
+                    "SupportBean",
+                    hook + "select * from SupportBean(current_timestamp()=1)");
+                
                 // local inlined class
                 var eplWithLocalHelper = hook +
                                          "inlined_class \"\"\"\n" +

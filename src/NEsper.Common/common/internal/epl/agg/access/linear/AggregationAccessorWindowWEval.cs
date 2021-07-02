@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -37,19 +38,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             var childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope,
-                false);
+                context.ClassScope);
             var childExprType = forge.ChildNode.EvaluationType;
 
+            var componentType = forge.ComponentType;
+            var arrayType = TypeHelper.GetArrayType(componentType);
+
             CodegenExpression invokeChild = LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull());
-            if (forge.ComponentType != childExprType) {
+            if (componentType != childExprType) {
                 invokeChild = Unbox(invokeChild);
             }
-
+            
             context.Method.Block
                 .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(componentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .DebugStack()
@@ -107,8 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope,
-                            true),
+                            context.ClassScope),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
                         ConstantNull()))

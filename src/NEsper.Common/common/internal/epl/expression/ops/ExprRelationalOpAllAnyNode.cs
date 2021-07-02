@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -38,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             RelationalOpEnum relationalOpEnum,
             bool isAll)
         {
-            this._relationalOpEnum = relationalOpEnum;
-            this._isAll = isAll;
+            _relationalOpEnum = relationalOpEnum;
+            _isAll = isAll;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -80,25 +81,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new IllegalStateException("Group relational op node must have 1 or more parameters");
             }
 
-            Type typeOne = Boxing.GetBoxedType(ChildNodes[0].Forge.EvaluationType);
-
-            // collections, array or map not supported
-            if ((typeOne.IsArray) ||
-                (typeOne.IsGenericCollection()) || 
-                (typeOne.IsGenericDictionary())) {
-                throw new ExprValidationException(
-                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-            }
+            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            ExprNodeUtilityValidate.ValidateLHSTypeAnyAllSomeIn(typeOne);
 
             IList<Type> comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
-            bool hasCollectionOrArray = false;
-            for (int i = 0; i < ChildNodes.Length - 1; i++) {
-                Type propType = ChildNodes[i + 1].Forge.EvaluationType;
-                if (propType.IsArray) {
+            var hasCollectionOrArray = false;
+            for (var i = 0; i < ChildNodes.Length - 1; i++) {
+                var propType = ChildNodes[i + 1].Forge.EvaluationType;
+                if (propType.IsNullTypeSafe()) {
+                    comparedTypes.Add(TypeHelper.NullType);
+                }
+                else if (propType.IsArray) {
                     hasCollectionOrArray = true;
-                    if (propType.GetElementType() != typeof(object)) {
-                        comparedTypes.Add(propType.GetElementType());
+                    var componentType = propType.GetElementType();
+                    if (componentType != typeof(object)) {
+                        comparedTypes.Add(componentType);
                     }
                 }
                 else if (propType.IsGenericCollection()) {
@@ -122,16 +120,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be either numeric or string
+            if (coercionType.IsNullType()) {
+                throw new ExprValidationException("Implicit conversion from null-type to numeric or string is not allowed");
+            }
+            
             if (coercionType != typeof(string)) {
                 if (!TypeHelper.IsNumeric(coercionType)) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
-                        coercionType.CleanName() +
+                        coercionType.TypeSafeName() +
                         "' to numeric is not allowed");
                 }
             }
 
-            RelationalOpEnumComputer computer = _relationalOpEnum.GetComputer(coercionType, coercionType, coercionType);
+            var computer = _relationalOpEnum.GetComputer(coercionType, coercionType, coercionType);
             _forge = new ExprRelationalOpAllAnyNodeForge(this, computer, hasCollectionOrArray);
             return null;
         }
@@ -149,9 +151,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             writer.Write("(");
-            string delimiter = "";
+            var delimiter = "";
 
-            for (int i = 0; i < ChildNodes.Length - 1; i++) {
+            for (var i = 0; i < ChildNodes.Length - 1; i++) {
                 writer.Write(delimiter);
                 ChildNodes[i + 1].ToEPL(writer, Precedence, flags);
                 delimiter = ",";
@@ -172,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return false;
             }
 
-            ExprRelationalOpAllAnyNode other = (ExprRelationalOpAllAnyNode) node;
+            var other = (ExprRelationalOpAllAnyNode) node;
 
             if ((other._relationalOpEnum != _relationalOpEnum) ||
                 (other._isAll != _isAll)) {

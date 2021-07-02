@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             Type provider,
             Type resultType)
         {
-            this._provider = provider;
-            this._resultType = resultType;
+            _provider = provider;
+            _resultType = resultType;
         }
 
         public CodegenExpression CodegenCreateReader(

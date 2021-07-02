@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.virtualdw;
 using com.espertech.esper.common.@internal.util;
@@ -80,7 +81,7 @@ namespace com.espertech.esper.common.@internal.view.core
             }
             catch (TypeInstantiationException e) {
                 var message = "Error instantiating view factory instance to " +
-                              typeof(ViewFactoryForge).CleanName() +
+                              typeof(ViewFactoryForge).TypeSafeName() +
                               " interface for view '" +
                               name +
                               "'";
@@ -88,7 +89,7 @@ namespace com.espertech.esper.common.@internal.view.core
             }
             catch (InvalidCastException e) {
                 var message = "Error casting view factory instance to " +
-                              typeof(ViewFactoryForge).CleanName() +
+                              typeof(ViewFactoryForge).TypeSafeName() +
                               " interface for view '" +
                               name +
                               "'";

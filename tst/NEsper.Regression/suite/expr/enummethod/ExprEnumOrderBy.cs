@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -29,41 +30,41 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			WithOrderByEventsPlus(execs);
 			WithOrderByScalar(execs);
 			WithOrderByScalarWithParam(execs);
-			WithInvalid(execs);
+			WithOrderByInvalid(execs);
 			return execs;
 		}
 
-		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		public static IList<RegressionExecution> WithOrderByInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprEnumInvalid());
+			execs ??= new List<RegressionExecution>();
+			execs.Add(new ExprEnumOrderByInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithOrderByScalarWithParam(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumOrderByScalarWithParam());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithOrderByScalar(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumOrderByScalar());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithOrderByEventsPlus(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumOrderByEventsPlus());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithOrderByEvents(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumOrderByEvents());
 			return execs;
 		}
@@ -79,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[2], "Contained.orderBy( (x, i, s) => case when s <= 2 then P00 else i-10 end)");
 				builder.WithExpression(fields[3], "Contained.orderByDesc( (x, i, s) => case when s <= 2 then P00 else i-10 end)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"))
 					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Contained.orderByDesc(x => 10 - P00)");
 				builder.WithExpression(fields[5], "Contained.orderByDesc(x => 0)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"))
 					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
@@ -159,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Strvals.orderBy()");
 				builder.WithExpression(fields[1], "Strvals.orderByDesc()");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2", "E4", "E5"))
@@ -183,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Strvals.orderBy( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
 				builder.WithExpression(fields[5], "Strvals.orderByDesc( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2", "E4", "E5"))
@@ -207,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			}
 		}
 
-		internal class ExprEnumInvalid : RegressionExecution
+		internal class ExprEnumOrderByInvalid : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
@@ -220,6 +221,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"Failed to validate select-clause expression 'Contained.orderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
 					typeof(SupportBean_ST0).CleanName() +
 					"'");
+				
+				epl = "select Strvals.orderBy(v => null) from SupportCollection";
+				TryInvalidCompile(env, epl, "Failed to validate select-clause expression 'Strvals.orderBy()': Null-type is not allowed");
 			}
 		}
 	}

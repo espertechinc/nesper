@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     public class QueryPlanNodeAllUnidirectionalOuter : QueryPlanNode
     {
-        private readonly int streamNum;
+        private readonly int _streamNum;
 
         public QueryPlanNodeAllUnidirectionalOuter(int streamNum)
         {
-            this.streamNum = streamNum;
+            this._streamNum = streamNum;
         }
 
         public override ExecNode MakeExec(
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             VirtualDWView[] viewExternal,
             ILockable[] tableSecondaryIndexLocks)
         {
-            return new ExecNodeAllUnidirectionalOuter(streamNum, streamTypes.Length);
+            return new ExecNodeAllUnidirectionalOuter(_streamNum, streamTypes.Length);
         }
     }
 } // end of namespace

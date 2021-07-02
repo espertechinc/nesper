@@ -16,6 +16,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -48,21 +49,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
         public static IList<RegressionExecution> WithSingleRowSplitAndType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLContainedSingleRowSplitAndType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSplitExprReturnsEventBean(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLContainedSplitExprReturnsEventBean());
             return execs;
         }
 
         public static IList<RegressionExecution> WithScriptContextValue(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLContainedScriptContextValue());
             return execs;
         }

@@ -33,21 +33,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithUnidirectionalKeyAndRange(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerf3StreamUnidirectionalKeyAndRange());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRangeOnly(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerf3StreamRangeOnly());
             return execs;
         }
 
         public static IList<RegressionExecution> WithKeyAndRange(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinPerf3StreamKeyAndRange());
             return execs;
         }

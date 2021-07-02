@@ -13,26 +13,26 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public class ModuleDependenciesRuntime
     {
-        public NameAndModule[] PathEventTypes { get; set; }
+        public NameAndModule[] PathEventTypes { get; set; } = new NameAndModule[0];
 
-        public NameAndModule[] PathNamedWindows { get; set; }
+        public NameAndModule[] PathNamedWindows { get; set; } = new NameAndModule[0];
 
-        public NameAndModule[] PathTables { get; set; }
+        public NameAndModule[] PathTables { get; set; } = new NameAndModule[0];
 
-        public NameAndModule[] PathVariables { get; set; }
+        public NameAndModule[] PathVariables { get; set; } = new NameAndModule[0];
 
-        public NameAndModule[] PathContexts { get; set; }
+        public NameAndModule[] PathContexts { get; set; } = new NameAndModule[0];
 
-        public NameAndModule[] PathExpressions { get; set; }
+        public NameAndModule[] PathExpressions { get; set; } = new NameAndModule[0];
 
-        public string[] PublicEventTypes { get; set; }
+        public string[] PublicEventTypes { get; set; } = new string[0];
 
-        public string[] PublicVariables { get; set; }
+        public string[] PublicVariables { get; set; } = new string[0];
 
-        public ModuleIndexMeta[] PathIndexes { get; set; }
+        public ModuleIndexMeta[] PathIndexes { get; set; } = new ModuleIndexMeta[0];
 
-        public NameParamNumAndModule[] PathScripts { get; set; }
+        public NameParamNumAndModule[] PathScripts { get; set; } = new NameParamNumAndModule[0];
         
-        public NameAndModule[] PathClasses { get; set; }
+        public NameAndModule[] PathClasses { get; set; } = new NameAndModule[0];
     }
 } // end of namespace

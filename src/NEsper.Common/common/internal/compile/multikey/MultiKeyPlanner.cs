@@ -11,12 +11,14 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.serdeset.multikey;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -41,9 +43,9 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					MultiKeyClassRefEmpty.INSTANCE);
 			}
 
-			string[] propertyNames = eventType.PropertyNames;
-			Type[] props = new Type[propertyNames.Length];
-			for (int i = 0; i < propertyNames.Length; i++) {
+			var propertyNames = eventType.PropertyNames;
+			var props = new Type[propertyNames.Length];
+			for (var i = 0; i < propertyNames.Length; i++) {
 				props[i] = eventType.GetPropertyType(propertyNames[i]);
 			}
 
@@ -141,16 +143,16 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			}
 
 			if (types.Length == 1) {
-				Type paramType = types[0];
-				if (paramType == null || !paramType.IsArray) {
-					DataInputOutputSerdeForge serdeForge = serdeResolver.SerdeForKeyNonArray(paramType, raw);
+				var paramType = types[0];
+				if (paramType.IsNullTypeSafe() || !paramType.IsArray) {
+					var serdeForge = serdeResolver.SerdeForKeyNonArray(paramType, raw);
 					return new MultiKeyPlan(
 						EmptyList<StmtClassForgeableFactory>.Instance, 
 						new MultiKeyClassRefWSerde(serdeForge, types));
 				}
 
-				Type mkClass = GetMKClassForComponentType(paramType.GetElementType());
-				DataInputOutputSerde mkSerde = GetMKSerdeClassForComponentType(paramType.GetElementType());
+				var mkClass = GetMKClassForComponentType(paramType.GetElementType());
+				var mkSerde = GetMKSerdeClassForComponentType(paramType.GetElementType());
 				return new MultiKeyPlan(
 					EmptyList<StmtClassForgeableFactory>.Instance,
 					new MultiKeyClassRefPredetermined(
@@ -159,12 +161,12 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 						new DataInputOutputSerdeForgeSingleton(mkSerde.GetType())));
 			}
 
-			Type[] boxed = new Type[types.Length];
-			for (int i = 0; i < boxed.Length; i++) {
+			var boxed = new Type[types.Length];
+			for (var i = 0; i < boxed.Length; i++) {
 				boxed[i] = Boxing.GetBoxedType(types[i]);
 			}
 
-			MultiKeyClassRefUUIDBased classNames = new MultiKeyClassRefUUIDBased(boxed);
+			var classNames = new MultiKeyClassRefUUIDBased(boxed);
 			StmtClassForgeableFactory factoryMK = new ProxyStmtClassForgeableFactory(
 				(
 					namespaceScope,
@@ -172,7 +174,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					return new StmtClassForgeableMultiKey(classNames.GetClassNameMK(classPostfix), namespaceScope, types, lenientEquals);
 				});
 
-			DataInputOutputSerdeForge[] forges = serdeResolver.SerdeForMultiKey(types, raw);
+			var forges = serdeResolver.SerdeForMultiKey(boxed, raw);
 			StmtClassForgeableFactory factoryMKSerde = new ProxyStmtClassForgeableFactory(
 				(
 					namespaceScope,
@@ -185,13 +187,13 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 						forges);
 				});
 
-			IList<StmtClassForgeableFactory> forgeables = Arrays.AsList(factoryMK, factoryMKSerde);
+			var forgeables = Arrays.AsList(factoryMK, factoryMKSerde);
 			return new MultiKeyPlan(forgeables, classNames);
 		}
 
 		public static object ToMultiKey(object keyValue)
 		{
-			Type componentType = keyValue.GetType().GetElementType();
+			var componentType = keyValue.GetType().GetElementType();
 			if (componentType == typeof(bool)) {
 				return new MultiKeyArrayBoolean((bool[]) keyValue);
 			}

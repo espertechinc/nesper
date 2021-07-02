@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="aggregationService">aggs</param>
-        /// <param name="agentInstanceContext">ctx</param>
+        /// <param name="exprEvaluatorContext">ctx</param>
         /// <param name="newData">new data</param>
         /// <param name="newDataMultiKey">new data keys</param>
         /// <param name="oldData">old data</param>
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         /// <param name="eventsPerStream">event buffer, transient buffer</param>
         public static void ApplyAggViewResultKeyedView(
             AggregationService aggregationService,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             EventBean[] newData,
             object[] newDataMultiKey,
             EventBean[] oldData,
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 // apply new data to aggregates
                 for (var i = 0; i < newData.Length; i++) {
                     eventsPerStream[0] = newData[i];
-                    aggregationService.ApplyEnter(eventsPerStream, newDataMultiKey[i], agentInstanceContext);
+                    aggregationService.ApplyEnter(eventsPerStream, newDataMultiKey[i], exprEvaluatorContext);
                 }
             }
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 // apply old data to aggregates
                 for (var i = 0; i < oldData.Length; i++) {
                     eventsPerStream[0] = oldData[i];
-                    aggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[i], agentInstanceContext);
+                    aggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[i], exprEvaluatorContext);
                 }
             }
         }
@@ -78,14 +78,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="aggregationService">aggs</param>
-        /// <param name="agentInstanceContext">ctx</param>
+        /// <param name="exprEvaluatorContext">ctx</param>
         /// <param name="newEvents">new data</param>
         /// <param name="newDataMultiKey">new data keys</param>
         /// <param name="oldEvents">old data</param>
         /// <param name="oldDataMultiKey">old data keys</param>
         public static void ApplyAggJoinResultKeyedJoin(
             AggregationService aggregationService,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             object[] newDataMultiKey,
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 // apply old data to aggregates
                 var count = 0;
                 foreach (var eventsPerStream in newEvents) {
-                    aggregationService.ApplyEnter(eventsPerStream.Array, newDataMultiKey[count], agentInstanceContext);
+                    aggregationService.ApplyEnter(eventsPerStream.Array, newDataMultiKey[count], exprEvaluatorContext);
                     count++;
                 }
             }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 // apply old data to aggregates
                 var count = 0;
                 foreach (var eventsPerStream in oldEvents) {
-                    aggregationService.ApplyLeave(eventsPerStream.Array, oldDataMultiKey[count], agentInstanceContext);
+                    aggregationService.ApplyLeave(eventsPerStream.Array, oldDataMultiKey[count], exprEvaluatorContext);
                     count++;
                 }
             }
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     var method = MultiKeyCodegen.CodegenMethod(groupKeyExpressions, optionalMultiKeyClasses, methodNode, classScope);
                     methodNode
                         .Block
-                        .DeclareVar<object>("key", LocalMethod(method, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
+                        .DeclareVar<object>("key", LocalMethod(method, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_EXPREVALCONTEXT))
                         .Apply(Instblock(classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Ref("key")))
                         .MethodReturn(Ref("key"));
                     return;
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[0].Forge, methodNode, classScope);
                 methodNode
                     .Block
-                    .DeclareVar<object>("key", LocalMethod(expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
+                    .DeclareVar<object>("key", LocalMethod(expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_EXPREVALCONTEXT))
                     .Apply(Instblock(classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Ref("key")))
                     .MethodReturn(Ref("key"));
             };
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     typeof(EventBean[]),
                     NAME_EPS,
                     typeof(bool),
-                    ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     typeof(EventBean[]),
                     "events",
                     typeof(bool),
-                    ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroup),
                 classScope,
                 code);

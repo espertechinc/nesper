@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -27,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
     {
         private readonly VariableMetaData numRowsVariableMetaData;
         private readonly VariableMetaData offsetVariableMetaData;
-        private int currentRowLimit;
-        private int currentOffset;
+        private readonly int currentRowLimit;
+        private readonly int currentOffset;
 
         /// <summary>
         /// Ctor.
@@ -60,9 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
             else {
                 numRowsVariableMetaData = null;
-                currentRowLimit = rowLimitSpec.NumRows.GetValueOrDefault(Int32.MaxValue);
+                currentRowLimit = rowLimitSpec.NumRows.GetValueOrDefault(int.MaxValue);
                 if (currentRowLimit < 0) {
-                    currentRowLimit = Int32.MaxValue;
+                    currentRowLimit = int.MaxValue;
                 }
             }
 
@@ -108,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 numRowsVariable = VariableDeployTimeResolver.MakeVariableField(
                     numRowsVariableMetaData,
                     classScope,
-                    this.GetType());
+                    GetType());
             }
 
             CodegenExpression offsetVariable = ConstantNull();
@@ -116,12 +117,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 offsetVariable = VariableDeployTimeResolver.MakeVariableField(
                     offsetVariableMetaData,
                     classScope,
-                    this.GetType());
+                    GetType());
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(RowLimitProcessorFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(RowLimitProcessorFactory), GetType(), classScope);
             method.Block
-                .DeclareVar<RowLimitProcessorFactory>("factory", NewInstance(typeof(RowLimitProcessorFactory)))
+                .DeclareVarNewInstance<RowLimitProcessorFactory>("factory")
                 .SetProperty(Ref("factory"), "NumRowsVariable", numRowsVariable)
                 .SetProperty(Ref("factory"), "OffsetVariable", offsetVariable)
                 .SetProperty(Ref("factory"), "CurrentRowLimit", Constant(currentRowLimit))

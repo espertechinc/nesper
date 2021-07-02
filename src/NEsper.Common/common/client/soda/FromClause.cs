@@ -175,6 +175,10 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter,
             bool includeFrom)
         {
+            if (streams.IsEmpty()) {
+                return;
+            }
+            
             var delimiter = "";
             if (includeFrom)
             {

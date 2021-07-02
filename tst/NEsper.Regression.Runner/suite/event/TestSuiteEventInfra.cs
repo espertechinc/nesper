@@ -1058,5 +1058,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
         {
             RegressionRunner.Run(session, new EventInfraPropertyMappedRuntimeKey());
         }
+
+        [Test]
+        public void TestEventInfraPropertyNestedNestedEscaped()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyNestedNestedEscaped());
+        }
     }
 } // end of namespace

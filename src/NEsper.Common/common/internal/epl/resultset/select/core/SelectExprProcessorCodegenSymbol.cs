@@ -25,22 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public static readonly CodegenExpressionRef LAMBDA_REF_ISSYNTHESIZE = 
             new CodegenExpressionRef(LAMBDA_NAME_ISSYNTHESIZE);
         
-        private CodegenExpressionRef optionalSynthesizeRef;
+        private CodegenExpressionRef _optionalSynthesizeRef;
 
         public CodegenExpressionRef GetAddSynthesize(CodegenMethod processMethod)
         {
-            if (optionalSynthesizeRef == null) {
-                optionalSynthesizeRef = REF_ISSYNTHESIZE;
+            if (_optionalSynthesizeRef == null) {
+                _optionalSynthesizeRef = REF_ISSYNTHESIZE;
             }
 
-            processMethod.AddSymbol(optionalSynthesizeRef);
-            return optionalSynthesizeRef;
+            processMethod.AddSymbol(_optionalSynthesizeRef);
+            return _optionalSynthesizeRef;
         }
 
         public void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalSynthesizeRef != null) {
-                symbols.Put(optionalSynthesizeRef.Ref, typeof(bool));
+            if (_optionalSynthesizeRef != null) {
+                symbols.Put(_optionalSynthesizeRef.Ref, typeof(bool));
             }
         }
     }

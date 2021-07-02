@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumOrderByScalar : ThreeFormScalar
 	{
-		private readonly bool descending;
-		private readonly Type innerBoxedType;
+		private readonly bool _descending;
+		private readonly Type _innerBoxedType;
 
 		public EnumOrderByScalar(
 			ExprDotEvalParamLambda lambda,
@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters,
 			bool descending) : base(lambda, fieldEventType, numParameters)
 		{
-			this.descending = descending;
-			innerBoxedType = InnerExpression.EvaluationType.GetBoxedType();
+			this._descending = descending;
+			_innerBoxedType = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -75,13 +75,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							hasColl = true;
 						}
 
-						return EnumOrderByHelper.EnumOrderBySortEval(sort, hasColl, descending);
+						return EnumOrderByHelper.EnumOrderBySortEval(sort, hasColl, _descending);
 					},
 				};
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(FlexCollection);
 		}
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			block
 				.DeclareVar<IOrderedDictionary<object, ICollection<object>>>("sort", NewInstance(typeof(OrderedListDictionary<object, ICollection<object>>)))
-				.DeclareVar<bool>("hasColl", ConstantFalse());
+				.DeclareVar<bool?>("hasColl", ConstantFalse());
 		}
 
 		public override void ForEachBlock(
@@ -108,12 +108,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			EnumOrderByHelper.SortingCode<object>(block, innerBoxedType, InnerExpression, methodNode, scope, codegenClassScope);
+			EnumOrderByHelper.SortingCode<object>(block, _innerBoxedType, InnerExpression, methodNode, scope, codegenClassScope);
 		}
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(FlexWrap(StaticMethod(typeof(EnumOrderByHelper), "EnumOrderBySortEval", Ref("sort"), Ref("hasColl"), Constant(descending))));
+			block.MethodReturn(FlexWrap(StaticMethod(typeof(EnumOrderByHelper), "EnumOrderBySortEval", Ref("sort"), Ref("hasColl"), Constant(_descending))));
 		}
 	}
 } // end of namespace

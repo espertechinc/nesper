@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -49,10 +50,11 @@ namespace com.espertech.esper.common.@internal.view.unique
             _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             _criteriaExpressions = ViewForgeSupport.Validate(
                 ViewName,
@@ -68,7 +70,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                 throw new ViewParameterException(errorMessage);
             }
 
-            this.eventType = parentEventType;
+            eventType = parentEventType;
         }
 
 
@@ -83,12 +85,12 @@ namespace com.espertech.esper.common.@internal.view.unique
             return desc.MultiKeyForgeables;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(UniqueByPropertyViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Unique";
         }
@@ -100,6 +102,11 @@ namespace com.espertech.esper.common.@internal.view.unique
             CodegenClassScope classScope)
         {
             ViewMultiKeyHelper.Assign(_criteriaExpressions, _multiKeyClassNames, method, factory, symbols, classScope);
+        }
+        
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_UNIQUE;
         }
     }
 } // end of namespace

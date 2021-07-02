@@ -34,6 +34,7 @@ using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
+using static com.espertech.esper.common.@internal.epl.output.core.OutputProcessViewCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -146,49 +147,86 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StatementInformationalsRuntime), GetType(), classScope);
-            var info = Ref("info");
+            var builder = new CodegenSetterBuilder(typeof(StatementInformationalsRuntime), typeof(StatementInformationalsCompileTime), "info", classScope, method);
             var annotationsExpr = _annotations == null
                 ? ConstantNull()
-                : LocalMethod(MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope));
-            method.Block
-                .DeclareVar<StatementInformationalsRuntime>(
-                    info.Ref,
-                    NewInstance(typeof(StatementInformationalsRuntime)))
-                .SetProperty(info, "StatementNameCompileTime", Constant(_statementNameCompileTime))
-                .SetProperty(info, "IsAlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
-                .SetProperty(info, "OptionalContextName", Constant(_optionalContextName))
-                .SetProperty(info, "OptionalContextModuleName", Constant(_optionalContextModuleName))
-                .SetProperty(info, "OptionalContextVisibility", Constant(_optionalContextVisibility))
-                .SetProperty(info, "IsCanSelfJoin", Constant(_canSelfJoin))
-                .SetProperty(info, "HasSubquery", Constant(_hasSubquery))
-                .SetProperty(info, "IsNeedDedup", Constant(_needDedup))
-                .SetProperty(info, "IsStateless", Constant(_stateless))
-                .SetProperty(info, "Annotations", annotationsExpr)
-                .SetProperty(info, "UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
-                .SetProperty(info, "NumFilterCallbacks", Constant(_numFilterCallbacks))
-                .SetProperty(info, "NumScheduleCallbacks", Constant(_numScheduleCallbacks))
-                .SetProperty(info, "NumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
-                .SetProperty(info, "StatementType", Constant(_statementType))
-                .SetProperty(info, "Priority", Constant(_priority))
-                .SetProperty(info, "IsPreemptive", Constant(_preemptive))
-                .SetProperty(info, "HasVariables", Constant(_hasVariables))
-                .SetProperty(info, "IsWritesToTables", Constant(_writesToTables))
-                .SetProperty(info, "HasTableAccess", Constant(_hasTableAccess))
-                .SetProperty(info, "SelectClauseTypes", Constant(_selectClauseTypes))
-                .SetProperty(info, "SelectClauseColumnNames", Constant(_selectClauseColumnNames))
-                .SetProperty(info, "IsForClauseDelivery", Constant(_forClauseDelivery))
-                .SetProperty(info, "GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
-                .SetProperty(info, "Properties", MakeProperties(_properties, method, classScope))
-                .SetProperty(info, "HasMatchRecognize", Constant(_hasMatchRecognize))
-                .SetProperty(info, "AuditProvider", MakeAuditProvider(method, classScope))
-                .SetProperty(info, "IsInstrumented", Constant(_instrumented))
-                .SetProperty(info, "InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
-                .SetProperty(info, "SubstitutionParamTypes", MakeSubstitutionParamTypes())
-                .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
-                .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
-                .SetProperty(info, "IsAllowSubscriber", Constant(_allowSubscriber))
-                .SetProperty(info, "OnScripts", MakeOnScripts(_onScripts, method, classScope))
-                .MethodReturn(info);
+                : MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope);
+            
+            builder
+                .ConstantDefaultCheckedObj("StatementNameCompileTime", _statementNameCompileTime)
+                .ConstantDefaultChecked("IsAlwaysSynthesizeOutputEvents", _alwaysSynthesizeOutputEvents)
+                .ConstantDefaultCheckedObj("OptionalContextName", _optionalContextName)
+                .ConstantDefaultCheckedObj("OptionalContextModuleName", _optionalContextModuleName)
+                .ConstantDefaultCheckedObj("OptionalContextVisibility", _optionalContextVisibility)
+                .ConstantDefaultChecked("IsCanSelfJoin", _canSelfJoin)
+                .ConstantDefaultChecked("HasSubquery", _hasSubquery)
+                .ConstantDefaultChecked("IsNeedDedup", _needDedup)
+                .ConstantDefaultChecked("IsStateless", _stateless)
+                .ConstantDefaultChecked("NumFilterCallbacks", _numFilterCallbacks)
+                .ConstantDefaultChecked("NumScheduleCallbacks", _numScheduleCallbacks)
+                .ConstantDefaultChecked("NumNamedWindowCallbacks", _numNamedWindowCallbacks)
+                .ConstantDefaultCheckedObj("StatementType", _statementType)
+                .ConstantDefaultChecked("Priority", _priority)
+                .ConstantDefaultChecked("IsPreemptive", _preemptive)
+                .ConstantDefaultChecked("HasVariables", _hasVariables)
+                .ConstantDefaultChecked("IsWritesToTables", _writesToTables)
+                .ConstantDefaultChecked("HasTableAccess", _hasTableAccess)
+                .ConstantDefaultCheckedObj("SelectClauseTypes", _selectClauseTypes)
+                .ConstantDefaultCheckedObj("SelectClauseColumnNames", _selectClauseColumnNames)
+                .ConstantDefaultChecked("IsForClauseDelivery", _forClauseDelivery)
+                .ConstantDefaultChecked("HasMatchRecognize", _hasMatchRecognize)
+                .ConstantDefaultChecked("Instrumented", _instrumented)
+                .ConstantDefaultCheckedObj("InsertIntoLatchName", _insertIntoLatchName)
+                .ConstantDefaultChecked("IsAllowSubscriber", _allowSubscriber)
+                .ExpressionDefaultChecked("Annotations", annotationsExpr)
+                .ExpressionDefaultChecked("UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
+                .ExpressionDefaultChecked("GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
+                .ExpressionDefaultChecked("Properties", MakeProperties(_properties, method, classScope))
+                .ExpressionDefaultChecked("AuditProvider", MakeAuditProvider(method, classScope))
+                .ExpressionDefaultChecked("InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
+                .ExpressionDefaultChecked("SubstitutionParamTypes", MakeSubstitutionParamTypes())
+                .ExpressionDefaultChecked("SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
+                .ExpressionDefaultChecked("OnScripts", MakeOnScripts(_onScripts, method, classScope));
+        
+            // method.Block
+            //     .DeclareVar<StatementInformationalsRuntime>(info.Ref, NewInstance(typeof(StatementInformationalsRuntime)))
+            //     .SetProperty(info, "StatementNameCompileTime", Constant(_statementNameCompileTime))
+            //     .SetProperty(info, "IsAlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
+            //     .SetProperty(info, "OptionalContextName", Constant(_optionalContextName))
+            //     .SetProperty(info, "OptionalContextModuleName", Constant(_optionalContextModuleName))
+            //     .SetProperty(info, "OptionalContextVisibility", Constant(_optionalContextVisibility))
+            //     .SetProperty(info, "IsCanSelfJoin", Constant(_canSelfJoin))
+            //     .SetProperty(info, "HasSubquery", Constant(_hasSubquery))
+            //     .SetProperty(info, "IsNeedDedup", Constant(_needDedup))
+            //     .SetProperty(info, "IsStateless", Constant(_stateless))
+            //     .SetProperty(info, "Annotations", annotationsExpr)
+            //     .SetProperty(info, "UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
+            //     .SetProperty(info, "NumFilterCallbacks", Constant(_numFilterCallbacks))
+            //     .SetProperty(info, "NumScheduleCallbacks", Constant(_numScheduleCallbacks))
+            //     .SetProperty(info, "NumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
+            //     .SetProperty(info, "StatementType", Constant(_statementType))
+            //     .SetProperty(info, "Priority", Constant(_priority))
+            //     .SetProperty(info, "IsPreemptive", Constant(_preemptive))
+            //     .SetProperty(info, "HasVariables", Constant(_hasVariables))
+            //     .SetProperty(info, "IsWritesToTables", Constant(_writesToTables))
+            //     .SetProperty(info, "HasTableAccess", Constant(_hasTableAccess))
+            //     .SetProperty(info, "SelectClauseTypes", Constant(_selectClauseTypes))
+            //     .SetProperty(info, "SelectClauseColumnNames", Constant(_selectClauseColumnNames))
+            //     .SetProperty(info, "IsForClauseDelivery", Constant(_forClauseDelivery))
+            //     .SetProperty(info, "GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
+            //     .SetProperty(info, "Properties", MakeProperties(_properties, method, classScope))
+            //     .SetProperty(info, "HasMatchRecognize", Constant(_hasMatchRecognize))
+            //     .SetProperty(info, "AuditProvider", MakeAuditProvider(method, classScope))
+            //     .SetProperty(info, "IsInstrumented", Constant(_instrumented))
+            //     .SetProperty(info, "InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
+            //     .SetProperty(info, "SubstitutionParamTypes", MakeSubstitutionParamTypes())
+            //     .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
+            //     .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
+            //     .SetProperty(info, "IsAllowSubscriber", Constant(_allowSubscriber))
+            //     .SetProperty(info, "OnScripts", MakeOnScripts(_onScripts, method, classScope))
+            //     .MethodReturn(info);
+
+            method.Block.MethodReturn(builder.RefName);
             return LocalMethod(method);
         }
 
@@ -322,10 +360,10 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenClassScope classScope)
         {
             if (!HasAnnotation<AuditAttribute>(_annotations)) {
-                return PublicConstValue(typeof(AuditProviderDefault), "INSTANCE");
+                return ConstantNull();
             }
 
-            var auditProviderVar = method.Block.DeclareVar<ProxyAuditProvider>(
+            method.Block.DeclareVar<ProxyAuditProvider>(
                 "auditProvider",
                 NewInstance<ProxyAuditProvider>());
 

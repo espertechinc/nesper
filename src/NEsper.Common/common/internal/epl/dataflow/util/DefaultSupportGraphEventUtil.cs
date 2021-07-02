@@ -15,6 +15,7 @@ using System.Xml;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -173,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         private static string MakeJsonEvent(
             double myDouble,
             int myInt,
-            String myString)
+            string myString)
         {
             return JsonSerializer.Serialize<object>(
                 new {

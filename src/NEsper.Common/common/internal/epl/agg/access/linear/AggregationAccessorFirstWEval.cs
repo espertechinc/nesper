@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope,
-                true);
+                context.ClassScope);
             context.Method.Block
                 .DeclareVar<EventBean>(
                     "bean",
@@ -63,8 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope,
-                true);
+                context.ClassScope);
             context.Method.Block.DeclareVar<EventBean>(
                     "bean",
                     accessStateFactory.AggregatorLinear.GetFirstValueCodegen(context.ClassScope, context.Method))

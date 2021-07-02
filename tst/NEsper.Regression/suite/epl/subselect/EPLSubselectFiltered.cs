@@ -58,189 +58,189 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithWhereClauseMultikeyWArrayComposite(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWhereClauseMultikeyWArrayComposite());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereClauseMultikeyWArray2Field(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWhereClauseMultikeyWArray2Field());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereClauseMultikeyWArrayPrimitive(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWhereClauseMultikeyWArrayPrimitive());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubselectPrior(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSubselectPrior());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubselectMixMax(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSubselectMixMax());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinFilteredTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectJoinFilteredTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinFilteredOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectJoinFilteredOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWithWhere2Subqery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWithWhere2Subqery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWhereJoined4BackCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWhereJoined4BackCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWhereJoined4Coercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWhereJoined4Coercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWhereJoined3SceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWhereJoined3SceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWhereJoined3Streams(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWhereJoined3Streams());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWhereJoined2Streams(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWhereJoined2Streams());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWithWhereJoined(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWithWhereJoined());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWherePreviousCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWherePreviousCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWherePreviousOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWherePreviousOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWherePrevious(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWherePrevious());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWhereConstant());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWildcardNoName(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWildcardNoName());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelectSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelectSceneOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSameEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSameEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSameEventOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSameEventOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSameEventCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSameEventCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithHavingNoAggWFilterWWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectHavingNoAggWFilterWWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithHavingNoAggWWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectHavingNoAggWWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithHavingNoAggNoFilterNoWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectHavingNoAggNoFilterNoWhere());
             return execs;
         }

@@ -23,33 +23,33 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public partial class ExprDotForgeSumOf : ExprDotForgeLambdaThreeForm
 	{
+		private ExprDotEvalSumMethodFactory _aggMethodFactory;
 
-		private ExprDotEvalSumMethodFactory aggMethodFactory;
-
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			aggMethodFactory = GetAggregatorFactory(collectionComponentType);
-			return EPTypeHelper.SingleValue(Boxing.GetBoxedType(aggMethodFactory.ValueType));
+			_aggMethodFactory = GetAggregatorFactory(collectionComponentType);
+			return EPChainableTypeHelper.SingleValueNonNull(_aggMethodFactory.ValueType.GetBoxedType());
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
-			return streamCountIncoming => new EnumSumScalarNoParams(streamCountIncoming, aggMethodFactory);
+			return streamCountIncoming => new EnumSumScalarNoParams(streamCountIncoming, _aggMethodFactory);
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			return lambda => {
-				aggMethodFactory = GetAggregatorFactory(lambda.BodyForge.EvaluationType);
-				var returnType = Boxing.GetBoxedType(aggMethodFactory.ValueType);
-				return EPTypeHelper.SingleValue(returnType);
+				var type = ValidateNonNull(lambda.BodyForge.EvaluationType);
+				_aggMethodFactory = GetAggregatorFactory(type);
+				var returnType = _aggMethodFactory.ValueType.GetBoxedType();
+				return EPChainableTypeHelper.SingleValueNonNull(returnType);
 			};
 		}
 
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			return (
 				lambda,
 				typeInfo,
-				services) => new EnumSumEvent(lambda, aggMethodFactory);
+				services) => new EnumSumEvent(lambda, _aggMethodFactory);
 		}
 
 		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				fieldType,
 				numParameters,
 				typeInfo,
-				services) => new EnumSumEventPlus(lambda, fieldType, numParameters, aggMethodFactory);
+				services) => new EnumSumEventPlus(lambda, fieldType, numParameters, _aggMethodFactory);
 		}
 
 		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				eventType,
 				numParams,
 				typeInfo,
-				services) => new EnumSumScalar(lambda, eventType, numParams, aggMethodFactory);
+				services) => new EnumSumScalar(lambda, eventType, numParams, _aggMethodFactory);
 		}
 
 		private static ExprDotEvalSumMethodFactory GetAggregatorFactory(Type evalType)

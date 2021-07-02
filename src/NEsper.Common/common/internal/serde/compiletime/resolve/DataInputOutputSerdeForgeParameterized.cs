@@ -17,20 +17,20 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class DataInputOutputSerdeForgeParameterized : DataInputOutputSerdeForge
 	{
-		private readonly string dioClassName;
-		private readonly Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[] functions;
+		private readonly string _dioClassName;
+		private readonly Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[] _functions;
 
 		public DataInputOutputSerdeForgeParameterized(
 			string dioClassName,
 			params Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[] functions)
 		{
-			this.dioClassName = dioClassName;
-			this.functions = functions;
+			this._dioClassName = dioClassName;
+			this._functions = functions;
 		}
 
 		public string ForgeClassName()
 		{
-			return dioClassName;
+			return _dioClassName;
 		}
 
 		public CodegenExpression Codegen(
@@ -38,13 +38,13 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			CodegenClassScope classScope,
 			CodegenExpression optionalEventTypeResolver)
 		{
-			CodegenExpression[] @params = new CodegenExpression[functions.Length];
+			CodegenExpression[] @params = new CodegenExpression[_functions.Length];
 			DataInputOutputSerdeForgeParameterizedVars vars = new DataInputOutputSerdeForgeParameterizedVars(method, classScope, optionalEventTypeResolver);
 			for (int i = 0; i < @params.Length; i++) {
-				@params[i] = functions[i].Invoke(vars);
+				@params[i] = _functions[i].Invoke(vars);
 			}
 
-			return NewInstanceInner(dioClassName, @params);
+			return NewInstanceNamed(_dioClassName, @params);
 		}
 	}
 } // end of namespace

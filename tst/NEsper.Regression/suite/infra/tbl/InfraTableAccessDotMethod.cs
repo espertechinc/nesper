@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -36,21 +37,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithNestedDotMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNestedDotMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggDatetimeAndEnumerationAndMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraAggDatetimeAndEnumerationAndMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPlainPropDatetimeAndEnumerationAndMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraPlainPropDatetimeAndEnumerationAndMethod());
             return execs;
         }
@@ -251,10 +252,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     $" mearr MyEvent[])";
                 env.CompileDeployWBusPublicType(eplType, path);
 
-                var primaryKey = (grouped ? "primary key" : "");
+                var primaryKey = (grouped ? " primary key" : "");
                 var eplDeclare =
                     "create table varaggPWD " +
-                    $"(key string {primaryKey}" +
+                    $"(key string{primaryKey}" +
                     $", ts long" +
                     $", mb {myBean}" +
                     $", mbarr {myBean}[]" +

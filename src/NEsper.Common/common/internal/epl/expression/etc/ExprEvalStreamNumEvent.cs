@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalStreamNumEvent(int streamNum)
         {
-            this._streamNum = streamNum;
+            _streamNum = streamNum;
         }
 
         public object Evaluate(
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             return ArrayAtIndex(refEPS, Constant(_streamNum));
         }
 

@@ -41,15 +41,15 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public const string VIEWNAME = "Group-By";
 
-        private readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
+        private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
 
-        private readonly Dictionary<View, Pair<object, object>> groupedEvents =
+        private readonly Dictionary<View, Pair<object, object>> _groupedEvents =
             new Dictionary<View, Pair<object, object>>();
 
-        private readonly IDictionary<object, View> subViewPerKey = new Dictionary<object, View>()
+        private readonly IDictionary<object, View> _subViewPerKey = new Dictionary<object, View>()
             .WithNullKeySupport();
 
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
         private readonly GroupByViewFactory _groupByViewFactory;
 
         /// <summary>
@@ -62,13 +62,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
             _groupByViewFactory = groupByGroupByViewFactory;
-            this.agentInstanceContext = agentInstanceContext;
+            this._agentInstanceContext = agentInstanceContext;
             MergeView = new MergeView(this, groupByGroupByViewFactory.EventType);
         }
 
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (KeyValuePair<object, View> entry in subViewPerKey) {
+            foreach (KeyValuePair<object, View> entry in _subViewPerKey) {
                 GroupByViewUtil.RemoveSubview(entry.Value, services);
             }
         }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             EventBean[] newData,
             EventBean[] oldData)
         {
-            AgentInstanceContext aiContext = agentInstanceContext.AgentInstanceContext;
+            AgentInstanceContext aiContext = _agentInstanceContext.AgentInstanceContext;
             aiContext.AuditProvider.View(newData, oldData, aiContext, ViewFactory);
             aiContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
 
@@ -91,17 +91,17 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 var groupByValuesKey = GetGroupKey(theEvent);
 
                 // Get child views that belong to this group-by value combination
-                var subView = subViewPerKey.Get(groupByValuesKey);
+                var subView = _subViewPerKey.Get(groupByValuesKey);
 
                 // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
                 if (subView == null) {
                     subView = GroupByViewUtil.MakeSubView(this, groupByValuesKey);
-                    subViewPerKey.Put(groupByValuesKey, subView);
+                    _subViewPerKey.Put(groupByValuesKey, subView);
                 }
 
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataToPost, null);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataToPost, null);
                 subView.Update(newDataToPost, null);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
             else {
                 // Algorithm for dispatching multiple events
@@ -118,31 +118,31 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 }
 
                 // Update child views
-                foreach (KeyValuePair<View, Pair<object, object>> entry in groupedEvents) {
+                foreach (KeyValuePair<View, Pair<object, object>> entry in _groupedEvents) {
                     var newEvents = ConvertToArray(entry.Value.First);
                     var oldEvents = ConvertToArray(entry.Value.Second);
-                    agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newEvents, oldEvents);
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newEvents, oldEvents);
                     entry.Key.Update(newEvents, oldEvents);
-                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
 
-                groupedEvents.Clear();
+                _groupedEvents.Clear();
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(VIEWNAME, subViewPerKey.Count);
-            foreach (KeyValuePair<object, View> entry in subViewPerKey) {
+            viewDataVisitor.VisitPrimary(VIEWNAME, _subViewPerKey.Count);
+            foreach (KeyValuePair<object, View> entry in _subViewPerKey) {
                 VisitView(viewDataVisitor, entry.Key, entry.Value);
             }
         }
 
         public MergeView MergeView { get; }
 
-        public AgentInstanceViewFactoryChainContext AgentInstanceContext => agentInstanceContext;
+        public AgentInstanceViewFactoryChainContext AgentInstanceContext => _agentInstanceContext;
 
         public override EventType EventType {
             get {
@@ -180,19 +180,19 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             var groupByValuesKey = GetGroupKey(theEvent);
 
             // Get child views that belong to this group-by value combination
-            var subView = subViewPerKey.Get(groupByValuesKey);
+            var subView = _subViewPerKey.Get(groupByValuesKey);
 
             // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
             if (subView == null) {
                 subView = GroupByViewUtil.MakeSubView(this, groupByValuesKey);
-                subViewPerKey.Put(groupByValuesKey, subView);
+                _subViewPerKey.Put(groupByValuesKey, subView);
             }
 
             // Construct a pair of lists to hold the events for the grouped value if not already there
-            Pair<object, object> pair = groupedEvents.Get(subView);
+            Pair<object, object> pair = _groupedEvents.Get(subView);
             if (pair == null) {
                 pair = new Pair<object, object>(null, null);
-                groupedEvents.Put(subView, pair);
+                _groupedEvents.Put(subView, pair);
             }
 
             // Add event to a child view event list for later child update that includes new and old events
@@ -206,8 +206,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         private object GetGroupKey(EventBean theEvent)
         {
-            eventsPerStream[0] = theEvent;
-            return _groupByViewFactory.CriteriaEval.Evaluate(eventsPerStream, true, agentInstanceContext);
+            _eventsPerStream[0] = theEvent;
+            return _groupByViewFactory.CriteriaEval.Evaluate(_eventsPerStream, true, _agentInstanceContext);
         }
 
         protected internal static object AddUpgradeToDequeIfPopulated(

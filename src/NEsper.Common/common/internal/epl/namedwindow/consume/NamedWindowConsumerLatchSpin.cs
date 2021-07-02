@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // The earlier latch is the latch generated before this latch
-        private NamedWindowConsumerLatchFactory factory;
+        private readonly NamedWindowConsumerLatchFactory factory;
 
         private NamedWindowConsumerLatchSpin earlier;
 

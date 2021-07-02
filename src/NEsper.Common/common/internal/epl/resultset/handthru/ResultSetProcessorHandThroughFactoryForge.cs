@@ -9,13 +9,11 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.epl.resultset.select.core;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.handthru
 {
@@ -25,19 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
     /// </summary>
     public class ResultSetProcessorHandThroughFactoryForge : ResultSetProcessorFactoryForge
     {
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
-
-        public ResultSetProcessorHandThroughFactoryForge(
-            EventType resultEventType,
-            SelectExprProcessorForge selectExprProcessorForge,
-            bool selectRStream)
+        public ResultSetProcessorHandThroughFactoryForge(bool selectRStream)
         {
-            ResultEventType = resultEventType;
-            this.selectExprProcessorForge = selectExprProcessorForge;
             IsSelectRStream = selectRStream;
         }
-
-        public EventType ResultEventType { get; }
 
         public bool IsSelectRStream { get; }
 
@@ -49,6 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
+            throw NotSupported();
         }
 
         public void ProcessViewResultCodegen(
@@ -56,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.ProcessViewResultCodegen(this, method);
+            throw NotSupported();
         }
 
         public void ProcessJoinResultCodegen(
@@ -64,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.ProcessJoinResultCodegen(this, method);
+            throw NotSupported();
         }
 
         public void GetEnumeratorViewCodegen(
@@ -72,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.GetEnumeratorViewCodegen(method);
+            throw NotSupported();
         }
 
         public void GetEnumeratorJoinCodegen(
@@ -80,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.GetEnumeratorJoinCodegen(method);
+            throw NotSupported();
         }
 
         public void ProcessOutputLimitedViewCodegen(
@@ -88,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotSupported();
         }
 
         public void ProcessOutputLimitedJoinCodegen(
@@ -96,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotSupported();
         }
 
         public void ApplyViewResultCodegen(
@@ -104,6 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotSupported();
         }
 
         public void ApplyJoinResultCodegen(
@@ -111,6 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotSupported();
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
@@ -118,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotSupported();
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -126,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotSupported();
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
@@ -134,6 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotSupported();
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -141,6 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotSupported();
         }
 
         public void AcceptHelperVisitorCodegen(
@@ -148,6 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotSupported();
         }
 
         public void StopMethodCodegen(
@@ -155,12 +150,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotSupported();
         }
 
         public void ClearMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method)
         {
+            throw NotSupported();
+        }
+
+        private UnsupportedOperationException NotSupported()
+        {
+            throw new UnsupportedOperationException("Implemented by " + typeof(ResultSetProcessorHandThroughImpl).TypeSafeName());
         }
 
         public string InstrumentedQName => "ResultSetProcessSimple";

@@ -58,7 +58,10 @@ namespace com.espertech.esper.compiler.@internal.util
             CompilerArguments args)
         {
             var compileTimeServices = new StatementCompileTimeServices(0, services);
-            var walkResult = CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
+            var walkResult = CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(
+                compilable,
+                args.Options == null ? null : args.Options.InlinedClassInspection,
+                compileTimeServices);
             var raw = walkResult.StatementSpecRaw;
 
             var statementType = StatementTypeUtil.GetStatementType(raw);
@@ -244,10 +247,10 @@ namespace com.espertech.esper.compiler.@internal.util
                 classScope,
                 new List<CodegenTypedParam>());
 
-            ctor.Block.AssignRef(Ref("statementFields"), NewInstanceInner(statementFieldsClassName));
+            ctor.Block.AssignRef(Ref("statementFields"), NewInstanceNamed(statementFieldsClassName));
 
             // initialize-event-types
-            var initializeEventTypesMethod = MakeInitEventTypes(classScope, compileTimeServices);
+            var initializeEventTypesMethod = MakeInitEventTypesOptional(classScope, compileTimeServices);
 
             // initialize-query
             var initializeQueryMethod = CodegenMethod
@@ -261,7 +264,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     EPStatementInitServicesConstants.REF.Ref);
             initializeQueryMethod.Block.AssignMember(
                 MEMBERNAME_QUERY_METHOD_PROVIDER,
-                NewInstanceInner(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
+                NewInstanceNamed(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
 
             // get-execute
             var queryMethodProviderProperty = CodegenProperty.MakePropertyNode(
@@ -272,18 +275,20 @@ namespace com.espertech.esper.compiler.@internal.util
             queryMethodProviderProperty.GetterBlock.BlockReturn(Ref(MEMBERNAME_QUERY_METHOD_PROVIDER));
 
             // provide module dependencies
-            var moduleDependenciesProperty = CodegenProperty.MakePropertyNode(
+            var getModuleDependenciesMethod = CodegenMethod.MakeMethod(
                 typeof(ModuleDependenciesRuntime),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            moduleDependenciesProperty.GetterBlock
-                .BlockReturn(compileTimeServices.ModuleDependencies.Make(
-                    initializeQueryMethod, classScope));
-
+            
+            compileTimeServices.ModuleDependencies.Make(getModuleDependenciesMethod, classScope);
+            
             // build stack
-            CodegenStackGenerator.RecursiveBuildStack(moduleDependenciesProperty, "ModuleDependencies", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(getModuleDependenciesMethod, "GetModuleDependencies", methods, properties);
+            if (initializeEventTypesMethod != null) {
+                CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
+            }
+
             CodegenStackGenerator.RecursiveBuildStack(initializeQueryMethod, "InitializeQuery", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(queryMethodProviderProperty, "QueryMethodProvider", methods, properties);
 

@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeMatch), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeMatch), GetType(), classScope);
             CodegenExpression evaluator = optionalCond == null
                 ? ConstantNull()
-                : ExprNodeUtilityCodegen.CodegenEvaluator(optionalCond.Forge, method, this.GetType(), classScope);
+                : ExprNodeUtilityCodegen.CodegenEvaluator(optionalCond.Forge, method, GetType(), classScope);
             CodegenExpression actionsList = InfraOnMergeActionForge.MakeActions(actions, method, symbols, classScope);
             method.Block.MethodReturn(NewInstance<InfraOnMergeMatch>(evaluator, actionsList));
             return LocalMethod(method);

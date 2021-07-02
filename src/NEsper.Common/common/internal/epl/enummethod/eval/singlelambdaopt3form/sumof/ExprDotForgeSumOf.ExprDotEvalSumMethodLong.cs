@@ -6,8 +6,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         private class ExprDotEvalSumMethodLong : ExprDotEvalSumMethod
         {
-            private long cnt;
-            private long sum;
+            private long _cnt;
+            private long _sum;
 
             public void Enter(object value)
             {
@@ -15,17 +15,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     return;
                 }
 
-                cnt++;
-                sum += value.AsInt64();
+                _cnt++;
+                _sum += value.AsInt64();
             }
 
             public object Value {
                 get {
-                    if (cnt == 0) {
+                    if (_cnt == 0) {
                         return null;
                     }
 
-                    return sum;
+                    return _sum;
                 }
             }
         }

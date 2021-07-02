@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 EventTypeUtility.ResolveTypeCodegen(resultEventType, EPStatementInitServicesConstants.REF));
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block.DeclareVar<IDictionary<string, object>>(

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <summary>
         /// Connection name
         /// </summary>
-        private String _name;
+        private string _name;
 
         /// <summary>
         /// Connection properties
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <summary>
         /// Connection string
         /// </summary>
-        private String _connectionString;
+        private string _connectionString;
 
         /// <summary>
         /// Creates a connection string builder.
@@ -73,13 +73,13 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets the parameter prefix.
         /// </summary>
         /// <value>The param prefix.</value>
-        protected abstract String ParamPrefix { get; }
+        protected abstract string ParamPrefix { get; }
 
         /// <summary>
         /// Gets or sets the connection string.
         /// </summary>
         /// <value>The connection string.</value>
-        public virtual String ConnectionString
+        public virtual string ConnectionString
         {
             get => _connectionString;
             set => _connectionString = value;
@@ -93,9 +93,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
             SerializationInfo info,
             StreamingContext context)
         {
-            this._name = info.GetString("_name");
-            this._connectionProperties = (Properties) info.GetValue("_connectionProperties", typeof(Properties));
-            this._connectionString = info.GetString("_connectionString");
+            _name = info.GetString("_name");
+            _connectionProperties = (Properties) info.GetValue("_connectionProperties", typeof(Properties));
+            _connectionString = info.GetString("_connectionString");
         }
 
         /// <summary>
@@ -114,16 +114,16 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="parameterIndex"></param>
         /// <returns></returns>
-        protected delegate String PositionalToTextConverter(int parameterIndex);
+        protected delegate string PositionalToTextConverter(int parameterIndex);
 
         /// <summary>
         /// Gets the text for the parameter at the given index.
         /// </summary>
         /// <param name="parameterIndex">MapIndex of the parameter.</param>
         /// <returns></returns>
-        protected String PositionalToNamedTextConverter(int parameterIndex)
+        protected string PositionalToNamedTextConverter(int parameterIndex)
         {
-            return String.Format("{0}arg{1}", ParamPrefix, parameterIndex);
+            return string.Format("{0}arg{1}", ParamPrefix, parameterIndex);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="parameterIndex">MapIndex of the parameter.</param>
         /// <returns></returns>
-        protected String PositionalToPositionalTextConverter(int parameterIndex)
+        protected string PositionalToPositionalTextConverter(int parameterIndex)
         {
             return ParamPrefix;
         }
@@ -188,8 +188,8 @@ namespace com.espertech.esper.common.@internal.db.drivers
             SerializationInfo info,
             StreamingContext context)
         {
-            info.AddValue("_name", this._name);
-            info.AddValue("_connectionProperties", this._connectionProperties);
+            info.AddValue("_name", _name);
+            info.AddValue("_connectionProperties", _connectionProperties);
             info.AddValue("_connectionString", _connectionString);
         }
 
@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Releases the connections.
         /// </summary>
         /// <param name="userObject">The user object.</param>
-        private static void ReleaseConnections(Object userObject)
+        private static void ReleaseConnections(object userObject)
         {
             long touchPoint = Environment.TickCount - 15000;
 
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <param name="catalog">The catalog.</param>
         protected virtual void SetCatalog(
             DbConnection connection,
-            String catalog)
+            string catalog)
         {
             try
             {
@@ -378,7 +378,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="ex">The ex.</param>
         /// <returns></returns>
-        public static String GetDetail(DbException ex)
+        public static string GetDetail(DbException ex)
         {
             return
                 "DbException: " +

@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(FlexCollection);
 		}
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			block
 				.DeclareVar<OrderedListDictionary<object, ICollection<EventBean>>>("sort", NewInstance(typeof(OrderedListDictionary<object, ICollection<EventBean>>)))
-				.DeclareVar<bool>("hasColl", ConstantFalse());
+				.DeclareVar<bool?>("hasColl", ConstantFalse());
 		}
 
 		public override void ForEachBlock(

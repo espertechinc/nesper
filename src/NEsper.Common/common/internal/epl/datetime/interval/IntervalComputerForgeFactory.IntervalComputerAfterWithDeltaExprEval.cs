@@ -18,15 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     {
         public class IntervalComputerAfterWithDeltaExprEval : IntervalComputerEval
         {
-            private readonly IntervalDeltaExprEvaluator finish;
-            private readonly IntervalDeltaExprEvaluator start;
+            private readonly IntervalDeltaExprEvaluator _finish;
+            private readonly IntervalDeltaExprEvaluator _start;
 
             public IntervalComputerAfterWithDeltaExprEval(
                 IntervalDeltaExprEvaluator start,
                 IntervalDeltaExprEvaluator finish)
             {
-                this.start = start;
-                this.finish = finish;
+                this._start = start;
+                this._finish = finish;
             }
 
             public bool? Compute(
@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long rangeStartDelta = start.Evaluate(rightStart, eventsPerStream, newData, context);
-                long rangeEndDelta = finish.Evaluate(rightStart, eventsPerStream, newData, context);
+                long rangeStartDelta = _start.Evaluate(rightStart, eventsPerStream, newData, context);
+                long rangeEndDelta = _finish.Evaluate(rightStart, eventsPerStream, newData, context);
                 if (rangeStartDelta > rangeEndDelta) {
                     return IntervalComputerConstantAfter.ComputeIntervalAfter(
                         leftStart,

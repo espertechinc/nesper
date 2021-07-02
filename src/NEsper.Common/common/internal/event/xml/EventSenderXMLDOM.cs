@@ -9,6 +9,7 @@
 using System.Xml;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
@@ -25,11 +26,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class EventSenderXMLDOM : EventSender
     {
-        private readonly BaseXMLEventType baseXMLEventType;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EPRuntimeEventProcessWrapped runtimeEventSender;
-        private readonly ThreadingCommon threadingService;
-        private readonly bool validateRootElement;
+        private readonly BaseXMLEventType _baseXmlEventType;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EPRuntimeEventProcessWrapped _runtimeEventSender;
+        private readonly ThreadingCommon _threadingService;
+        private readonly bool _validateRootElement;
 
         /// <summary>
         ///     Ctor.
@@ -44,11 +45,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ThreadingCommon threadingService)
         {
-            this.runtimeEventSender = runtimeEventSender;
-            this.baseXMLEventType = baseXMLEventType;
-            validateRootElement = baseXMLEventType.ConfigurationEventTypeXMLDOM.IsEventSenderValidatesRoot;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.threadingService = threadingService;
+            this._runtimeEventSender = runtimeEventSender;
+            this._baseXmlEventType = baseXMLEventType;
+            _validateRootElement = baseXMLEventType.ConfigurationEventTypeXMLDOM.IsEventSenderValidatesRoot;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._threadingService = threadingService;
         }
 
         public void SendEvent(object theEvent)
@@ -75,32 +76,32 @@ namespace com.espertech.esper.common.@internal.@event.xml
             else {
                 throw new EPException(
                     "Unexpected event object type '" +
-                    node.GetType().CleanName() +
+                    node.GetType().TypeSafeName() +
                     "' encountered, please supply a XmlDocument or XmlElement node");
             }
 
-            if (validateRootElement) {
+            if (_validateRootElement) {
                 var getNodeName = namedNode.Name;
-                if (getNodeName != baseXMLEventType.RootElementName) {
+                if (getNodeName != _baseXmlEventType.RootElementName) {
                     throw new EPException(
                         "Unexpected root element name '" +
                         getNodeName +
                         "' encountered, expected a root element name of '" +
-                        baseXMLEventType.RootElementName +
+                        _baseXmlEventType.RootElementName +
                         "'");
                 }
             }
 
-            var theEvent = eventBeanTypedEventFactory.AdapterForTypedDOM(namedNode, baseXMLEventType);
+            var theEvent = _eventBeanTypedEventFactory.AdapterForTypedDOM(namedNode, _baseXmlEventType);
             if (isRoute) {
-                runtimeEventSender.RouteEventBean(theEvent);
+                _runtimeEventSender.RouteEventBean(theEvent);
             }
             else {
-                if (threadingService.IsInboundThreading) {
-                    threadingService.SubmitInbound(theEvent, runtimeEventSender);
+                if (_threadingService.IsInboundThreading) {
+                    _threadingService.SubmitInbound(theEvent, _runtimeEventSender);
                 }
                 else {
-                    runtimeEventSender.ProcessWrappedEvent(theEvent);
+                    _runtimeEventSender.ProcessWrappedEvent(theEvent);
                 }
             }
         }

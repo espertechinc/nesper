@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayNestedEntryPropertyGetterArrayMap : ObjectArrayNestedEntryPropertyGetterBase
     {
-        private readonly MapEventPropertyGetter getter;
+        private readonly MapEventPropertyGetter _getter;
 
-        private readonly int index;
+        private readonly int _index;
 
         public ObjectArrayNestedEntryPropertyGetterArrayMap(
             int propertyIndex,
@@ -31,28 +31,28 @@ namespace com.espertech.esper.common.@internal.@event.arr
             MapEventPropertyGetter getter)
             : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
         {
-            this.index = index;
-            this.getter = getter;
+            this._index = index;
+            this._getter = getter;
         }
 
         public override object HandleNestedValue(object value)
         {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithMap(value, index, getter);
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMap(value, _index, _getter);
         }
 
         public override object HandleNestedValueFragment(object value)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(
                 value,
-                index,
-                getter,
+                _index,
+                _getter,
                 EventBeanTypedEventFactory,
                 FragmentType);
         }
 
         public override bool HandleNestedValueExists(object value)
         {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithMapExists(value, index, getter);
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapExists(value, _index, _getter);
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(
-                index,
-                getter,
+                _index,
+                _getter,
                 refName,
                 codegenMethodScope,
                 codegenClassScope,
@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapExistsCode(
-                index,
-                getter,
+                _index,
+                _getter,
                 refName,
                 codegenMethodScope,
                 codegenClassScope,
@@ -89,8 +89,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragmentCode(
-                index,
-                getter,
+                _index,
+                _getter,
                 refName,
                 codegenMethodScope,
                 codegenClassScope,

@@ -26,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
             private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-            private readonly IntervalDeltaExprEvaluator finish;
+            private readonly IntervalDeltaExprEvaluator _finish;
 
-            private readonly IntervalDeltaExprEvaluator start;
+            private readonly IntervalDeltaExprEvaluator _start;
 
             public IntervalComputerCoincidesWithDeltaExprEval(
                 IntervalDeltaExprEvaluator start,
                 IntervalDeltaExprEvaluator finish)
             {
-                this.start = start;
-                this.finish = finish;
+                this._start = start;
+                this._finish = finish;
             }
 
             public bool? Compute(
@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long startValue = start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
-                long endValue = finish.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
+                long startValue = _start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
+                long endValue = _finish.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
 
                 if (startValue < 0 || endValue < 0) {
                     Log.Warn("The coincides date-time method does not allow negative start and end values");

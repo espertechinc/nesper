@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprOrNode parent,
             ExprEvaluator[] evaluators)
         {
-            this._parent = parent;
-            this._evaluators = evaluators;
+            _parent = parent;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -69,14 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var childType = child.Forge.EvaluationType;
                 if (childType.CanNotBeNull()) {
                     block.IfCondition(
-                            child.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
+                            child.Forge.EvaluateCodegen(typeof(bool), methodNode, exprSymbol, codegenClassScope))
                         .BlockReturn(ConstantTrue());
                 }
                 else {
                     var refname = "r" + count;
                     block.DeclareVar<bool?>(
                             refname,
-                            child.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
+                            child.Forge.EvaluateCodegen(typeof(bool), methodNode, exprSymbol, codegenClassScope))
                         .IfCondition(EqualsNull(Ref(refname)))
                         .AssignRef("result", ConstantNull())
                         .IfElse()

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -56,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private readonly bool _unbound;
         private readonly LinkedHashMap<string, Pair<int, bool>> _variableStreams;
         private readonly MultiKeyClassRef _partitionByMultiKey;
-
+        private readonly StateMgmtSetting _partitionMgmtStateMgmtSettings;
+        private readonly StateMgmtSetting _scheduleMgmtStateMgmtSettings;
+        
         public RowRecogDescForge(
             EventType parentEventType,
             EventType rowEventType,
@@ -83,34 +86,38 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             string[] columnNames,
             TimePeriodComputeForge intervalCompute,
             int[] previousRandomAccessIndexes,
-            AggregationServiceForgeDesc[] aggregationServices)
+            AggregationServiceForgeDesc[] aggregationServices,
+            StateMgmtSetting partitionMgmtStateMgmtSettings,
+            StateMgmtSetting scheduleMgmtStateMgmtSettings)
         {
-            this._parentEventType = parentEventType;
+            _parentEventType = parentEventType;
             RowEventType = rowEventType;
-            this._compositeEventType = compositeEventType;
-            this._multimatchEventType = multimatchEventType;
-            this._multimatchStreamNumToVariable = multimatchStreamNumToVariable;
-            this._multimatchVariableToStreamNum = multimatchVariableToStreamNum;
-            this._partitionBy = partitionBy;
-            this._partitionByMultiKey = partitionByMultiKey;
-            this._variableStreams = variableStreams;
-            this._hasInterval = hasInterval;
-            this._iterateOnly = iterateOnly;
-            this._unbound = unbound;
-            this._orTerminated = orTerminated;
-            this._collectMultimatches = collectMultimatches;
-            this._defineAsksMultimatches = defineAsksMultimatches;
-            this._numEventsEventsPerStreamDefine = numEventsEventsPerStreamDefine;
-            this._multimatchVariablesArray = multimatchVariablesArray;
-            this._startStates = startStates;
-            this._allStates = allStates;
-            this._allMatches = allMatches;
-            this._skip = skip;
-            this._columnEvaluators = columnEvaluators;
-            this._columnNames = columnNames;
-            this._intervalCompute = intervalCompute;
-            this._previousRandomAccessIndexes = previousRandomAccessIndexes;
-            this._aggregationServices = aggregationServices;
+            _compositeEventType = compositeEventType;
+            _multimatchEventType = multimatchEventType;
+            _multimatchStreamNumToVariable = multimatchStreamNumToVariable;
+            _multimatchVariableToStreamNum = multimatchVariableToStreamNum;
+            _partitionBy = partitionBy;
+            _partitionByMultiKey = partitionByMultiKey;
+            _variableStreams = variableStreams;
+            _hasInterval = hasInterval;
+            _iterateOnly = iterateOnly;
+            _unbound = unbound;
+            _orTerminated = orTerminated;
+            _collectMultimatches = collectMultimatches;
+            _defineAsksMultimatches = defineAsksMultimatches;
+            _numEventsEventsPerStreamDefine = numEventsEventsPerStreamDefine;
+            _multimatchVariablesArray = multimatchVariablesArray;
+            _startStates = startStates;
+            _allStates = allStates;
+            _allMatches = allMatches;
+            _skip = skip;
+            _columnEvaluators = columnEvaluators;
+            _columnNames = columnNames;
+            _intervalCompute = intervalCompute;
+            _previousRandomAccessIndexes = previousRandomAccessIndexes;
+            _aggregationServices = aggregationServices;
+            this._partitionMgmtStateMgmtSettings = partitionMgmtStateMgmtSettings;
+            this._scheduleMgmtStateMgmtSettings = scheduleMgmtStateMgmtSettings;
         }
 
         public EventType RowEventType { get; }
@@ -153,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             method.Block
-                .DeclareVar<RowRecogDesc>(desc.Ref, NewInstance(typeof(RowRecogDesc)))
+                .DeclareVarNewInstance<RowRecogDesc>(desc.Ref)
                 .SetProperty(desc, "ParentEventType", EventTypeUtility.ResolveTypeCodegen(_parentEventType, init))
                 .SetProperty(desc, "RowEventType", EventTypeUtility.ResolveTypeCodegen(RowEventType, init))
                 .SetProperty(desc, "CompositeEventType", EventTypeUtility.ResolveTypeCodegen(_compositeEventType, init))
@@ -205,6 +212,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     desc,
                     "AggregationResultFutureAssignables",
                     _aggregationServices == null ? ConstantNull() : MakeAggAssignables(method, classScope))
+                .SetProperty(desc, "PartitionMgmtStateMgmtSettings", _partitionMgmtStateMgmtSettings.ToExpression())
+                .SetProperty(desc, "ScheduleMgmtStateMgmtSettings", _scheduleMgmtStateMgmtSettings.ToExpression())
                 .MethodReturn(desc);
             return LocalMethod(method);
         }

@@ -26,13 +26,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly BeanEventType beanEventType;
+        private readonly BeanEventType _beanEventType;
 
-        private readonly BeanInstantiator beanInstantiator;
-        private readonly bool hasPrimitiveTypes;
-        private readonly bool[] primitiveType;
-        private readonly EventBeanTypedEventFactory service;
-        private readonly MemberInfo[] writeMembersReflection;
+        private readonly BeanInstantiator _beanInstantiator;
+        private readonly bool _hasPrimitiveTypes;
+        private readonly bool[] _primitiveType;
+        private readonly EventBeanTypedEventFactory _service;
+        private readonly MemberInfo[] _writeMembersReflection;
 
         /// <summary>
         ///     Ctor.
@@ -48,40 +48,40 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             WriteablePropertyDescriptor[] properties,
             ImportService importService)
         {
-            this.beanEventType = beanEventType;
-            this.service = service;
+            this._beanEventType = beanEventType;
+            this._service = service;
 
-            beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService)
+            _beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService)
                 .BeanInstantiator;
 
-            writeMembersReflection = new MemberInfo[properties.Length];
+            _writeMembersReflection = new MemberInfo[properties.Length];
             var primitiveTypeCheck = false;
-            primitiveType = new bool[properties.Length];
+            _primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                writeMembersReflection[i] = properties[i].WriteMember;
-                primitiveType[i] = properties[i].PropertyType.IsValueType;
-                primitiveTypeCheck |= primitiveType[i];
+                _writeMembersReflection[i] = properties[i].WriteMember;
+                _primitiveType[i] = properties[i].PropertyType.IsValueType;
+                primitiveTypeCheck |= _primitiveType[i];
             }
 
-            hasPrimitiveTypes = primitiveTypeCheck;
+            _hasPrimitiveTypes = primitiveTypeCheck;
         }
 
         public EventBean Make(object[] propertyValues)
         {
             var outObject = MakeUnderlying(propertyValues);
-            return service.AdapterForTypedObject(outObject, beanEventType);
+            return _service.AdapterForTypedObject(outObject, _beanEventType);
         }
 
         public object MakeUnderlying(object[] propertyValues)
         {
-            var outObject = beanInstantiator.Instantiate();
+            var outObject = _beanInstantiator.Instantiate();
 
-            if (!hasPrimitiveTypes) {
+            if (!_hasPrimitiveTypes) {
                 var parameters = new object[1];
-                for (var i = 0; i < writeMembersReflection.Length; i++) {
+                for (var i = 0; i < _writeMembersReflection.Length; i++) {
                     parameters[0] = propertyValues[i];
                     try {
-                        var writeMember = writeMembersReflection[i];
+                        var writeMember = _writeMembersReflection[i];
                         if (writeMember is MethodInfo writeMethod) {
                             writeMethod.Invoke(outObject, parameters);
                         }
@@ -93,13 +93,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         }
                     }
                     catch (MemberAccessException e) {
-                        Handle(e, writeMembersReflection[i].Name);
+                        Handle(e, _writeMembersReflection[i].Name);
                     }
                     catch (Exception e) {
                         var message = "Unexpected exception encountered invoking setter-method '" +
-                                      writeMembersReflection[i] +
+                                      _writeMembersReflection[i] +
                                       "' on class '" +
-                                      beanEventType.UnderlyingType.Name +
+                                      _beanEventType.UnderlyingType.Name +
                                       "' : " +
                                       e.Message;
                         Log.Error(message, e);
@@ -108,14 +108,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             }
             else {
                 var parameters = new object[1];
-                for (var i = 0; i < writeMembersReflection.Length; i++) {
-                    if (primitiveType[i] && propertyValues[i] == null) {
+                for (var i = 0; i < _writeMembersReflection.Length; i++) {
+                    if (_primitiveType[i] && propertyValues[i] == null) {
                         continue;
                     }
 
                     parameters[0] = propertyValues[i];
                     try {
-                        var writeMember = writeMembersReflection[i];
+                        var writeMember = _writeMembersReflection[i];
                         if (writeMember is MethodInfo writeMethod) {
                             writeMethod.Invoke(outObject, parameters);
                         }
@@ -127,10 +127,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         }
                     }
                     catch (MemberAccessException e) {
-                        Handle(e, writeMembersReflection[i].Name);
+                        Handle(e, _writeMembersReflection[i].Name);
                     }
                     catch (Exception e) {
-                        HandleAny(e, writeMembersReflection[i].Name);
+                        HandleAny(e, _writeMembersReflection[i].Name);
                     }
                 }
             }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var message = "Unexpected exception encountered invoking setter-method '" +
                           methodName +
                           "' on class '" +
-                          beanEventType.UnderlyingType.Name +
+                          _beanEventType.UnderlyingType.Name +
                           "' : " +
                           ex.Message;
             Log.Error(message, ex);
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var message = "Unexpected exception encountered invoking setter-method '" +
                           methodName +
                           "' on class '" +
-                          beanEventType.UnderlyingType.Name +
+                          _beanEventType.UnderlyingType.Name +
                           "' : " +
                           ex.Message;
             Log.Error(message, ex);

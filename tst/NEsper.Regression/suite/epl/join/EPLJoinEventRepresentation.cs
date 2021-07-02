@@ -37,21 +37,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithWrapperEventNotUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinWrapperEventNotUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMapEventNotUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinMapEventNotUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEventRepresentations(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinEventRepresentations());
             return execs;
         }

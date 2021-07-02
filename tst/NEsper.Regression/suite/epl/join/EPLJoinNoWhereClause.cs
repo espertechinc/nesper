@@ -29,14 +29,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithNoWhereClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinNoWhereClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWInnerKeywordWOOnClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinWInnerKeywordWOOnClause());
             return execs;
         }

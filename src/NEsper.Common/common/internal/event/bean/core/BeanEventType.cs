@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -104,15 +105,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public Type GetPropertyType(string propertyName)
         {
-            var simpleProp = GetSimplePropertyInfo(propertyName);
-            if (simpleProp != null && simpleProp.Clazz != null) {
-                return simpleProp.Clazz;
+            var type = SimplePropertyType(propertyName);
+            if (type != null) {
+                return type;
             }
-
+            
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (prop is SimpleProperty) {
-                // there is no such property since it wasn't in simplePropertyTypes
-                return null;
+                // unescaped lookup
+                return SimplePropertyType(prop.PropertyNameAtomic);
             }
 
             return prop.GetPropertyType(this, _beanEventTypeFactory);
@@ -135,23 +136,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             { 
                 return cachedGetter;
             }
-
-            var simpleProp = GetSimplePropertyInfo(propertyName);
-            if (simpleProp != null && simpleProp.GetterFactory != null) {
-                var getterX = simpleProp.GetterFactory.Make(
-                    _beanEventTypeFactory.EventBeanTypedEventFactory,
-                    _beanEventTypeFactory);
-                _propertyGetterCache.Put(propertyName, getterX);
-                return getterX;
+            
+            EventPropertyGetterSPI getter = SimplePropertyGetter(propertyName);
+            if (getter != null) {
+                return getter;
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (prop is SimpleProperty) {
-                // there is no such property since it wasn't in simplePropertyGetters
-                return null;
+                // unescaped lookup
+                return SimplePropertyGetter(prop.PropertyNameAtomic);
             }
 
-            var getter = prop.GetGetter(this, _beanEventTypeFactory.EventBeanTypedEventFactory, _beanEventTypeFactory);
+            getter = prop.GetGetter(this, _beanEventTypeFactory.EventBeanTypedEventFactory, _beanEventTypeFactory);
             _propertyGetterCache[propertyName] = getter;
 
             return getter;
@@ -212,30 +209,24 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public FragmentEventType GetFragmentType(string propertyExpression)
         {
-            var simpleProp = GetSimplePropertyInfo(propertyExpression);
-            if (simpleProp != null && simpleProp.Clazz != null) {
-                var genericPropX = simpleProp.Descriptor.ReturnTypeGeneric;
-                return EventBeanUtility.CreateNativeFragmentType(
-                    genericPropX.GenericType,
-                    genericPropX.Generic,
-                    _beanEventTypeFactory,
-                    Stem.IsPublicFields);
+            var fragmentEventType = SimplePropertyFragmentType(propertyExpression);
+            if (fragmentEventType != null) {
+                return fragmentEventType;
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
             if (prop is SimpleProperty) {
-                // there is no such property since it wasn't in simplePropertyTypes
-                return null;
+                // unescaped lookup
+                return SimplePropertyFragmentType(prop.PropertyNameAtomic);
             }
-
-            var genericProp = prop.GetPropertyTypeGeneric(this, _beanEventTypeFactory);
-            if (genericProp == null) {
+            
+            var type = prop.GetPropertyType(this, _beanEventTypeFactory);
+            if (type == null) {
                 return null;
             }
 
             return EventBeanUtility.CreateNativeFragmentType(
-                genericProp.GenericType,
-                genericProp.Generic,
+                type,
                 _beanEventTypeFactory,
                 Stem.IsPublicFields);
         }
@@ -261,7 +252,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -278,7 +268,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -373,14 +362,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 InitializeWriters();
             }
 
-            var pair = _writerMap.Get(propertyName);
-            if (pair != null) {
-                return pair.Second;
+            var writer = SimplePropertyWriter(propertyName);
+            if (writer != null) {
+                return writer;
             }
-
+            
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
-                var mapProp = (MappedProperty) property;
+            if (property is SimpleProperty) {
+                // unescaped lookup
+                return SimplePropertyWriter(property.PropertyNameAtomic);
+            }
+            
+            if (property is MappedProperty mapProp) {
                 var methodName = PropertyHelper.GetSetterMethodName(mapProp.PropertyNameAtomic);
                 MethodInfo setterMethod;
                 try {
@@ -399,10 +392,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         "' for writing to property '" +
                         propertyName +
                         "' taking {String, Object} as parameters");
-                    return null;
-                }
-
-                if (setterMethod == null) {
                     return null;
                 }
 
@@ -429,10 +418,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         "' for writing to property '" +
                         propertyName +
                         "' taking {int, Object} as parameters");
-                    return null;
-                }
-
-                if (setterMethod == null) {
                     return null;
                 }
 
@@ -535,7 +520,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                    " name=" +
                    Name +
                    " clazz=" +
-                   Stem.Clazz.CleanName();
+                   Stem.Clazz.TypeSafeName();
         }
 
         private PropertyInfo GetSimplePropertyInfo(string propertyName)
@@ -591,7 +576,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 var propertyDesc = new EventPropertyDescriptor(
                     writable.PropertyName,
                     writable.PropertyType,
-                    null,
                     false,
                     false,
                     false,
@@ -609,6 +593,38 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             _writerMap = writers;
             _writeablePropertyDescriptors = desc;
+        }
+        
+        private Type SimplePropertyType(string propertyName) {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if ((simpleProp != null) && (simpleProp.Clazz != null)) {
+                return simpleProp.Clazz;
+            }
+            return null;
+        }
+
+        private EventPropertyGetterSPI SimplePropertyGetter(string propertyName) {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if ((simpleProp != null) && (simpleProp.GetterFactory != null)) {
+                var getter = simpleProp.GetterFactory.Make(_beanEventTypeFactory.EventBeanTypedEventFactory, _beanEventTypeFactory);
+                _propertyGetterCache.Put(propertyName, getter);
+                return getter;
+            }
+            return null;
+        }
+
+        private FragmentEventType SimplePropertyFragmentType(string propertyName) {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if ((simpleProp != null) && (simpleProp.Clazz != null)) {
+                var type = simpleProp.Descriptor.ReturnType;
+                return EventBeanUtility.CreateNativeFragmentType(type, _beanEventTypeFactory, Stem.IsPublicFields);
+            }
+            return null;
+        }
+
+        private BeanEventPropertyWriter SimplePropertyWriter(string propertyName)
+        {
+            return _writerMap.TryGetValue(propertyName, out var pair) ? pair.Second : null;
         }
     }
 } // end of namespace

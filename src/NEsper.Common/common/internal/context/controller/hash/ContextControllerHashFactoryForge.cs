@@ -8,6 +8,8 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -22,14 +24,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashFactoryForge : ContextControllerForgeBase
     {
-        private readonly ContextSpecHash detail;
+        private readonly ContextSpecHash _detail;
+        private StateMgmtSetting _stateMgmtSettings;
 
         public ContextControllerHashFactoryForge(
             ContextControllerFactoryEnv ctx,
             ContextSpecHash detail)
             : base(ctx)
         {
-            this.detail = detail;
+            this._detail = detail;
         }
 
         public override void ValidateGetContextProps(
@@ -38,7 +41,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ContextControllerHashUtil.ValidateContextDesc(contextName, detail, statementRawInfo, services);
+            ContextControllerHashUtil.ValidateContextDesc(contextName, _detail, statementRawInfo, services);
+            _stateMgmtSettings = services.StateMgmtSettingsProvider.GetContext(statementRawInfo, contextName, AppliesTo.CONTEXT_HASH);
         }
 
         public override CodegenMethod MakeCodegen(
@@ -46,14 +50,14 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ContextControllerHashFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(ContextControllerHashFactory), GetType(), classScope);
             method.Block
                 .DeclareVar<ContextControllerHashFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
-                        .Add("HashFactory"))
-                .SetProperty(Ref("factory"), "HashSpec", detail.MakeCodegen(method, symbols, classScope))
+                        .Add("HashFactory", _stateMgmtSettings.ToExpression()))
+                .SetProperty(Ref("factory"), "HashSpec", _detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;
         }
@@ -61,9 +65,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public override ContextControllerPortableInfo ValidationInfo {
             get {
                 ContextControllerHashValidationItem[] items =
-                    new ContextControllerHashValidationItem[detail.Items.Count];
-                for (int i = 0; i < detail.Items.Count; i++) {
-                    ContextSpecHashItem props = detail.Items[i];
+                    new ContextControllerHashValidationItem[_detail.Items.Count];
+                for (int i = 0; i < _detail.Items.Count; i++) {
+                    ContextSpecHashItem props = _detail.Items[i];
                     items[i] = new ContextControllerHashValidationItem(props.FilterSpecCompiled.FilterForEventType);
                 }
 

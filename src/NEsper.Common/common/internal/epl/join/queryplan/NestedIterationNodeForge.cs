@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// </summary>
     public class NestedIterationNodeForge : QueryPlanNodeForge
     {
-        private readonly List<QueryPlanNodeForge> childNodes;
-        private readonly int[] nestingOrder;
+        private readonly List<QueryPlanNodeForge> _childNodes;
+        private readonly int[] _nestingOrder;
 
         /// <summary>
         ///     Ctor.
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <param name="nestingOrder">order of streams in nested iteration</param>
         public NestedIterationNodeForge(int[] nestingOrder)
         {
-            this.nestingOrder = nestingOrder;
-            childNodes = new List<QueryPlanNodeForge>();
+            this._nestingOrder = nestingOrder;
+            _childNodes = new List<QueryPlanNodeForge>();
 
             if (nestingOrder.Length == 0) {
                 throw new ArgumentException("Invalid empty nesting order");
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         ///     Returns list of child nodes.
         /// </summary>
         /// <returns>list of child nodes</returns>
-        public List<QueryPlanNodeForge> ChildNodes => childNodes;
+        public List<QueryPlanNodeForge> ChildNodes => _childNodes;
 
         /// <summary>
         ///     Adds a child node.
@@ -55,21 +55,21 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <param name="childNode">is the child evaluation tree node to add</param>
         public void AddChildNode(QueryPlanNodeForge childNode)
         {
-            childNodes.Add(childNode);
+            _childNodes.Add(childNode);
         }
 
         public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
         {
-            foreach (var child in childNodes) {
+            foreach (var child in _childNodes) {
                 child.AddIndexes(usedIndexes);
             }
         }
 
         protected internal override void Print(IndentWriter indentWriter)
         {
-            indentWriter.WriteLine("NestedIterationNode with nesting order " + nestingOrder.RenderAny());
+            indentWriter.WriteLine("NestedIterationNode with nesting order " + _nestingOrder.RenderAny());
             indentWriter.IncrIndent();
-            foreach (var child in childNodes) {
+            foreach (var child in _childNodes) {
                 child.Print(indentWriter);
             }
 
@@ -84,18 +84,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var childNodeArray = CodegenMakeableUtil.MakeArray(
                 "childNodes",
                 typeof(QueryPlanNode),
-                childNodes.ToArray(),
+                _childNodes.ToArray(),
                 GetType(),
                 parent,
                 symbols,
                 classScope);
-            return NewInstance<NestedIterationNode>(childNodeArray, Constant(nestingOrder));
+            return NewInstance<NestedIterationNode>(childNodeArray, Constant(_nestingOrder));
         }
 
         public override void Accept(QueryPlanNodeForgeVisitor visitor)
         {
             visitor.Visit(this);
-            foreach (var child in childNodes) {
+            foreach (var child in _childNodes) {
                 child.Accept(visitor);
             }
         }

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public IList<SelectClauseElementCompiled> SelectClauseCompiled {
             get { return selectClauseCompiled; }
-            set { this.selectClauseCompiled = value; }
+            set { selectClauseCompiled = value; }
         }
     }
 }

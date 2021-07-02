@@ -16,16 +16,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 	{
 		public const string NAME = "event_identity_equals";
 
-		private ExprEventIdentityEqualsNodeForge forge;
+		private ExprEventIdentityEqualsNodeForge _forge;
 
 		public override ExprNode Validate(ExprValidationContext validationContext)
 		{
-			if (this.ChildNodes.Length != 2) {
+			if (ChildNodes.Length != 2) {
 				throw new ExprValidationException(NAME + "requires two parameters");
 			}
 
-			ExprStreamUnderlyingNode undOne = CheckStreamUnd(this.ChildNodes[0]);
-			ExprStreamUnderlyingNode undTwo = CheckStreamUnd(this.ChildNodes[1]);
+			ExprStreamUnderlyingNode undOne = CheckStreamUnd(ChildNodes[0]);
+			ExprStreamUnderlyingNode undTwo = CheckStreamUnd(ChildNodes[1]);
 			if (undOne.EventType != undTwo.EventType) {
 				throw new ExprValidationException(
 					NAME +
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 					"'");
 			}
 
-			forge = new ExprEventIdentityEqualsNodeForge(this, undOne, undTwo);
+			_forge = new ExprEventIdentityEqualsNodeForge(this, undOne, undTwo);
 			return null;
 		}
 
@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
 		public override ExprForge Forge {
 			get {
-				CheckValidated(forge);
-				return forge;
+				CheckValidated(_forge);
+				return _forge;
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 			ExprNodeRenderableFlags flags)
 		{
 			writer.Write(NAME);
-			ExprNodeUtilityPrint.ToExpressionStringParams(writer, this.ChildNodes);
+			ExprNodeUtilityPrint.ToExpressionStringParams(writer, ChildNodes);
 		}
 
 		public override ExprPrecedenceEnum Precedence {

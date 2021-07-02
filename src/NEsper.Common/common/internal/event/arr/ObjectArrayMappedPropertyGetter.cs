@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayMappedPropertyGetter : ObjectArrayEventPropertyGetterAndMapped
     {
-        private readonly string key;
-        private readonly int propertyIndex;
+        private readonly string _key;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -32,18 +32,18 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int propertyIndex,
             string key)
         {
-            this.propertyIndex = propertyIndex;
-            this.key = key;
+            this._propertyIndex = propertyIndex;
+            this._key = key;
         }
 
         public object GetObjectArray(object[] array)
         {
-            return GetOAMapValue(array, propertyIndex, key);
+            return GetOAMapValue(array, _propertyIndex, _key);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
-            return GetOAMapExists(array, propertyIndex, key);
+            return GetOAMapExists(array, _propertyIndex, _key);
         }
 
         public object Get(
@@ -51,19 +51,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string mapKey)
         {
             var data = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return GetOAMapValue(data, propertyIndex, mapKey);
+            return GetOAMapValue(data, _propertyIndex, mapKey);
         }
 
         public object Get(EventBean eventBean)
         {
             var data = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return GetOAMapValue(data, propertyIndex, key);
+            return GetOAMapValue(data, _propertyIndex, _key);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
             var data = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return GetOAMapExists(data, propertyIndex, key);
+            return GetOAMapExists(data, _propertyIndex, _key);
         }
 
         public object GetFragment(EventBean eventBean)
@@ -110,8 +110,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "GetOAMapValue",
                 underlyingExpression,
-                Constant(propertyIndex),
-                Constant(key));
+                Constant(_propertyIndex),
+                Constant(_key));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -123,8 +123,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "GetOAMapExists",
                 underlyingExpression,
-                Constant(propertyIndex),
-                Constant(key));
+                Constant(_propertyIndex),
+                Constant(_key));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "GetOAMapValue",
                 CastUnderlying(typeof(object[]), beanExpression),
-                Constant(propertyIndex),
+                Constant(_propertyIndex),
                 key);
         }
 

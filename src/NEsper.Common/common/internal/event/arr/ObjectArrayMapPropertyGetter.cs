@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
     public class ObjectArrayMapPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly MapEventPropertyGetter getter;
-        private readonly int index;
+        private readonly MapEventPropertyGetter _getter;
+        private readonly int _index;
 
         /// <summary>
         ///     Ctor.
@@ -39,28 +39,28 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 throw new ArgumentException("Getter is a required parameter");
             }
 
-            this.index = index;
-            this.getter = getter;
+            this._index = index;
+            this._getter = getter;
         }
 
         public object GetObjectArray(object[] array)
         {
-            var valueTopObj = array[index];
+            var valueTopObj = array[_index];
             if (!(valueTopObj is Map)) {
                 return null;
             }
 
-            return getter.GetMap((Map) valueTopObj);
+            return _getter.GetMap((Map) valueTopObj);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
-            var valueTopObj = array[index];
+            var valueTopObj = array[_index];
             if (!(valueTopObj is Map)) {
                 return false;
             }
 
-            return getter.IsMapExistsProperty((Map) valueTopObj);
+            return _getter.IsMapExistsProperty((Map) valueTopObj);
         }
 
         public object Get(EventBean eventBean)
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var returnExpression = getter.UnderlyingGetCodegen(
+            var returnExpression = _getter.UnderlyingGetCodegen(
                 Cast(typeof(Map), Ref("valueTopObj")),
                 codegenMethodScope,
                 codegenClassScope);
@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
+                .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(_index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
                 .MethodReturn(returnExpression);
         }
@@ -160,10 +160,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
+                .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(_index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), false)
                 .MethodReturn(
-                    getter.UnderlyingExistsCodegen(
+                    _getter.UnderlyingExistsCodegen(
                         Cast(typeof(Map), Ref("valueTopObj")),
                         codegenMethodScope,
                         codegenClassScope));

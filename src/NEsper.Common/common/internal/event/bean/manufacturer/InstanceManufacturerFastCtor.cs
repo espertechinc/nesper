@@ -10,10 +10,12 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -22,15 +24,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     public class InstanceManufacturerFastCtor : InstanceManufacturer
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly InstanceManufacturerFactoryFastCtor factory;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly InstanceManufacturerFactoryFastCtor _factory;
 
         public InstanceManufacturerFastCtor(
             InstanceManufacturerFactoryFastCtor factory,
             ExprEvaluator[] evaluators)
         {
-            this.factory = factory;
-            this.evaluators = evaluators;
+            this._factory = factory;
+            this._evaluators = evaluators;
         }
 
         public object Make(
@@ -38,12 +40,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var row = new object[evaluators.Length];
+            var row = new object[_evaluators.Length];
             for (var i = 0; i < row.Length; i++) {
-                row[i] = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                row[i] = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            return MakeUnderlyingFromFastCtor(row, factory.Ctor, factory.TargetClass);
+            return MakeUnderlyingFromFastCtor(row, _factory.Ctor, _factory.TargetClass);
         }
 
         public static object MakeUnderlyingFromFastCtor(
@@ -105,7 +107,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 var currentForge = forges[i];
                 var currentForgeEvaluationType = currentForge.EvaluationType;
 
-                if (targetCtorParamType.IsAssignableFrom(currentForgeEvaluationType)) {
+                if (currentForgeEvaluationType.IsNullTypeSafe()) {
+                    paramList[i] = ConstantNull();
+                }
+                else if (targetCtorParamType.IsAssignableFrom(currentForgeEvaluationType)) {
                     paramList[i] = currentForge
                         .EvaluateCodegen(
                             currentForgeEvaluationType,

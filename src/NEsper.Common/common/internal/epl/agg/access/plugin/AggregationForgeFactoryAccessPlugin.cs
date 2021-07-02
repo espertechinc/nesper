@@ -22,26 +22,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationForgeFactoryAccessPlugin : AggregationForgeFactoryAccessBase
     {
-        private readonly ExprPlugInMultiFunctionAggNode parent;
-        private readonly AggregationMultiFunctionHandler handler;
-        private EPType returnType;
+        private readonly ExprPlugInMultiFunctionAggNode _parent;
+        private readonly AggregationMultiFunctionHandler _handler;
+        private EPChainableType _returnType;
 
         public AggregationForgeFactoryAccessPlugin(
             ExprPlugInMultiFunctionAggNode parent,
             AggregationMultiFunctionHandler handler)
         {
-            this.parent = parent;
-            this.handler = handler;
+            this._parent = parent;
+            this._handler = handler;
         }
 
         public override AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-            return handler.AggregationStateUniqueKey;
+            return _handler.AggregationStateUniqueKey;
         }
 
         public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
         {
-            AggregationMultiFunctionStateMode stateMode = handler.StateMode;
+            AggregationMultiFunctionStateMode stateMode = _handler.StateMode;
             if (stateMode is AggregationMultiFunctionStateModeManaged) {
                 AggregationMultiFunctionStateModeManaged managed = (AggregationMultiFunctionStateModeManaged) stateMode;
                 return new AggregationStateFactoryForgePlugin(this, managed);
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 
         public override AggregationAccessorForge AccessorForge {
             get {
-                AggregationMultiFunctionAccessorMode accessorMode = handler.AccessorMode;
+                AggregationMultiFunctionAccessorMode accessorMode = _handler.AccessorMode;
                 if (accessorMode is AggregationMultiFunctionAccessorModeManaged) {
                     AggregationMultiFunctionAccessorModeManaged managed =
                         (AggregationMultiFunctionAccessorModeManaged) accessorMode;
@@ -69,13 +69,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             ImportService importService,
             string statementName)
         {
-            AggregationMultiFunctionAgentMode agentMode = handler.AgentMode;
+            AggregationMultiFunctionAgentMode agentMode = _handler.AgentMode;
             if (agentMode is AggregationMultiFunctionAgentModeManaged) {
                 AggregationMultiFunctionAgentModeManaged managed = (AggregationMultiFunctionAgentModeManaged) agentMode;
                 return new AggregationAgentForgePlugin(
                     this,
                     managed,
-                    parent.OptionalFilter == null ? null : parent.OptionalFilter.Forge);
+                    _parent.OptionalFilter == null ? null : _parent.OptionalFilter.Forge);
             }
             else {
                 throw new IllegalStateException("Unrecognized accessor mode " + agentMode);
@@ -85,19 +85,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public override Type ResultType {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetNormalizedClass(returnType);
+                return EPChainableTypeHelper.GetNormalizedClass(_returnType);
             }
         }
 
         public override ExprAggregateNodeBase AggregationExpression {
-            get => parent;
+            get => _parent;
         }
 
         public override AggregationPortableValidation AggregationPortableValidation {
             get {
                 var portable = new AggregationPortableValidationPluginMultiFunc();
-                portable.Handler = handler;
-                portable.AggregationFunctionName = parent.AggregationFunctionName;
+                portable.Handler = _handler;
+                portable.AggregationFunctionName = _parent.AggregationFunctionName;
                 return portable;
             }
         }
@@ -105,28 +105,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public EventType EventTypeCollection {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetEventTypeMultiValued(returnType);
+                return EPChainableTypeHelper.GetEventTypeMultiValued(_returnType);
             }
         }
 
         public EventType EventTypeSingle {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetEventTypeSingleValued(returnType);
+                return EPChainableTypeEventSingle.FromInputOrNull(_returnType);
             }
         }
 
         public Type ComponentTypeCollection {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetClassMultiValued(returnType);
+                return EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(_returnType);
             }
         }
 
         private void ObtainReturnType()
         {
-            if (returnType == null) {
-                returnType = handler.ReturnType;
+            if (_returnType == null) {
+                _returnType = _handler.ReturnType;
             }
         }
     }

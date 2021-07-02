@@ -25,35 +25,35 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     public class AddPropertyValueOptionalView : ViewSupport,
         AgentInstanceMgmtCallback
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AddPropertyValueOptionalView));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AddPropertyValueOptionalView));
 
-        private readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
-        private readonly GroupByViewFactory groupByViewFactory;
-        private readonly object propertyValues;
+        private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
+        private readonly GroupByViewFactory _groupByViewFactory;
+        private readonly object _propertyValues;
 
         // Keep a history of posted old events to avoid reconstructing the event
         // and adhere to the contract of posting the same reference to child views.
         // Only for must-add-property.
-        private readonly IDictionary<EventBean, EventBean> newToOldEventMap;
+        private readonly IDictionary<EventBean, EventBean> _newToOldEventMap;
 
         public AddPropertyValueOptionalView(
             GroupByViewFactory groupByViewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceContext,
             object mergeValues)
         {
-            this.groupByViewFactory = groupByViewFactory;
-            propertyValues = mergeValues;
-            this.agentInstanceContext = agentInstanceContext;
-            newToOldEventMap = new Dictionary<EventBean, EventBean>();
+            this._groupByViewFactory = groupByViewFactory;
+            _propertyValues = mergeValues;
+            this._agentInstanceContext = agentInstanceContext;
+            _newToOldEventMap = new Dictionary<EventBean, EventBean>();
         }
 
-        public override EventType EventType => groupByViewFactory.EventType;
+        public override EventType EventType => _groupByViewFactory.EventType;
 
         public void Stop(AgentInstanceStopServices services)
         {
-            if (!newToOldEventMap.IsEmpty()) {
+            if (!_newToOldEventMap.IsEmpty()) {
                 var oldEvents = new OneEventCollection();
-                foreach (var oldEvent in newToOldEventMap) {
+                foreach (var oldEvent in _newToOldEventMap) {
                     oldEvents.Add(oldEvent.Value);
                 }
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     Child.Update(null, oldEvents.ToArray());
                 }
 
-                newToOldEventMap.Clear();
+                _newToOldEventMap.Clear();
             }
         }
 
@@ -79,13 +79,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 foreach (var newEvent in newData) {
                     var theEvent = AddProperty(
                         newEvent,
-                        groupByViewFactory.PropertyNames,
-                        propertyValues,
-                        groupByViewFactory.EventType,
-                        agentInstanceContext.EventBeanTypedEventFactory);
+                        _groupByViewFactory.PropertyNames,
+                        _propertyValues,
+                        _groupByViewFactory.EventType,
+                        _agentInstanceContext.EventBeanTypedEventFactory);
                     newEvents[index++] = theEvent;
 
-                    newToOldEventMap.Put(newEvent, theEvent);
+                    _newToOldEventMap.Put(newEvent, theEvent);
                 }
             }
 
@@ -94,25 +94,25 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
                 var index = 0;
                 foreach (var oldEvent in oldData) {
-                    var outgoing = newToOldEventMap.Delete(oldEvent);
+                    var outgoing = _newToOldEventMap.Delete(oldEvent);
                     if (outgoing != null) {
                         oldEvents[index++] = outgoing;
                     }
                     else {
                         var theEvent = AddProperty(
                             oldEvent,
-                            groupByViewFactory.PropertyNames,
-                            propertyValues,
-                            groupByViewFactory.EventType,
-                            agentInstanceContext.EventBeanTypedEventFactory);
+                            _groupByViewFactory.PropertyNames,
+                            _propertyValues,
+                            _groupByViewFactory.EventType,
+                            _agentInstanceContext.EventBeanTypedEventFactory);
                         oldEvents[index++] = theEvent;
                     }
                 }
             }
 
-            agentInstanceContext.InstrumentationProvider.QViewIndicate(groupByViewFactory, newEvents, oldEvents);
+            _agentInstanceContext.InstrumentationProvider.QViewIndicate(_groupByViewFactory, newEvents, oldEvents);
             Child.Update(newEvents, oldEvents);
-            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
@@ -120,10 +120,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             foreach (var nextEvent in Parent) {
                 yield return AddProperty(
                     nextEvent,
-                    groupByViewFactory.PropertyNames,
-                    propertyValues,
-                    groupByViewFactory.EventType,
-                    agentInstanceContext.EventBeanTypedEventFactory);
+                    _groupByViewFactory.PropertyNames,
+                    _propertyValues,
+                    _groupByViewFactory.EventType,
+                    _agentInstanceContext.EventBeanTypedEventFactory);
             }
         }
 
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public override string ToString()
         {
-            return GetType().Name + " propertyValue=" + propertyValues;
+            return GetType().Name + " propertyValue=" + _propertyValues;
         }
         
         public void Transfer(AgentInstanceTransferServices services)

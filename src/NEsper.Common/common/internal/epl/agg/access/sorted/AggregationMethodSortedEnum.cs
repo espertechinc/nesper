@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -165,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			switch (value) {
 				case AggregationMethodSortedEnum.CONTAINSKEY:
-					return typeof(bool?);
+					return typeof(bool);
 
 				case AggregationMethodSortedEnum.COUNTEVENTS:
 				case AggregationMethodSortedEnum.COUNTKEYS:
@@ -173,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
 				case AggregationMethodSortedEnum.SUBMAP:
 				case AggregationMethodSortedEnum.DICTIONARYREFERENCE:
-					return typeof(IOrderedDictionary<object, object>);
+					return typeof(IOrderedDictionary<object, EventBean>);
 			}
 
 			if (!IsReturnsSingleEvent(value) && !IsReturnsCollectionOfEvents(value)) {

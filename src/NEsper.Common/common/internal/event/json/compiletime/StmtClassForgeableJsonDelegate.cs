@@ -11,12 +11,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.json.util;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.@event.json.core;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -67,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryGetPropertyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(string), "name"))
 				.AddParam(new CodegenNamedParam(typeof(object), "underlying"))
 				.AddParam(new CodegenNamedParam(typeof(object), "value").WithOutputModifier());
@@ -78,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var trySetPropertyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(string), "name"))
 				.AddParam(new CodegenNamedParam(typeof(object), "underlying"))
 				.AddParam(new CodegenNamedParam(typeof(object), "value"));
@@ -89,7 +91,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryCopyMethod = CodegenMethod
-				.MakeParentNode(typeof(object), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(object), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(object), "source"));
 			tryCopyMethod = MakeTryCopy(tryCopyMethod, classScope);
 
@@ -130,7 +132,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		private CodegenMethod MakeAllocate(CodegenMethod allocateMethod)
 		{
 			// we know this underlying class has a default constructor otherwise it is not json and deep-class eligible
-			allocateMethod.Block.MethodReturn(NewInstanceInner(_underlyingClassName));
+			allocateMethod.Block.MethodReturn(NewInstanceNamed(_underlyingClassName));
 			return allocateMethod;
 		}
 
@@ -150,6 +152,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			var switchIndx = 0;
 				
 			foreach (var property in _desc.PropertiesThisType) {
+				if (property.Value.IsNullType()) { // no assignment for null values
+					continue;
+				}
+				
 				var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
 				var fieldName = field.FieldName;
 				var propertyRef = ExprDotName(Ref("und"), fieldName);
@@ -202,7 +208,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			tryCopyMethod.Block
 				.IfRefNullReturnNull("source")
 				.DeclareVar(_underlyingClassName, "src", Cast(_underlyingClassName, Ref("source")))
-				.DeclareVar(_underlyingClassName, "dst", NewInstanceInner(_underlyingClassName));
+				.DeclareVar(_underlyingClassName, "dst", NewInstanceNamed(_underlyingClassName));
 
 			foreach (var property in _desc.PropertiesThisType) {
 				var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);

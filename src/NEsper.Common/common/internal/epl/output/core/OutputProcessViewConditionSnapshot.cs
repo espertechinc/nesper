@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly OutputProcessViewConditionFactory parent;
+        private readonly OutputProcessViewConditionFactory _parent;
 
         public OutputProcessViewConditionSnapshot(
             ResultSetProcessor resultSetProcessor,
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 afterConditionNumberOfEvents,
                 afterConditionSatisfied)
         {
-            this.parent = parent;
+            this._parent = parent;
 
             var outputCallback = GetCallbackToLocal(parent.StreamCount);
             OptionalOutputCondition =
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 if (enumerator.MoveNext()) {
                     var snapshot = new List<EventBean>();
                     do {
-                        EventBean @event = enumerator.Current;
+                        var @event = enumerator.Current;
                         snapshot.Add(@event);
                     } while (enumerator.MoveNext());
 
@@ -209,13 +209,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 joinExecutionStrategy,
                 _resultSetProcessor,
                 parentView,
-                parent.IsDistinct,
-                parent.DistinctKeyGetter);
+                _parent.IsDistinct,
+                _parent.DistinctKeyGetter);
         }
 
         public override void Terminated()
         {
-            if (parent.IsTerminable) {
+            if (_parent.IsTerminable) {
                 OptionalOutputCondition.Terminated();
             }
         }

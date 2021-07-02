@@ -30,7 +30,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamEventPropForge : FilterSpecParamForge
     {
         [NonSerialized] private readonly Coercer _numberCoercer;
-        private readonly string _statementName;
 
         /// <summary>
         ///     Constructor.
@@ -42,7 +41,6 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="isMustCoerce">indicates on whether numeric coercion must be performed</param>
         /// <param name="coercionType">indicates the numeric coercion type to use</param>
         /// <param name="numberCoercer">interface to use to perform coercion</param>
-        /// <param name="statementName">statement name</param>
         /// <param name="exprIdentNodeEvaluator">evaluator</param>
         /// <throws>ArgumentException if an operator was supplied that does not take a single constant value</throws>
         public FilterSpecParamEventPropForge(
@@ -53,8 +51,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprIdentNodeEvaluator exprIdentNodeEvaluator,
             bool isMustCoerce,
             Coercer numberCoercer,
-            Type coercionType,
-            string statementName)
+            Type coercionType)
             : base(lookupable, filterOperator)
         {
             ResultEventAsName = resultEventAsName;
@@ -63,7 +60,6 @@ namespace com.espertech.esper.common.@internal.filterspec
             IsMustCoerce = isMustCoerce;
             _numberCoercer = numberCoercer;
             CoercionType = coercionType;
-            _statementName = statementName;
 
             if (filterOperator.IsRangeOperator()) {
                 throw new ArgumentException(
@@ -148,7 +144,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             return result;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -199,7 +195,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
         
         

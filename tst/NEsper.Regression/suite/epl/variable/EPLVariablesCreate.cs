@@ -6,15 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
@@ -29,12 +34,62 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLVariableOM());
-            execs.Add(new EPLVariableCompileStartStop());
-            execs.Add(new EPLVariableSubscribeAndIterate());
-            execs.Add(new EPLVariableDeclarationAndSelect());
-            execs.Add(new EPLVariableInvalid());
+            WithOM(execs);
+            WithCompileStartStop(execs);
+            WithSubscribeAndIterate(execs);
+            WithDeclarationAndSelect(execs);
+            WithInvalid(execs);
+            WithDimensionAndPrimitive(execs);
+            WithGenericType(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGenericType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableGenericType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDimensionAndPrimitive(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLVariableDimensionAndPrimitive());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDeclarationAndSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableDeclarationAndSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubscribeAndIterate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableSubscribeAndIterate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCompileStartStop(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableCompileStartStop());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableOM());
             return execs;
         }
 
@@ -74,6 +129,37 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             bean.TheString = theString;
             bean.IntPrimitive = intPrimitive;
             env.SendEventBean(bean);
+        }
+
+        internal class EPLVariableGenericType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var arrays = typeof(Arrays).MaskTypeName();
+                string epl = "@name('var') create variable IList<String> mylist = " + arrays + ".AsList('a', 'b');\n" +
+                             "@name('s0') select mylist as c0, mylist.where(v => v = 'a') as c1 from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SupportEventPropUtil.AssertTypes(
+                    env.Statement("s0").EventType,
+                    "c0,c1".SplitCsv(),
+                    new[] {
+                        typeof(IList<string>),
+                        typeof(ICollection<string>)
+                    });
+
+                env.Milestone(0);
+
+                var list = (IList<String>) env.Runtime.VariableService.GetVariableValue(env.DeploymentId("var"), "mylist");
+                EPAssertionUtil.AssertEqualsExactOrder("a,b".SplitCsv(), list.ToArray());
+
+                env.SendEventBean(new SupportBean());
+                EventBean received = env.Listener("s0").AssertOneGetNewAndReset();
+                EPAssertionUtil.AssertEqualsExactOrder("a,b".SplitCsv(), ((IList<string>) received.Get("c0")).ToArray());
+                EPAssertionUtil.AssertEqualsExactOrder("a".SplitCsv(), ((ICollection<string>) received.Get("c1")).ToArray());
+
+                env.UndeployAll();
+            }
         }
 
         internal class EPLVariableDimensionAndPrimitive : RegressionExecution
@@ -227,7 +313,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     StatementType.CREATE_VARIABLE,
                     env.Statement("create-one").GetProperty(StatementProperty.STATEMENTTYPE));
                 Assert.AreEqual(
-                    "var1SAI", env.Statement("create-one").GetProperty(StatementProperty.CREATEOBJECTNAME));
+                    "var1SAI",
+                    env.Statement("create-one").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
                 env.AddListener("create-one");
 
@@ -426,6 +513,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     env,
                     "select * from SupportBean output every somevar events",
                     "Failed to validate the output rate limiting clause: Variable named 'somevar' has not been declared [");
+
+                TryInvalidCompile(
+                    env,
+                    "create variable SupportBean<int> sb",
+                    "Cannot create variable 'sb', type 'SupportBean' cannot be declared as an array type and cannot receive type parameters as it is an event type");
 
                 env.UndeployAll();
             }

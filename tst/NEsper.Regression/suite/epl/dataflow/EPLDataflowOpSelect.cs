@@ -43,47 +43,47 @@ WithOuterJoinMultirow(execs);
         }
 public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowOuterJoinMultirow());
     return execs;
 }public static IList<RegressionExecution> WithSelectPerformance(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowSelectPerformance());
     return execs;
 }public static IList<RegressionExecution> WithFromClauseJoinOrder(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFromClauseJoinOrder());
     return execs;
 }public static IList<RegressionExecution> WithTimeWindowTriggered(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowTimeWindowTriggered());
     return execs;
 }public static IList<RegressionExecution> WithOutputRateLimit(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowOutputRateLimit());
     return execs;
 }public static IList<RegressionExecution> WithIterateFinalMarker(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowIterateFinalMarker());
     return execs;
 }public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowInvalid());
     return execs;
 }public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowDocSamples());
     return execs;
 }public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowAllTypes());
     return execs;
 }

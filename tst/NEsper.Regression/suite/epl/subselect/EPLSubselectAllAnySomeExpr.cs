@@ -33,49 +33,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsInNullOrNoRows(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectEqualsInNullOrNoRows());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsAnyOrSome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectEqualsAnyOrSome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsNotEqualsAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectEqualsNotEqualsAll());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRelationalOpSome(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectRelationalOpSome());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRelationalOpNullOrNoRows(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectRelationalOpNullOrNoRows());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRelationalOpAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectRelationalOpAll());
             return execs;
         }
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 TryInvalidCompile(
                     env,
                     "select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap]");
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords [select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap]");
 
                 // test OM
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 TryInvalidCompile(
                     env,
                     "select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap]");
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords [select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap]");
             }
         }
     }

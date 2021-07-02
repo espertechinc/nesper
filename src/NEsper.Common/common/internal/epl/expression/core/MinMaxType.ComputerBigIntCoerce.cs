@@ -9,6 +9,7 @@
 using System.Numerics;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -25,9 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         public class ComputerBigIntCoerce : Computer
         {
-            private readonly ExprEvaluator[] childNodes;
-            private readonly BigIntegerCoercer[] convertors;
-            private readonly bool isMax;
+            private readonly ExprEvaluator[] _childNodes;
+            private readonly BigIntegerCoercer[] _convertors;
+            private readonly bool _isMax;
 
             /// <summary>
             ///     Ctor.
@@ -40,9 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 BigIntegerCoercer[] convertors,
                 bool isMax)
             {
-                this.childNodes = childNodes;
-                this.convertors = convertors;
-                this.isMax = isMax;
+                this._childNodes = childNodes;
+                this._convertors = convertors;
+                this._isMax = isMax;
             }
 
             public object Execute(
@@ -50,34 +51,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var valueChildOne = _childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var valueChildTwo = _childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (valueChildOne == null || valueChildTwo == null) {
                     return null;
                 }
 
-                var bigIntOne = convertors[0].CoerceBoxedBigInt(valueChildOne);
-                var bigIntTwo = convertors[1].CoerceBoxedBigInt(valueChildTwo);
+                var bigIntOne = _convertors[0].CoerceBoxedBigInt(valueChildOne);
+                var bigIntTwo = _convertors[1].CoerceBoxedBigInt(valueChildTwo);
 
                 BigInteger result;
-                if (isMax && bigIntOne.CompareTo(bigIntTwo) > 0 ||
-                    !isMax && bigIntOne.CompareTo(bigIntTwo) < 0) {
+                if (_isMax && bigIntOne.CompareTo(bigIntTwo) > 0 ||
+                    !_isMax && bigIntOne.CompareTo(bigIntTwo) < 0) {
                     result = bigIntOne;
                 }
                 else {
                     result = bigIntTwo;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++) {
-                    var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                for (var i = 2; i < _childNodes.Length; i++) {
+                    var valueChild = _childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     if (valueChild == null) {
                         return null;
                     }
 
-                    var bigInt = convertors[i].CoerceBoxedBigInt(valueChild);
-                    if (isMax && result.CompareTo(bigInt) < 0 ||
-                        !isMax && result.CompareTo(bigInt) > 0) {
+                    var bigInt = _convertors[i].CoerceBoxedBigInt(valueChild);
+                    if (_isMax && result.CompareTo(bigInt) < 0 ||
+                        !_isMax && result.CompareTo(bigInt) > 0) {
                         result = bigInt;
                     }
                 }
@@ -95,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             {
                 var r0Type = nodes[0].Forge.EvaluationType.GetBoxedType();
                 var r1Type = nodes[1].Forge.EvaluationType.GetBoxedType();
-                if (r0Type == null || r1Type == null) {
+                if (r0Type.IsNullTypeSafe() || r1Type.IsNullTypeSafe()) {
                     return CodegenExpressionBuilder.ConstantNull();
                 }
 

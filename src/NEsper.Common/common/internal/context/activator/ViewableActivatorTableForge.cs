@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var method = parent.MakeChild(typeof(ViewableActivatorTable), GetType(), classScope);
             method.Block
-                .DeclareVar<ViewableActivatorTable>("va", NewInstance(typeof(ViewableActivatorTable)))
+                .DeclareVarNewInstance<ViewableActivatorTable>("va")
                 .SetProperty(
                     Ref("va"),
                     "Table",

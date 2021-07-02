@@ -69,133 +69,133 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public static IList<RegressionExecution> WithSubqNamedWindowIndexShare(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexSubqNamedWindowIndexShare());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableSubdivideMergeDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexTableSubdivideMergeDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableSubdivideDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexTableSubdivideDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableSubdivideDeepAddDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexTableSubdivideDeepAddDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexTableSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRandomMovingPoints(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexRandomMovingPoints());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRandomIntPointsInSquareUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexRandomIntPointsInSquareUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRandomDoublePointsWRandomQuery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexRandomDoublePointsWRandomQuery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEdgeSubdivide(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexEdgeSubdivide());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexExpression());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnTriggerContextParameterized(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexOnTriggerContextParameterized());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableFireAndForget(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexTableFireAndForget());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNWFireAndForgetPerformance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexNWFireAndForgetPerformance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithChoiceBetweenIndexTypes(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexChoiceBetweenIndexTypes());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPerformance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexPerformance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithChoiceOfTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexChoiceOfTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnTriggerTable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexOnTriggerTable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnTriggerNWInsertRemove(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexOnTriggerNWInsertRemove(false));
             execs.Add(new EPLSpatialPREventIndexOnTriggerNWInsertRemove(true));
             return execs;
@@ -203,21 +203,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public static IList<RegressionExecution> WithUnusedNamedWindowFireAndForget(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexUnusedNamedWindowFireAndForget());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnusedOnTrigger(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexUnusedOnTrigger());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnindexed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSpatialPREventIndexUnindexed());
             return execs;
         }

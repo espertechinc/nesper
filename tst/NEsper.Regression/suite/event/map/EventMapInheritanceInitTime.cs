@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
@@ -21,13 +24,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
     {
         public void Run(RegressionEnvironment env)
         {
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("base", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("sub1", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("suba", typeof(string), typeof(char), false, false, true, false, false)
-                },
-                env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent").PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent").PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("base", typeof(string)).WithComponentType(typeof(char)).WithIndexed(),
+                new SupportEventPropDesc("sub1", typeof(string)).WithComponentType(typeof(char)).WithIndexed(),
+                new SupportEventPropDesc("suba", typeof(string)).WithComponentType(typeof(char)).WithIndexed()
+                );
 
             RunAssertionMapInheritance(env, new RegressionPath());
         }

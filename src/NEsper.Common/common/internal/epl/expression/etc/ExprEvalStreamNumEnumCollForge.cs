@@ -20,18 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
     public class ExprEvalStreamNumEnumCollForge : ExprForge
     {
         private readonly ExprEnumerationForge _enumeration;
-        private readonly Type _evaluationType;
 
         public ExprEvalStreamNumEnumCollForge(ExprEnumerationForge enumeration)
         {
             _enumeration = enumeration;
-
-            // NOTE: the forge knows the type that needs to be rendered.  In Java, they use the
-            //   generic "Collection" type which allows them to not specify which type of collection
-            //   they are using.  In C# we have strong type checking which means we need to know.
-            //   Unfortunately, this data is only known in the ExprForge.  Revisit this.
-
-            _evaluationType = typeof(FlexCollection);
         }
 
         public ExprEvaluator ExprEvaluator => throw new UnsupportedOperationException("Not available at compile time");
@@ -47,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType => _evaluationType;
+        public Type EvaluationType => typeof(FlexCollection);
 
         public ExprNodeRenderable ExprForgeRenderable => _enumeration.EnumForgeRenderable;
     }

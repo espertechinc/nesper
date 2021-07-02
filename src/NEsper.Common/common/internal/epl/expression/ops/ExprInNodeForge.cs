@@ -35,16 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type coercionType,
             bool hasCollectionOrArray)
         {
-            this._parent = parent;
-            this._mustCoerce = mustCoerce;
-            this._coercer = coercer;
-            this._coercionType = coercionType;
-            this._hasCollectionOrArray = hasCollectionOrArray;
+            _parent = parent;
+            _mustCoerce = mustCoerce;
+            _coercer = coercer;
+            _coercionType = coercionType;
+            _hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                ExprEvaluator[] evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes);
+                var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes);
                 if (_hasCollectionOrArray) {
                     return new ExprInNodeForgeEvalWColl(this, evaluators);
                 }

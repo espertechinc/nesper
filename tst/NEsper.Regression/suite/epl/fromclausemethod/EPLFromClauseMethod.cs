@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -1143,7 +1144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     env,
                     "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".dummy where 1=2",
                     "Could not find public static method named 'dummy' in class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    nameof(SupportStaticMethodLib) +
                     "' [");
 
                 TryInvalidCompile(
@@ -1205,7 +1206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     typeof(SupportStaticMethodLib).FullName +
                     ".InvalidOverloadForJoin(null)",
                     "Method by name 'InvalidOverloadForJoin' is overloaded in class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    nameof(SupportStaticMethodLib) +
                     "' and overloaded methods do not return the same type");
             }
         }

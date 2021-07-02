@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             ExpiryExpression = parameters[0];
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(ExpressionWindowViewFactory);
         }
@@ -44,9 +45,14 @@ namespace com.espertech.esper.common.@internal.view.expression
         {
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Expr";
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_EXPRESSION;
         }
     }
 } // end of namespace

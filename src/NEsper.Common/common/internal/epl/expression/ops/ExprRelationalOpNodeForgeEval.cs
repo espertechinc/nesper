@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -29,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator left,
             ExprEvaluator right)
         {
-            this._forge = forge;
-            this._left = left;
-            this._right = right;
+            _forge = forge;
+            _left = left;
+            _right = right;
         }
 
         public object Evaluate(
@@ -62,12 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var rhs = forge.ForgeRenderable.ChildNodes[1].Forge;
             
             var lhsType = lhs.EvaluationType;
-            if (lhsType == null) {
+            if (lhsType.IsNullTypeSafe()) {
                 return ConstantNull();
             }
 
             var rhsType = rhs.EvaluationType;
-            if (rhsType == null) {
+            if (rhsType.IsNullTypeSafe()) {
                 return ConstantNull();
             }
 

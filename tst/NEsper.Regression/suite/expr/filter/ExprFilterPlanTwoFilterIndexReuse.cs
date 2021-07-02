@@ -22,7 +22,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     ///     Index reuse with different-key
     ///     - index: {key: [filter, index: {filter}]}
     /// </summary>
-    [TestFixture]
     public class ExprFilterPlanTwoFilterIndexReuse
     {
         public static ICollection<FilterTestMultiStmtExecution> Executions(bool withStats)

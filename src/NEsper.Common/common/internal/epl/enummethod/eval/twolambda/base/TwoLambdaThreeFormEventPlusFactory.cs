@@ -19,14 +19,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 {
 	public class TwoLambdaThreeFormEventPlusFactory : EnumForgeDescFactory
 	{
-		private readonly EventType inputEventType;
-		private readonly string streamNameFirst;
-		private readonly string streamNameSecond;
-		private readonly ObjectArrayEventType typeKey;
-		private readonly ObjectArrayEventType typeValue;
-		private readonly int numParams;
-		private readonly EPType returnType;
-		private readonly TwoLambdaThreeFormEventPlusFactory.ForgeFunction function;
+		private readonly EventType _inputEventType;
+		private readonly string _streamNameFirst;
+		private readonly string _streamNameSecond;
+		private readonly ObjectArrayEventType _typeKey;
+		private readonly ObjectArrayEventType _typeValue;
+		private readonly int _numParams;
+		private readonly ForgeFunction _function;
 
 		public TwoLambdaThreeFormEventPlusFactory(
 			EventType inputEventType,
@@ -35,22 +34,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			ObjectArrayEventType typeKey,
 			ObjectArrayEventType typeValue,
 			int numParams,
-			EPType returnType,
 			ForgeFunction function)
 		{
-			this.inputEventType = inputEventType;
-			this.streamNameFirst = streamNameFirst;
-			this.streamNameSecond = streamNameSecond;
-			this.typeKey = typeKey;
-			this.typeValue = typeValue;
-			this.numParams = numParams;
-			this.returnType = returnType;
-			this.function = function;
+			this._inputEventType = inputEventType;
+			this._streamNameFirst = streamNameFirst;
+			this._streamNameSecond = streamNameSecond;
+			this._typeKey = typeKey;
+			this._typeValue = typeValue;
+			this._numParams = numParams;
+			this._function = function;
 		}
 
 		public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
 		{
-			return parameterNum == 0 ? MakeDesc(typeKey, streamNameFirst) : MakeDesc(typeValue, streamNameSecond);
+			return parameterNum == 0 ? MakeDesc(_typeKey, _streamNameFirst) : MakeDesc(_typeValue, _streamNameSecond);
 		}
 
 		public EnumForgeDesc MakeEnumForgeDesc(
@@ -58,27 +55,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			int streamCountIncoming,
 			StatementCompileTimeServices services)
 		{
-			ExprDotEvalParamLambda key = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-			ExprDotEvalParamLambda value = (ExprDotEvalParamLambda) bodiesAndParameters[1];
-			EnumForge forge = function.Invoke(key, value, streamCountIncoming, typeKey, typeValue, numParams, returnType, services);
-			return new EnumForgeDesc(returnType, forge);
+			var key = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+			var value = (ExprDotEvalParamLambda) bodiesAndParameters[1];
+			return _function.Invoke(key, value, streamCountIncoming, _typeKey, _typeValue, _numParams, services);
 		}
 
 		private EnumForgeLambdaDesc MakeDesc(
 			ObjectArrayEventType type,
 			string streamName)
 		{
-			return new EnumForgeLambdaDesc(new EventType[] {inputEventType, type}, new string[] {streamName, type.Name});
+			return new EnumForgeLambdaDesc(new EventType[] {_inputEventType, type}, new string[] {streamName, type.Name});
 		}
 
-		public delegate EnumForge ForgeFunction(
+		public delegate EnumForgeDesc ForgeFunction(
 			ExprDotEvalParamLambda first,
 			ExprDotEvalParamLambda second,
 			int streamCountIncoming,
 			ObjectArrayEventType firstType,
 			ObjectArrayEventType secondType,
 			int numParameters,
-			EPType typeInfo,
 			StatementCompileTimeServices services);
 	}
 } // end of namespace

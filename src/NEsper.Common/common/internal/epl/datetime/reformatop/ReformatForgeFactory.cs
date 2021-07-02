@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private static readonly ReformatForge FORMAT_STRING = new ReformatStringFormatForge();
 
         public ReformatForge GetForge(
-            EPType inputType,
+            EPChainableType inputType,
             TimeAbacus timeAbacus,
             DatetimeMethodDesc desc,
             string methodNameUsed,

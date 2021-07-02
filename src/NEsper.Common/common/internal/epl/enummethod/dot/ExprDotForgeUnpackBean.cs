@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotForgeUnpackBean : ExprDotForge,
         ExprDotEval
     {
-        private readonly EPType returnType;
+        private readonly EPChainableType returnType;
 
         public ExprDotForgeUnpackBean(EventType lambdaType)
         {
-            returnType = EPTypeHelper.SingleValue(lambdaType.UnderlyingType);
+            returnType = EPChainableTypeHelper.SingleValueNonNull(lambdaType.UnderlyingType);
         }
 
         public object Evaluate(
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            Type resultType = EPTypeHelper.GetCodegenReturnType(returnType);
+            Type resultType = EPChainableTypeHelper.GetCodegenReturnType(returnType);
             CodegenMethod methodNode = parent
                 .MakeChild(resultType, typeof(ExprDotForgeUnpackBean), classScope)
                 .AddParam(innerType, "target");
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo {
+        public EPChainableType TypeInfo {
             get => returnType;
         }
 

@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// </summary>
     public class HistoricalDataPlanNodeForge : QueryPlanNodeForge
     {
-        private readonly ExprForge outerJoinExprEval;
-        private HistoricalIndexLookupStrategyForge historicalIndexLookupStrategy;
-        private PollResultIndexingStrategyForge pollResultIndexingStrategy;
+        private readonly ExprForge _outerJoinExprEval;
+        private HistoricalIndexLookupStrategyForge _historicalIndexLookupStrategy;
+        private PollResultIndexingStrategyForge _pollResultIndexingStrategy;
 
         /// <summary>
         ///     Ctor.
@@ -51,15 +51,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             RootStreamNum = rootStreamNum;
             LookupStreamNum = lookupStreamNum;
             NumStreams = numStreams;
-            this.outerJoinExprEval = outerJoinExprEval;
+            this._outerJoinExprEval = outerJoinExprEval;
         }
 
         public PollResultIndexingStrategyForge PollResultIndexingStrategy {
-            set => pollResultIndexingStrategy = value;
+            set => _pollResultIndexingStrategy = value;
         }
 
         public HistoricalIndexLookupStrategyForge HistoricalIndexLookupStrategy {
-            set => historicalIndexLookupStrategy = value;
+            set => _historicalIndexLookupStrategy = value;
         }
 
         public int StreamNum { get; }
@@ -82,24 +82,24 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             var method = parent.MakeChild(typeof(HistoricalDataPlanNode), GetType(), classScope);
             method.Block
-                .DeclareVar<HistoricalDataPlanNode>("node", NewInstance(typeof(HistoricalDataPlanNode)))
+                .DeclareVarNewInstance<HistoricalDataPlanNode>("node")
                 .SetProperty(Ref("node"), "StreamNum", Constant(StreamNum))
                 .SetProperty(Ref("node"), "NumStreams", Constant(NumStreams))
                 .SetProperty(
                     Ref("node"),
                     "IndexingStrategy",
-                    pollResultIndexingStrategy.Make(method, symbols, classScope))
+                    _pollResultIndexingStrategy.Make(method, symbols, classScope))
                 .SetProperty(
                     Ref("node"),
                     "LookupStrategy",
-                    historicalIndexLookupStrategy.Make(method, symbols, classScope))
+                    _historicalIndexLookupStrategy.Make(method, symbols, classScope))
                 .SetProperty(Ref("node"), "RootStreamNum", Constant(RootStreamNum))
                 .SetProperty(
                     Ref("node"),
                     "OuterJoinExprEval",
-                    outerJoinExprEval == null
+                    _outerJoinExprEval == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(outerJoinExprEval, method, GetType(), classScope))
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(_outerJoinExprEval, method, GetType(), classScope))
                 .MethodReturn(Ref("node"));
             return LocalMethod(method);
         }

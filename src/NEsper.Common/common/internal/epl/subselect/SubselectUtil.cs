@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             string optionalStreamName,
             int subselectNumber)
         {
-            string subexpressionStreamName = optionalStreamName;
+            var subexpressionStreamName = optionalStreamName;
             if (subexpressionStreamName == null) {
                 subexpressionStreamName = "$subselect_" + subselectNumber;
             }

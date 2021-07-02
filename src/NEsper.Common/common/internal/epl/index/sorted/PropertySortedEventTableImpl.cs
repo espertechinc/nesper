@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
@@ -53,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
         protected object Coerce(object value)
         {
-            if (value != null && value.GetType() != factory.valueType) {
+            if (value != null && factory.valueType != null && value.GetType() != factory.valueType) {
                 if (value.IsNumber()) {
                     return TypeHelper.CoerceBoxed(value, factory.valueType);
                 }

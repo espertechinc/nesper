@@ -38,35 +38,35 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithTableKeyUpdateMultiKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableKeyUpdateMultiKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableKeyUpdateSingleKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableKeyUpdateSingleKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFAFUpdate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraFAFUpdate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLateUniqueIndexViolation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraLateUniqueIndexViolation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEarlyUniqueIndexViolation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraEarlyUniqueIndexViolation());
             return execs;
         }

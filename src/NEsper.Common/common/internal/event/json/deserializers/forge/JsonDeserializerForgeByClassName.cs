@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 			CodegenExpression elementExpr)
 		{
 			return ExprDotMethod(
-				NewInstanceInner(_clazzName),
+				NewInstanceNamed(_clazzName),
 				"Deserialize",
 				elementExpr);
 		}

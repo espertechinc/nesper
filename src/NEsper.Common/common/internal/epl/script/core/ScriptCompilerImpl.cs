@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -24,12 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// <summary>
         /// The container.
         /// </summary>
-        private IContainer _container;
+        private readonly IContainer _container;
 
         /// <summary>
         /// The scripting configuration.
         /// </summary>
-        private ConfigurationCommonScripting _configuration;
+        private readonly ConfigurationCommonScripting _configuration;
 
         /// <summary>
         /// Scripting engines indexed by language prefix

@@ -22,13 +22,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	
 	public static class AggregationMethodSortedFootprintEnumExtensions
 	{
-		private static DotMethodFP[] FP_KEYONLY = new DotMethodFP[] {
+		private static readonly DotMethodFP[] FpKeyonly = new DotMethodFP[] {
 			new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam("the key value", EPLExpressionParamType.ANY))
 		};
-		private static DotMethodFP[] FP_NOPARAM = new DotMethodFP[] {
+		private static readonly DotMethodFP[] FpNoparam = new DotMethodFP[] {
 			new DotMethodFP(DotMethodFPInputEnum.ANY)
 		};
-		private static DotMethodFP[] FP_SUBMAP = new DotMethodFP[] {
+		private static readonly DotMethodFP[] FpSubmap = new DotMethodFP[] {
 			new DotMethodFP(
 				DotMethodFPInputEnum.ANY,
 				new DotMethodFPParam("the from-key value", EPLExpressionParamType.ANY),
@@ -41,11 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			switch (value) {
 				case AggregationMethodSortedFootprintEnum.KEYONLY:
-					return FP_KEYONLY;
+					return FpKeyonly;
 				case AggregationMethodSortedFootprintEnum.NOPARAM:
-					return FP_NOPARAM;
+					return FpNoparam;
 				case AggregationMethodSortedFootprintEnum.SUBMAP:
-					return FP_SUBMAP;
+					return FpSubmap;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(value), value, null);
 			}

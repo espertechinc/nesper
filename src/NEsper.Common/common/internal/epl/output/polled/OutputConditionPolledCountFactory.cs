@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -18,60 +19,60 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public sealed class OutputConditionPolledCountFactory : OutputConditionPolledFactory
     {
-        private int eventRate;
-        private Variable variable;
+        private int _eventRate;
+        private Variable _variable;
 
         public int EventRate {
-            get => eventRate;
-            set => eventRate = value;
+            get => _eventRate;
+            set => _eventRate = value;
         }
 
         public Variable Variable {
-            get => variable;
-            set => variable = value;
+            get => _variable;
+            set => _variable = value;
         }
 
         public OutputConditionPolledCountFactory SetEventRate(int eventRate)
         {
-            this.eventRate = eventRate;
+            _eventRate = eventRate;
             return this;
         }
 
         public OutputConditionPolledCountFactory SetVariable(Variable variable)
         {
-            this.variable = variable;
+            _variable = variable;
             return this;
         }
 
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
             OutputConditionPolledCountState state = new OutputConditionPolledCountState(
-                eventRate,
-                eventRate,
-                eventRate,
+                _eventRate,
+                _eventRate,
+                _eventRate,
                 true);
-            return new OutputConditionPolledCount(state, GetVariableReader(agentInstanceContext));
+            return new OutputConditionPolledCount(state, GetVariableReader(exprEvaluatorContext));
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
             return new OutputConditionPolledCount(
                 (OutputConditionPolledCountState) state,
-                GetVariableReader(agentInstanceContext));
+                GetVariableReader(exprEvaluatorContext));
         }
 
-        private VariableReader GetVariableReader(AgentInstanceContext agentInstanceContext)
+        private VariableReader GetVariableReader(ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (variable == null) {
+            if (_variable == null) {
                 return null;
             }
 
-            return agentInstanceContext.VariableManagementService.GetReader(
-                variable.DeploymentId,
-                variable.MetaData.VariableName,
-                agentInstanceContext.AgentInstanceId);
+            return exprEvaluatorContext.VariableManagementService.GetReader(
+                _variable.DeploymentId,
+                _variable.MetaData.VariableName,
+                exprEvaluatorContext.AgentInstanceId);
         }
     }
 } // end of namespace

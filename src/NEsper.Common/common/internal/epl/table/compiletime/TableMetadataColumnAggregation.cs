@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             AggregationPortableValidation aggregationPortableValidation,
             string aggregationExpression,
             bool methodAgg,
-            EPType optionalEnumerationType)
+            EPChainableType optionalEnumerationType)
             : base(columnName, key)
         {
             Column = column;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public bool IsMethodAgg { get; set; }
 
-        public EPType OptionalEnumerationType { get; set; }
+        public EPChainableType OptionalEnumerationType { get; set; }
 
         protected override CodegenExpression Make(
             CodegenMethodScope parent,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 "col",
                 NewInstance(typeof(TableMetadataColumnAggregation)));
 
-            base.MakeSettersInline(Ref("col"), method.Block);
+            MakeSettersInline(Ref("col"), method.Block);
             method.Block
                 .SetProperty(Ref("col"), "Column", Constant(Column))
                 .SetProperty(

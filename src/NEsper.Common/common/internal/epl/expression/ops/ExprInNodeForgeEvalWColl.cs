@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -36,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprInNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     for (var index = 0; index < arrayLength; index++) {
-                        object item = array.GetValue(index);
+                        var item = array.GetValue(index);
                         if (item == null) {
                             hasNullRow = true;
                             continue;
@@ -161,13 +162,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var block = methodNode.Block
                 .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
-            var leftTypeUncoerced = forges[0].EvaluationType.GetBoxedType();
+            var leftType = forges[0].EvaluationType.GetBoxedType();
             var leftTypeCoerced = forge.CoercionType.GetBoxedType();
 
             block.DeclareVar(
-                leftTypeUncoerced,
+                leftType,
                 "left",
-                forges[0].EvaluateCodegen(leftTypeUncoerced, methodNode, exprSymbol, codegenClassScope));
+                forges[0].EvaluateCodegen(leftType, methodNode, exprSymbol, codegenClassScope));
             block.DeclareVar(
                 forge.CoercionType,
                 "leftCoerced",
@@ -175,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     ? Ref("left")
                     : forge.Coercer.CoerceCodegenMayNullBoxed(
                         Ref("left"),
-                        leftTypeUncoerced,
+                        leftType,
                         methodNode,
                         codegenClassScope));
 
@@ -184,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var refforge = forges[i];
                 var refname = "r" + i;
 
-                if (reftype == null) {
+                if (reftype.IsNullTypeSafe()) {
                     block.AssignRef("hasNullRow", ConstantTrue());
                     continue;
                 }
@@ -197,7 +198,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 if (reftype.IsArray) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        if (leftTypeUncoerced.CanBeNull()) {
+                        if (leftType.CanBeNull()) {
                             ifRightNotNull.IfCondition(
                                     And(
                                         Relational(ArrayLength(Ref(refname)), GT, Constant(0)),
@@ -205,15 +206,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 .BlockReturn(ConstantNull());
                         }
 
+                        var componentType = reftype.GetElementType();
                         var forLoop = ifRightNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refname)));
                         {
                             forLoop.DeclareVar(
-                                reftype.GetElementType(),
+                                componentType,
                                 "item",
                                 ArrayAtIndex(Ref(refname), Ref("index")));
                             forLoop.DeclareVar<bool>(
                                 "itemNull",
-                                reftype.GetElementType().CanNotBeNull() ? ConstantFalse() : EqualsNull(Ref("item")));
+                                componentType.CanNotBeNull() ? ConstantFalse() : EqualsNull(Ref("item")));
                             var itemNotNull = forLoop.IfCondition(Ref("itemNull"))
                                 .AssignRef("hasNullRow", ConstantTrue())
                                 .IfElse();
@@ -224,16 +226,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                 Ref("leftCoerced"),
                                                 leftTypeCoerced,
                                                 Ref("item"),
-                                                reftype.GetElementType()))
+                                                componentType))
                                         .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                                 }
                                 else {
-                                    if (TypeHelper.IsNumeric(reftype.GetElementType())) {
+                                    if (TypeHelper.IsNumeric(componentType)) {
                                         itemNotNull.IfCondition(
                                                 CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                                     Ref("leftCoerced"),
                                                     leftTypeCoerced,
-                                                    forge.Coercer.CoerceCodegen(Ref("item"), reftype.GetElementType()),
+                                                    forge.Coercer.CoerceCodegen(Ref("item"), componentType),
                                                     forge.CoercionType))
                                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                                     }
@@ -245,12 +247,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype.IsGenericDictionary()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        if (leftTypeUncoerced.CanBeNull()) {
+                        if (leftType.CanBeNull()) {
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 
                         var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
-                            Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
+                            Ref("left"), leftType, reftype.GetDictionaryKeyType());
                         
                         ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "CheckedContainsKey", leftWithBoxing))
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
@@ -259,12 +261,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype.IsGenericCollection()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        if (leftTypeUncoerced.CanBeNull()) {
+                        if (leftType.CanBeNull()) {
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 
                         var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
-                            Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
+                            Ref("left"), leftType, reftype.GetCollectionItemType());
                         
                         ifRightNotNull
                             .IfCondition(StaticMethod(typeof(Collections), "CheckedContains", Ref(refname), leftWithBoxing))
@@ -274,7 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else {
                     var ifRightNotNull = reftype.CanNotBeNull() ? block : block.IfRefNotNull(refname);
                     {
-                        if (leftTypeUncoerced.CanBeNull()) {
+                        if (leftType.CanBeNull()) {
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 

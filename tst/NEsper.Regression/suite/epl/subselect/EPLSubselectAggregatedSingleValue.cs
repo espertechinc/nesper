@@ -49,147 +49,147 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithGroupedTableWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedTableWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedTableWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedTableWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedCorrelationInsideHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedCorrelationInsideHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAggregatedInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectAggregatedInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedCorrelationInsideHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedCorrelationInsideHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedCorrelatedWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedCorrelatedWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedUncorrelatedWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedUncorrelatedWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedJoin2StreamRangeCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedJoin2StreamRangeCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedJoin3StreamKeyRangeCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedJoin3StreamKeyRangeCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedCorrelatedWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedCorrelatedWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedCorrelatedInWhereClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedCorrelatedInWhereClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedCorrelatedSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedCorrelatedSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedWWhereClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedWWhereClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedFiltered(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedFiltered());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedInSelectClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedInSelectClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedInWhereClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedInWhereClause());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedNoDataWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedNoDataWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedTwoAggStopStart(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedTwoAggStopStart());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedUncorrelatedInSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUngroupedUncorrelatedInSelect());
             return execs;
         }

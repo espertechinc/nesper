@@ -14,30 +14,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
     public class StaticMethodCodegenArgDesc
     {
-        private readonly string blockRefName;
-        private readonly Type declareType;
-        private readonly CodegenExpression argExpression;
+        private readonly string _blockRefName;
+        private readonly Type _declareType;
+        private readonly CodegenExpression _argExpression;
 
         public StaticMethodCodegenArgDesc(
             string blockRefName,
             Type declareType,
             CodegenExpression argExpression)
         {
-            this.blockRefName = blockRefName;
-            this.declareType = declareType;
-            this.argExpression = argExpression;
+            this._blockRefName = blockRefName;
+            this._declareType = declareType;
+            this._argExpression = argExpression;
         }
 
         public string BlockRefName {
-            get => blockRefName;
+            get => _blockRefName;
         }
 
         public Type DeclareType {
-            get => declareType;
+            get => _declareType;
         }
 
         public CodegenExpression ArgExpression {
-            get => argExpression;
+            get => _argExpression;
         }
     }
 } // end of namespace

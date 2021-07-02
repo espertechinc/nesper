@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             EventType eventTypeSingle)
         {
-            this._enumerationForge = enumerationForge;
-            this._eventTypeSingle = eventTypeSingle;
+            _enumerationForge = enumerationForge;
+            _eventTypeSingle = eventTypeSingle;
         }
 
         public ExprEvaluator ExprEvaluator {

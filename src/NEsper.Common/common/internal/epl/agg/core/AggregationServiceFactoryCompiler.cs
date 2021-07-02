@@ -51,8 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 
         private static readonly IList<CodegenNamedParam> MAKESERVICEPARAMS = CodegenNamedParam.From(
-            typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT,
-            typeof(ImportServiceRuntime), NAME_ENGINEIMPORTSVC,
+            typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT,
             typeof(bool), NAME_ISSUBQUERY,
             typeof(int?), NAME_SUBQUERYNUMBER,
             typeof(int[]), NAME_GROUPID);
@@ -255,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 makeMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                makeMethod.Block.MethodReturn(NewInstanceInner(classNameRow, CTX_REF));
+                makeMethod.Block.MethodReturn(NewInstanceNamed(classNameRow, CTX_REF));
             }
 
             var methods = new CodegenClassMethods();
@@ -381,7 +380,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 readMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceInner(classNameRow, CTX_REF));
+                readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceNamed(classNameRow, CTX_REF));
                 readConsumer.Invoke(readMethod, level);
 
                 var methodFactories = levelDesc.StateDesc.MethodFactories;
@@ -1216,7 +1215,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             
             var getRowMethod = CodegenMethod
                 .MakeParentNode(typeof(AggregationRow), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(int), AggregationServiceCodegenNames.NAME_AGENTINSTANCEID)
+                .AddParam(typeof(int), NAME_AGENTINSTANCEID)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);

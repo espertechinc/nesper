@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
 {
     public class IndexHintInstructionIndexName : IndexHintInstruction
     {
-        public IndexHintInstructionIndexName(String indexName)
+        public IndexHintInstructionIndexName(string indexName)
         {
             IndexName = indexName;
         }

@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 {
     using CreateTableColumnSoda = client.soda.CreateTableColumn;
     using CreateTableColumnSpec = spec.CreateTableColumn;
-    using AnnotationAttributeSoda = client.soda.AnnotationAttribute;
+    using AnnotationAttributeSoda = AnnotationAttribute;
 
     /// <summary>
     /// Helper for mapping internal representations of a statement to the SODA object model for statements.
@@ -651,7 +652,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (endpoint is ContextSpecConditionPattern pattern) {
                 var patternExpr = UnmapPatternEvalDeep(pattern.PatternRaw, unmapContext);
-                return new ContextDescriptorConditionPattern(patternExpr, pattern.IsInclusive, pattern.IsImmediate);
+                return new ContextDescriptorConditionPattern(patternExpr, pattern.IsInclusive, pattern.IsImmediate, pattern.AsName);
             }
             else if (endpoint is ContextSpecConditionFilter filter) {
                 var filterExpr = UnmapFilter(filter.FilterSpecRaw, unmapContext);
@@ -781,7 +782,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         }
 
         private static void UnmapCreateClass(
-            String createClassClassText,
+            string createClassClassText,
             EPStatementObjectModel model)
         {
             if (createClassClassText == null) {
@@ -1857,7 +1858,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
             if (condition is ContextDescriptorConditionPattern pattern) {
                 var patternExpr = MapPatternEvalDeep(pattern.Pattern, mapContext);
-                return new ContextSpecConditionPattern(patternExpr, pattern.IsInclusive, pattern.IsNow);
+                return new ContextSpecConditionPattern(patternExpr, pattern.IsInclusive, pattern.IsNow, pattern.AsName);
             }
 
             if (condition is ContextDescriptorConditionTimePeriod timePeriod) {
@@ -1973,7 +1974,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 assignment = MapExpressionDeep(createVariable.OptionalAssignment, mapContext);
             }
 
-            var type = ClassIdentifierWArray.ParseSODA(createVariable.VariableType);
+            var type = ClassDescriptor.ParseTypeText(createVariable.VariableType);
             raw.CreateVariableDesc = new CreateVariableDesc(
                 type,
                 createVariable.VariableName,
@@ -1996,9 +1997,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                     ? MapExpressionDeep(desc.OptionalExpression, mapContext)
                     : null;
                 IList<AnnotationDesc> annotations = MapAnnotations(desc.Annotations);
-                ClassIdentifierWArray ident = desc.OptionalTypeName == null
+                ClassDescriptor ident = desc.OptionalTypeName == null
                     ? null
-                    : ClassIdentifierWArray.ParseSODA(desc.OptionalTypeName);
+                    : ClassDescriptor.ParseTypeText(desc.OptionalTypeName);
                 cols.Add(new CreateTableColumnSpec(desc.ColumnName, optNode, ident, annotations, desc.PrimaryKey));
             }
 
@@ -2414,7 +2415,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
                 if (!CodegenExpressionUtil.CanRenderConstant(op.Constant)) {
                     throw new EPException(
-                        "Invalid constant of type '" + op.Constant.GetType().CleanName() + 
+                        "Invalid constant of type '" + op.Constant.GetType().TypeSafeName() + 
                         "' encountered as the class has no compiler representation, please use substitution parameters instead");
                 }
                 
@@ -2581,7 +2582,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is CastExpression) {
                 var node = (CastExpression) expr;
-                return new ExprCastNode(ClassIdentifierWArray.ParseSODA(node.TypeName));
+                return new ExprCastNode(ClassDescriptor.ParseTypeText(node.TypeName));
             }
             else if (expr is PropertyExistsExpression) {
                 return new ExprPropertyExistsNode();
@@ -2615,7 +2616,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is NewInstanceOperatorExpression) {
                 var noe = (NewInstanceOperatorExpression) expr;
-                return new ExprNewInstanceNode(noe.ClassName, noe.NumArrayDimensions);
+                var type = ClassDescriptor.ParseTypeText(noe.ClassName);
+                return new ExprNewInstanceNode(type, noe.NumArrayDimensions);
             }
             else if (expr is CompareListExpression) {
                 var exp = (CompareListExpression) expr;
@@ -2628,7 +2630,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is SubstitutionParameterExpression) {
                 var node = (SubstitutionParameterExpression) expr;
-                var ident = node.OptionalType == null ? null : ClassIdentifierWArray.ParseSODA(node.OptionalType);
+                var ident = node.OptionalType == null ? null : ClassDescriptor.ParseTypeText(node.OptionalType);
                 var substitutionNode = new ExprSubstitutionNode(node.OptionalName, ident);
                 mapContext.SubstitutionNodes.Add(substitutionNode);
                 return substitutionNode;
@@ -2949,7 +2951,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             else if (expr is ExprConstantNodeImpl) {
                 var constNode = (ExprConstantNodeImpl) expr;
                 string constantType = null;
-                if (constNode.ConstantType != null) {
+                if (!constNode.ConstantType.IsNullTypeSafe()) {
                     constantType = constNode.ConstantType.Name;
                 }
 
@@ -3163,7 +3165,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is ExprNewInstanceNode newInstanceNode) {
                 return new NewInstanceOperatorExpression(
-                    newInstanceNode.ClassIdent,
+                    newInstanceNode.ClassIdentNoDimensions.ToEPL(),
                     newInstanceNode.NumArrayDimensions);
             }
             else if (expr is ExprNewStructNode newStructNode) {
@@ -3792,7 +3794,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         }
 
         private static IList<ClassProvidedExpression> UnmapClassProvidedList(
-            IList<String> classProvidedList,
+            IList<string> classProvidedList,
             StatementSpecUnMapContext unmapContext)
         {
             if (classProvidedList == null || classProvidedList.IsEmpty()) {
@@ -3809,9 +3811,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             StatementSpecUnMapContext unmapContext)
         {
             var returnType = script.OptionalReturnTypeName;
-            if (returnType != null && script.IsOptionalReturnTypeIsArray) {
-                returnType = returnType + "[]";
-            }
 
             IList<string> @params = new List<string>(script.ParameterNames);
             return new ScriptExpression(
@@ -3926,7 +3925,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 return;
             }
 
-            List<String> classes = new List<string>();
+            List<string> classes = new List<string>();
             raw.ClassProvidedList = classes;
             classes.AddRange(classProvidedExpressions.Select(decl => decl.ClassText));
         }
@@ -3935,15 +3934,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ScriptExpression decl,
             StatementSpecMapContext mapContext)
         {
-            var returnType = decl.OptionalReturnType?.Replace("[]", "");
-            var isArray = decl.OptionalReturnType?.Contains("[]") ?? false;
             var @params = decl.ParameterNames == null ? new string[0] : decl.ParameterNames.ToArray();
             return new ExpressionScriptProvided(
                 decl.Name,
                 decl.ExpressionText,
                 @params,
-                returnType,
-                isArray,
+                decl.OptionalReturnType,
                 decl.OptionalEventTypeName,
                 decl.OptionalDialect);
         }

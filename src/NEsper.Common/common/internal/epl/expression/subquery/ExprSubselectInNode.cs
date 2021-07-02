@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class ExprSubselectInNode : ExprSubselectNode
     {
-        private SubselectForgeNR evalStrategy;
+        private SubselectForgeNR _evalStrategy;
 
         public ExprSubselectInNode(
             StatementSpecRaw statementSpec,
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public override void ValidateSubquery(ExprValidationContext validationContext)
         {
-            evalStrategy = SubselectNRForgeFactory.CreateStrategyAnyAllIn(
+            _evalStrategy = SubselectNRForgeFactory.CreateStrategyAnyAllIn(
                 this,
                 IsNotIn,
                 false,
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            return evalStrategy.EvaluateMatchesCodegen(parent, symbols, classScope);
+            return _evalStrategy.EvaluateMatchesCodegen(parent, symbols, classScope);
         }
 
         public override EventType GetEventTypeCollection(

@@ -44,84 +44,84 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
 		public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterSubquery());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterVariable());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithCache(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterCache());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithEVEVE(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterEVEVE());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithEVE(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterEVE());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithVEVE(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterVEVE());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithVEV(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterVEV());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithEV(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterEV());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithVVV(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterVVV());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithVV(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterVV());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithV(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprDefineValueParameterV());
 			return execs;
 		}

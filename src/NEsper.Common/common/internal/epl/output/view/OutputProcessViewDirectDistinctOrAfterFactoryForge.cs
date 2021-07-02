@@ -68,12 +68,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         : _outputStrategyPostProcessForge.Make(method, symbols, classScope),
                     Constant(_isDistinct),
                     MultiKeyCodegen.CodegenGetterEventDistinct(
-                        _isDistinct, ResultEventType, DistinctMultiKey, method, classScope),
+                        _isDistinct,
+                        ResultEventType,
+                        DistinctMultiKey,
+                        method,
+                        classScope),
                     AfterTimePeriod == null
                         ? ConstantNull()
                         : AfterTimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope),
-                    Constant(AfterConditionNumberOfEvents),
-                    EventTypeUtility.ResolveTypeCodegen(ResultEventType, symbols.GetAddInitSvc(method))));
+                    Constant(AfterConditionNumberOfEvents)));
         }
 
         public void UpdateCodegen(

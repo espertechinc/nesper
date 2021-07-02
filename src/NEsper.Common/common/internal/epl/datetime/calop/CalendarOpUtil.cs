@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
@@ -58,11 +59,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public static ReformatFormatForgeDesc ValidateGetFormatterType(
-            EPType inputType,
+            EPChainableType inputType,
             string methodName,
             ExprNode exprNode)
         {
-            if (!(inputType is ClassEPType)) {
+            if (!(inputType is EPChainableTypeClass)) {
                 throw new ExprValidationException(
                     GetMessage(methodName) + " requires a datetime input value but received " + inputType);
             }
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             var formatForge = exprNode.Forge;
             var formatType = formatForge.EvaluationType;
-            if (formatType == null) {
+            if (formatType.IsNullTypeSafe()) {
                 throw new ExprValidationException(GetMessage(methodName) + " invalid null format object");
             }
 
@@ -89,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             // handle legacy date
-            var input = (ClassEPType) inputType;
+            var input = (EPChainableTypeClass) inputType;
             if (input.Clazz.GetBoxedType() == typeof(long?) ||
                 TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTime)) ||
                 TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeOffset)) ||
@@ -148,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 " invalid format, expected string-format or " +
                 expected.Name +
                 " but received " +
-                received.CleanName());
+                received.TypeSafeName());
         }
 
         private static string ValidateConstant(

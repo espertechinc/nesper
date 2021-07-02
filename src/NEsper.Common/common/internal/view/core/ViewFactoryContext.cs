@@ -10,8 +10,6 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public class ViewFactoryContext
     {
-        public bool IsGrouped { get; set; }
-
         public int StreamNum { get; set; }
 
         public int? SubqueryNumber { get; set; }

@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
             getters.Add(MakeGetterOne(0));
             getters.Add(MakeGetterTwo("0ma"));
-            getter = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null, null);
+            getter = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null);
 
             getters = new List<EventPropertyGetter>();
             getters.Add(MakeGetterOne(2));
             getters.Add(MakeGetterTwo("0ma"));
-            getterNull = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null, null);
+            getterNull = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null);
         }
 
         [Test]

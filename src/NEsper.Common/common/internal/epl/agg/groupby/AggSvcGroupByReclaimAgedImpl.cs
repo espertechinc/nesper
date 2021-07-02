@@ -30,13 +30,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
     public class AggSvcGroupByReclaimAgedImpl
     {
         public const long DEFAULT_MAX_AGE_MSEC = 60000L;
-        private static readonly CodegenExpressionRef REF_NEXTSWEEPTIME = Ref("nextSweepTime");
-        private static readonly CodegenExpressionRef REF_REMOVEDCALLBACK = Ref("removedCallback");
-        private static readonly CodegenExpressionRef REF_CURRENTMAXAGE = Ref("currentMaxAge");
-        private static readonly CodegenExpressionRef REF_CURRENTRECLAIMFREQUENCY = Ref("currentReclaimFrequency");
-        private static readonly CodegenExpressionRef REF_EVALUATORFUNCTIONMAXAGE = Ref("evaluationFunctionMaxAge");
+        private static readonly CodegenExpressionRef RefNextsweeptime = Ref("nextSweepTime");
+        private static readonly CodegenExpressionRef RefRemovedcallback = Ref("removedCallback");
+        private static readonly CodegenExpressionRef RefCurrentmaxage = Ref("currentMaxAge");
+        private static readonly CodegenExpressionRef RefCurrentreclaimfrequency = Ref("currentReclaimFrequency");
+        private static readonly CodegenExpressionRef RefEvaluatorfunctionmaxage = Ref("evaluationFunctionMaxAge");
 
-        private static readonly CodegenExpressionRef REF_EVALUATIONFUNCTIONFREQUENCY =
+        private static readonly CodegenExpressionRef RefEvaluationfunctionfrequency =
             Ref("evaluationFunctionFrequency");
 
         public static void RowCtorCodegen(
@@ -68,20 +68,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenExpression maxAgeFactory,
             CodegenExpression frequencyFactory)
         {
-            explicitMembers.Add(new CodegenTypedParam(typeof(long?), REF_NEXTSWEEPTIME.Ref));
-            explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRowRemovedCallback), REF_REMOVEDCALLBACK.Ref));
-            explicitMembers.Add(new CodegenTypedParam(typeof(long), REF_CURRENTMAXAGE.Ref));
-            explicitMembers.Add(new CodegenTypedParam(typeof(long), REF_CURRENTRECLAIMFREQUENCY.Ref));
+            explicitMembers.Add(new CodegenTypedParam(typeof(long?), RefNextsweeptime.Ref));
+            explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRowRemovedCallback), RefRemovedcallback.Ref));
+            explicitMembers.Add(new CodegenTypedParam(typeof(long), RefCurrentmaxage.Ref));
+            explicitMembers.Add(new CodegenTypedParam(typeof(long), RefCurrentreclaimfrequency.Ref));
             explicitMembers.Add(
-                new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), REF_EVALUATORFUNCTIONMAXAGE.Ref));
+                new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), RefEvaluatorfunctionmaxage.Ref));
             explicitMembers.Add(
-                new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), REF_EVALUATIONFUNCTIONFREQUENCY.Ref));
-            ctor.Block.AssignRef(REF_CURRENTMAXAGE, Constant(DEFAULT_MAX_AGE_MSEC))
-                .AssignRef(REF_CURRENTRECLAIMFREQUENCY, Constant(DEFAULT_MAX_AGE_MSEC))
-                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "Make", MEMBER_AGENTINSTANCECONTEXT))
+                new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), RefEvaluationfunctionfrequency.Ref));
+            ctor.Block.AssignRef(RefCurrentmaxage, Constant(DEFAULT_MAX_AGE_MSEC))
+                .AssignRef(RefCurrentreclaimfrequency, Constant(DEFAULT_MAX_AGE_MSEC))
+                .AssignRef(RefEvaluatorfunctionmaxage, ExprDotMethod(maxAgeFactory, "Make", MEMBER_EXPREVALCONTEXT))
                 .AssignRef(
-                    REF_EVALUATIONFUNCTIONFREQUENCY,
-                    ExprDotMethod(frequencyFactory, "Make", MEMBER_AGENTINSTANCECONTEXT));
+                    RefEvaluationfunctionfrequency,
+                    ExprDotMethod(frequencyFactory, "Make", MEMBER_EXPREVALCONTEXT));
         }
 
         public static void ApplyEnterCodegenSweep(
@@ -93,25 +93,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.DeclareVar<long>(
                     "currentTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"))
-                .IfCondition(Or(EqualsNull(REF_NEXTSWEEPTIME), Relational(REF_NEXTSWEEPTIME, LE, Ref("currentTime"))))
+                .IfCondition(Or(EqualsNull(RefNextsweeptime), Relational(RefNextsweeptime, LE, Ref("currentTime"))))
                 .AssignRef(
-                    REF_CURRENTMAXAGE,
+                    RefCurrentmaxage,
                     StaticMethod(
                         typeof(AggSvcGroupByReclaimAgedImpl),
                         "ComputeTimeReclaimAgeFreq",
-                        REF_CURRENTMAXAGE,
-                        REF_EVALUATORFUNCTIONMAXAGE,
+                        RefCurrentmaxage,
+                        RefEvaluatorfunctionmaxage,
                         timeAbacus))
                 .AssignRef(
-                    REF_CURRENTRECLAIMFREQUENCY,
+                    RefCurrentreclaimfrequency,
                     StaticMethod(
                         typeof(AggSvcGroupByReclaimAgedImpl),
                         "ComputeTimeReclaimAgeFreq",
-                        REF_CURRENTRECLAIMFREQUENCY,
-                        REF_EVALUATIONFUNCTIONFREQUENCY,
+                        RefCurrentreclaimfrequency,
+                        RefEvaluationfunctionfrequency,
                         timeAbacus))
-                .AssignRef(REF_NEXTSWEEPTIME, Op(Ref("currentTime"), "+", REF_CURRENTRECLAIMFREQUENCY))
-                .LocalMethod(SweepCodegen(method, classScope, classNames), Ref("currentTime"), REF_CURRENTMAXAGE);
+                .AssignRef(RefNextsweeptime, Op(Ref("currentTime"), "+", RefCurrentreclaimfrequency))
+                .LocalMethod(SweepCodegen(method, classScope, classNames), Ref("currentTime"), RefCurrentmaxage);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             var method = parent
                 .MakeChild(typeof(void), typeof(AggSvcGroupByReclaimAgedImpl), classScope)
                 .AddParam(typeof(long), "currentTime")
-                .AddParam(typeof(long), REF_CURRENTMAXAGE.Ref);
+                .AddParam(typeof(long), RefCurrentmaxage.Ref);
 
             method.Block.DeclareVar<ArrayDeque<object>>("removed", NewInstance(typeof(ArrayDeque<object>)))
                 .ForEach(
@@ -157,13 +157,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                         ExprDotMethod(
                             Cast(classNames.RowTop, ExprDotName(Ref("entry"), "Value")),
                             "GetLastUpdateTime")))
-                .IfCondition(Relational(Ref("age"), GT, REF_CURRENTMAXAGE))
+                .IfCondition(Relational(Ref("age"), GT, RefCurrentmaxage))
                 .ExprDotMethod(Ref("removed"), "Add", ExprDotName(Ref("entry"), "Key"))
                 .BlockEnd()
                 .BlockEnd()
                 .ForEach(typeof(object), "key", Ref("removed"))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Remove", Ref("key"))
-                .ExprDotMethod(REF_REMOVEDCALLBACK, "RemovedAggregationGroupKey", Ref("key"));
+                .ExprDotMethod(RefRemovedcallback, "RemovedAggregationGroupKey", Ref("key"));
 
             return method;
         }

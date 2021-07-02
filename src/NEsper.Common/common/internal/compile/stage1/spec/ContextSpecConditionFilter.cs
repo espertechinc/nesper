@@ -39,9 +39,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorFilter), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorFilter>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorFilter)))
+                .DeclareVarNewInstance<ContextConditionDescriptorFilter>("condition")
                 .SetProperty(
                     Ref("condition"),
                     "FilterSpecActivatable",

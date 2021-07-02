@@ -9,10 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -21,6 +23,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.events;
 using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.regressionlib.support.schedule;
 using com.espertech.esper.runtime.client;
@@ -40,21 +43,68 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			executions.Add(new ExprCoreCastSimple());
 			executions.Add(new ExprCoreCastSimpleMoreTypes());
 			executions.Add(new ExprCoreCastAsParse());
-			executions.Add(new ExprCoreDoubleAndNullOM());
+			executions.Add(new ExprCoreCastDoubleAndNullOM());
 			executions.Add(new ExprCoreCastInterface());
-			executions.Add(new ExprCastStringAndNullCompile());
+			executions.Add(new ExprCoreCastStringAndNullCompile());
 			executions.Add(new ExprCoreCastBoolean());
-			executions.Add(new ExprCastWStaticType());
-			executions.Add(new ExprCastWArray(false));
-			executions.Add(new ExprCastWArray(true));
+			executions.Add(new ExprCoreCastWStaticType());
+			executions.Add(new ExprCoreCastWArray(false));
+			executions.Add(new ExprCoreCastWArray(true));
+			executions.Add(new ExprCoreCastGeneric());
 			return executions;
 		}
 
-		private class ExprCastWArray : RegressionExecution
+		internal class ExprCoreCastGeneric : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var schema = new StringBuilder();
+				schema.Append("@public @buseventtype create schema MyEvent(");
+				
+				var delimiter = "";
+				foreach (SupportGenericColUtil.PairOfNameAndType pair in SupportGenericColUtil.NAMESANDTYPES) {
+					schema
+						.Append(delimiter)
+						.Append(pair.Name)
+						.Append(" System.Object");
+					delimiter = ",";
+				}
+				schema.Append(");\n");
+
+				delimiter = "";
+				
+				var cast = new StringBuilder();
+				cast.Append("@name('s0') select ");
+				foreach (SupportGenericColUtil.PairOfNameAndType pair in SupportGenericColUtil.NAMESANDTYPES) {
+					cast
+						.Append(delimiter)
+						.Append("cast(")
+						.Append(pair.Name)
+						.Append(",")
+						.Append(pair.TypeName)
+						.Append(") as ")
+						.Append(pair.Name);
+					delimiter = ",";
+				}
+				cast.Append(" from MyEvent;\n");
+
+				var epl = schema.ToString() + cast.ToString();
+				env.CompileDeploy(epl).AddListener("s0");
+
+				SupportGenericColUtil.AssertPropertyTypes(env.Statement("s0").EventType);
+
+				env.SendEventMap(SupportGenericColUtil.SampleEvent, "MyEvent");
+				SupportGenericColUtil.Compare(env.Listener("s0").AssertOneGetNewAndReset());
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ExprCoreCastWArray : RegressionExecution
 		{
 			private bool soda;
 
-			public ExprCastWArray(bool soda)
+			public ExprCoreCastWArray(bool soda)
 			{
 				this.soda = soda;
 			}
@@ -72,15 +122,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.CompileDeployWBusPublicType(epl, path);
 
 				var insert = "@Name('s0') insert into MyArrayEvent select " +
-				             "cast(arr_string, string[]) as c0, " +
-				             "cast(arr_primitive, int[primitive]) as c1, " +
-				             "cast(arr_boxed_one, int[]) as c2, " +
-				             "cast(arr_boxed_two, System.Int32[]) as c3, " +
-				             "cast(arr_object, System.Object[]) as c4," +
-				             "cast(arr_2dim_primitive, int[primitive][]) as c5," +
-				             "cast(arr_2dim_object, System.Object[][]) as c6," +
-				             "cast(arr_3dim_primitive, int[primitive][][]) as c7," +
-				             "cast(arr_3dim_object, System.Object[][][]) as c8 " +
+				             "cast(arr_string,string[]) as c0, " +
+				             "cast(arr_primitive,int[primitive]) as c1, " +
+				             "cast(arr_boxed_one,int[]) as c2, " +
+				             "cast(arr_boxed_two,System.Int32[]) as c3, " +
+				             "cast(arr_object,System.Object[]) as c4, " +
+				             "cast(arr_2dim_primitive,int[primitive][]) as c5, " +
+				             "cast(arr_2dim_object,System.Object[][]) as c6, " +
+				             "cast(arr_3dim_primitive,int[primitive][][]) as c7, " +
+				             "cast(arr_3dim_object,System.Object[][][]) as c8 " +
 				             "from MyEvent";
 				env.CompileDeploy(soda, insert, path);
 
@@ -126,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			}
 		}
 
-		private class ExprCastWStaticType : RegressionExecution
+		private class ExprCoreCastWStaticType : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
@@ -270,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			}
 		}
 
-		private class ExprCoreDoubleAndNullOM : RegressionExecution
+		private class ExprCoreCastDoubleAndNullOM : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
@@ -278,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				var model = new EPStatementObjectModel();
 				model.SelectClause = SelectClause.Create().Add(Expressions.Cast("Item?", "double"), "t0");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBeanDynRoot).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBeanDynRoot)));
 				model = SerializableObjectCopier.CopyMayFail(env.Container, model);
 				Assert.AreEqual(epl, model.ToEPL());
 
@@ -398,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			}
 		}
 
-		private class ExprCastStringAndNullCompile : RegressionExecution
+		private class ExprCoreCastStringAndNullCompile : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{

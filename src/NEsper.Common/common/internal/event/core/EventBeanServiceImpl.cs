@@ -18,18 +18,18 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventBeanServiceImpl : EventBeanService
     {
-        private readonly EventTypeRepositoryImpl eventTypeRepositoryPreconfigured;
-        private readonly PathRegistry<string, EventType> pathEventTypes;
-        private readonly EventBeanTypedEventFactory typedEventFactory;
+        private readonly EventTypeRepositoryImpl _eventTypeRepositoryPreconfigured;
+        private readonly PathRegistry<string, EventType> _pathEventTypes;
+        private readonly EventBeanTypedEventFactory _typedEventFactory;
 
         public EventBeanServiceImpl(
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             PathRegistry<string, EventType> pathEventTypes,
             EventBeanTypedEventFactory typedEventFactory)
         {
-            this.eventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
-            this.pathEventTypes = pathEventTypes;
-            this.typedEventFactory = typedEventFactory;
+            this._eventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
+            this._pathEventTypes = pathEventTypes;
+            this._typedEventFactory = typedEventFactory;
         }
 
         public EventBean AdapterForMap(
@@ -37,7 +37,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             string eventTypeName)
         {
             var eventType = FindType(eventTypeName);
-            return typedEventFactory.AdapterForTypedMap(theEvent, eventType);
+            return _typedEventFactory.AdapterForTypedMap(theEvent, eventType);
+        }
+        
+        public EventBean AdapterForBean(
+            object theEvent,
+            string eventTypeName)
+        {
+            var eventType = FindType(eventTypeName);
+            return _typedEventFactory.AdapterForTypedObject(theEvent, eventType);
         }
 
         public EventBean AdapterForAvro(
@@ -45,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             string eventTypeName)
         {
             var eventType = FindType(eventTypeName);
-            return typedEventFactory.AdapterForTypedAvro(avroGenericDataDotRecord, eventType);
+            return _typedEventFactory.AdapterForTypedAvro(avroGenericDataDotRecord, eventType);
         }
 
         public EventBean AdapterForObjectArray(
@@ -53,53 +61,18 @@ namespace com.espertech.esper.common.@internal.@event.core
             string eventTypeName)
         {
             var eventType = FindType(eventTypeName);
-            return typedEventFactory.AdapterForTypedObjectArray(theEvent, eventType);
+            return _typedEventFactory.AdapterForTypedObjectArray(theEvent, eventType);
         }
-
-        public EventBean AdapterForTypedAvro(
-            object avroGenericDataDotRecord,
-            EventType eventType)
-        {
-            return typedEventFactory.AdapterForTypedAvro(avroGenericDataDotRecord, eventType);
-        }
-
-        public EventBean AdapterForTypedMap(
-            IDictionary<string, object> properties,
-            EventType eventType)
-        {
-            return typedEventFactory.AdapterForTypedMap(properties, eventType);
-        }
-
-        public EventBean AdapterForTypedObjectArray(
-            object[] props,
-            EventType eventType)
-        {
-            return typedEventFactory.AdapterForTypedObjectArray(props, eventType);
-        }
-
-        public EventBean AdapterForTypedDOM(
-            XmlNode node,
-            EventType eventType)
-        {
-            return typedEventFactory.AdapterForTypedDOM(node, eventType);
-        }
-
-        public EventBean AdapterForBean(
-            object theEvent,
-            string eventTypeName)
-        {
-            var eventType = FindType(eventTypeName);
-            return typedEventFactory.AdapterForTypedObject(theEvent, eventType);
-        }
-
+        
         public EventBean AdapterForDOM(
             XmlNode node,
             string eventTypeName)
         {
             var eventType = FindType(eventTypeName);
-            return typedEventFactory.AdapterForTypedDOM(node, eventType);
+            return _typedEventFactory.AdapterForTypedDOM(node, eventType);
         }
-
+        
+        
         public EventType GetExistsTypeByName(string eventTypeName)
         {
             return FindTypeMayNull(eventTypeName);
@@ -109,7 +82,50 @@ namespace com.espertech.esper.common.@internal.@event.core
             object bean,
             EventType eventType)
         {
-            return typedEventFactory.AdapterForTypedObject(bean, eventType);
+            return _typedEventFactory.AdapterForTypedObject(bean, eventType);
+        }
+        
+        public EventBean AdapterForTypedAvro(
+            object avroGenericDataDotRecord,
+            EventType eventType)
+        {
+            return _typedEventFactory.AdapterForTypedAvro(avroGenericDataDotRecord, eventType);
+        }
+
+        public MappedEventBean AdapterForTypedMap(
+            IDictionary<string, object> properties,
+            EventType eventType)
+        {
+            return _typedEventFactory.AdapterForTypedMap(properties, eventType);
+        }
+
+        public ObjectArrayBackedEventBean AdapterForTypedObjectArray(
+            object[] props,
+            EventType eventType)
+        {
+            return _typedEventFactory.AdapterForTypedObjectArray(props, eventType);
+        }
+
+        public EventBean AdapterForTypedDOM(
+            XmlNode node,
+            EventType eventType)
+        {
+            return _typedEventFactory.AdapterForTypedDOM(node, eventType);
+        }
+
+        public EventBean AdapterForTypedWrapper(
+            EventBean decoratedUnderlying,
+            IDictionary<string, object> map,
+            EventType wrapperEventType)
+        {
+            return _typedEventFactory.AdapterForTypedWrapper(decoratedUnderlying, map, wrapperEventType);
+        }
+
+        public EventBean AdapterForTypedJson(
+            object underlying,
+            EventType eventType)
+        {
+            return _typedEventFactory.AdapterForTypedJson(underlying, eventType);
         }
 
         private EventType FindType(string eventTypeName)
@@ -124,13 +140,13 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         private EventType FindTypeMayNull(string eventTypeName)
         {
-            var eventType = eventTypeRepositoryPreconfigured.GetTypeByName(eventTypeName);
+            var eventType = _eventTypeRepositoryPreconfigured.GetTypeByName(eventTypeName);
             if (eventType != null) {
                 return eventType;
             }
 
             try {
-                eventType = pathEventTypes.GetAnyModuleExpectSingle(eventTypeName, null).First;
+                eventType = _pathEventTypes.GetAnyModuleExpectSingle(eventTypeName, null).First;
             }
             catch (PathException ex) {
                 throw new EPException("Failed to obtain event type '" + eventTypeName + "': " + ex.Message, ex);

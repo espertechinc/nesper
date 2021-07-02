@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             int streamNumber,
             EventType[] typesPerStream)
         {
-            this.eventType = targetType;
+            eventType = targetType;
             this.streamNumber = streamNumber;
 
             EventType sourceType = typesPerStream[streamNumber];
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression bean = ExprDotName(ArrayAtIndex(refEPS, Constant(streamNumber)), "Underlying");

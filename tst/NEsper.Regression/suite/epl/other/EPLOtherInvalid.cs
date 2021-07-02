@@ -36,28 +36,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithDifferentJoins(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherDifferentJoins());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLongTypeConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherLongTypeConstant());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidSyntax(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidSyntax());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidFuncParams(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidFuncParams());
             return execs;
         }
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidCompile(env, "select *", "The from-clause is required but has not been specified");
+                //TryInvalidCompile(env, "select *", "The from-clause is required but has not been specified");
 
                 var streamDef = "select * from " +
                                 "SupportBean#length(3) as sa," +

@@ -65,10 +65,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             return result;
         }
 
-        public static CodegenExpression MakeArray(ICollection<NameParamNumAndModule> names)
+        public static CodegenExpression MakeArrayNullIfEmpty(ICollection<NameParamNumAndModule> names)
         {
             if (names.IsEmpty()) {
-                return EnumValue(typeof(NameParamNumAndModule), "EMPTY_ARRAY");
+                return ConstantNull();
             }
 
             CodegenExpression[] expressions = new CodegenExpression[names.Count];

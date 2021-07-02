@@ -14,6 +14,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.json.util;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
@@ -166,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
 					new JsonDeserializerForgeByClassName(existingDesc.DeserializerClassName));
 			}
 
-			//throw new ArgumentException($"unable to determine forge pair for type {type.CleanName()}");
+			//throw new ArgumentException($"unable to determine forge pair for type {type.TypeSafeName()}");
 
 			return null;
 		}
@@ -229,12 +230,12 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
 
 			if (clazz.FindGenericInterface(typeof(JsonFieldAdapterString<>)) == null) {
 				throw new ExprValidationException(
-					$"Json schema field adapter class does not implement interface '{typeof(JsonFieldAdapterString<>).CleanName()}");
+					$"Json schema field adapter class does not implement interface '{typeof(JsonFieldAdapterString<>).TypeSafeName()}");
 			}
 
 			if (!clazz.HasDefaultConstructor()) {
 				throw new ExprValidationException(
-					$"Json schema field adapter class '{clazz.CleanName()}' does not have a default constructor");
+					$"Json schema field adapter class '{clazz.TypeSafeName()}' does not have a default constructor");
 			}
 
 			MethodInfo writeMethod;
@@ -248,8 +249,8 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
 
 			if (!TypeHelper.IsSubclassOrImplementsInterface(type, writeMethod.ReturnType)) {
 				throw new ExprValidationException(
-					$"Json schema field adapter class '{clazz.CleanName()}' mismatches the return type of the parse method, " +
-					$"expected '{type.CleanName()}' but found '{writeMethod.ReturnType.CleanName()}'");
+					$"Json schema field adapter class '{clazz.TypeSafeName()}' mismatches the return type of the parse method, " +
+					$"expected '{type.TypeSafeName()}' but found '{writeMethod.ReturnType.TypeSafeName()}'");
 			}
 
 			return new JsonSerializationForgePair(
@@ -275,7 +276,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
 			string fieldName)
 		{
 			return new UnsupportedOperationException(
-				$"Unsupported type '{type.CleanName()}' for property '{fieldName}' (use JsonSchemaField to declare additional information)");
+				$"Unsupported type '{type.TypeSafeName()}' for property '{fieldName}' (use JsonSchemaField to declare additional information)");
 		}
 	}
 	

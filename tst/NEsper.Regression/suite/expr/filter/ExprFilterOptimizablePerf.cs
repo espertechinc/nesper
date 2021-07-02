@@ -35,35 +35,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithTrueDeclaredExpr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptimizablePerfTrueDeclaredExpr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsDeclaredExpr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptimizablePerfEqualsDeclaredExpr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTrueWithFunc(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptimizablePerfTrueWithFunc());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsWithFunc(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptimizablePerfEqualsWithFunc());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptimizablePerfOr());
             return execs;
         }

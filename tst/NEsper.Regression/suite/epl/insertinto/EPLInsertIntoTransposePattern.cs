@@ -33,21 +33,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithransposeMapEventPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeMapEventPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithransposePONOEventPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposePONOEventPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithhisAsColumn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoThisAsColumn());
             return execs;
         }

@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprSubstitutionNode(
             string optionalName,
-            ClassIdentifierWArray optionalType)
+            ClassDescriptor optionalType)
         {
             OptionalName = optionalName;
             OptionalType = optionalType;
@@ -53,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public ClassIdentifierWArray OptionalType { get; }
+        public ClassDescriptor OptionalType { get; }
 
         public Type ResolvedType { get; private set; } = typeof(object);
 
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable {
-                    ProcToEPL = (writer, _, flags) => writer.Write("?")
+                    procToEPL = (writer, _, flags) => writer.Write("?")
                 };
             }
         }
@@ -89,9 +90,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             if (OptionalType != null) {
                 Type clazz = null;
+                
+                var optionalTypeClassIdentifierClr = OptionalType.ClassIdentifierClr;
                 try {
                     clazz = TypeHelper.GetClassForName(
-                        OptionalType.ClassIdentifier,
+                        optionalTypeClassIdentifierClr,
                         validationContext.ImportService.ClassForNameProvider);
                 }
                 catch (TypeLoadException) {
@@ -99,17 +102,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 if (clazz == null) {
                     clazz = TypeHelper.GetTypeForSimpleName(
-                        OptionalType.ClassIdentifier,
+                        optionalTypeClassIdentifierClr,
                         validationContext.ImportService.ClassForNameProvider);
                 }
 
-                if (clazz != null) {
-                    ResolvedType = clazz;
-                }
-                else {
+                if (clazz == null) {
                     try {
-                        ResolvedType = validationContext.ImportService.ResolveClass(
-                            OptionalType.ClassIdentifier,
+                        clazz = validationContext.ImportService.ResolveClass(
+                            optionalTypeClassIdentifierClr,
                             false,
                             validationContext.ClassProvidedExtension);
                     }
@@ -120,20 +120,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                 }
 
-                if (ResolvedType != null && OptionalType.IsArrayOfPrimitive && ResolvedType.CanBeNull()) {
-                    throw new ExprValidationException(
-                        "Invalid use of the '" +
-                        ClassIdentifierWArray.PRIMITIVE_KEYWORD +
-                        "' keyword for non-primitive type '" +
-                        ResolvedType.Name +
-                        "'");
-                }
-
                 if (!OptionalType.IsArrayOfPrimitive) {
-                    ResolvedType = ResolvedType.GetBoxedType();
+                    clazz = clazz.GetBoxedType();
+                } else {
+                    if (clazz.CanBeNull()) {
+                        throw new ExprValidationException(
+                            "Invalid use of the '" + ClassDescriptor.PRIMITIVE_KEYWORD + "' keyword for non-primitive type '" + clazz.TypeSafeName() + "'");
+                    }
                 }
 
-                ResolvedType = TypeHelper.GetArrayType(ResolvedType, OptionalType.ArrayDimensions);
+                ResolvedType = ImportTypeUtil.ParameterizeType(
+                    true,
+                    clazz,
+                    OptionalType,
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
             }
 
             return null;

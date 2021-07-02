@@ -42,9 +42,9 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
             int msecTimeout,
             EventBean payload)
         {
-            this._earlier = earlier;
-            this._msecTimeout = msecTimeout;
-            this._payload = payload;
+            _earlier = earlier;
+            _msecTimeout = msecTimeout;
+            _payload = payload;
         }
 
         /// <summary>

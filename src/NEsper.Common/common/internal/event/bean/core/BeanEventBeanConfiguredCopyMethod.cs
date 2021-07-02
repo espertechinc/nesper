@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBeanTypedEventFactory eventAdapterService,
             MethodInfo copyMethod)
         {
-            this._beanEventType = beanEventType;
-            this._eventAdapterService = eventAdapterService;
-            this._copyMethod = copyMethod;
+            _beanEventType = beanEventType;
+            _eventAdapterService = eventAdapterService;
+            _copyMethod = copyMethod;
         }
 
         public EventBean Copy(EventBean theEvent)

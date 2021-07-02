@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 			// there is also no need to register a serde when using a public object
 			var statementType = raw.StatementType;
 			if ((typeClass == EventTypeTypeClass.NAMED_WINDOW && statementType != StatementType.CREATE_WINDOW) ||
-			    (typeClass == EventTypeTypeClass.TABLE_PUBLIC && statementType != StatementType.CREATE_TABLE)) {
+			    (typeClass.IsTable())) {
 				return EmptyList<StmtClassForgeableFactory>.Instance;
 			}
 

@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
@@ -17,11 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeRowHavingSelected : SubselectForgeRow
     {
-        private readonly ExprSubselectRowNode subselect;
+        private readonly ExprSubselectRowNode _subselect;
 
         public SubselectForgeRowHavingSelected(ExprSubselectRowNode subselect)
         {
-            this.subselect = subselect;
+            this._subselect = subselect;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -29,8 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
-            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
+            if (_subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var method = parent.MakeChild(_subselect.EvaluationType, GetType(), classScope);
+            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(_subselect.HavingExpr, method, classScope);
             CodegenExpression having = LocalMethod(
                 havingMethod,
                 REF_EVENTS_SHIFTED,
@@ -44,13 +50,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 having,
                 ConstantNull());
 
-            if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
+            if (_subselect.SelectClause.Length == 1) {
+                var eval = CodegenLegoMethodExpression.CodegenExpression(_subselect.SelectClause[0].Forge, method, classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }
             else {
-                method.Block.MethodReturn(LocalMethod(subselect.EvaluateRowCodegen(method, classScope)));
+                method.Block.MethodReturn(LocalMethod(_subselect.EvaluateRowCodegen(method, classScope)));
             }
 
             return LocalMethod(method);

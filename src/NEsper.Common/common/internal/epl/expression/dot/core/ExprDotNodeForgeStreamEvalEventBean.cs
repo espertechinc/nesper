@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             if (codegenClassScope.IsInstrumented) {
                 typeInformation =
                     codegenClassScope.AddOrGetDefaultFieldSharable(
-                        new EPTypeCodegenSharable(EPTypeHelper.SingleEvent(forge.EventType), codegenClassScope));
+                        new EPChainableTypeCodegenSharable(EPChainableTypeHelper.SingleEvent(forge.EventType), codegenClassScope));
             }
 
             methodNode.Block

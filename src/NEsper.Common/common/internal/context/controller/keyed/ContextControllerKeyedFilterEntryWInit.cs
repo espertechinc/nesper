@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedFilterEntryWInit : ContextControllerKeyedFilterEntry
     {
-        private readonly ContextConditionDescriptorFilter initCond;
+        private readonly ContextConditionDescriptorFilter _initCond;
 
         public ContextControllerKeyedFilterEntryWInit(
             ContextControllerKeyedImpl callback,
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             ContextConditionDescriptorFilter initCond)
             : base(callback, controllerPath, item, parentPartitionKeys)
         {
-            this.initCond = initCond;
+            this._initCond = initCond;
             Start(initCond.FilterSpecActivatable);
         }
 
@@ -35,12 +35,12 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             EventBean theEvent,
             ICollection<FilterHandleCallback> allStmtMatches)
         {
-            callback.MatchFound(item, theEvent, controllerPath, initCond.OptionalFilterAsName);
+            callback.MatchFound(item, theEvent, controllerPath, _initCond.OptionalFilterAsName);
         }
 
         public override void Destroy()
         {
-            Stop(initCond.FilterSpecActivatable);
+            Stop(_initCond.FilterSpecActivatable);
         }
     }
 } // end of namespace

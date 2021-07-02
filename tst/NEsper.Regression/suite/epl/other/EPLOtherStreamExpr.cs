@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -45,63 +46,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithInvalidSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternStreamSelectNoWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherPatternStreamSelectNoWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinStreamSelectNoWildcard(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoinStreamSelectNoWildcard());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStreamInstanceMethodNoAlias(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherStreamInstanceMethodNoAlias());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStreamInstanceMethodAliased(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherStreamInstanceMethodAliased());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInstanceMethodStatic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInstanceMethodStatic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInstanceMethodOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInstanceMethodOuterJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStreamFunction(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherStreamFunction());
             return execs;
         }
 
         public static IList<RegressionExecution> WithChainedParameterized(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherChainedParameterized());
             return execs;
         }

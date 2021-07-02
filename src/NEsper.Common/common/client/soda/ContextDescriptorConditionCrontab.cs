@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.client.soda
             if (now) {
                 writer.Write("@now and ");
             }
-            String delimiter = "";
+            string delimiter = "";
             foreach (IList<Expression> crontab in crontabs) {
                 writer.Write(delimiter);
                 Write(writer, crontab);

@@ -50,133 +50,133 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithInvalidSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectInvalidSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinUnfiltered(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectJoinUnfiltered());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereClauseReturningTrue(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWhereClauseReturningTrue());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoSubqSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectTwoSubqSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredStreamPriorCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredStreamPriorCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredStreamPriorOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredStreamPriorOM());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCustomFunction(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectCustomFunction());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWhereClauseWithExpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectWhereClauseWithExpression());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFilterInside(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectFilterInside());
             return execs;
         }
 
         public static IList<RegressionExecution> WithComputedResult(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectComputedResult());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSelfSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectSelfSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartStopStatement(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectStartStopStatement());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredLastEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredLastEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredNoAs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredNoAs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredWithAsWithinSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredWithAsWithinSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredAsAfterSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredAsAfterSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredLengthWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredLengthWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredUnlimitedStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredUnlimitedStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnfilteredExpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUnfilteredExpression());
             return execs;
         }

@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.client.soda
     public class EPStatementObjectModel
     {
         /// <summary>
-        ///     Return the insert-into-clause, or null to indicate that the clause is absent.
+        ///     Gets or sets the insert-into-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the insert-into-clause, or null if none present</value>
         public InsertIntoClause InsertInto { get; set; }
 
         /// <summary>
-        ///     Return the select-clause.
+        ///     Gets or sets the select-clause.
         /// </summary>
         /// <value>specification of the select-clause</value>
         public SelectClause SelectClause { get; set; }
@@ -64,31 +64,31 @@ namespace com.espertech.esper.common.client.soda
         public FromClause FromClause { get; set; }
 
         /// <summary>
-        ///     Return the where-clause, or null to indicate that the clause is absent.
+        ///     Gets or sets the where-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the where-clause, or null if none present</value>
         public Expression WhereClause { get; set; }
 
         /// <summary>
-        ///     Return the group-by-clause, or null to indicate that the clause is absent.
+        ///     Gets or sets the group-by-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the group-by-clause, or null if none present</value>
         public GroupByClause GroupByClause { get; set; }
 
         /// <summary>
-        ///     Return the having-clause, or null to indicate that the clause is absent.
+        ///     Gets or sets the having-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the having-clause, or null if none present</value>
         public Expression HavingClause { get; set; }
 
         /// <summary>
-        ///     Return the order-by-clause, or null to indicate that the clause is absent.
+        ///     Gets or sets the order-by-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the order-by-clause, or null if none present</value>
         public OrderByClause OrderByClause { get; set; }
 
         /// <summary>
-        ///     Return the output-rate-limiting-clause, or null to indicate that the clause is absent.
+        ///     Gets or sets the output-rate-limiting-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the output-rate-limiting-clause, or null if none present</value>
         public OutputLimitClause OutputLimitClause { get; set; }
@@ -162,59 +162,65 @@ namespace com.espertech.esper.common.client.soda
         public ForClause ForClause { get; set; }
 
         /// <summary>
-        ///     Returns the expression declarations, if any.
+        ///     Gets or sets the expression declarations, if any.
         /// </summary>
         /// <value>expression declarations</value>
         public IList<ExpressionDeclaration> ExpressionDeclarations { get; set; }
 
         /// <summary>
-        ///     Returns the context name if context dimensions apply to statement.
+        ///     Gets or sets the context name if context dimensions apply to statement.
         /// </summary>
         /// <value>context name</value>
         public string ContextName { get; set; }
 
         /// <summary>
-        ///     Returns the scripts defined.
+        ///     Gets or sets the scripts defined.
         /// </summary>
         /// <value>scripts</value>
         public IList<ScriptExpression> ScriptExpressions { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the inlined-classes provided as part of the EPL statement
+        /// </summary>
         public IList<ClassProvidedExpression> ClassProvidedExpressions { get; set; }
 
         /// <summary>
-        ///     Returns the "create dataflow" part, if present.
+        ///     Gets or sets the "create dataflow" part, if present.
         /// </summary>
         /// <value>create dataflow clause</value>
         public CreateDataFlowClause CreateDataFlow { get; set; }
 
         /// <summary>
-        ///     Returns the internal expression id assigned for tools to identify the expression.
+        ///     Gets or sets the internal expression id assigned for tools to identify the expression.
         /// </summary>
         /// <value>object name</value>
         public string TreeObjectName { get; set; }
 
         /// <summary>
-        ///     Returns the create-expression clause, if any
+        ///     Gets or sets the create-expression clause, if any
         /// </summary>
         /// <value>clause</value>
         public CreateExpressionClause CreateExpression { get; set; }
-        
+
+        /// <summary>
+        ///     Gets or sets the create-class clause or null if not present.
+        /// </summary>
         public CreateClassClause CreateClass { get; set; }
 
         /// <summary>
-        ///     Returns fire-and-forget (on-demand) query information for FAF select, insert, update and delete.
+        ///     Gets or sets the fire-and-forget (on-demand) query information for FAF select, insert, update and delete.
         /// </summary>
         /// <value>fire and forget query information</value>
         public FireAndForgetClause FireAndForgetClause { get; set; }
 
         /// <summary>
-        ///     Returns the into-table clause, or null if none found.
+        ///     Gets or sets the into-table clause, or null if none found.
         /// </summary>
         /// <value>into-table clause</value>
         public IntoTableClause IntoTableClause { get; set; }
 
         /// <summary>
-        ///     Returns the create-table clause if present or null if not present
+        ///     Gets or sets the create-table clause if present or null if not present
         /// </summary>
         /// <value>create-table clause</value>
         public CreateTableClause CreateTable { get; set; }
@@ -378,7 +384,7 @@ namespace com.espertech.esper.common.client.soda
                 CreateExpression.ToEPL(writer);
                 return;
             }
-                
+
             if (CreateClass != null) {
                 formatter.BeginCreateExpression(writer);
                 CreateClass.ToEPL(writer);
@@ -453,7 +459,7 @@ namespace com.espertech.esper.common.client.soda
                 }
                 else if (OnExpr is OnSelectClause onSelectClause) {
                     InsertInto?.ToEPL(writer, formatter, true);
-                    SelectClause.ToEPL(writer, formatter, true, onSelectClause.IsDeleteAndSelect);
+                    SelectClause.ToEPL(writer, formatter, InsertInto == null, onSelectClause.IsDeleteAndSelect);
                     writer.Write(" from ");
                     onSelectClause.ToEPL(writer);
                 }
@@ -467,7 +473,7 @@ namespace com.espertech.esper.common.client.soda
                 else {
                     var split = (OnInsertSplitStreamClause) OnExpr;
                     InsertInto.ToEPL(writer, formatter, true);
-                    SelectClause.ToEPL(writer, formatter, true, false);
+                    SelectClause.ToEPL(writer, formatter, false, false);
                     if (WhereClause != null) {
                         writer.Write(" where ");
                         WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
@@ -478,7 +484,7 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
             else {
-                IntoTableClause?.ToEPL(writer);
+                IntoTableClause?.ToEPL(writer, formatter);
 
                 if (SelectClause == null) {
                     throw new IllegalStateException("Select-clause has not been defined");
@@ -508,7 +514,7 @@ namespace com.espertech.esper.common.client.soda
                         writer.Write(")");
                     }
                     else {
-                        SelectClause.ToEPL(writer, formatter, true, false);
+                        SelectClause.ToEPL(writer, formatter, false, false);
                     }
                 }
                 else if (FireAndForgetClause is FireAndForgetDelete) {
@@ -516,8 +522,8 @@ namespace com.espertech.esper.common.client.soda
                     FromClause.ToEPLOptions(writer, formatter, true);
                 }
                 else {
-                    InsertInto?.ToEPL(writer, formatter, true);
-                    SelectClause.ToEPL(writer, formatter, true, false);
+                    InsertInto?.ToEPL(writer, formatter, IntoTableClause == null);
+                    SelectClause.ToEPL(writer, formatter, IntoTableClause == null && InsertInto == null, false);
                     FromClause.ToEPLOptions(writer, formatter, true);
                 }
             }

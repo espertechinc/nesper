@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -30,8 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEqualsAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -193,20 +194,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             for (var i = 1; i < forges.Length; i++) {
-                var refforge = forges[i];
-                var refname = "r" + i;
-                var reftype = forges[i].EvaluationType;
+                var refForge = forges[i];
+                var refName = "r" + i;
+                var refType = forges[i].EvaluationType.TypeNormalized();
  
-                if (reftype != null && reftype.IsArray) {
-                    var leftInitializer = refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope);
+                if (refType != null && refType.IsArray) {
+                    var leftInitializer = refForge.EvaluateCodegen(refType, methodNode, exprSymbol, codegenClassScope);
                     var arrayBlock = block.IfRefNullReturnNull("left")
-                        .DeclareVar(reftype, refname, leftInitializer)
-                        .IfCondition(EqualsNull(Ref(refname)))
+                        .DeclareVar(refType, refName, leftInitializer)
+                        .IfCondition(EqualsNull(Ref(refName)))
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse();
 
-                    var forLoop = arrayBlock.ForLoopIntSimple("i", ArrayLength(Ref(refname)));
-                    var arrayAtIndex = ArrayAtIndex(Ref(refname), Ref("i"));
+                    var forLoop = arrayBlock.ForLoopIntSimple("i", ArrayLength(Ref(refName)));
+                    var arrayAtIndex = ArrayAtIndex(Ref(refName), Ref("i"));
                     
                     forLoop.DeclareVar(
                         forge.CoercionTypeBoxed,
@@ -215,7 +216,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             ? arrayAtIndex
                             : forge.Coercer.CoerceCodegenMayNullBoxed(
                                 arrayAtIndex,
-                                reftype.GetElementType(),
+                                refType.GetElementType(),
                                 methodNode,
                                 codegenClassScope));
 
@@ -230,68 +231,70 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             NotOptional(isNot, StaticMethod<object>("Equals", Ref("leftCoerced"), Ref("item"))))
                         .BlockReturn(ConstantTrue());
                 }
-                else if (reftype != null && reftype.IsGenericCollection()) {
-                    var leftInitializer = refforge.EvaluateCodegen(
-                        reftype,
+                else if (refType != null && refType.IsGenericCollection()) {
+                    var leftInitializer = refForge.EvaluateCodegen(
+                        refType,
                         methodNode,
                         exprSymbol,
                         codegenClassScope);
                     
                     var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
-                        Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
+                        Ref("left"), leftTypeUncoerced, refType.GetCollectionItemType());
                     
                     block.IfRefNullReturnNull("left")
-                        .DeclareVar(reftype, refname, leftInitializer)
-                        .IfCondition(EqualsNull(Ref(refname)))
+                        .DeclareVar(refType, refName, leftInitializer)
+                        .IfCondition(EqualsNull(Ref(refName)))
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "CheckedContains", leftWithBoxing)))
+                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refName), "CheckedContains", leftWithBoxing)))
                         .BlockReturn(ConstantTrue());
                 }
-                else if (reftype != null && reftype.IsGenericDictionary()) {
+                else if (refType != null && refType.IsGenericDictionary()) {
                     var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
-                        Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
+                        Ref("left"), leftTypeUncoerced, refType.GetDictionaryKeyType());
                     
                     block.IfRefNullReturnNull("left")
                         .DeclareVar(
-                            reftype,
-                            refname,
-                            refforge.EvaluateCodegen(
+                            refType,
+                            refName,
+                            refForge.EvaluateCodegen(
                                 typeof(IDictionary<object, object>),
                                 methodNode,
                                 exprSymbol,
                                 codegenClassScope))
-                        .IfCondition(EqualsNull(Ref(refname)))
+                        .IfCondition(EqualsNull(Ref(refName)))
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "CheckedContainsKey", leftWithBoxing)))
+                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refName), "CheckedContainsKey", leftWithBoxing)))
                         .BlockReturn(ConstantTrue());
                 }
                 else {
-                    var leftCoercedInitializer = refforge.EvaluateCodegen(
+                    var rhs = ConstantNull();
+                    if (refType != null) {
+                        rhs = forge.Coercer == null
+                            ? refForge.EvaluateCodegen(forge.CoercionTypeBoxed, methodNode, exprSymbol, codegenClassScope)
+                            : forge.Coercer.CoerceCodegenMayNullBoxed(
+                                refForge.EvaluateCodegen(forge.CoercionTypeBoxed, methodNode, exprSymbol, codegenClassScope),
+                                refType,
+                                methodNode,
+                                codegenClassScope);
+                    }
+
+                    var leftCoercedInitializer = refForge.EvaluateCodegen(
                         forge.CoercionTypeBoxed,
                         methodNode,
                         exprSymbol,
                         codegenClassScope);
                     
                     block.IfRefNullReturnNull("leftCoerced");
-                    block.DeclareVar(
-                        forge.CoercionTypeBoxed,
-                        refname,
-                        forge.Coercer == null
-                            ? leftCoercedInitializer
-                            : forge.Coercer.CoerceCodegenMayNullBoxed(
-                                leftCoercedInitializer,
-                                reftype,
-                                methodNode,
-                                codegenClassScope));
-                    
+                    block.DeclareVar(forge.CoercionTypeBoxed, refName, rhs);
+
                     block
-                        .IfRefNotNull(refname)
+                        .IfRefNotNull(refName)
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(isNot, StaticMethod<object>("Equals", Ref("leftCoerced"), Ref(refname))))
+                        .IfCondition(NotOptional(isNot, StaticMethod<object>("Equals", Ref("leftCoerced"), Ref(refName))))
                         .BlockReturn(ConstantTrue())
                         .IfElse().AssignRef("hasNullRow", ConstantTrue());
                 }

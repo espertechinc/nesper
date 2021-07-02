@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 evalNodeAnalysisResult.AddNode(currentNode);
             }
 
-            foreach (EvalForgeNode node in currentNode.ChildNodes) {
+            foreach (var node in currentNode.ChildNodes) {
                 RecursiveAnalyzeChildNodes(evalNodeAnalysisResult, node);
             }
         }

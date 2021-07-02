@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return writer.ToString();
         }
 
-        public static String ToExpressionStringMinPrecedence(ExprNode expression, ExprNodeRenderableFlags flags) {
+        public static string ToExpressionStringMinPrecedence(ExprNode expression, ExprNodeRenderableFlags flags) {
             var writer = new StringWriter();
             expression.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             return writer.ToString();
@@ -196,7 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         buffer.Write(functionName);
                     }
                     else {
-                        String name = element.GetRootNameOrEmptyString();
+                        string name = element.GetRootNameOrEmptyString();
                         buffer.Write(name);
                     }
 

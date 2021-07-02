@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             QueryGraphValueEntryRange rangeKeyPair,
             PropertySortedEventTable index)
         {
-            this._index = index;
-            this._strategy = SortedAccessStrategyFactory.Make(false, lookupStream, numStreams, rangeKeyPair);
+            _index = index;
+            _strategy = SortedAccessStrategyFactory.Make(false, lookupStream, numStreams, rangeKeyPair);
         }
 
         /// <summary>

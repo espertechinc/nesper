@@ -10,6 +10,7 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -161,13 +162,25 @@ namespace com.espertech.esper.common.@internal.epl.util
             int parameterNum,
             ExprNode parameterExpression)
         {
+            if (expectedTypeEnum == EPLExpressionParamType.ANY) {
+                return;
+            }
+            
+            if (providedType.IsNullTypeSafe()) {
+                throw new ExprValidationException(
+                    GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
+                    "expected a non-null result for expression parameter " +
+                    parameterNum +
+                    " but received a null-typed expression");
+            }
+            
             if (expectedTypeEnum == EPLExpressionParamType.BOOLEAN && !providedType.IsBoolean()) {
                 throw new ExprValidationException(
                     GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                     "expected a boolean-type result for expression parameter " +
                     parameterNum +
                     " but received " +
-                    providedType.CleanName());
+                    providedType.TypeSafeName());
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.NUMERIC && !providedType.IsNumeric()) {
@@ -176,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     "expected a number-type result for expression parameter " +
                     parameterNum +
                     " but received " +
-                    providedType.CleanName());
+                    providedType.TypeSafeName());
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.SPECIFIC) {
@@ -207,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         "-type result for expression parameter " +
                         parameterNum +
                         " but received " +
-                        providedType.CleanName());
+                        providedType.TypeSafeName());
                 }
             }
 
@@ -222,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         "expected a time-period expression or a numeric-type result for expression parameter " +
                         parameterNum +
                         " but received " +
-                        providedType.CleanName());
+                        providedType.TypeSafeName());
                 }
             }
 
@@ -233,7 +246,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " +
                         parameterNum +
                         " but received " +
-                        providedType.CleanName());
+                        providedType.TypeSafeName());
                 }
             }
         }

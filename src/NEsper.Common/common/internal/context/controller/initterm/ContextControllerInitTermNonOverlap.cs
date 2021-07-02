@@ -25,9 +25,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         public ContextControllerInitTermNonOverlap(
             ContextControllerInitTermFactory factory,
             ContextManagerRealization realization)
-            : base(
-                factory,
-                realization)
+            : base(factory, realization)
         {
         }
 
@@ -73,7 +71,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval)
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties)
         {
             bool endConditionNotification = originCondition.Descriptor != factory.InitTermSpec.StartCondition;
             if (endConditionNotification) {
@@ -82,7 +81,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     originCondition,
                     optionalTriggeringEvent,
                     optionalTriggeringPattern,
-                    optionalTriggeringEventPattern);
+                    optionalTriggeringEventPattern,
+                    terminationProperties);
             }
             else {
                 LastTriggerEvent = optionalTriggeringEvent;
@@ -121,7 +121,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerConditionNonHA endCondition,
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
-            EventBean optionalTriggeringEventPattern)
+            EventBean optionalTriggeringEventPattern,
+            IDictionary<string, object> terminationProperties)
         {
             if (endCondition.IsRunning) {
                 endCondition.Deactivate();
@@ -144,7 +145,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 conditionPath.RemoveFromEnd(),
                 instance.SubpathIdOrCPId,
                 this,
-                optionalTriggeringPattern,
+                terminationProperties,
                 startNow,
                 agentInstancesLocksHeld);
 
@@ -208,12 +209,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public class NonOverlapWFIlterStartFilterFaultHandler : FilterFaultHandler
         {
-            private readonly ContextControllerInitTermWLastTrigger contextControllerInitTerm;
+            private readonly ContextControllerInitTermWLastTrigger _contextControllerInitTerm;
 
             public NonOverlapWFIlterStartFilterFaultHandler(
                 ContextControllerInitTermWLastTrigger contextControllerInitTerm)
             {
-                this.contextControllerInitTerm = contextControllerInitTerm;
+                this._contextControllerInitTerm = contextControllerInitTerm;
             }
 
             public bool HandleFilterFault(
@@ -224,9 +225,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 // - a) App thread determines event E1 applies to CP1
                 // b) Timer thread destroys CP1
                 // c) App thread processes E1 for CP1, filter-faulting and ending up reprocessing the event against CTX because of this handler
-                var aiCreate = contextControllerInitTerm.Realization.AgentInstanceContextCreate;
+                var aiCreate = _contextControllerInitTerm.Realization.AgentInstanceContextCreate;
                 using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock()) {
-                    var trigger = contextControllerInitTerm.LastTriggerEvent;
+                    var trigger = _contextControllerInitTerm.LastTriggerEvent;
                     if (theEvent != trigger) {
                         AgentInstanceUtil.EvaluateEventForStatement(
                             theEvent,

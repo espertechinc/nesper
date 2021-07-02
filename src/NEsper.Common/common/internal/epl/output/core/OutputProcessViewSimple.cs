@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public class OutputProcessViewSimple : OutputProcessView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
+        private readonly AgentInstanceContext _agentInstanceContext;
 
         public OutputProcessViewSimple(AgentInstanceContext agentInstanceContext)
         {
-            this.agentInstanceContext = agentInstanceContext;
+            this._agentInstanceContext = agentInstanceContext;
         }
 
         public override int NumChangesetRows => 0;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             EventBean[] newData,
             EventBean[] oldData)
         {
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 

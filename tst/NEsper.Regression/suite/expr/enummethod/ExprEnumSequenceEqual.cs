@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
 				builder.WithExpression(fields[0], "Contained.selectFrom(x => Key0).sequenceEqual(Contained.selectFrom(y => Id))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("I1,E1,0", "I2,E2,0")).Expect(fields, false);
 
@@ -60,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Strvals.sequenceEqual(Strvalstwo)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3", "E1,E2,E3")).Expect(fields, true);
 

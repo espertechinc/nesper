@@ -54,11 +54,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             object expressionValue,
             EventEvaluator matcher)
         {
-            if (!(expressionValue is StringRange)) {
+            if (!(expressionValue is StringRange range)) {
                 throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
             }
 
-            var range = (StringRange) expressionValue;
             if (range.Max == null || range.Min == null) {
                 RangesNullEndpoints = matcher;
                 return;

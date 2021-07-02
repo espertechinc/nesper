@@ -102,42 +102,37 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.SetProperty(Ref("saiff"), "ViewableActivators", Ref("activators"));
 
             // views
-            method.Block.DeclareVar<ViewFactory[][]>(
-                "viewFactories",
-                NewArrayByLength(typeof(ViewFactory[]), Constant(_views.Length)));
-            for (var i = 0; i < _views.Length; i++) {
-                if (_views[i] != null) {
-                    var array = ViewFactoryForgeUtil.CodegenForgesWInit(
-                        _views[i],
-                        i,
-                        null,
-                        method,
-                        symbols,
-                        classScope);
-                    method.Block.AssignArrayElement("viewFactories", Constant(i), array);
-                }
+            if (_views.Length == 1 && _views[0].IsEmpty()) {
+                method.Block.SetProperty(Ref("saiff"), "ViewFactories", PublicConstValue(typeof(ViewFactoryConstants), "SINGLE_ELEMENT_ARRAY"));
             }
+            else {
+                method.Block.DeclareVar<ViewFactory[][]>(
+                    "viewFactories",
+                    NewArrayByLength(typeof(ViewFactory[]), Constant(_views.Length)));
+                for (var i = 0; i < _views.Length; i++) {
+                    if (_views[i] != null) {
+                        var array = ViewFactoryForgeUtil.CodegenForgesWInit(
+                            _views[i],
+                            i,
+                            null,
+                            method,
+                            symbols,
+                            classScope);
+                        method.Block.AssignArrayElement("viewFactories", Constant(i), array);
+                    }
+                }
 
-            method.Block.SetProperty(Ref("saiff"), "ViewFactories", Ref("viewFactories"));
+                method.Block.SetProperty(Ref("saiff"), "ViewFactories", Ref("viewFactories"));
+            }
 
             // view delegate information ('prior' and 'prev')
-            method.Block.DeclareVar<ViewResourceDelegateDesc[]>(
-                "viewResourceDelegates",
-                NewArrayByLength(typeof(ViewResourceDelegateDesc), Constant(_viewResourceDelegates.Length)));
-            for (var i = 0; i < _viewResourceDelegates.Length; i++) {
-                method.Block.AssignArrayElement(
-                    "viewResourceDelegates",
-                    Constant(i),
-                    _viewResourceDelegates[i].ToExpression());
-            }
-
-            method.Block.SetProperty(Ref("saiff"), "ViewResourceDelegates", Ref("viewResourceDelegates"));
+            method.Block.SetProperty(Ref("saiff"), "ViewResourceDelegates", ViewResourceDelegateDesc.ToExpression(_viewResourceDelegates));
 
             // result set processor
             method.Block.DeclareVar(
                     _resultSetProcessorProviderClassName,
                     RSPFACTORYPROVIDER,
-                    NewInstanceInner(_resultSetProcessorProviderClassName, 
+                    NewInstanceNamed(_resultSetProcessorProviderClassName, 
                         symbols.GetAddInitSvc(method), 
                         Ref(StmtClassForgeableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
                 .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
@@ -166,7 +161,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                     _outputProcessViewProviderClassName,
                     OPVFACTORYPROVIDER,
-                    NewInstanceInner(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                    NewInstanceNamed(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
 
             // subselects
@@ -186,13 +181,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             // order-by with no output-limit
-            method.Block.SetProperty(
-                Ref("saiff"),
-                "OrderByWithoutOutputRateLimit",
-                Constant(_orderByWithoutOutputRateLimit));
+            if (_orderByWithoutOutputRateLimit) {
+                method.Block.SetProperty(
+                    Ref("saiff"),
+                    "OrderByWithoutOutputRateLimit",
+                    Constant(_orderByWithoutOutputRateLimit));
+            }
 
             // unidirectional join
-            method.Block.SetProperty(Ref("saiff"), "IsUnidirectionalJoin", Constant(_unidirectionalJoin));
+            if (_unidirectionalJoin) {
+                method.Block.SetProperty(Ref("saiff"), "IsUnidirectionalJoin", Constant(_unidirectionalJoin));
+            }
+
             method.Block.MethodReturn(Ref("saiff"));
 
             return method;

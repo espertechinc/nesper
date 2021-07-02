@@ -30,20 +30,75 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ClientExtendEnumScalarNoParamMedian());
-            execs.Add(new ClientExtendEnumEventLambdaMedian());
-            execs.Add(new ClientExtendEnumScalarLambdaMedian());
-            execs.Add(new ClientExtendEnumScalarNoLambdaWithParams());
-            execs.Add(new ClientExtendEnumScalarEarlyExit());
-            execs.Add(new ClientExtendEnumPredicateReturnEvents());
-            execs.Add(new ClientExtendEnumPredicateReturnSingleEvent());
-            execs.Add(new ClientExtendEnumTwoLambdaParameters());
-            execs.Add(new ClientExtendEnumLambdaEventInputValueAndIndex());
-            execs.Add(new ClientExtendEnumLambdaScalarInputValueAndIndex());
-            execs.Add(new ClientExtendEnumLambdaScalarStateAndValue());
+WithScalarNoParamMedian(execs);
+WithEventLambdaMedian(execs);
+WithScalarLambdaMedian(execs);
+WithScalarNoLambdaWithParams(execs);
+WithScalarEarlyExit(execs);
+WithPredicateReturnEvents(execs);
+WithPredicateReturnSingleEvent(execs);
+WithTwoLambdaParameters(execs);
+WithLambdaEventInputValueAndIndex(execs);
+WithLambdaScalarInputValueAndIndex(execs);
+WithLambdaScalarStateAndValue(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithLambdaScalarStateAndValue(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumLambdaScalarStateAndValue());
+    return execs;
+}public static IList<RegressionExecution> WithLambdaScalarInputValueAndIndex(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumLambdaScalarInputValueAndIndex());
+    return execs;
+}public static IList<RegressionExecution> WithLambdaEventInputValueAndIndex(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumLambdaEventInputValueAndIndex());
+    return execs;
+}public static IList<RegressionExecution> WithTwoLambdaParameters(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumTwoLambdaParameters());
+    return execs;
+}public static IList<RegressionExecution> WithPredicateReturnSingleEvent(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumPredicateReturnSingleEvent());
+    return execs;
+}public static IList<RegressionExecution> WithPredicateReturnEvents(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumPredicateReturnEvents());
+    return execs;
+}public static IList<RegressionExecution> WithScalarEarlyExit(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumScalarEarlyExit());
+    return execs;
+}public static IList<RegressionExecution> WithScalarNoLambdaWithParams(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumScalarNoLambdaWithParams());
+    return execs;
+}public static IList<RegressionExecution> WithScalarLambdaMedian(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumScalarLambdaMedian());
+    return execs;
+}public static IList<RegressionExecution> WithEventLambdaMedian(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumEventLambdaMedian());
+    return execs;
+}public static IList<RegressionExecution> WithScalarNoParamMedian(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ClientExtendEnumScalarNoParamMedian());
+    return execs;
+}
         private class ClientExtendEnumLambdaScalarStateAndValue : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -247,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "Intvals.enumPlugInEarlyExit() as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
 
                 SendAssert(env, fields, 12, "12,1,1");
                 SendAssert(env, fields, 10, "5,5,5");
@@ -275,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "Intvals.enumPlugInOne(10, 20) as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
 
                 SendAssert(env, fields, 11, "1,2,11,3");
                 SendAssert(env, fields, 0, "");
@@ -306,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "Strvals.enumPlugInMedian((v, i, s) => extractNum(v) + i*10+s*100) as c2 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?), typeof(double?), typeof(double?)});
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?), typeof(double?), typeof(double?)});
 
                 SendAssert(env, fields, 3d, 18d, 418d, "E2,E1,E5,E4");
                 SendAssert(env, fields, null, null, null, "E1");
@@ -339,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
 
                 SendAssert(env, fields, 11d, "E1,12", "E2,11", "E3,2");
                 SendAssert(env, fields, null, null);
@@ -368,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 var eplFragment = "@Name('s0') select Intvals.enumPlugInMedian() as val0 from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
+                SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
 
                 SendAssert(env, fields, 2d, "1,2,2,4");
                 SendAssert(env, fields, 2d, "1,2,2,10");
@@ -423,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 var stateClass = typeof(MyLocalEnumMethodMedianState); // the class providing state
                 var serviceClass = typeof(MyLocalEnumMethodMedianService); // the class providing the processing method
                 var methodName = "Next"; // the name of the method for processing an item of input values
-                EPType returnType = new ClassEPType(typeof(double?)); // indicate that we are returning a Double-type value
+                EPChainableType returnType = new EPChainableTypeClass(typeof(double?)); // indicate that we are returning a Double-type value
                 var earlyExit = false;
 
                 var mode = new EnumMethodModeStaticMethod(stateClass, serviceClass, methodName, returnType, earlyExit);
@@ -522,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeOneState),
                     typeof(MyLocalEnumMethodForgeOneState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
             }
         }
@@ -582,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeEarlyExitState),
                     typeof(MyLocalEnumMethodForgeEarlyExitState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     true);
             }
         }
@@ -621,7 +676,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
 
             public EnumMethodMode Validate(EnumMethodValidateContext context)
             {
-                var type = EPTypeHelper.CollectionOfEvents(context.InputEventType);
+                var type = EPChainableTypeHelper.CollectionOfEvents(context.InputEventType);
                 return new EnumMethodModeStaticMethod(
                     typeof(MyLocalEnumMethodForgePredicateReturnEventsState),
                     typeof(MyLocalEnumMethodForgePredicateReturnEvents),
@@ -673,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
 
             public EnumMethodMode Validate(EnumMethodValidateContext context)
             {
-                var type = new EventEPType(context.InputEventType);
+                var type = new EPChainableTypeEventSingle(context.InputEventType);
                 return new EnumMethodModeStaticMethod(
                     typeof(MyLocalEnumMethodForgePredicateReturnSingleEventState),
                     typeof(MyLocalEnumMethodForgePredicateReturnSingleEvent),
@@ -732,7 +787,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeTwoLambdaState),
                     typeof(MyLocalEnumMethodForgeTwoLambdaState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
             }
         }
@@ -790,7 +845,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeThreeState),
                     typeof(MyLocalEnumMethodForgeThree),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
                 mode.LambdaParameters =
                     descriptor => {
@@ -862,7 +917,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeStateWValueState),
                     typeof(MyLocalEnumMethodForgeStateWValueState),
                     "Next",
-                    new ClassEPType(typeof(string)),
+                    new EPChainableTypeClass(typeof(string)),
                     false);
                 mode.LambdaParameters =
                     descriptor => {

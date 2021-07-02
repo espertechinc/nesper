@@ -68,168 +68,168 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithExpression(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateExpression());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayElementInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateArrayElementInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayElementBoxed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateArrayElementBoxed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithArrayElement(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateArrayElement());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMapIndexProps(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateMapIndexProps());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateSubqueryMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithListenerDeliveryMultiupdateMixed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateListenerDeliveryMultiupdateMixed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithListenerDeliveryMultiupdate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateListenerDeliveryMultiupdate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnprioritizedOrder(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateUnprioritizedOrder());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCopyMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateCopyMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSendRouteSenderPreprocess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateSendRouteSenderPreprocess());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWrappedObject(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateWrappedObject());
             return execs;
         }
 
         public static IList<RegressionExecution> WithXMLEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateXMLEvent());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateSODA());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertDirectBeanTypeInheritance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateInsertDirectBeanTypeInheritance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTypeWidener(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateTypeWidener());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFieldsWithPriority(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateFieldsWithPriority());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoWMapNoWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateInsertIntoWMapNoWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInsertIntoWBeanWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateInsertIntoWBeanWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFieldUpdateOrder(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateFieldUpdateOrder());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBean(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherUpdateBean());
             return execs;
         }

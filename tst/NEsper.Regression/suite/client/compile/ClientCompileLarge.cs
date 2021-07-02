@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithLargeConstantPoolDueToMethods(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileLargeConstantPoolDueToMethods());
             return execs;
         }

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
 		public StmtForgeMethodCreateSimpleBase(StatementBaseInfo @base)
 		{
-			this._base = @base;
+			_base = @base;
 		}
 
 		public StatementBaseInfo Base => _base;

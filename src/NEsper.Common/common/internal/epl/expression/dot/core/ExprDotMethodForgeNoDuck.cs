@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -26,35 +27,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             PLAIN
         }
 
-        private readonly DuckType type;
-
         public ExprDotMethodForgeNoDuck(
             string optionalStatementName,
             MethodInfo method,
+            Type methodTargetType,
             ExprForge[] parameters,
             DuckType type)
         {
             OptionalStatementName = optionalStatementName;
             Method = method;
+            MethodTargetType = methodTargetType;
             Parameters = parameters;
-            this.type = type;
+            WrapType = type;
         }
 
         public string OptionalStatementName { get; }
 
         public MethodInfo Method { get; }
+        
+        public Type MethodTargetType { get; }
 
         public ExprForge[] Parameters { get; }
 
-        public EPType TypeInfo {
+        public DuckType WrapType { get; }
+
+        public EPChainableType TypeInfo {
             get {
-                if (type == DuckType.WRAPARRAY) {
-                    return EPTypeHelper.CollectionOfSingleValue(
-                        Method.ReturnType.GetElementType(),
-                        Method.ReturnType);
+                if (WrapType == DuckType.WRAPARRAY) {
+                    var returnType = Method.ReturnType;
+                    var componentType = returnType.GetElementType();
+                    return EPChainableTypeHelper.CollectionOfSingleValue(componentType);
                 }
 
-                return EPTypeHelper.FromMethod(Method);
+                return EPChainableTypeHelper.FromMethod(Method);
             }
         }
 
@@ -66,15 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public ExprDotEval DotEvaluator {
             get {
                 var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parameters);
-                if (type == DuckType.WRAPARRAY) {
-                    return new ExprDotMethodForgeNoDuckEvalWrapArray(this, evaluators);
-                }
-
-                if (type == DuckType.PLAIN) {
-                    return new ExprDotMethodForgeNoDuckEvalPlain(this, evaluators);
-                }
-
-                return new ExprDotMethodForgeNoDuckEvalUnderlying(this, evaluators);
+                return WrapType switch {
+                    DuckType.WRAPARRAY => new ExprDotMethodForgeNoDuckEvalWrapArray(this, evaluators),
+                    DuckType.PLAIN => new ExprDotMethodForgeNoDuckEvalPlain(this, evaluators),
+                    _ => new ExprDotMethodForgeNoDuckEvalUnderlying(this, evaluators)
+                };
             }
         }
 
@@ -85,33 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (type == DuckType.WRAPARRAY) {
-                return ExprDotMethodForgeNoDuckEvalWrapArray.CodegenWrapArray(
-                    this,
-                    inner,
-                    innerType,
-                    parent,
-                    symbols,
-                    classScope);
-            }
-
-            if (type == DuckType.PLAIN) {
-                return ExprDotMethodForgeNoDuckEvalPlain.CodegenPlain(
-                    this,
-                    inner,
-                    innerType,
-                    parent,
-                    symbols,
-                    classScope);
-            }
-
-            return ExprDotMethodForgeNoDuckEvalUnderlying.CodegenUnderlying(
-                this,
-                inner,
-                innerType,
-                parent,
-                symbols,
-                classScope);
+            return WrapType switch {
+                DuckType.WRAPARRAY => ExprDotMethodForgeNoDuckEvalWrapArray.CodegenWrapArray(this, inner, innerType, parent, symbols, classScope),
+                DuckType.PLAIN => ExprDotMethodForgeNoDuckEvalPlain.CodegenPlain(this, inner, innerType, parent, symbols, classScope),
+                _ => ExprDotMethodForgeNoDuckEvalUnderlying.CodegenUnderlying(this, inner, innerType, parent, symbols, classScope)
+            };
         }
     }
 } // end of namespace

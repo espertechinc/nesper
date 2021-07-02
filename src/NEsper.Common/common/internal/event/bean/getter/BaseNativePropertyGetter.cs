@@ -11,6 +11,7 @@ using System.Collections;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -31,27 +32,29 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     {
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
         private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly Type _returnType;
+        private volatile BeanEventType _fragmentEventType;
         private readonly Type _fragmentClassType;
         private bool _isFragmentable;
         private readonly bool _isArray;
         private readonly bool _isIterable;
-        private volatile BeanEventType _fragmentEventType;
 
         public BaseNativePropertyGetter(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type returnType,
-            Type genericType)
+            Type returnType)
         {
             _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             _beanEventTypeFactory = beanEventTypeFactory;
+            _returnType = returnType;
+            
             if (returnType.IsArray) {
                 _fragmentClassType = returnType.GetElementType();
                 _isArray = true;
                 _isIterable = false;
             }
             else if (returnType.IsGenericEnumerable()) {
-                _fragmentClassType = genericType;
+                _fragmentClassType = GenericExtensions.GetComponentType(returnType);
                 _isArray = false;
                 _isIterable = true;
             }
@@ -66,9 +69,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public abstract Type TargetType { get; }
 
-        public abstract Type BeanPropType { get; }
+        public virtual Type BeanPropType => _returnType;
 
-        public bool IsFragmentable => _isFragmentable;
+        public virtual bool IsFragmentable => _isFragmentable;
 
         public object GetFragment(EventBean eventBean)
         {
@@ -219,9 +222,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var isArray = false;
             var objectType = @object.GetType();
             if (objectType.IsArray) {
-                if (objectType.GetElementType().IsFragmentableType()) {
+                var elementType = objectType.GetElementType();
+                if (elementType.IsFragmentableType()) {
                     isArray = true;
-                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(objectType.GetElementType(), false);
+                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(elementType, false);
                 }
             }
             else {

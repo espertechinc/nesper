@@ -9,6 +9,7 @@
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _heightEval = heightEval;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -79,7 +80,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope,
                         method))
                 .MethodReturn(Ref("fpai"));
-            return method;
+            
+            return LocalMethod(method);
         }
 
         public override bool Equals(object obj)

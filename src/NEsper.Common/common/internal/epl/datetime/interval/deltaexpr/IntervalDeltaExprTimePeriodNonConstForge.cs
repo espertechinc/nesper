@@ -21,15 +21,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
     public class IntervalDeltaExprTimePeriodNonConstForge : IntervalDeltaExprForge,
         IntervalDeltaExprEvaluator
     {
-        private readonly ExprTimePeriod timePeriod;
-        private readonly TimeAbacus timeAbacus;
+        private readonly ExprTimePeriod _timePeriod;
+        private readonly TimeAbacus _timeAbacus;
 
         public IntervalDeltaExprTimePeriodNonConstForge(
             ExprTimePeriod timePeriod,
             TimeAbacus timeAbacus)
         {
-            this.timePeriod = timePeriod;
-            this.timeAbacus = timeAbacus;
+            this._timePeriod = timePeriod;
+            this._timeAbacus = timeAbacus;
         }
 
         public IntervalDeltaExprEvaluator MakeEvaluator()
@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            double sec = timePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
-            return timeAbacus.DeltaForSecondsDouble(sec);
+            double sec = _timePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
+            return _timeAbacus.DeltaForSecondsDouble(sec);
         }
 
         public CodegenExpression Codegen(
@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             methodNode.Block
                 .DeclareVar<double>(
                     "sec",
-                    timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
+                    _timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
-                    timeAbacus.DeltaForSecondsDoubleCodegen(
+                    _timeAbacus.DeltaForSecondsDoubleCodegen(
                         Ref("sec"), codegenClassScope));
             return LocalMethod(methodNode, reference);
         }

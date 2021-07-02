@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory)
             : base(factory)
         {
-            _propertyIndex = new Dictionary<object, ISet<EventBean>>(AsymmetricEqualityComparer.Instance)
+            _propertyIndex = new Dictionary<object, ISet<EventBean>>(AsymmetricEqualityComparer.INSTANCE)
                 .WithNullKeySupport();
         }
 

@@ -38,22 +38,17 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ContextControllerDetailCategoryItem), GetType(), classScope)
+            CodegenMethod method = parent
+                .MakeChild(typeof(ContextControllerDetailCategoryItem), GetType(), classScope)
                 .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
                 .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
 
-            CodegenMethod makeFilter = FilterPlan.CodegenWithEventType(method, classScope);
+            var filterPlan = FilterPlan.CodegenWithEventType(
+                method, SAIFFInitializeSymbolWEventType.REF_EVENTTYPE, SAIFFInitializeSymbol.REF_STMTINITSVC, classScope);
 
             method.Block
-                .DeclareVar<FilterSpecPlan>(
-                    "filterPlan",
-                    LocalMethod(
-                        makeFilter,
-                        SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
-                        SAIFFInitializeSymbol.REF_STMTINITSVC))
-                .DeclareVar<ContextControllerDetailCategoryItem>(
-                    "item",
-                    NewInstance(typeof(ContextControllerDetailCategoryItem)))
+                .DeclareVar<FilterSpecPlan>("filterPlan", filterPlan)
+                .DeclareVarNewInstance<ContextControllerDetailCategoryItem>("item")
                 .SetProperty(Ref("item"), "FilterPlan", Ref("filterPlan"))
                 .SetProperty(Ref("item"), "Name", Constant(Name))
                 .MethodReturn(Ref("item"));

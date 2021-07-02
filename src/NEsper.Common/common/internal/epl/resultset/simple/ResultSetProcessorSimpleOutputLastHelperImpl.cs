@@ -17,29 +17,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 {
     public class ResultSetProcessorSimpleOutputLastHelperImpl : ResultSetProcessorSimpleOutputLastHelper
     {
-        private readonly ResultSetProcessorSimple processor;
-        private MultiKeyArrayOfKeys<EventBean> outputLastIStreamBufJoin;
+        private readonly ResultSetProcessorSimple _processor;
+        private MultiKeyArrayOfKeys<EventBean> _outputLastIStreamBufJoin;
 
-        private EventBean outputLastIStreamBufView;
-        private MultiKeyArrayOfKeys<EventBean> outputLastRStreamBufJoin;
-        private EventBean outputLastRStreamBufView;
+        private EventBean _outputLastIStreamBufView;
+        private MultiKeyArrayOfKeys<EventBean> _outputLastRStreamBufJoin;
+        private EventBean _outputLastRStreamBufView;
 
         public ResultSetProcessorSimpleOutputLastHelperImpl(ResultSetProcessorSimple processor)
         {
-            this.processor = processor;
+            _processor = processor;
         }
 
         public void ProcessView(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            if (!processor.HasHavingClause) {
+            if (!_processor.HasHavingClause) {
                 if (newData != null && newData.Length > 0) {
-                    outputLastIStreamBufView = newData[newData.Length - 1];
+                    _outputLastIStreamBufView = newData[newData.Length - 1];
                 }
 
                 if (oldData != null && oldData.Length > 0) {
-                    outputLastRStreamBufView = oldData[oldData.Length - 1];
+                    _outputLastRStreamBufView = oldData[oldData.Length - 1];
                 }
             }
             else {
@@ -48,15 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                     foreach (var theEvent in newData) {
                         eventsPerStream[0] = theEvent;
 
-                        var passesHaving = processor.EvaluateHavingClause(
+                        var passesHaving = _processor.EvaluateHavingClause(
                             eventsPerStream,
                             true,
-                            processor.GetAgentInstanceContext());
+                            _processor.ExprEvaluatorContext);
                         if (!passesHaving) {
                             continue;
                         }
 
-                        outputLastIStreamBufView = theEvent;
+                        _outputLastIStreamBufView = theEvent;
                     }
                 }
 
@@ -64,15 +64,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                     foreach (var theEvent in oldData) {
                         eventsPerStream[0] = theEvent;
 
-                        var passesHaving = processor.EvaluateHavingClause(
+                        var passesHaving = _processor.EvaluateHavingClause(
                             eventsPerStream,
                             false,
-                            processor.GetAgentInstanceContext());
+                            _processor.ExprEvaluatorContext);
                         if (!passesHaving) {
                             continue;
                         }
 
-                        outputLastRStreamBufView = theEvent;
+                        _outputLastRStreamBufView = theEvent;
                     }
                 }
             }
@@ -82,41 +82,41 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
-            if (!processor.HasHavingClause) {
+            if (!_processor.HasHavingClause) {
                 if (newEvents != null && !newEvents.IsEmpty()) {
-                    outputLastIStreamBufJoin = EventBeanUtility.GetLastInSet(newEvents);
+                    _outputLastIStreamBufJoin = EventBeanUtility.GetLastInSet(newEvents);
                 }
 
                 if (oldEvents != null && !oldEvents.IsEmpty()) {
-                    outputLastRStreamBufJoin = EventBeanUtility.GetLastInSet(oldEvents);
+                    _outputLastRStreamBufJoin = EventBeanUtility.GetLastInSet(oldEvents);
                 }
             }
             else {
                 if (newEvents != null && newEvents.Count > 0) {
                     foreach (var theEvent in newEvents) {
-                        var passesHaving = processor.EvaluateHavingClause(
+                        var passesHaving = _processor.EvaluateHavingClause(
                             theEvent.Array,
                             true,
-                            processor.GetAgentInstanceContext());
+                            _processor.ExprEvaluatorContext);
                         if (!passesHaving) {
                             continue;
                         }
 
-                        outputLastIStreamBufJoin = theEvent;
+                        _outputLastIStreamBufJoin = theEvent;
                     }
                 }
 
                 if (oldEvents != null && oldEvents.Count > 0) {
                     foreach (var theEvent in oldEvents) {
-                        var passesHaving = processor.EvaluateHavingClause(
+                        var passesHaving = _processor.EvaluateHavingClause(
                             theEvent.Array,
                             false,
-                            processor.GetAgentInstanceContext());
+                            _processor.ExprEvaluatorContext);
                         if (!passesHaving) {
                             continue;
                         }
 
-                        outputLastRStreamBufJoin = theEvent;
+                        _outputLastRStreamBufJoin = theEvent;
                     }
                 }
             }
@@ -124,31 +124,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
         public UniformPair<EventBean[]> OutputView(bool isSynthesize)
         {
-            if (outputLastIStreamBufView == null && outputLastRStreamBufView == null) {
+            if (_outputLastIStreamBufView == null && _outputLastRStreamBufView == null) {
                 return null;
             }
 
-            var pair = processor.ProcessViewResult(
-                EventBeanUtility.ToArrayIfNotNull(outputLastIStreamBufView),
-                EventBeanUtility.ToArrayIfNotNull(outputLastRStreamBufView),
+            var pair = _processor.ProcessViewResult(
+                EventBeanUtility.ToArrayIfNotNull(_outputLastIStreamBufView),
+                EventBeanUtility.ToArrayIfNotNull(_outputLastRStreamBufView),
                 isSynthesize);
-            outputLastIStreamBufView = null;
-            outputLastRStreamBufView = null;
+            _outputLastIStreamBufView = null;
+            _outputLastRStreamBufView = null;
             return pair;
         }
 
         public UniformPair<EventBean[]> OutputJoin(bool isSynthesize)
         {
-            if (outputLastIStreamBufJoin == null && outputLastRStreamBufJoin == null) {
+            if (_outputLastIStreamBufJoin == null && _outputLastRStreamBufJoin == null) {
                 return null;
             }
 
-            var pair = processor.ProcessJoinResult(
-                EventBeanUtility.ToSingletonSetIfNotNull(outputLastIStreamBufJoin),
-                EventBeanUtility.ToSingletonSetIfNotNull(outputLastRStreamBufJoin),
+            var pair = _processor.ProcessJoinResult(
+                EventBeanUtility.ToSingletonSetIfNotNull(_outputLastIStreamBufJoin),
+                EventBeanUtility.ToSingletonSetIfNotNull(_outputLastRStreamBufJoin),
                 isSynthesize);
-            outputLastIStreamBufJoin = null;
-            outputLastRStreamBufJoin = null;
+            _outputLastIStreamBufJoin = null;
+            _outputLastRStreamBufJoin = null;
             return pair;
         }
 

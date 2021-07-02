@@ -40,70 +40,70 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCombination(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternCombination());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGuardOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternGuardOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotOpNotImpacted(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternNotOpNotImpacted());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternAndOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithObserverOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternObserverOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMatchUntilOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternMatchUntilOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedByOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedByOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOrOp());
             return execs;
         }

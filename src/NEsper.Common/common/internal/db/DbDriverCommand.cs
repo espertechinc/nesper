@@ -71,11 +71,11 @@ namespace com.espertech.esper.common.@internal.db
         /// <summary>
         /// Gets the actual SQL that is sent to the driver.
         /// </summary>
-        String CommandText { get; }
+        string CommandText { get; }
 
         /// <summary>
         /// Gets the pseudo SQL that is provided to and from the client.
         /// </summary>
-        String PseudoText { get; }
+        string PseudoText { get; }
     }
 }

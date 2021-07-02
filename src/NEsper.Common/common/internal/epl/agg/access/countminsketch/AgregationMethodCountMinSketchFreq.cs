@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
 	public class AgregationMethodCountMinSketchFreq : AggregationMultiFunctionAggregationMethod
 	{
-		private ExprEvaluator frequencyEval;
+		private ExprEvaluator _frequencyEval;
 
 		public ExprEvaluator FrequencyEval {
-			get => this.frequencyEval;
-			set => this.frequencyEval = value;
+			get => _frequencyEval;
+			set => _frequencyEval = value;
 		}
 
 		public object GetValue(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 			bool isNewData,
 			ExprEvaluatorContext exprEvaluatorContext)
 		{
-			var value = frequencyEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+			var value = _frequencyEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 			var state = (CountMinSketchAggState) row.GetAccessState(aggColNum);
 			return state.Frequency(value);
 		}

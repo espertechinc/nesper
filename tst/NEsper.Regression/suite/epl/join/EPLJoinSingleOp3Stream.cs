@@ -31,21 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithdCompile(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinSingleOp3StreamUniquePerIdCompile());
             return execs;
         }
 
         public static IList<RegressionExecution> WithdOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinSingleOp3StreamUniquePerIdOM());
             return execs;
         }
 
         public static IList<RegressionExecution> Withd(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinSingleOp3StreamUniquePerId());
             return execs;
         }

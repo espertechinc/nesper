@@ -12,10 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.compile.multikey.MultiKeyPlanner;
@@ -25,9 +27,9 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 	public class SerdeCompileTimeResolverImpl : SerdeCompileTimeResolver
 	{
 		private readonly bool _allowExtended;
-		private readonly bool allowSerializable;
-		private readonly bool allowSerializationFallback;
-		private readonly ICollection<SerdeProvider> serdeProviders;
+		private readonly bool _allowSerializable;
+		private readonly bool _allowSerializationFallback;
+		private readonly ICollection<SerdeProvider> _serdeProviders;
 
 		public SerdeCompileTimeResolverImpl(
 			IList<SerdeProvider> serdeProviders,
@@ -35,10 +37,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			bool allowSerializable,
 			bool allowSerializationFallback)
 		{
-			this.serdeProviders = new CopyOnWriteList<SerdeProvider>(serdeProviders);
-			this._allowExtended = allowExtended;
-			this.allowSerializable = allowSerializable;
-			this.allowSerializationFallback = allowSerializationFallback;
+			this._serdeProviders = new CopyOnWriteList<SerdeProvider>(serdeProviders);
+			_allowExtended = allowExtended;
+			this._allowSerializable = allowSerializable;
+			this._allowSerializationFallback = allowSerializationFallback;
 		}
 
 		public bool IsTargetHA {
@@ -138,14 +140,14 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			BaseNestableEventType eventType,
 			StatementRawInfo raw)
 		{
-			if (serdeProviders.IsEmpty()) {
+			if (_serdeProviders.IsEmpty()) {
 				return null;
 			}
 
-			SerdeProviderEventTypeContext context = new SerdeProviderEventTypeContext(raw, eventType);
-			foreach (SerdeProvider provider in serdeProviders) {
+			var context = new SerdeProviderEventTypeContext(raw, eventType);
+			foreach (var provider in _serdeProviders) {
 				try {
-					SerdeProvision serde = provider.ResolveSerdeForEventType(context);
+					var serde = provider.ResolveSerdeForEventType(context);
 					if (serde != null) {
 						return serde.ToForge();
 					}
@@ -175,8 +177,9 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			Type type,
 			SerdeProviderAdditionalInfo info)
 		{
-			if (type.IsArray) {
-				DataInputOutputSerde mkSerde = GetMKSerdeClassForComponentType(type.GetElementType());
+			if (type != null && type.IsArray) {
+				var componentType = type.GetElementType();
+				var mkSerde = GetMKSerdeClassForComponentType(componentType);
 				return new DataInputOutputSerdeForgeSingleton(mkSerde.GetType());
 			}
 
@@ -187,8 +190,9 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			Type[] sortCriteriaExpressions,
 			SerdeProviderAdditionalInfo additionalInfo)
 		{
-			DataInputOutputSerdeForge[] forges = new DataInputOutputSerdeForge[sortCriteriaExpressions.Length];
-			for (int i = 0; i < sortCriteriaExpressions.Length; i++) {
+			
+			var forges = new DataInputOutputSerdeForge[sortCriteriaExpressions.Length];
+			for (var i = 0; i < sortCriteriaExpressions.Length; i++) {
 				forges[i] = SerdeForClass(sortCriteriaExpressions[i], additionalInfo);
 			}
 
@@ -199,8 +203,12 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			Type type,
 			SerdeProviderAdditionalInfo additionalInfo)
 		{
+			if (type.IsNullType()) {
+				return DataInputOutputSerdeForgeNotApplicable.INSTANCE;
+			}
+			
 			if (IsBasicBuiltin(type)) {
-				DataInputOutputSerde serde = VMBasicBuiltinSerdeFactory.GetSerde(type);
+				var serde = VMBasicBuiltinSerdeFactory.GetSerde(type);
 				if (serde == null) {
 					throw new DataInputOutputSerdeException("Failed to find built-in serde for class " + type.Name);
 				}
@@ -209,7 +217,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			}
 
 			if (_allowExtended) {
-				DataInputOutputSerde serde = VMExtendedBuiltinSerdeFactory.GetSerde(type);
+				var serde = VMExtendedBuiltinSerdeFactory.GetSerde(type);
 				if (serde != null) {
 					return new DataInputOutputSerdeForgeSingleton(serde.GetType());
 				}
@@ -219,11 +227,11 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				return new DataInputOutputSerdeForgeSingleton(typeof(DIOSkipSerde));
 			}
 
-			SerdeProvision provision = SerdeCompileTimeResolverUtil.DetermineSerde(
+			var provision = SerdeCompileTimeResolverUtil.DetermineSerde(
 				type,
-				serdeProviders,
-				allowSerializable,
-				allowSerializationFallback,
+				_serdeProviders,
+				_allowSerializable,
+				_allowSerializationFallback,
 				additionalInfo);
 			return provision.ToForge();
 		}

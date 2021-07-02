@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -79,20 +80,21 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(TimeLengthBatchViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Timelengthbatch";
         }
@@ -114,6 +116,11 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(factory, "ForceUpdate", Constant(isForceUpdate))
                 .SetProperty(factory, "StartEager", Constant(isStartEager));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_TIMELENGTHBATCH;
         }
     }
 } // end of namespace

@@ -34,35 +34,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithMultikeyWArrayComposite2Prop(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultikeyWArrayComposite2Prop());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultikeyWArrayCompositeArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultikeyWArrayCompositeArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultikeyWArrayHashJoin2Prop(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultikeyWArrayHashJoin2Prop());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultikeyWArrayHashJoinArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinMultikeyWArrayHashJoinArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRangeNullAndDupAndInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinRangeNullAndDupAndInvalid());
             return execs;
         }

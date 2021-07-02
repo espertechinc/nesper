@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -26,7 +27,33 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			List<RegressionExecution> execs = new List<RegressionExecution>();
 			execs.Add(new ExprEnumAllOfAnyOfEvents());
 			execs.Add(new ExprEnumAllOfAnyOfScalar());
+			execs.Add(new ExprEnumAllOfAnyOfInvalid());
 			return execs;
+		}
+
+		internal class ExprEnumAllOfAnyOfInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+				epl = "select contained.allOf(x => 1) from SupportBean_ST0_Container";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'contained.allOf()': Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received int");
+
+				epl = "select contained.anyOf(x => 1) from SupportBean_ST0_Container";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'contained.anyOf()': Failed to validate enumeration method 'anyOf', expected a boolean-type result for expression parameter 0 but received int");
+
+				epl = "select contained.anyOf(x => null) from SupportBean_ST0_Container";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'contained.anyOf()': Failed to validate enumeration method 'anyOf', expected a non-null result for expression parameter 0 but received a null-typed expression");
+			}
 		}
 
 		internal class ExprEnumAllOfAnyOfEvents : RegressionExecution
@@ -42,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Contained.allof((v, i, s) => P00 = (7 + i*10 + s*100))");
 				builder.WithExpression(fields[5], "Contained.anyof((v, i, s) => P00 = (7 + i*10 + s*100))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,7", "E3,2"))
 					.Expect(fields, false, true, false, false, false, false);
@@ -82,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Strvals.allof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
 				builder.WithExpression(fields[5], "Strvals.anyof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
 				builder.WithAssertion(SupportCollection.MakeString("B,A,C"))
 					.Expect(fields, false, true, false, true, false, true);

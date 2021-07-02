@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             this.propertyMap = propertyMap;
             this.index = index;

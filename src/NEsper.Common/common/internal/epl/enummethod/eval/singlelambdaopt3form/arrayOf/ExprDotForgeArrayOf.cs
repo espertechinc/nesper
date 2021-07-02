@@ -18,31 +18,29 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ExprDotForgeArrayOf : ExprDotForgeLambdaThreeForm
 	{
-
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return EPTypeHelper.Array(collectionComponentType);
+			return EPChainableTypeHelper.Array(collectionComponentType);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			return streamCountIncoming => new EnumArrayOfScalarNoParams(ComponentType(type));
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			if (inputEventType != null) {
-				return lambda => EPTypeHelper.Array(lambda.BodyForge.EvaluationType);
-			}
-
-			return lambda => EPTypeHelper.Array(collectionComponentType);
+			return lambda => {
+				var type = ValidateNonNull(lambda.BodyForge.EvaluationType);
+				return EPChainableTypeHelper.Array(type);
+			};
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
@@ -74,10 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				services) => new EnumArrayOfScalar(lambda, fieldType, numParams, ComponentType(typeInfo));
 		}
 
-		private Type ComponentType(EPType type)
+		private Type ComponentType(EPChainableType type)
 		{
-			ClassMultiValuedEPType mv = (ClassMultiValuedEPType) type;
-			return mv.Component;
+			return EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(type);
 		}
 	}
 } // end of namespace

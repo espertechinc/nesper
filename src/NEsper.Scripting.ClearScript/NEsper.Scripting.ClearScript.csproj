@@ -14,11 +14,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.ClearScript" Version="6.0.2"/>
+        <PackageReference Include="Microsoft.ClearScript" Version="7.1.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj"/>
-        <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj"/>
+        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
     </ItemGroup>
 </Project>

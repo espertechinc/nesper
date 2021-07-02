@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -25,31 +26,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     /// </summary>
     public class AggregationAccessorSortedTable : AggregationAccessorForge
     {
-        private readonly Type componentType;
-        private readonly bool max;
-        private readonly TableMetaData table;
+        private readonly Type _componentType;
+        private readonly bool _max;
+        private readonly TableMetaData _table;
 
         public AggregationAccessorSortedTable(
             bool max,
             Type componentType,
             TableMetaData table)
         {
-            this.max = max;
-            this.componentType = componentType;
-            this.table = table;
+            _max = max;
+            _componentType = componentType;
+            _table = table;
         }
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_table, context.ClassScope, GetType());
             var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             var size = sorted.SizeCodegen();
-            var enumerator = max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
+            var enumerator = _max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+            var arrayType = TypeHelper.GetArrayType(_componentType);
+            context.Method.Block
+                .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(TypeHelper.GetArrayType(componentType), "array", NewArrayByLength(componentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(_componentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))

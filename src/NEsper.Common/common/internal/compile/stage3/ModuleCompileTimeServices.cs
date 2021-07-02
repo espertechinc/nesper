@@ -34,6 +34,7 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.container;
 
@@ -42,17 +43,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
     public class ModuleCompileTimeServices
     {
         private static long _generation = 0L;
-        
+
         public ModuleCompileTimeServices(
             IContainer container,
             CompilerServices compilerServices,
             Configuration configuration,
+            ClassProvidedCompileTimeRegistry classProvidedCompileTimeRegistry,
+            ClassProvidedCompileTimeResolver classProvidedCompileTimeResolver,
             ContextCompileTimeRegistry contextCompileTimeRegistry,
             ContextCompileTimeResolver contextCompileTimeResolver,
             BeanEventTypeStemService beanEventTypeStemService,
             BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
-            ClassProvidedCompileTimeRegistry classProvidedCompileTimeRegistry,
-            ClassProvidedCompileTimeResolver classProvidedCompileTimeResolver,
             DatabaseConfigServiceCompileTime databaseConfigServiceCompileTime,
             ImportServiceCompileTime importService,
             ExprDeclaredCompileTimeRegistry exprDeclaredCompileTimeRegistry,
@@ -67,13 +68,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleAccessModifierService moduleVisibilityRules,
             NamedWindowCompileTimeResolver namedWindowCompileTimeResolver,
             NamedWindowCompileTimeRegistry namedWindowCompileTimeRegistry,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider,
             ParentClassLoader parentClassLoader,
             PatternObjectResolutionService patternObjectResolutionService,
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
             ScriptCompiler scriptCompiler,
             SerdeEventTypeCompileTimeRegistry serdeEventTypeRegistry,
-            SerdeCompileTimeResolver serdeResolver, 
+            SerdeCompileTimeResolver serdeResolver,
             TableCompileTimeRegistry tableCompileTimeRegistry,
             TableCompileTimeResolver tableCompileTimeResolver,
             VariableCompileTimeRegistry variableCompileTimeRegistry,
@@ -124,6 +126,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             SerdeResolver = serdeResolver;
             IsFireAndForget = fireAndForget;
             #endregion
+            
+            #region ESPER_8.6.0
+            StateMgmtSettingsProvider = stateMgmtSettingsProvider;
+            #endregion
         }
 
         public ModuleCompileTimeServices(IContainer container)
@@ -168,6 +174,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             SerdeResolver = null;
             IsFireAndForget = false;
             #endregion
+
+            #region ESPER_8.6.0
+            StateMgmtSettingsProvider = null;
+            #endregion
         }
 
         public string Namespace { get; }
@@ -208,6 +218,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public NamedWindowCompileTimeResolver NamedWindowCompileTimeResolver { get; }
 
         public NamedWindowCompileTimeRegistry NamedWindowCompileTimeRegistry { get; }
+
+        public StateMgmtSettingsProvider StateMgmtSettingsProvider { get; }
 
         public PatternObjectResolutionService PatternObjectResolutionService { get; }
 

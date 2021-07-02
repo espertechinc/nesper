@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -29,27 +31,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
     /// </summary>
     public class ResultSetProcessorSimpleForge : ResultSetProcessorFactoryForge
     {
-        private readonly OutputLimitSpec outputLimitSpec;
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
+        private readonly OutputLimitSpec _outputLimitSpec;
 
         public ResultSetProcessorSimpleForge(
             EventType resultEventType,
-            SelectExprProcessorForge selectExprProcessorForge,
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             OutputLimitSpec outputLimitSpec,
             ResultSetProcessorOutputConditionType? outputConditionType,
             bool isSorting,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            Supplier<StateMgmtSetting> outputAllHelperSettings)
         {
             ResultEventType = resultEventType;
-            this.selectExprProcessorForge = selectExprProcessorForge;
             OptionalHavingNode = optionalHavingNode;
             IsSelectRStream = isSelectRStream;
-            this.outputLimitSpec = outputLimitSpec;
+            _outputLimitSpec = outputLimitSpec;
             OutputConditionType = outputConditionType;
             IsSorting = isSorting;
             EventTypes = eventTypes;
+            this.OutputAllHelperSettings = outputAllHelperSettings;
         }
 
         public EventType ResultEventType { get; }
@@ -59,9 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         public ExprForge OptionalHavingNode { get; }
 
         public bool IsOutputLast =>
-            outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
+            _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
 
-        public bool IsOutputAll => outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
+        public bool IsOutputAll => _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
 
         public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
 
@@ -72,6 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         public bool IsSorting { get; }
 
         public Type InterfaceClass => typeof(ResultSetProcessorSimple);
+
+        public Supplier<StateMgmtSetting> OutputAllHelperSettings { get; }
 
         public void InstanceCodegen(
             CodegenInstanceAux instance,
@@ -84,15 +87,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 "HasHavingClause",
                 typeof(ResultSetProcessorSimple),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
+                node => node.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
+                node => node.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
         }
 
         public void ProcessViewResultCodegen(

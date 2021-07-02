@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
@@ -25,6 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             ContextPartitionSelector[] contextPartitionSelectors,
             FAFQueryMethodAssignerSetter assignerSetter,
             ContextManagementService contextManagementService)
+        {
+            throw new UnsupportedOperationException("Context with join is not supported");
+        }
+        
+        public void ReleaseTableLocks(FireAndForgetProcessor[] processors)
         {
             throw new UnsupportedOperationException("Context with join is not supported");
         }

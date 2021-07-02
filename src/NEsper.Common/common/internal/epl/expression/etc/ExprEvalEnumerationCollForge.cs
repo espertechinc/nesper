@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -33,9 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             EventType targetType,
             bool firstRowOnly)
         {
-            this._enumerationForge = enumerationForge;
-            this._targetType = targetType;
-            this._firstRowOnly = firstRowOnly;
+            _enumerationForge = enumerationForge;
+            _targetType = targetType;
+            _firstRowOnly = firstRowOnly;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             if (_firstRowOnly) {
-                CodegenMethod firstMethodNode = codegenMethodScope
+                var firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
                 firstMethodNode.Block
                     .DeclareVar<FlexCollection>(
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 return LocalMethod(firstMethodNode);
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
                 typeof(ExprEvalEnumerationCollForge),
                 codegenClassScope);

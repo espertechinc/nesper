@@ -9,7 +9,9 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.util;
@@ -19,12 +21,12 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 {
     public class PropertyHashedArrayFactory : EventTableFactory
     {
-        private readonly PropertyHashedEventTableFactory[] factories;
-        private readonly string optionalIndexName;
-        private readonly EventPropertyValueGetter[] propertyGetters;
-        private readonly string[] propertyNames;
-        private readonly int streamNum;
-        private readonly bool unique;
+        private readonly PropertyHashedEventTableFactory[] _factories;
+        private readonly string _optionalIndexName;
+        private readonly EventPropertyValueGetter[] _propertyGetters;
+        private readonly string[] _propertyNames;
+        private readonly int _streamNum;
+        private readonly bool _unique;
 
         public PropertyHashedArrayFactory(
             int streamNum,
@@ -33,14 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             string optionalIndexName,
             EventPropertyValueGetter[] propertyGetters)
         {
-            this.streamNum = streamNum;
-            this.propertyNames = propertyNames;
-            this.unique = unique;
-            this.optionalIndexName = optionalIndexName;
-            this.propertyGetters = propertyGetters;
-            factories = new PropertyHashedEventTableFactory[propertyGetters.Length];
-            for (var i = 0; i < factories.Length; i++) {
-                factories[i] = new PropertyHashedEventTableFactory(
+            _streamNum = streamNum;
+            _propertyNames = propertyNames;
+            _unique = unique;
+            _optionalIndexName = optionalIndexName;
+            _propertyGetters = propertyGetters;
+            _factories = new PropertyHashedEventTableFactory[propertyGetters.Length];
+            for (var i = 0; i < _factories.Length; i++) {
+                _factories[i] = new PropertyHashedEventTableFactory(
                     streamNum,
                     new[] {propertyNames[i]},
                     unique,
@@ -51,18 +53,18 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
         }
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
-            var tables = new EventTable[propertyGetters.Length];
-            if (unique) {
+            var tables = new EventTable[_propertyGetters.Length];
+            if (_unique) {
                 for (var i = 0; i < tables.Length; i++) {
-                    tables[i] = new PropertyHashedEventTableUnique(factories[i]);
+                    tables[i] = new PropertyHashedEventTableUnique(_factories[i]);
                 }
             }
             else {
                 for (var i = 0; i < tables.Length; i++) {
-                    tables[i] = new PropertyHashedEventTableUnadorned(factories[i]);
+                    tables[i] = new PropertyHashedEventTableUnadorned(_factories[i]);
                 }
             }
 
@@ -71,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 
         public Type EventTableClass {
             get {
-                if (unique) {
+                if (_unique) {
                     return typeof(PropertyHashedEventTableUnique);
                 }
 
@@ -82,11 +84,11 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
         public string ToQueryPlan()
         {
             return GetType().GetSimpleName() +
-                   (unique ? " unique" : " non-unique") +
+                   (_unique ? " unique" : " non-unique") +
                    " streamNum=" +
-                   streamNum +
+                   _streamNum +
                    " propertyNames=" +
-                   propertyNames.RenderAny();
+                   _propertyNames.RenderAny();
         }
     }
 } // end of namespace

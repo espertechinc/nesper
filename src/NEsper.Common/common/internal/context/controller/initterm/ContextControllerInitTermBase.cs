@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval);
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties);
 
         public override void Deactivate(
             IntSeqKey path,

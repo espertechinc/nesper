@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -20,7 +21,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumMinMax
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
@@ -34,35 +34,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMinMaxScalarChain(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumMinMaxScalarChain());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMinMaxScalarWithPredicate(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumMinMaxScalarWithPredicate());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMinMaxScalar(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumMinMaxScalar());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithMinMaxEvents(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprEnumMinMaxEvents());
 			return execs;
 		}
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[7], "Strvals.max( (v, i, s) => extractNum(v) + i*10 + s*100)");
 
 				builder.WithStatementConsumer(
-					stmt => AssertTypes(
+					stmt => SupportEventPropUtil.AssertTypes(
 						stmt.EventType,
 						fields,
 						new[] {
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[4], "Contained.min( (x, i, s) => P00 + i*10 + s*100)");
 				builder.WithExpression(fields[5], "Contained.max( (x, i, s) => P00 + i*10 + s*100)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2")).Expect(fields, 2, 12, 12, 22, 312, 322);
 
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Strvals.min()");
 				builder.WithExpression(fields[1], "Strvals.max()");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4")).Expect(fields, "E1", "E5");
 
@@ -184,6 +184,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
 					typeof(SupportBean_ST0).FullName +
 					"'");
+				
+				
+				epl = "select Contained.min(x => null) from SupportBean_ST0_Container";
+				TryInvalidCompile(env, epl, "Failed to validate select-clause expression 'Contained.min()': Null-type is not allowed");
+
 			}
 		}
 
@@ -198,6 +203,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				return decimal.Parse(arg.Substring(1));
 			}
+		}
+
+		public class MyEvent
+		{
+			public MyEvent Myevent { get; }
 		}
 	}
 } // end of namespace

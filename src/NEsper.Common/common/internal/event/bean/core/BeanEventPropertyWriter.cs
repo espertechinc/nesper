@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Type clazz,
             MemberInfo writerMember)
         {
-            this._clazz = clazz;
-            this._writerMember = writerMember;
+            _clazz = clazz;
+            _writerMember = writerMember;
         }
 
         public virtual void Write(

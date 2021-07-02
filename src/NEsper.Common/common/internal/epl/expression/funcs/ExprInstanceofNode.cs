@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -25,9 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     [Serializable]
     public class ExprInstanceofNode : ExprNodeBase
     {
-        private readonly string[] classIdentifiers;
+        private readonly string[] _classIdentifiers;
 
-        [NonSerialized] private ExprInstanceofNodeForge forge;
+        [NonSerialized] private ExprInstanceofNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -35,42 +36,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="classIdentifiers">is a list of type names to check type for</param>
         public ExprInstanceofNode(string[] classIdentifiers)
         {
-            this.classIdentifiers = classIdentifiers;
+            this._classIdentifiers = classIdentifiers;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 1) {
+            if (ChildNodes.Length != 1) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 child expression node supplying the expression to test");
             }
 
-            if ((classIdentifiers == null) || (classIdentifiers.Length == 0)) {
+            if ((_classIdentifiers == null) || (_classIdentifiers.Length == 0)) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 or more class identifiers to verify type against");
             }
 
-            ISet<Type> classList = GetClassSet(classIdentifiers, validationContext.ImportService);
+            ISet<Type> classList = GetClassSet(_classIdentifiers, validationContext.ImportService);
             Type[] classes;
             lock (this) {
                 classes = classList.ToArray();
             }
 
-            forge = new ExprInstanceofNodeForge(this, classes);
+            _forge = new ExprInstanceofNodeForge(this, classes);
             return null;
         }
 
@@ -83,13 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNodeRenderableFlags flags)
         {
             writer.Write("instanceof(");
-            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(",");
 
             string delimiter = "";
-            for (int i = 0; i < classIdentifiers.Length; i++) {
+            for (int i = 0; i < _classIdentifiers.Length; i++) {
                 writer.Write(delimiter);
-                writer.Write(classIdentifiers[i]);
+                writer.Write(_classIdentifiers[i]);
                 delimiter = ",";
             }
 
@@ -109,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var other = (ExprInstanceofNode) node;
-            if (Collections.AreEqual(other.classIdentifiers, classIdentifiers)) {
+            if (Collections.AreEqual(other._classIdentifiers, _classIdentifiers)) {
                 return true;
             }
 
@@ -121,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// </summary>
         /// <returns>class names</returns>
         public string[] ClassIdentifiers {
-            get => classIdentifiers;
+            get => _classIdentifiers;
         }
 
         private ISet<Type> GetClassSet(

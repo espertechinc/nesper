@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
     /// </summary>
     public class AsymmetricEqualityComparer : IEqualityComparer<object>
     {
-        public static readonly AsymmetricEqualityComparer Instance = new AsymmetricEqualityComparer();
+        public static readonly AsymmetricEqualityComparer INSTANCE = new AsymmetricEqualityComparer();
 
         /// <summary>
         ///     Determines whether the specified objects are equal.

@@ -58,175 +58,175 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithOnDemandQuery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateOnDemandQuery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoParamChainedAndProperty(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateNoParamChainedAndProperty());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMixedNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMixedNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLateInitialize(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateLateInitialize());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastMaxMixedOnSelect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateLastMaxMixedOnSelect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateOnDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOutputRateLimiting(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateOutputRateLimiting());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowAndSumWGroup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateWindowAndSumWGroup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstLastWindowGroup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateFirstLastWindowGroup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstLastWindowNoGroup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateFirstLastWindowNoGroup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBatchWindowGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateBatchWindowGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateBatchWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOuterJoin1Access(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateOuterJoin1Access());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoin2Access(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateJoin2Access());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTypeAndColNameAndEquivalency(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateTypeAndColNameAndEquivalency());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodAndAccessTogether(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAndAccessTogether());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrevNthIndexedFirstLast(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregatePrevNthIndexedFirstLast());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstLastIndexed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateFirstLastIndexed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowedGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateWindowedGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowedUnGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateWindowedUnGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundedStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateUnboundedStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnboundedSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateUnboundedSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStar(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateStar());
             return execs;
         }

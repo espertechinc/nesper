@@ -33,35 +33,35 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithWindowPrev(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedWindowPrev());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimedMonthScoped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedTimedMonthScoped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWinSceneShort(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedWinSceneShort());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBatchSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedBatchSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWindowSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedWindowSceneOne());
             return execs;
         }

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSubqueryMultikeyWArray(true));
             execs.Add(new InfraSubqueryMultikeyWArray(false));
             return execs;
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithSubquerySelf(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSubquerySelf(true));
             execs.Add(new InfraSubquerySelf(false));
             return execs;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithUpdateOrderOfFields(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUpdateOrderOfFields(true));
             execs.Add(new InfraUpdateOrderOfFields(false));
             return execs;
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         public static IList<RegressionExecution> WithOnUpdateSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNWTableOnUpdateSceneOne(true));
             execs.Add(new InfraNWTableOnUpdateSceneOne(false));
             return execs;

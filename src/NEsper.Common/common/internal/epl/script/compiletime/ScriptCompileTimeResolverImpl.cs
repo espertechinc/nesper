@@ -35,11 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             ModuleDependenciesCompileTime moduleDependencies,
             bool isFireAndForget)
         {
-            this._moduleName = moduleName;
-            this._moduleUses = moduleUses;
-            this._locals = locals;
-            this._path = path;
-            this._moduleDependencies = moduleDependencies;
+            _moduleName = moduleName;
+            _moduleUses = moduleUses;
+            _locals = locals;
+            _path = path;
+            _moduleDependencies = moduleDependencies;
             _isFireAndForget = isFireAndForget;
         }
 

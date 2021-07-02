@@ -33,28 +33,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithOuterInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinOuterInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> With4StreamWhereClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin4StreamWhereClause());
             return execs;
         }
 
         public static IList<RegressionExecution> With3StreamMixed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3StreamMixed());
             return execs;
         }
 
         public static IList<RegressionExecution> With3StreamAllUnidirectional(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin3StreamAllUnidirectional(false));
             execs.Add(new EPLJoin3StreamAllUnidirectional(true));
             return execs;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> With2Stream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoin2Stream());
             return execs;
         }

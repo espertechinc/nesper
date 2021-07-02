@@ -17,11 +17,11 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class DataInputOutputSerdeForgeSingleton : DataInputOutputSerdeForge
 	{
-		private readonly Type serdeClass;
+		private readonly Type _serdeClass;
 
 		public DataInputOutputSerdeForgeSingleton(Type serdeClass)
 		{
-			this.serdeClass = serdeClass;
+			this._serdeClass = serdeClass;
 		}
 
 		public CodegenExpression Codegen(
@@ -29,12 +29,12 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			CodegenClassScope classScope,
 			CodegenExpression optionalEventTypeResolver)
 		{
-			return PublicConstValue(serdeClass, "INSTANCE");
+			return PublicConstValue(_serdeClass, "INSTANCE");
 		}
 
 		public string ForgeClassName()
 		{
-			return serdeClass.Name;
+			return _serdeClass.Name;
 		}
 	}
 } // end of namespace

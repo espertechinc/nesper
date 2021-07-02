@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             if (plan.FilterNegate != null) {
                 var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     return null;
                 }
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<FilterValueSetParam[]> pathList = new List<FilterValueSetParam[]>(paths.Length);
             foreach (var path in paths) {
                 var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     continue;
                 }
 

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -44,21 +45,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithWithStringSplit(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEWithStringSplit());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithAdditionalInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEAdditionalInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithWithStaticMethodAndUDF(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEWithStaticMethodAndUDF(false));
 			execs.Add(new ExprCoreAAEWithStaticMethodAndUDF(true));
 			return execs;
@@ -66,14 +67,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithVariableRootedChained(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEVariableRootedChained());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithVariableRootedTopLevelProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEVariableRootedTopLevelProp(false));
 			execs.Add(new ExprCoreAAEVariableRootedTopLevelProp(true));
 			return execs;
@@ -81,21 +82,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithPropRootedNestedNestedArrayProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEPropRootedNestedNestedArrayProp());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithPropRootedNestedArrayProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEPropRootedNestedArrayProp());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithPropRootedNestedNestedProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEPropRootedNestedNestedProp(false));
 			execs.Add(new ExprCoreAAEPropRootedNestedNestedProp(true));
 			return execs;
@@ -103,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithPropRootedNestedProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEPropRootedNestedProp(false));
 			execs.Add(new ExprCoreAAEPropRootedNestedProp(true));
 			return execs;
@@ -111,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithPropRootedTopLevelProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreAAEPropRootedTopLevelProp(false));
 			execs.Add(new ExprCoreAAEPropRootedTopLevelProp(true));
 			return execs;
@@ -400,12 +401,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					env,
 					path,
 					"select Lvl1.Lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0",
-					"Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber,IndexN...(41 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber,IndexN...(41 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
 				TryInvalidCompile(
 					env,
 					path,
 					"select me.Lvl1.Lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
-					"Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber,Ind...(44 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber,Ind...(44 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
 
 				// double-array
 				TryInvalidCompile(
@@ -424,12 +425,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					env,
 					path,
 					"select Lvl1.Lvl2.Intarr[Id] from Lvl0",
-					"Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
 				TryInvalidCompile(
 					env,
 					path,
 					"select me.Lvl1.Lvl2.Intarr[Id] from Lvl0 as me",
-					"Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
 
 				env.UndeployAll();
 			}
@@ -575,12 +576,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					env,
 					path,
 					"select Lvl1.Intarr[IndexNumber, IndexNumber] from Lvl0",
-					"Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
 				TryInvalidCompile(
 					env,
 					path,
 					"select me.Lvl1.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
-					"Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
 
 				// double-array
 				TryInvalidCompile(
@@ -599,12 +600,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					env,
 					path,
 					"select Lvl1.Intarr[Id] from Lvl0",
-					"Failed to validate select-clause expression 'Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
 				TryInvalidCompile(
 					env,
 					path,
 					"select me.Lvl1.Intarr[Id] from Lvl0 as me",
-					"Failed to validate select-clause expression 'me.Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type array of System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
 
 				env.UndeployAll();
 			}

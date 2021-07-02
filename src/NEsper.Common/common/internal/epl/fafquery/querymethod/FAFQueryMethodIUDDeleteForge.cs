@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 "OptionalWhereClause",
                 whereClause == null
                     ? ConstantNull()
-                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));
+                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, GetType(), classScope));
         }
     }
 } // end of namespace

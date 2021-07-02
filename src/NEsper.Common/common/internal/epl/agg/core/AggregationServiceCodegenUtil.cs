@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
                 var instance = optionalMultiKey.ClassNameMK.Type != null
                     ? NewInstance(optionalMultiKey.ClassNameMK.Type, expressions)
-                    : NewInstanceInner(optionalMultiKey.ClassNameMK.Name, expressions);
+                    : NewInstanceNamed(optionalMultiKey.ClassNameMK.Name, expressions);
 
                 exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
                 method.Block.MethodReturn(instance);

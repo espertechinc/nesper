@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.pattern.and;
 using com.espertech.esper.common.@internal.epl.pattern.every;
 using com.espertech.esper.common.@internal.epl.pattern.everydistinct;
@@ -21,27 +22,27 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     public interface PatternFactoryService
     {
-        EvalRootFactoryNode Root();
+        EvalRootFactoryNode Root(StateMgmtSetting stateMgmtSettings);
 
-        EvalObserverFactoryNode Observer();
+        EvalObserverFactoryNode Observer(StateMgmtSetting stateMgmtSettings);
 
-        EvalGuardFactoryNode Guard();
+        EvalGuardFactoryNode Guard(StateMgmtSetting stateMgmtSettings);
 
-        EvalAndFactoryNode And();
+        EvalAndFactoryNode And(StateMgmtSetting stateMgmtSettings);
 
-        EvalOrFactoryNode Or();
+        EvalOrFactoryNode Or(StateMgmtSetting stateMgmtSettings);
 
-        EvalFilterFactoryNode Filter();
+        EvalFilterFactoryNode Filter(StateMgmtSetting stateMgmtSettings);
 
-        EvalEveryFactoryNode Every();
+        EvalEveryFactoryNode Every(StateMgmtSetting stateMgmtSettings);
 
-        EvalNotFactoryNode Not();
+        EvalNotFactoryNode Not(StateMgmtSetting stateMgmtSettings);
 
-        EvalFollowedByFactoryNode Followedby();
+        EvalFollowedByFactoryNode Followedby(StateMgmtSetting stateMgmtSettings);
 
-        EvalMatchUntilFactoryNode MatchUntil();
+        EvalMatchUntilFactoryNode MatchUntil(StateMgmtSetting stateMgmtSettings);
 
-        EvalEveryDistinctFactoryNode EveryDistinct();
+        EvalEveryDistinctFactoryNode EveryDistinct(StateMgmtSetting stateMgmtSettings);
 
         TimerIntervalObserverFactory ObserverTimerInterval();
 

@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			JsonEventPropertyGetter innerGetter,
 			string underlyingClassName)
 		{
-			this.Index = index;
-			this.InnerGetter = innerGetter;
-			this.UnderlyingClassName = underlyingClassName;
+			Index = index;
+			InnerGetter = innerGetter;
+			UnderlyingClassName = underlyingClassName;
 		}
 
 		public object Get(EventBean eventBean)
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenMethod method = codegenMethodScope.MakeChild(typeof(object), this.GetType(), codegenClassScope)
+			CodegenMethod method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
 				.AddParam(UnderlyingClassName, "und");
 			method.Block
 				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenMethod method = codegenMethodScope.MakeChild(typeof(bool), this.GetType(), codegenClassScope)
+			CodegenMethod method = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
 				.AddParam(UnderlyingClassName, "und");
 			method.Block
 				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenMethod method = codegenMethodScope.MakeChild(typeof(object), this.GetType(), codegenClassScope)
+			CodegenMethod method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
 				.AddParam(UnderlyingClassName, "und");
 			method.Block
 				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))

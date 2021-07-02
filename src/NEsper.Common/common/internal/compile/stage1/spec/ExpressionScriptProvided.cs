@@ -28,7 +28,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             string expression,
             string[] parameterNames,
             string optionalReturnTypeName,
-            bool optionalReturnTypeIsArray,
             string optionalEventTypeName,
             string optionalDialect)
         {
@@ -36,7 +35,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             Expression = expression;
             ParameterNames = parameterNames;
             OptionalReturnTypeName = optionalReturnTypeName;
-            IsOptionalReturnTypeIsArray = optionalReturnTypeIsArray;
             OptionalEventTypeName = optionalEventTypeName;
             OptionalDialect = optionalDialect;
             if (expression == null) {
@@ -54,8 +52,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public string OptionalDialect { get; set; }
 
-        public bool IsOptionalReturnTypeIsArray { get; set; }
-
         public string OptionalEventTypeName { get; set; }
 
         public ExpressionScriptCompiled CompiledBuf { get; set; }
@@ -70,13 +66,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ExpressionScriptProvided), GetType(), classScope);
             method.Block
-                .DeclareVar<ExpressionScriptProvided>("sp", NewInstance(typeof(ExpressionScriptProvided)))
+                .DeclareVarNewInstance<ExpressionScriptProvided>("sp")
                 .SetProperty(Ref("sp"), "Name", Constant(Name))
                 .SetProperty(Ref("sp"), "Expression", Constant(Expression))
                 .SetProperty(Ref("sp"), "ParameterNames", Constant(ParameterNames))
                 .SetProperty(Ref("sp"), "OptionalReturnTypeName", Constant(OptionalReturnTypeName))
                 .SetProperty(Ref("sp"), "OptionalEventTypeName", Constant(OptionalEventTypeName))
-                .SetProperty(Ref("sp"), "IsOptionalReturnTypeIsArray", Constant(IsOptionalReturnTypeIsArray))
                 .SetProperty(Ref("sp"), "OptionalDialect", Constant(OptionalDialect))
                 .SetProperty(Ref("sp"), "ModuleName", Constant(ModuleName))
                 .SetProperty(Ref("sp"), "Visibility", Constant(Visibility))
@@ -111,12 +106,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public ExpressionScriptProvided WithOptionalEventTypeName(string optionalEventTypeName)
         {
             OptionalEventTypeName = optionalEventTypeName;
-            return this;
-        }
-
-        public ExpressionScriptProvided WithOptionalReturnTypeIsArray(bool optionalReturnTypeIsArray)
-        {
-            IsOptionalReturnTypeIsArray = optionalReturnTypeIsArray;
             return this;
         }
 

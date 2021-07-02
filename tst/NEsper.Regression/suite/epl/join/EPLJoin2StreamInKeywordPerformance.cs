@@ -33,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithMultiIndexLookup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinInKeywordMultiIndexLookup());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSingleIndexLookup(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinInKeywordSingleIndexLookup());
             return execs;
         }

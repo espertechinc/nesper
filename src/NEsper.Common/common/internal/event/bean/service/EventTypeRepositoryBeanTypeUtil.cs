@@ -202,9 +202,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                     "Predefined event type " +
                     clazzFullName +
                     " expected class " +
-                    clazz.CleanName() +
+                    clazz.TypeSafeName() +
                     " but is already defined to another class " +
-                    existing.CleanName());
+                    existing.TypeSafeName());
             }
 
             resolvedBeanEventTypes.Put(clazzFullName, clazz);

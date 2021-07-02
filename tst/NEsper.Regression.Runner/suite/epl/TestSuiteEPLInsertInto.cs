@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithRStreamOMToStmt() => RegressionRunner.Run(_session, EPLInsertInto.WithRStreamOMToStmt());
 
             [Test, RunInApplicationDomain]
-            public void WithProvidePartitialCols() => RegressionRunner.Run(_session, EPLInsertInto.WithProvidePartitialCols());
+            public void WithProvidePartialCols() => RegressionRunner.Run(_session, EPLInsertInto.WithProvidePartialCols());
 
             [Test, RunInApplicationDomain]
             public void WithSingleBeanToMulti() => RegressionRunner.Run(_session, EPLInsertInto.WithSingleBeanToMulti());

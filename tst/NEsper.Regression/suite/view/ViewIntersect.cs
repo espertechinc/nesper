@@ -45,138 +45,146 @@ namespace com.espertech.esper.regressionlib.suite.view
             WithFirstUniqueAndLengthOnDelete(execs);
             WithTimeWinNamedWindow(execs);
             WithTimeWinNamedWindowDelete(execs);
+            WithGroupTimeLength(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupTimeLength(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ViewIntersectGroupTimeLength());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWinNamedWindowDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeWinNamedWindowDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWinNamedWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeWinNamedWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstUniqueAndLengthOnDelete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectFirstUniqueAndLengthOnDelete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupTimeUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectGroupTimeUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeUniqueMultikey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeUniqueMultikey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLengthOneUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectLengthOneUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWinSODA(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeWinSODA());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWinReversed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeWinReversed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimeWin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeWin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSorted(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectSorted());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectTwoUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithThreeUnique(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectThreeUnique());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectGroupBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndDerivedValue(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectAndDerivedValue());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectBatchWindow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstUniqueAndFirstLength(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectFirstUniqueAndFirstLength());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUniqueAndFirstLength(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewIntersectUniqueAndFirstLength());
             return execs;
         }
@@ -671,6 +679,79 @@ namespace com.espertech.esper.regressionlib.suite.view
             }
 
             return result.ToArray();
+        }
+
+        internal class ViewIntersectGroupTimeLength : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@name('s0') select sum(IntPrimitive) as c0 from SupportBean#groupwin(TheString)#time(1 second)#length(2)";
+                env.AdvanceTime(0);
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssert(env, "G1", 10, 10);
+
+                env.AdvanceTime(250);
+                SendAssert(env, "G2", 100, 110);
+
+                env.Milestone(0);
+
+                env.AdvanceTime(500);
+                SendAssert(env, "G1", 11, 10 + 100 + 11);
+
+                env.AdvanceTime(750);
+                SendAssert(env, "G2", 101, 10 + 100 + 11 + 101);
+
+                env.Milestone(1);
+
+                env.AdvanceTime(800);
+                SendAssert(env, "G3", 1000, 10 + 100 + 11 + 101 + 1000);
+
+                env.AdvanceTime(1000); // expires: {"G1", 10}
+                AssertReceived(env, 100 + 11 + 101 + 1000);
+
+                env.Milestone(2);
+
+                SendAssert(env, "G2", 102, 11 + 101 + 1000 + 102); // expires: {"G2", 100}
+
+                env.AdvanceTime(1499); // expires: {"G1", 10}
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.Milestone(3);
+
+                env.AdvanceTime(1500); // expires: {"G1", 11}
+                AssertReceived(env, 101 + 1000 + 102);
+
+                env.AdvanceTime(1750); // expires: {"G2", 101}
+                AssertReceived(env, 1000 + 102);
+
+                env.Milestone(4);
+
+                env.AdvanceTime(1800); // expires: {"G3", 1000}
+                AssertReceived(env, 102);
+
+                env.AdvanceTime(2000); // expires: {"G2", 102}
+                AssertReceived(env, null);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                string theString,
+                int intPrimitive,
+                object expected)
+            {
+                env.SendEventBean(new SupportBean(theString, intPrimitive));
+                AssertReceived(env, expected);
+            }
+
+            private static void AssertReceived(
+                RegressionEnvironment env,
+                object expected)
+            {
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
         }
 
         internal class ViewIntersectUniqueAndFirstLength : RegressionExecution

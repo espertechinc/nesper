@@ -19,12 +19,12 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventTypeCompileTimeResolver : EventTypeNameResolver
     {
-        private readonly EventTypeCompileTimeRegistry locals;
-        private readonly ModuleDependenciesCompileTime moduleDependencies;
-        private readonly string moduleName;
-        private readonly ICollection<string> moduleUses;
-        private readonly EventTypeRepositoryImpl publics;
-        private readonly bool isFireAndForget;
+        private readonly EventTypeCompileTimeRegistry _locals;
+        private readonly ModuleDependenciesCompileTime _moduleDependencies;
+        private readonly string _moduleName;
+        private readonly ICollection<string> _moduleUses;
+        private readonly EventTypeRepositoryImpl _publics;
+        private readonly bool _isFireAndForget;
 
         public EventTypeCompileTimeResolver(
             string moduleName,
@@ -35,20 +35,20 @@ namespace com.espertech.esper.common.@internal.@event.core
             ModuleDependenciesCompileTime moduleDependencies,
             bool isFireAndForget)
         {
-            this.moduleName = moduleName;
-            this.moduleUses = moduleUses;
-            this.locals = locals;
-            this.publics = publics;
+            this._moduleName = moduleName;
+            this._moduleUses = moduleUses;
+            this._locals = locals;
+            this._publics = publics;
             Path = path;
-            this.moduleDependencies = moduleDependencies;
-            this.isFireAndForget = isFireAndForget;
+            this._moduleDependencies = moduleDependencies;
+            this._isFireAndForget = isFireAndForget;
         }
 
         public PathRegistry<string, EventType> Path { get; }
 
         public EventType GetTypeByName(string typeName)
         {
-            var local = locals.GetModuleTypes(typeName);
+            var local = _locals.GetModuleTypes(typeName);
             var path = ResolvePath(typeName);
             var preconfigured = ResolvePreconfigured(typeName);
             return CompileTimeResolverUtil.ValidateAmbiguous(
@@ -61,32 +61,32 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         private EventType ResolvePreconfigured(string typeName)
         {
-            var eventType = publics.GetTypeByName(typeName);
+            var eventType = _publics.GetTypeByName(typeName);
             if (eventType == null) {
                 return null;
             }
 
-            moduleDependencies.AddPublicEventType(typeName);
+            _moduleDependencies.AddPublicEventType(typeName);
             return eventType;
         }
 
         private EventType ResolvePath(string typeName)
         {
             try {
-                var typeAndModule = Path.GetAnyModuleExpectSingle(typeName, moduleUses);
+                var typeAndModule = Path.GetAnyModuleExpectSingle(typeName, _moduleUses);
                 if (typeAndModule == null) {
                     return null;
                 }
 
-                if (!isFireAndForget &&
+                if (!_isFireAndForget &&
                     !NameAccessModifierExtensions.Visible(
                         typeAndModule.First.Metadata.AccessModifier,
                         typeAndModule.Second,
-                        moduleName)) {
+                        _moduleName)) {
                     return null;
                 }
 
-                moduleDependencies.AddPathEventType(typeName, typeAndModule.Second);
+                _moduleDependencies.AddPathEventType(typeName, typeAndModule.Second);
                 return typeAndModule.First;
             }
             catch (PathException e) {

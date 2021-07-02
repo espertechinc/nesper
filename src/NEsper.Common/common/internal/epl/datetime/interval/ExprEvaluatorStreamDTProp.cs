@@ -24,17 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly EventPropertyGetterSPI getter;
+        private readonly EventPropertyGetterSPI _getter;
 
-        private readonly int streamId;
+        private readonly int _streamId;
 
         public ExprEvaluatorStreamDTProp(
             int streamId,
             EventPropertyGetterSPI getter,
             Type getterReturnTypeBoxed)
         {
-            this.streamId = streamId;
-            this.getter = getter;
+            this._streamId = streamId;
+            this._getter = getter;
             EvaluationType = getterReturnTypeBoxed;
         }
 
@@ -43,12 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var @event = eventsPerStream[streamId];
+            var @event = eventsPerStream[_streamId];
             if (@event == null) {
                 return null;
             }
 
-            return getter.Get(@event);
+            return _getter.Get(@event);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -69,12 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamId)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         EvaluationType,
-                        getter.EventBeanGetCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                        _getter.EventBeanGetCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

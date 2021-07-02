@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
     {
         /// <summary>Ctor.</summary>
         /// <param name="message">validation error message</param>
-        public GuardParameterException(String message)
+        public GuardParameterException(string message)
             : base(message)
         {
         }

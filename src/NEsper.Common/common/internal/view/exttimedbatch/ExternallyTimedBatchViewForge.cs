@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -48,10 +50,11 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var windowName = ViewName;
             var validated = ViewForgeSupport.Validate(
@@ -99,12 +102,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(ExternallyTimedBatchViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Exttimebatch";
         }
@@ -123,6 +126,11 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                     factory,
                     "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_EXTTIMEDBATCH;
         }
     }
 } // end of namespace

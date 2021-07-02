@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -33,14 +34,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             TableMetaData table)
         {
-            this._enumerationForge = enumerationForge;
-            this._table = table;
+            _enumerationForge = enumerationForge;
+            _table = table;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
                 return new ProxyExprEvaluator() {
-                    ProcEvaluate = (
+                    procEvaluate = (
                         eventsPerStream,
                         isNewData,
                         context) => {
@@ -61,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_table, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_table, codegenClassScope, GetType());
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);

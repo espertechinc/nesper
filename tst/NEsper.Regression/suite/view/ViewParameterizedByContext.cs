@@ -29,21 +29,21 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithMoreWindows(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewParameterizedByContextMoreWindows());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewParameterizedByContextDocSample());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLengthWindow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewParameterizedByContextLengthWindow());
             return execs;
         }

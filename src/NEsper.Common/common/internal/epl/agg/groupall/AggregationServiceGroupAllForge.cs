@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             method.Block
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
-                    NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
+                    NewInstanceNamed(classNames.RowFactoryTop, Ref("this")))
                 .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
-                    NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
+                    NewInstanceNamed(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar<AggregationServiceFactory>(
                     "svcFactory",
-                    NewInstanceInner(classNames.ServiceFactory, Ref("this")))
+                    NewInstanceNamed(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Get(EPStatementInitServicesConstants.AGGREGATIONSERVICEFACTORYSERVICE)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(NewInstanceInner(classNames.Service, Ref("o")));
+            method.Block.MethodReturn(NewInstanceNamed(classNames.Service, Ref("o")));
         }
 
         public void RowCtorCodegen(AggregationRowCtorDesc rowCtorDesc)
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             AggregationClassNames classNames)
         {
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, MEMBER_ROW.Ref));
-            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceInner(classNames.RowTop, Ref("o")));
+            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceNamed(classNames.RowTop, Ref("o")));
         }
 
         public void GetValueCodegen(

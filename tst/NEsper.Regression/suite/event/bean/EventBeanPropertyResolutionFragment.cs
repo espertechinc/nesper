@@ -26,21 +26,126 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLBeanMapSimpleTypes());
-            execs.Add(new EPLBeanObjectArraySimpleTypes());
-            execs.Add(new EPLBeanWrapperFragmentWithMap());
-            execs.Add(new EPLBeanWrapperFragmentWithObjectArray());
-            execs.Add(new EPLBeanNativeBeanFragment());
-            execs.Add(new EPLBeanMapFragmentMapNested());
-            execs.Add(new EPLBeanObjectArrayFragmentObjectArrayNested());
-            execs.Add(new EPLBeanMapFragmentMapUnnamed());
-            execs.Add(new EPLBeanMapFragmentTransposedMapEventBean());
-            execs.Add(new EPLBeanObjectArrayFragmentTransposedMapEventBean());
-            execs.Add(new EPLBeanMapFragmentMapBeans());
-            execs.Add(new EPLBeanObjectArrayFragmentBeans());
-            execs.Add(new EPLBeanMapFragmentMap3Level());
-            execs.Add(new EPLBeanObjectArrayFragment3Level());
+            WithMapSimpleTypes(execs);
+            WithObjectArraySimpleTypes(execs);
+            WithWrapperFragmentWithMap(execs);
+            WithWrapperFragmentWithObjectArray(execs);
+            WithNativeBeanFragment(execs);
+            WithMapFragmentMapNested(execs);
+            WithObjectArrayFragmentObjectArrayNested(execs);
+            WithMapFragmentMapUnnamed(execs);
+            WithMapFragmentTransposedMapEventBean(execs);
+            WithObjectArrayFragmentTransposedMapEventBean(execs);
+            WithMapFragmentMapBeans(execs);
+            WithObjectArrayFragmentBeans(execs);
+            WithMapFragmentMap3Level(execs);
+            WithObjectArrayFragment3Level(execs);
+            WithFragmentMapMulti(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFragmentMapMulti(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLBeanFragmentMapMulti());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectArrayFragment3Level(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanObjectArrayFragment3Level());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapFragmentMap3Level(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanMapFragmentMap3Level());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectArrayFragmentBeans(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanObjectArrayFragmentBeans());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapFragmentMapBeans(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanMapFragmentMapBeans());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectArrayFragmentTransposedMapEventBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanObjectArrayFragmentTransposedMapEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapFragmentTransposedMapEventBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanMapFragmentTransposedMapEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapFragmentMapUnnamed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanMapFragmentMapUnnamed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectArrayFragmentObjectArrayNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanObjectArrayFragmentObjectArrayNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapFragmentMapNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanMapFragmentMapNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNativeBeanFragment(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanNativeBeanFragment());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWrapperFragmentWithObjectArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanWrapperFragmentWithObjectArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWrapperFragmentWithMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanWrapperFragmentWithMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectArraySimpleTypes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanObjectArraySimpleTypes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapSimpleTypes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLBeanMapSimpleTypes());
             return execs;
         }
 
@@ -148,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 var innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
                 Assert.AreEqual(
-                    "NestedNestedValue", 
+                    "NestedNestedValue",
                     innerBeanEvent.Get("Nested.NestedNested.NestedNestedValue"));
                 Assert.AreEqual(
                     "NestedNestedValue",

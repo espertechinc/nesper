@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             Deque<Chainable> chainSpecStack,
             DatetimeMethodDesc dtMethod,
             string dtMethodName,
-            EPType inputType,
+            EPChainableType inputType,
             IList<ExprNode> parameters,
             ExprDotNodeFilterAnalyzerInput inputDesc,
             TimeAbacus timeAbacus,
@@ -51,21 +51,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             var message = "Date-time enumeration method '" +
                           dtMethodName +
                           "' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property";
-            if (inputType is EventEPType eventEpType) {
-                if (eventEpType.EventType.StartTimestampPropertyName == null) {
+            if (inputType is EPChainableTypeEventSingle chainableTypeEventSingle) {
+                if (chainableTypeEventSingle.EventType.StartTimestampPropertyName == null) {
                     throw new ExprValidationException(message);
                 }
             }
             else {
-                if (!(inputType is ClassEPType || inputType is NullEPType)) {
+                if (!(inputType is EPChainableTypeClass || inputType is EPChainableTypeNull)) {
                     throw new ExprValidationException(
                         message + " but received " + inputType.ToTypeDescriptive());
                 }
 
-                if (inputType is ClassEPType classEpType) {
-                    if (!TypeHelper.IsDateTime(classEpType.Clazz)) {
+                if (inputType is EPChainableTypeClass chainableTypeClass) {
+                    if (!TypeHelper.IsDateTime(chainableTypeClass.Clazz)) {
                         throw new ExprValidationException(
-                            message + " but received " + classEpType.Clazz.CleanName());
+                            message + " but received " + chainableTypeClass.Clazz.TypeSafeName());
                     }
                 }
             }
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             "Plug-in datetime method provider " + dtmPluginForgeFactory.GetType() + " returned a null-value for the operations");
                     }
 
-                    var input = EPTypeHelper.GetClassSingleValued(inputType);
+                    var input = EPChainableTypeClass.FromInputOrNull(inputType);
                     if (ops is DateTimeMethodOpsModify dateTimeMethodOpsModify) {
                         calendarForges.Add(new DTMPluginValueChangeForge(input, dateTimeMethodOpsModify, usageDesc.CurrentParameters));
                     }
@@ -186,14 +186,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     throw new ExprValidationException("Invalid input for date-time method '" + currentMethodName + "'");
                 }
             }
-
-            var dotForge = new ExprDotDTForge(
-                calendarForges,
-                timeAbacus,
-                reformatForge,
-                intervalForge,
-                inputType.GetClassSingleValued(),
-                inputType.GetEventTypeSingleValued());
+            
+            var inputTypeClass = EPChainableTypeClass.FromInputOrNull(inputType);
+            var inputEventType = EPChainableTypeEventSingle.FromInputOrNull(inputType);
+            var dotForge = new ExprDotDTForge(calendarForges, timeAbacus, reformatForge, intervalForge, inputTypeClass, inputEventType);
+            
             var returnType = dotForge.TypeInfo;
             return new ExprDotDTMethodDesc(dotForge, returnType, filterAnalyzerDesc);
         }
@@ -208,24 +205,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 // Time periods get special attention
                 if (innerExpr is ExprTimePeriod timePeriod) {
                     inputExpr[i] = new ProxyExprForge {
-                        ProcExprEvaluator = () => {
+                        procExprEvaluator = () => {
                             return new ProxyExprEvaluator {
-                                ProcEvaluate = (
+                                procEvaluate = (
                                         eventsPerStream,
                                         isNewData,
                                         context) =>
                                     timePeriod.EvaluateGetTimePeriod(eventsPerStream, isNewData, context)
                             };
                         },
-                        ProcForgeConstantType = () => ExprForgeConstantType.NONCONST,
-                        ProcEvaluateCodegen = (
+                        procForgeConstantType = () => ExprForgeConstantType.NONCONST,
+                        procEvaluateCodegen = (
                                 _,
                                 codegenMethodScope,
                                 exprSymbol,
                                 codegenClassScope) =>
                             timePeriod.EvaluateGetTimePeriodCodegen(codegenMethodScope, exprSymbol, codegenClassScope),
-                        ProcEvaluationType = () => typeof(TimePeriod),
-                        ProcForgeRenderable = () => timePeriod
+                        procEvaluationType = () => typeof(TimePeriod),
+                        procForgeRenderable = () => timePeriod
                     };
                 }
                 else {

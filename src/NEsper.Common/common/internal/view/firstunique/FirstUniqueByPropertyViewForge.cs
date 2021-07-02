@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -48,10 +49,11 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             criteriaExpressions = ViewForgeSupport.Validate(
                 ViewName,
@@ -77,12 +79,12 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             return desc.MultiKeyForgeables;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(FirstUniqueByPropertyViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Firstunique";
         }
@@ -94,6 +96,11 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             CodegenClassScope classScope)
         {
             ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_FIRSTUNIQUE;
         }
     }
 } // end of namespace

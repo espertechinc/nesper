@@ -6,9 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -38,36 +42,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            return CodegenExpression(forge, parent, classScope, true);
-        }
-        
-        public static CodegenMethod CodegenExpression(
-            ExprForge forge,
-            CodegenMethod parent,
-            CodegenClassScope classScope,
-            bool returnMissingValueAsNull)
-        {
             var evaluationType = forge.EvaluationType;
-            if (returnMissingValueAsNull) {
-                evaluationType = evaluationType.GetBoxedType();
+            var methodReturnType = typeof(object);
+            if (evaluationType != null) {
+                methodReturnType = evaluationType.GetBoxedType();
             }
+            
+            // if (returnMissingValueAsNull) {
+            //     evaluationType = evaluationType.GetBoxedType();
+            // }
             
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var exprMethod = parent
-                .MakeChildWithScope(evaluationType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
+                .MakeChildWithScope(methodReturnType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             exprMethod.Block.DebugStack();
             
-            var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
-            exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
-
-            if (evaluationType != typeof(void)) {
-                exprMethod.Block.MethodReturn(expression);
-                //CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression);
+            if (evaluationType.IsNullTypeSafe()) {
+                exprMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                exprMethod.Block.Expression(expression);
+                var expression = forge.EvaluateCodegen(methodReturnType, exprMethod, exprSymbol, classScope);
+                exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
+
+                if (evaluationType.IsVoid()) {
+                    exprMethod.Block.Expression(expression);
+                }
+                else {
+                    exprMethod.Block.MethodReturn(expression);
+                    //CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression);
+                }
             }
 
             return exprMethod;
@@ -87,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
 
-            if (evaluationType.CanNotBeNull()) {
+            if (evaluationType.IsNullType() || evaluationType.CanNotBeNull()) {
                 exprMethod.Block.MethodReturn(expression);
             }
             else {
@@ -104,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         private static void CheckEvaluationType(ExprForge forge)
         {
             var evaluationType = forge.EvaluationType;
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
+            if (!evaluationType.IsBoolean()) {
                 throw new IllegalStateException("Invalid non-boolean expression");
             }
         }

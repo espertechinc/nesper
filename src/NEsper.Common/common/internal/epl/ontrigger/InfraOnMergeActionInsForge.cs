@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(InfraOnMergeActionIns), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(InfraOnMergeActionIns), GetType(), classScope);
             var anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(
                 insertHelper,
                 method,

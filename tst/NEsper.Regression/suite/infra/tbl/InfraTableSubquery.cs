@@ -34,28 +34,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithInFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableSubqueryInFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSecondaryIndex(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableSubquerySecondaryIndex());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAgainstUnkeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableSubqueryAgainstUnkeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAgainstKeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableSubqueryAgainstKeyed());
             return execs;
         }

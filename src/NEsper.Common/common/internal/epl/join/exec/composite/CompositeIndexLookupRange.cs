@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             RangeIndexLookupValue lookupValue,
             Type coercionType)
         {
-            this._lookupValue = lookupValue;
-            this._coercionType = coercionType;
+            _lookupValue = lookupValue;
+            _coercionType = coercionType;
         }
 
         public void Lookup(
@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         }
 
         public CompositeIndexLookup Next {
-            set { this._next = value; }
+            set { _next = value; }
         }
     }
 } // end of namespace

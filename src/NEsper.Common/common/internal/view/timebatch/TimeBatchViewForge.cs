@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -104,20 +106,21 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             isStartEager = timeBatchFlags.IsStartEager;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(TimeBatchViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Timebatch";
         }
@@ -139,6 +142,11 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 .SetProperty(factory, "IsForceUpdate", Constant(isForceUpdate))
                 .SetProperty(factory, "IsStartEager", Constant(isStartEager))
                 .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_TIMEBATCH;
         }
     }
 } // end of namespace

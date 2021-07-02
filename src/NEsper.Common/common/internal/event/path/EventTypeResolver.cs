@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.runtime.@event;
@@ -17,7 +18,10 @@ namespace com.espertech.esper.common.@internal.@event.path
 {
     public interface EventTypeResolver
     {
-        EventTypeSPI Resolve(EventTypeMetadata metadata);
+        EventTypeSPI Resolve(
+            string name,
+            string moduleName,
+            NameAccessModifier accessModifier);
 
         BeanEventType ResolvePrivateBean(
             Type clazz,

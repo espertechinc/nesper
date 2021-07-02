@@ -42,63 +42,63 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithInMultipleWithBool(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterInMultipleWithBool());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInMultipleNonMatchingFirst(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterInMultipleNonMatchingFirst());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReuseNot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterReuseNot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReuse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterReuse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterInInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterNotIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInExpr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterInExpr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSimpleIntAndEnumWrite(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterSimpleIntAndEnumWrite());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInDynamic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterInDynamic());
             return execs;
         }

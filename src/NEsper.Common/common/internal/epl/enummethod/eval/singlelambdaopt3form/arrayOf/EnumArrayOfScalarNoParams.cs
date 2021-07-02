@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -43,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return array;
 						}
 
-						int count = 0;
-						foreach (object next in enumcoll) {
+						var count = 0;
+						foreach (var next in enumcoll) {
 							array.SetValue(next, count);
 							count++;
 						}
@@ -59,12 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			Type arrayType = TypeHelper.GetArrayType(_arrayComponentType);
-			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-			CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(arrayType, typeof(EnumArrayOfScalarNoParams), scope, codegenClassScope)
+			var arrayType = TypeHelper.GetArrayType(_arrayComponentType);
+			var scope = new ExprForgeCodegenSymbol(false, null);
+			var methodNode = codegenMethodScope.MakeChildWithScope(arrayType, typeof(EnumArrayOfScalarNoParams), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
 
-			CodegenBlock block = methodNode.Block
+			var block = methodNode.Block
 				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 				.BlockReturn(NewArrayByLength(_arrayComponentType, Constant(0)))
 				.DeclareVar(arrayType, "result", NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))

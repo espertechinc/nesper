@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     public class EventBeanManufacturerCtorForge : EventBeanManufacturerForge
     {
-        private readonly BeanEventType beanEventType;
-        private readonly ConstructorInfo constructor;
+        private readonly BeanEventType _beanEventType;
+        private readonly ConstructorInfo _constructor;
 
         public EventBeanManufacturerCtorForge(
             ConstructorInfo constructor,
             BeanEventType beanEventType)
         {
-            this.constructor = constructor;
-            this.beanEventType = beanEventType;
+            this._constructor = constructor;
+            this._beanEventType = beanEventType;
         }
 
         public CodegenExpression Make(
@@ -43,18 +43,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var beanType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_beanEventType, EPStatementInitServicesConstants.REF));
             var ctor = StaticMethod(
                 typeof(EventBeanManufacturerCtorForge),
                 "ResolveConstructor",
-                Constant(constructor.GetParameterTypes()),
-                Constant(constructor.DeclaringType));
+                Constant(_constructor.GetParameterTypes()),
+                Constant(_constructor.DeclaringType));
             return NewInstance<EventBeanManufacturerCtor>(ctor, beanType, factory);
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new EventBeanManufacturerCtor(constructor, beanEventType, eventBeanTypedEventFactory);
+            return new EventBeanManufacturerCtor(_constructor, _beanEventType, eventBeanTypedEventFactory);
         }
 
         /// <summary>

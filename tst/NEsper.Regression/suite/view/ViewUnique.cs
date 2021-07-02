@@ -32,35 +32,35 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithUniqueTwoWindows(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewUniqueTwoWindows());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUniqueExpressionParameter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewUniqueExpressionParameter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueWithAnnotationPrefix(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLastUniqueWithAnnotationPrefix(null));
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLastUniqueSceneTwo(null));
             return execs;
         }
 
         public static IList<RegressionExecution> WithLastUniqueSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewLastUniqueSceneOne(null));
             return execs;
         }

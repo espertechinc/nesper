@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             this.scheduleSpec = scheduleSpec;
             this.beginState = beginState;
             this.observerEventEvaluator = observerEventEvaluator;
-            this.scheduleSlot = observerEventEvaluator.Context.AgentInstanceContext.ScheduleBucket.AllocateSlot();
+            scheduleSlot = observerEventEvaluator.Context.AgentInstanceContext.ScheduleBucket.AllocateSlot();
         }
 
         public MatchedEventMap BeginState {

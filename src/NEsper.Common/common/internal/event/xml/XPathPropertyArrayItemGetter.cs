@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class XPathPropertyArrayItemGetter : EventPropertyGetterSPI
     {
-        private readonly FragmentFactorySPI fragmentFactory;
-        private readonly EventPropertyGetterSPI getter;
-        private readonly int index;
+        private readonly FragmentFactorySPI _fragmentFactory;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly int _index;
 
         /// <summary>
         ///     Ctor.
@@ -37,25 +37,25 @@ namespace com.espertech.esper.common.@internal.@event.xml
             int index,
             FragmentFactorySPI fragmentFactory)
         {
-            this.getter = getter;
-            this.index = index;
-            this.fragmentFactory = fragmentFactory;
+            this._getter = getter;
+            this._index = index;
+            this._fragmentFactory = fragmentFactory;
         }
 
         public object Get(EventBean eventBean)
         {
-            return GetXPathNodeListWCheck(getter.Get(eventBean), index);
+            return GetXPathNodeListWCheck(_getter.Get(eventBean), _index);
         }
 
         public object GetFragment(EventBean eventBean)
         {
-            if (fragmentFactory == null) {
+            if (_fragmentFactory == null) {
                 return null;
             }
 
             var result = Get(eventBean);
             if (result is XmlNode xmlNode) {
-                return fragmentFactory.GetEvent(xmlNode);
+                return _fragmentFactory.GetEvent(xmlNode);
             }
 
             return null;
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (fragmentFactory == null) {
+            if (_fragmentFactory == null) {
                 return ConstantNull();
             }
 
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (fragmentFactory == null) {
+            if (_fragmentFactory == null) {
                 return ConstantNull();
             }
 
@@ -160,8 +160,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 .Block
                 .DeclareVar<object>(
                     "value",
-                    getter.UnderlyingGetCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
-                .MethodReturn(StaticMethod(GetType(), "GetXPathNodeListWCheck", Ref("value"), Constant(index)));
+                    _getter.UnderlyingGetCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
+                .MethodReturn(StaticMethod(GetType(), "GetXPathNodeListWCheck", Ref("value"), Constant(_index)));
         }
 
         private CodegenMethod GetFragmentCodegen(
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var member = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+                _fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")
                 .Block

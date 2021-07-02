@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
     public class ObjectArrayArrayPONOEntryIndexedPropertyGetter : BaseNativePropertyGetter,
         ObjectArrayEventPropertyGetterAndIndexed
     {
-        private readonly int index;
-        private readonly int propertyIndex;
+        private readonly int _index;
+        private readonly int _propertyIndex;
 
         public ObjectArrayArrayPONOEntryIndexedPropertyGetter(
             int propertyIndex,
@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
-            this.propertyIndex = propertyIndex;
-            this.index = index;
+            this._propertyIndex = propertyIndex;
+            this._index = index;
         }
 
         public override Type TargetType => typeof(object[]);
@@ -47,22 +47,22 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object GetObjectArray(object[] array)
         {
-            return GetArrayValue(array, propertyIndex, index);
+            return GetArrayValue(array, _propertyIndex, _index);
         }
 
         public object GetObjectArray(Array array)
         {
-            return GetArrayValue(array, propertyIndex, index);
+            return GetArrayValue(array, _propertyIndex, _index);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
-            return array.Length > index;
+            return array.Length > _index;
         }
 
         public bool IsObjectArrayExistsProperty(Array array)
         {
-            return array.Length > index;
+            return array.Length > _index;
         }
 
         public object Get(
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int index)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return GetArrayValue(array, propertyIndex, index);
+            return GetArrayValue(array, _propertyIndex, index);
         }
 
         public override object Get(EventBean obj)
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return CollectionUtil.ArrayExistsAtIndex((Array) array[propertyIndex], index);
+            return CollectionUtil.ArrayExistsAtIndex((Array) array[_propertyIndex], _index);
         }
 
         public override CodegenExpression EventBeanGetCodegen(
@@ -116,8 +116,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "GetArrayValue",
                 underlyingExpression,
-                Constant(propertyIndex),
-                Constant(index));
+                Constant(_propertyIndex),
+                Constant(_index));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -128,9 +128,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return StaticMethod(
                 typeof(CollectionUtil),
                 "ArrayExistsAtIndex",
-                Cast<Array>(ExprDotMethod(underlyingExpression, "GetValue", Constant(propertyIndex))),
+                Cast<Array>(ExprDotMethod(underlyingExpression, "GetValue", Constant(_propertyIndex))),
                 //Cast<Array>(ArrayAtIndex(underlyingExpression, Constant(propertyIndex))),
-                Constant(index));
+                Constant(_index));
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 GetType(),
                 "GetArrayValue",
                 CastUnderlying(typeof(Array), beanExpression),
-                Constant(propertyIndex),
+                Constant(_propertyIndex),
                 key);
         }
 

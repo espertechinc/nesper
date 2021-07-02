@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 	    public JsonEventUnderlyingValueCollection(JsonEventObjectBase underlyingBase)
 	    {
-		    this._underlyingBase = underlyingBase;
+		    _underlyingBase = underlyingBase;
 	    }
 
 	    public int Count => _underlyingBase.Count;

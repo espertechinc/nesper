@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.controller.hash;
@@ -25,22 +26,26 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
         }
 
-        public ContextControllerKeyedFactory KeyedFactory()
+        public ContextControllerKeyedFactory KeyedFactory(
+            StateMgmtSetting terminationStateMgmtSettings,
+            StateMgmtSetting ctxStateMgmtSettings)
         {
             return new ContextControllerKeyedFactory();
         }
 
-        public ContextControllerCategoryFactory CategoryFactory()
+        public ContextControllerCategoryFactory CategoryFactory(StateMgmtSetting stateMgmtSettings)
         {
             return new ContextControllerCategoryFactory();
         }
 
-        public ContextControllerHashFactory HashFactory()
+        public ContextControllerHashFactory HashFactory(StateMgmtSetting stateMgmtSettings)
         {
             return new ContextControllerHashFactory();
         }
 
-        public ContextControllerInitTermFactory InitTermFactory()
+        public ContextControllerInitTermFactory InitTermFactory(
+            StateMgmtSetting distinctStateMgmtSettings,
+            StateMgmtSetting ctxStateMgmtSettings)
         {
             return new ContextControllerInitTermFactory();
         }
@@ -56,7 +61,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public ContextPartitionIdService GetContextPartitionIdService(
             StatementContext statementContextCreateContext,
-            DataInputOutputSerde[] bindings)
+            DataInputOutputSerde[] bindings,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ContextPartitionIdServiceImpl();
         }

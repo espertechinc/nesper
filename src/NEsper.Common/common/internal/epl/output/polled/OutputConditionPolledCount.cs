@@ -20,43 +20,43 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public sealed class OutputConditionPolledCount : OutputConditionPolled
     {
-        private readonly OutputConditionPolledCountState state;
-        private readonly VariableReader optionalVariableReader;
+        private readonly OutputConditionPolledCountState _state;
+        private readonly VariableReader _optionalVariableReader;
 
         public OutputConditionPolledCount(
             OutputConditionPolledCountState state,
             VariableReader optionalVariableReader)
         {
-            this.state = state;
-            this.optionalVariableReader = optionalVariableReader;
+            _state = state;
+            _optionalVariableReader = optionalVariableReader;
         }
 
         OutputConditionPolledState OutputConditionPolled.State => State;
 
         public OutputConditionPolledCountState State {
-            get => state;
+            get => _state;
         }
 
         public bool UpdateOutputCondition(
             int newDataCount,
             int oldDataCount)
         {
-            object value = optionalVariableReader?.Value;
+            object value = _optionalVariableReader?.Value;
             if (value != null) {
-                state.EventRate = value.AsInt64();
+                _state.EventRate = value.AsInt64();
             }
 
-            state.NewEventsCount = state.NewEventsCount + newDataCount;
-            state.OldEventsCount = state.OldEventsCount + oldDataCount;
+            _state.NewEventsCount = _state.NewEventsCount + newDataCount;
+            _state.OldEventsCount = _state.OldEventsCount + oldDataCount;
 
-            if (IsSatisfied() || state.IsFirst) {
-                if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-                    log.Debug(".updateOutputCondition() condition satisfied");
+            if (IsSatisfied() || _state.IsFirst) {
+                if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+                    Log.Debug(".updateOutputCondition() condition satisfied");
                 }
 
-                state.IsFirst = false;
-                state.NewEventsCount = 0;
-                state.OldEventsCount = 0;
+                _state.IsFirst = false;
+                _state.NewEventsCount = 0;
+                _state.OldEventsCount = 0;
                 return true;
             }
 
@@ -65,9 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         private bool IsSatisfied()
         {
-            return (state.NewEventsCount >= state.EventRate) || (state.OldEventsCount >= state.EventRate);
+            return (_state.NewEventsCount >= _state.EventRate) || (_state.OldEventsCount >= _state.EventRate);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionPolledCount));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputConditionPolledCount));
     }
 } // end of namespace

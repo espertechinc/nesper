@@ -9,6 +9,7 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
             throw new EventBeanManufactureException(
                 "Failed to find no-arg constructor and no factory method has been configured to instantiate object of type " +
-                beanEventType.UnderlyingType.CleanName(),
+                beanEventType.UnderlyingType.TypeSafeName(),
                 ctorNotFoundEx);
         }
 

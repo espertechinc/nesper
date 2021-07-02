@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -29,6 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
 			WithKeyword(execs);
 			WithStreamAlias(execs);
+			WithGeneric(execs);
 			WithInvalid(execs);
 			WithArraySized(execs);
 			WithArrayInitOneDim(execs);
@@ -39,14 +41,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithArrayInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExecCoreNewInstanceArrayInvalid());
+			execs ??= new List<RegressionExecution>();
+			execs.Add(new ExecCoreNewInstanceGeneric(false));
+			execs.Add(new ExecCoreNewInstanceGeneric(true));
+			return execs;
+		}
+		
+		public static IList<RegressionExecution> WithGeneric(IList<RegressionExecution> execs = null)
+		{
+			execs ??= new List<RegressionExecution>();
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithArrayInitTwoDim(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExecCoreNewInstanceArrayInitTwoDim(false));
 			execs.Add(new ExecCoreNewInstanceArrayInitTwoDim(true));
 			return execs;
@@ -54,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithArrayInitOneDim(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExecCoreNewInstanceArrayInitOneDim(false));
 			execs.Add(new ExecCoreNewInstanceArrayInitOneDim(true));
 			return execs;
@@ -62,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithArraySized(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExecCoreNewInstanceArraySized(false));
 			execs.Add(new ExecCoreNewInstanceArraySized(true));
 			return execs;
@@ -70,25 +79,88 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExecCoreNewInstanceInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithStreamAlias(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExecCoreNewInstanceStreamAlias());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithKeyword(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExecCoreNewInstanceKeyword(true));
 			execs.Add(new ExecCoreNewInstanceKeyword(false));
 			return execs;
 		}
+
+		private class ExecCoreNewInstanceGeneric : RegressionExecution
+		{
+			private bool _soda;
+
+			public ExecCoreNewInstanceGeneric(bool soda)
+			{
+				this._soda = soda;
+			}
+
+			public void Run(RegressionEnvironment env)
+			{
+				String[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean")
+					.WithExpression(fields[0], "new ArrayList<String>()")
+					.WithExpression(fields[1], "new HashMap<String,Integer>()")
+					.WithExpression(fields[2], "new ArrayList<String>(20)")
+					.WithExpression(fields[3], "new ArrayList<String>[5]")
+					.WithExpression(fields[4], "new ArrayList<String>[] {new ArrayList<String>(),new ArrayList<String>()}")
+					.WithExpression(fields[5], "new ArrayList<String[][]>[2][]");
+
+				builder.WithStatementConsumer(
+					stmt => {
+						EventType @out = stmt.EventType;
+						Assert.AreEqual(typeof(List<string>), @out.GetPropertyType("c0"));
+						Assert.AreEqual(typeof(HashMap<string, int>), @out.GetPropertyType("c1"));
+						Assert.AreEqual(typeof(List<string>), @out.GetPropertyType("c2"));
+						Assert.AreEqual(typeof(List<string>[]), @out.GetPropertyType("c3"));
+						Assert.AreEqual(typeof(List<string>[]), @out.GetPropertyType("c4"));
+						Assert.AreEqual(typeof(List<string[][]>[][]), @out.GetPropertyType("c5"));
+					});
+
+				builder.WithAssertion(new SupportBean("E1", 2))
+					.Verify("c0", value => Assert.IsInstanceOf<IList<object>>(value))
+					.Verify("c1", value => Assert.IsInstanceOf<IDictionary<string, object>>(value))
+					.Verify("c2", value => Assert.IsInstanceOf<IList<object>>(value))
+					.Verify(
+						"c3",
+						value => {
+							var array = (IList<string>[]) value;
+							Assert.AreEqual(5, array.Length);
+						})
+					.Verify(
+						"c4",
+						value => {
+							var array = (IList<string>[]) value;
+							Assert.AreEqual(2, array.Length);
+							for (int i = 0; i < 2; i++) {
+								Assert.IsInstanceOf<IList<string>>(array[i]);
+							}
+						})
+					.Verify(
+						"c5",
+						value => {
+							var array = (IList<string[][]>[][]) value;
+							Assert.AreEqual(2, array.Length);
+						});
+
+				builder.Run(env, _soda);
+				env.UndeployAll();
+			}
+		}
+
 
 		private class ExecCoreNewInstanceArrayInitTwoDim : RegressionExecution
 		{
@@ -396,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"select new Dummy() from SupportBean",
-					"Failed to validate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
+					"Failed to validate select-clause expression 'new Dummy()': Failed to resolve type parameter 'Dummy'");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,

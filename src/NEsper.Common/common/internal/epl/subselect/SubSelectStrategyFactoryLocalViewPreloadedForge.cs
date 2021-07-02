@@ -77,12 +77,12 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			SAIFFInitializeSymbol symbols,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod method = parent.MakeChild(typeof(SubSelectStrategyFactoryLocalViewPreloaded), GetType(), classScope);
+			var method = parent.MakeChild(typeof(SubSelectStrategyFactoryLocalViewPreloaded), GetType(), classScope);
 
-			CodegenExpression groupKeyEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupKeys, null, _groupByMultiKeyClasses, method, classScope);
+			var groupKeyEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupKeys, null, _groupByMultiKeyClasses, method, classScope);
 
 			method.Block
-				.DeclareVar<SubSelectStrategyFactoryLocalViewPreloaded>("factory", NewInstance(typeof(SubSelectStrategyFactoryLocalViewPreloaded)))
+				.DeclareVarNewInstance<SubSelectStrategyFactoryLocalViewPreloaded>("factory")
 				.SetProperty(Ref("factory"), "SubqueryNumber", Constant(_subqueryNumber))
 				.SetProperty(Ref("factory"), "ViewFactories",  ViewFactoryForgeUtil.CodegenForgesWInit(_viewForges, 0, _subqueryNumber, method, symbols, classScope))
 				.SetProperty(Ref("factory"), "ViewResourceDelegate", _viewResourceDelegateDesc.ToExpression())
@@ -128,9 +128,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				return ConstantNull();
 			}
 
-			AggregationClassNames aggregationClassNames =
+			var aggregationClassNames =
 				new AggregationClassNames(CodegenNamespaceScopeNames.ClassPostfixAggregationForSubquery(subqueryNumber));
-			AggregationServiceFactoryMakeResult aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
+			var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
 				false,
 				aggregationServiceForgeDesc.AggregationServiceFactoryForge,
 				parent,

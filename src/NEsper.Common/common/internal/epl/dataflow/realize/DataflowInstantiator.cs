@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.dataflow.core;
@@ -262,7 +263,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     }
 
                     if (numParams == 2 &&
-                        paramTypes[0].GetBoxedType() == typeof(int?) &&
+                        paramTypes[0].IsInt32() &&
                         TypeHelper.IsAssignmentCompatible(expectedUnderlying, paramTypes[1])) {
                         return new LogicalChannelBindingMethodDesc(
                             method,

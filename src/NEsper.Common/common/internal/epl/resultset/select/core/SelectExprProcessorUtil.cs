@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     classScope,
                     "qSelectClause",
                     REF_EPS,
-                    ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                    ExprForgeCodegenNames.REF_ISNEWDATA,
                     REF_ISSYNTHESIZE,
                     REF_EXPREVALCONTEXT));
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     Instblock(
                         classScope,
                         "aSelectClause",
-                        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
                         Ref("result"),
                         ConstantNull()))
                 .MethodReturn(Ref("result"));
@@ -104,10 +104,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         block.BlockReturn(
                             LocalMethod(
                                 processMethod,
-                                ExprForgeCodegenNames.REF_EPS,
+                                REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 SelectExprProcessorCodegenSymbol.REF_ISSYNTHESIZE,
-                                ExprForgeCodegenNames.REF_EXPREVALCONTEXT));
+                                REF_EXPREVALCONTEXT));
                     });
 
             var anonymousSelect = NewInstance<ProxySelectExprProcessor>(processLambda);

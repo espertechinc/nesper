@@ -34,20 +34,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
         public static IList<RegressionExecution> WithPONOMap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderPONOMap());
             return execs;
         }
         public static IList<RegressionExecution> WithObjectArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderObjectArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPropertyCustomRenderer(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventRenderPropertyCustomRenderer());
             return execs;
         }
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 
                 var contexts = MyRenderer.Contexts;
                 var context = contexts.FirstOrDefault(c => 
-                    c.EventType.Name == typeof(MyRendererEvent).Name && 
+                    c.EventType.Name == nameof(MyRendererEvent) && 
                     c.IndexedPropertyIndex == 1);
                 Assert.That(context, Is.Not.Null);
                 Assert.That(context.DefaultRenderer, Is.Not.Null);

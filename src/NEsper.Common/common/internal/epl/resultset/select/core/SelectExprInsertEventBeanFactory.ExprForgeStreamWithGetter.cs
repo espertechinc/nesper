@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -25,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprEvaluator,
             ExprNodeRenderable
         {
-            private readonly EventPropertyGetterSPI getter;
+            private readonly EventPropertyGetterSPI _getter;
 
             public ExprForgeStreamWithGetter(EventPropertyGetterSPI getter)
             {
-                this.getter = getter;
+                this._getter = getter;
             }
 
             public object Evaluate(
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             {
                 var theEvent = eventsPerStream[0];
                 if (theEvent != null) {
-                    return getter.Get(theEvent);
+                    return _getter.Get(theEvent);
                 }
 
                 return null;
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(0)))
                     .IfRefNotNull("theEvent")
                     .BlockReturn(
-                        getter.EventBeanGetCodegen(
+                        _getter.EventBeanGetCodegen(
                             CodegenExpressionBuilder.Ref("theEvent"),
                             methodNode,
                             codegenClassScope))

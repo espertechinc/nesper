@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
             typeof(IList<GroupByRollupKey>), REF_ORDERCURRENTGENERATORS.Ref,
             typeof(bool), ExprForgeCodegenNames.REF_ISNEWDATA.Ref,
-            typeof(AgentInstanceContext), MEMBER_AGENTINSTANCECONTEXT.Ref,
+            typeof(ExprEvaluatorContext), MEMBER_EXPREVALCONTEXT.Ref,
             typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref);
 
         public static readonly IList<CodegenNamedParam> SORTTWOKEYS_PARAMS = CodegenNamedParam.From(

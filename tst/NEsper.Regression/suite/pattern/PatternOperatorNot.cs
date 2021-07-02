@@ -35,42 +35,42 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithNotWithEvery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternNotWithEvery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotTimeInterval(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternNotTimeInterval());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNotFollowedBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternNotFollowedBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUniformEvents(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternUniformEvents());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOp());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOperatorNotWHarness(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOperatorNotWHarness());
             return execs;
         }

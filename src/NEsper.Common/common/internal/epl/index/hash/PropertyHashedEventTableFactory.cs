@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.compat.collections;
 
@@ -18,12 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 {
     public class PropertyHashedEventTableFactory : EventTableFactory
     {
-        internal readonly string OptionalIndexName;
-        internal readonly EventPropertyValueGetter PropertyGetter;
-        internal readonly string[] PropertyNames;
-        internal readonly int StreamNum;
-        internal readonly bool Unique;
-        internal readonly MultiKeyFromObjectArray MultiKeyTransform;
+        internal readonly string optionalIndexName;
+        internal readonly EventPropertyValueGetter propertyGetter;
+        internal readonly string[] propertyNames;
+        internal readonly int streamNum;
+        internal readonly bool unique;
+        internal readonly MultiKeyFromObjectArray multiKeyTransform;
 
         public PropertyHashedEventTableFactory(
             int streamNum,
@@ -33,12 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             EventPropertyValueGetter propertyGetter,
             MultiKeyFromObjectArray multiKeyTransform)
         {
-            StreamNum = streamNum;
-            PropertyNames = propertyNames;
-            Unique = unique;
-            OptionalIndexName = optionalIndexName;
-            PropertyGetter = propertyGetter;
-            MultiKeyTransform = multiKeyTransform;
+            this.streamNum = streamNum;
+            this.propertyNames = propertyNames;
+            this.unique = unique;
+            this.optionalIndexName = optionalIndexName;
+            this.propertyGetter = propertyGetter;
+            this.multiKeyTransform = multiKeyTransform;
 
             if (propertyGetter == null) {
                 throw new ArgumentException("Property-getter is null");
@@ -46,18 +47,18 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         }
 
         public EventTableOrganization Organization => new EventTableOrganization(
-            OptionalIndexName,
-            Unique,
+            optionalIndexName,
+            unique,
             false,
-            StreamNum,
-            PropertyNames,
+            streamNum,
+            propertyNames,
             EventTableOrganizationType.HASH);
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
-            if (Unique) {
+            if (unique) {
                 return new EventTable[] {new PropertyHashedEventTableUnique(this)};
             }
 
@@ -67,14 +68,14 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public string ToQueryPlan()
         {
             return GetType().Name +
-                   (Unique ? " unique" : " non-unique") +
+                   (unique ? " unique" : " non-unique") +
                    " streamNum=" +
-                   StreamNum +
+                   streamNum +
                    " propertyNames=" +
-                   Arrays.AsList(PropertyNames);
+                   Arrays.AsList(propertyNames);
         }
 
         public Type EventTableClass =>
-            Unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);
+            unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);
     }
 } // end of namespace

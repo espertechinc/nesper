@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.order;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
@@ -21,6 +22,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         ResultSetProcessor Instantiate(
             OrderByProcessor orderByProcessor,
             AggregationService aggregationService,
-            AgentInstanceContext agentInstanceContext);
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

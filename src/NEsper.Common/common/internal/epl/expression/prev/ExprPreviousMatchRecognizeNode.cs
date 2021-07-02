@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -31,10 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         ExprForge,
         ExprEvaluator
     {
-        private int _assignedIndex;
-        private int? _constantIndexNumber;
-        private CodegenFieldName _previousStrategyFieldName;
+        private Type _resultType;
         private int _streamNumber;
+        private int? _constantIndexNumber;
+
+        private int _assignedIndex;
+        private CodegenFieldName _previousStrategyFieldName;
 
         public override ExprForge Forge => this;
 
@@ -78,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType { get; private set; }
+        public Type EvaluationType => _resultType;
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
@@ -90,7 +93,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var evaluationType = EvaluationType.GetBoxedType();
+            if (_resultType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var evaluationType = _resultType.GetBoxedType();
             var method = parent.MakeChild(evaluationType, GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
 
@@ -98,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 _previousStrategyFieldName,
                 typeof(RowRecogPreviousStrategy));
 
-            var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope, true);
+            var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope);
 
             method.Block
                 .DeclareVar<RowRecogStateRandomAccess>(
@@ -151,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var identNode = (ExprIdentNode) ChildNodes[0];
             _streamNumber = identNode.StreamId;
             var forge = ChildNodes[0].Forge;
-            EvaluationType = forge.EvaluationType.GetBoxedType();
+            _resultType = forge.EvaluationType.GetBoxedType();
             _previousStrategyFieldName = validationContext.MemberNames.PreviousMatchrecognizeStrategy();
 
             return null;

@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters,
 			bool isMostFrequent) : base(lambda, fieldEventType, numParameters)
 		{
-			this._isMostFrequent = isMostFrequent;
-			this._returnType = InnerExpression.EvaluationType.GetBoxedType();
+			_isMostFrequent = isMostFrequent;
+			_returnType = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return _returnType;
 		}

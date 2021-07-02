@@ -66,14 +66,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < writeThreads.Length; i++) {
                 writeRunnables[i] = new WriteRunnable(env, i);
                 writeThreads[i] = new Thread(writeRunnables[i].Run) {
-                    Name = typeof(InfraTableMTUngroupedAccessReadMergeWrite).Name + "-write"
+                    Name = nameof(InfraTableMTUngroupedAccessReadMergeWrite) + "-write"
                 };
                 writeThreads[i].Start();
             }
 
             var readRunnable = new ReadRunnable(env, env.Listener("s0"));
             var readThread = new Thread(readRunnable.Run) {
-                Name = typeof(InfraTableMTUngroupedAccessReadMergeWrite).Name + "-read"
+                Name = nameof(InfraTableMTUngroupedAccessReadMergeWrite) + "-read"
             };
             readThread.Start();
 

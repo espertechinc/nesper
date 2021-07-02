@@ -18,21 +18,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ExprDotForgeFirstLastOf : ExprDotForgeLambdaThreeForm
 	{
-
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
 			if (inputEventType != null) {
-				return EPTypeHelper.SingleEvent(inputEventType);
+				return EPChainableTypeHelper.SingleEvent(inputEventType);
 			}
 
-			return EPTypeHelper.SingleValue(collectionComponentType);
+			return new EPChainableTypeClass(collectionComponentType);
 		}
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			if (enumMethod == EnumMethodEnum.FIRSTOF) {
@@ -43,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{

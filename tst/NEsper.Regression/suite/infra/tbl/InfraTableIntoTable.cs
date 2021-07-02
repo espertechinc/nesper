@@ -44,63 +44,63 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithIntoTableMultikeyWArrayTwoKeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraIntoTableMultikeyWArrayTwoKeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntoTableMultikeyWArraySingleArrayKeyed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraIntoTableMultikeyWArraySingleArrayKeyed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableBigNumberAggregation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableBigNumberAggregation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableIntoTableWithKeys(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableIntoTableWithKeys());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableIntoTableNoKeys(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableIntoTableNoKeys());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntoTableWindowSortedFromJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraIntoTableWindowSortedFromJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBoundUnbound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraBoundUnbound());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntoTableUnkeyedSimpleTwoModule(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraIntoTableUnkeyedSimpleTwoModule());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntoTableUnkeyedSimpleSameModule(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraIntoTableUnkeyedSimpleSameModule());
             return execs;
         }
@@ -166,7 +166,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 path,
                 "into table varagg select lastever(*) as windowb from SupportBean#length(2)",
                 "Incompatible aggregation function for table 'varagg' column 'windowb', expecting 'window(*)' and received 'lastever(*)': The table declares 'window(*)' and provided is 'lastever(*)'");
-
+            SupportMessageAssertUtil.TryInvalidCompile(
+                env,
+                path,
+                "into table varagg select lastever(null) as lasteveru from SupportBean#length(2)",
+                "Failed to validate select-clause expression 'lastever(null)': Null-type is not allowed");
+            
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select lastever(*) as lasteveru from SupportBean#length(2)";
             env.CompileDeploy(soda, eplBoundIntoUnbound, path);

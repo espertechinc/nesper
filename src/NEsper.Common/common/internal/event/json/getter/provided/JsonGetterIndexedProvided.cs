@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 	/// </summary>
 	public sealed class JsonGetterIndexedProvided : JsonGetterIndexedBase
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public JsonGetterIndexedProvided(
             int index,
@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             FieldInfo field)
             : base(index, underlyingClassName, optionalInnerType, eventBeanTypedEventFactory)
         {
-            this.field = field;
+            _field = field;
         }
 
-        public override string FieldName => field.Name;
+        public override string FieldName => _field.Name;
 
         public override CodegenExpression UnderlyingFragmentCodegen(
             CodegenExpression underlyingExpression,
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(JsonFieldGetterHelperProvided),
                 "HandleJsonProvidedCreateFragmentIndexed",
-                ExprDotName(underlyingExpression, field.Name),
+                ExprDotName(underlyingExpression, _field.Name),
                 Constant(Index),
                 eventType,
                 factory);
@@ -64,12 +64,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, field, Index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, _field, Index);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, field, Index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, _field, Index);
         }
 
         public override object GetJsonFragment(object @object)
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return null;
             }
 
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, field, Index);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, _field, Index);
             if (value == null) {
                 return null;
             }

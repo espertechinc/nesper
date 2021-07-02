@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -29,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             EventType targetType)
         {
-            this._ = enumerationForge;
-            this._targetType = targetType;
+            _ = enumerationForge;
+            _targetType = targetType;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
                 typeof(ExprEvalEnumerationSingleToCollForge),
                 codegenClassScope);

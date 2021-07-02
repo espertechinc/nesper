@@ -30,28 +30,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
 		public static IList<RegressionExecution> WithNewKeyword(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassTypeNewKeyword());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInnerClass(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassTypeInnerClass());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithConst(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassTypeConst());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithUseEnum(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassTypeUseEnum());
 			return execs;
 		}

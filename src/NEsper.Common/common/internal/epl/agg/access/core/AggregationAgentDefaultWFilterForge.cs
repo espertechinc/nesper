@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             CodegenClassScope classScope)
         {
             return NewInstance<AggregationAgentDefaultWFilter>(
-                ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, this.GetType(), classScope));
+                ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, GetType(), classScope));
         }
 
         public ExprForge FilterEval {

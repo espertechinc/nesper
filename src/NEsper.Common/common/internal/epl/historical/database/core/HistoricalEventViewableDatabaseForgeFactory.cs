@@ -371,7 +371,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// <returns></returns>
         private static ColumnSettings GetMetaDataSettings(
             StatementCompileTimeServices services,
-            String databaseName)
+            string databaseName)
         {
             try {
                 return services.DatabaseConfigServiceCompileTime.GetQuerySetting(databaseName);

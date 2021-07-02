@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -51,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             EventAdvancedIndexProvisionCompileTime advancedIndexProvisionDesc = null;
 
             foreach (var columnDesc in columns) {
-                string indexType = columnDesc.IndexType.Trim();
+                var indexType = columnDesc.IndexType.Trim();
                 if (indexType.Equals(CreateIndexType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase) ||
                     indexType.Equals(CreateIndexType.BTREE.GetName(), StringComparison.InvariantCultureIgnoreCase)) {
                     ValidateBuiltin(columnDesc, eventType, hashProps, btreeProps, indexedColumns);
@@ -79,8 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 throw new ExprValidationException(
                     "Combination of hash/btree columns an advanced-type indexes is not supported");
             }
-
-            return new QueryPlanIndexItemForge(hashProps, btreeProps, unique, advancedIndexProvisionDesc, eventType);
+            
+            var indexItemForge = new QueryPlanIndexItemForge(hashProps, btreeProps, unique, advancedIndexProvisionDesc, eventType);
+            indexItemForge.PlanStateMgmtSettings(statementRawInfo, services);
+            return indexItemForge;
         }
 
         private static EventAdvancedIndexProvisionCompileTime ValidateAdvanced(
@@ -152,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     "Invalid multiple index expressions for index type '" + columnDesc.IndexType + "'");
             }
 
-            ExprNode expression = columnDesc.Expressions[0];
+            var expression = columnDesc.Expressions[0];
             if (!(expression is ExprIdentNode)) {
                 throw new ExprValidationException(
                     "Invalid index expression '" +
@@ -169,8 +172,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             var columnName = identNode.FullUnresolvedName;
-            Type type = Boxing.GetBoxedType(eventType.GetPropertyType(columnName));
-            if (type == null) {
+            var type = Boxing.GetBoxedType(eventType.GetPropertyType(columnName));
+            if (type.IsNullType()) {
                 throw new ExprValidationException("Property named '" + columnName + "' not found");
             }
 
@@ -180,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             var desc = new IndexedPropDesc(columnName, type);
-            string indexType = columnDesc.IndexType;
+            var indexType = columnDesc.IndexType;
             if (indexType.Equals(CreateIndexType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase)) {
                 hashProps.Add(desc);
             }
@@ -200,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             // (IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry>) 
-            IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> indexCandidates = FindCandidates(
+            var indexCandidates = FindCandidates(
                     tableIndexesRefCount,
                     hashProps,
                     btreeProps);

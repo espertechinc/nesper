@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
@@ -51,7 +53,104 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			executions.Add(new ExprCoreCaseSyntax2EnumResult());
 			executions.Add(new ExprCoreCaseSyntax2NoAsName());
 			executions.Add(new ExprCoreCaseWithArrayResult());
+			executions.Add(new ExprCoreCaseWithTypeParameterizedProperty());
 			return executions;
+		}
+
+		internal class ExprCoreCaseWithTypeParameterizedProperty : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				RunAssertion(env, "IList<Integer>", "IList<Integer>", typeof(IList<int?>));
+				RunAssertion(env, "IList<IList<Integer>>", "IList<IList<Integer>>", typeof(IList<IList<int?>>));
+				RunAssertion(env, "IList<int[primitive]>", "IList<int[primitive]>", typeof(IList<int[]>));
+
+				RunAssertion(env, "Integer[]", "string[]", typeof(object[]));
+				RunInvalid(env, "int[primitive]", "string[]", "Cannot coerce to int[] type String[]");
+				RunInvalid(env, "long[primitive]", "long[]", "Cannot coerce to long[] type Long[]");
+
+				RunAssertion(env, "IList<Integer>", "IList<Object>", typeof(IList<object>));
+				RunAssertion(env, "ICollection<Integer>", "IList<Object>", typeof(object));
+
+				RunAssertion(env, "ICollection<Integer>", "null", typeof(ICollection<int?>));
+				RunInvalid(env, "null", "null", "Null-type return value is not allowed");
+			}
+
+			private void RunAssertion(
+				RegressionEnvironment env,
+				string typeOne,
+				string typeTwo,
+				Type expected)
+			{
+				string eplSyntaxOne = getEPLSyntaxOne(typeOne, typeTwo);
+				RunAssertionEPL(env, eplSyntaxOne, expected);
+
+				string eplSyntaxTwo = getEPLSyntaxTwo(typeOne, typeTwo);
+				RunAssertionEPL(env, eplSyntaxTwo, expected);
+			}
+
+			private void RunAssertionEPL(
+				RegressionEnvironment env,
+				string epl,
+				Type expected)
+			{
+				env.CompileDeploy(epl);
+				Assert.AreEqual(expected, env.Statement("s0").EventType.GetPropertyType("thecase"));
+				env.UndeployAll();
+			}
+
+			private void RunInvalid(
+				RegressionEnvironment env,
+				string typeOne,
+				string typeTwo,
+				string detail)
+			{
+				string eplSyntaxOne = getEPLSyntaxOne(typeOne, typeTwo);
+				RunInvalidEPL(env, eplSyntaxOne, detail);
+
+				string eplSyntaxTwo = getEPLSyntaxTwo(typeOne, typeTwo);
+				RunInvalidEPL(env, eplSyntaxTwo, detail);
+			}
+
+			private void RunInvalidEPL(
+				RegressionEnvironment env,
+				string epl,
+				string detail)
+			{
+				try {
+					env.CompileWCheckedEx(epl);
+					Assert.Fail();
+				}
+				catch (EPCompileException ex) {
+					if (!ex.Message.Contains(detail)) {
+						Assert.AreEqual(detail, ex.Message);
+					}
+				}
+			}
+
+			private string getEPLSyntaxOne(
+				string typeOne,
+				string typeTwo)
+			{
+				return "create schema MyEvent(switch boolean, fieldOne " +
+				       typeOne +
+				       ", fieldTwo " +
+				       typeTwo +
+				       ");\n" +
+				       "@name('s0') select case when switch then fieldOne else fieldTwo end as thecase from MyEvent;\n";
+			}
+
+			private string getEPLSyntaxTwo(
+				string typeOne,
+				string typeTwo)
+			{
+				return "create schema MyEvent(switch boolean, fieldOne " +
+				       typeOne +
+				       ", fieldTwo " +
+				       typeTwo +
+				       ");\n" +
+				       "@name('s0') select case switch when true then fieldOne when false then fieldTwo end as thecase from MyEvent;\n";
+			}
 		}
 
 		private class ExprCoreCaseWithArrayResult : RegressionExecution
@@ -104,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 						"p1");
 				model.FromClause = FromClause.Create(
 					FilterStream
-						.Create(typeof(SupportMarketDataBean).Name)
+						.Create(nameof(SupportMarketDataBean))
 						.AddView("win", "length", Expressions.Constant(10)));
 				model = copier.Copy(model);
 
@@ -195,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 							.SetElse(Expressions.Property("Volume"))
 							.Add(Expressions.Eq("Symbol", "DELL"), Expressions.Multiply(Expressions.Property("Volume"), Expressions.Constant(3))),
 						"p1");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).Name).AddView("length", Expressions.Constant(10)));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(10)));
 				model = copier.Copy(model);
 
 				var epl = "select case " +
@@ -833,7 +932,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				model.FromClause = FromClause
 					.Create(
 						FilterStream
-							.Create(typeof(SupportBean).Name)
+							.Create(nameof(SupportBean))
 							.AddView("length", Expressions.Constant(100)));
 				model = copier.Copy(model);
 
@@ -1025,7 +1124,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) then 1 " +
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) then 2 " +
 				          " end as p1 " +
-				          " from " + typeof(SupportBeanWithEnum).Name + "#length(10)";
+				          " from " + nameof(SupportBeanWithEnum) + "#length(10)";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("p1"));

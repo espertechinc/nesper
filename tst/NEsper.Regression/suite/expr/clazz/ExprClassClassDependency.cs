@@ -31,21 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
 		public static IList<RegressionExecution> WithClasspath(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassClassDependencyClasspath());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassClassDependencyInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithAllLocal(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprClassClassDependencyAllLocal());
 			return execs;
 		}

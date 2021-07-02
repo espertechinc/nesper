@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -40,31 +42,31 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
 					ProcEvaluateEnumMethod = (
 						eventsLambda,
 						enumcoll,
 						isNewData,
 						context) => {
-						ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
+						var beans = (ICollection<EventBean>) enumcoll;
 						if (beans.Count <= 1) {
 							return beans;
 						}
 
-						ObjectArrayEventBean indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
+						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
 						eventsLambda[StreamNumLambda + 1] = indexEvent;
-						object[] props = indexEvent.Properties;
+						var props = indexEvent.Properties;
 						props[1] = enumcoll.Count;
-						int count = -1;
+						var count = -1;
 						IDictionary<object, EventBean> distinct = new Dictionary<object, EventBean>();
 
-						foreach (EventBean next in beans) {
+						foreach (var next in beans) {
 							count++;
 							props[0] = count;
 							eventsLambda[StreamNumLambda] = next;
 
-							object comparable = inner.Evaluate(eventsLambda, isNewData, context);
+							var comparable = inner.Evaluate(eventsLambda, isNewData, context);
 							if (!distinct.ContainsKey(comparable)) {
 								distinct.Put(comparable, next);
 							}
@@ -76,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(FlexCollection);
 		}
@@ -103,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			CodegenExpression eval = InnerExpression.EvaluateCodegen(_innerType, methodNode, scope, codegenClassScope);
+			var eval = _innerType.IsNullType() ? ConstantNull() : InnerExpression.EvaluateCodegen(_innerType, methodNode, scope, codegenClassScope);
 			EnumDistinctOfHelper.ForEachBlock(block, eval, _innerType);
 		}
 

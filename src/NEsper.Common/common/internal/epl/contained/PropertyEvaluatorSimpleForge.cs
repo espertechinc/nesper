@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorSimple), GetType(), classScope);
             method.Block
-                .DeclareVar<PropertyEvaluatorSimple>("pe", NewInstance(typeof(PropertyEvaluatorSimple)))
+                .DeclareVarNewInstance<PropertyEvaluatorSimple>("pe")
                 .SetProperty(
                     Ref("pe"),
                     "Filter",

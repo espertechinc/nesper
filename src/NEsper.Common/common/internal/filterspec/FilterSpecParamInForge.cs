@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 _adders = new FilterSpecParamInAdder[listofValues.Count];
                 for (var i = 0; i < listofValues.Count; i++) {
                     var returnType = listofValues[i].ReturnType;
-                    if (returnType == null) {
+                    if (returnType.IsNullTypeSafe()) {
                         _adders[i] = InValueAdderPlain.INSTANCE;
                     }
                     else if (returnType.IsArray) {
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             return result;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("val")));
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
 
         private object[] GetFilterValues(

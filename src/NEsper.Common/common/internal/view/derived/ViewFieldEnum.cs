@@ -18,88 +18,88 @@ namespace com.espertech.esper.common.@internal.view.derived
     public enum ViewFieldEnum
     {
         /// <summary> Count.</summary>
-        UNIVARIATE_STATISTICS__DATAPOINTS,
+        UNIVARIATE_STATISTICS_DATAPOINTS,
 
         /// <summary> Sum.</summary>
-        UNIVARIATE_STATISTICS__TOTAL,
+        UNIVARIATE_STATISTICS_TOTAL,
 
         /// <summary> Average.</summary>
-        UNIVARIATE_STATISTICS__AVERAGE,
+        UNIVARIATE_STATISTICS_AVERAGE,
 
         /// <summary> Standard dev population.</summary>
-        UNIVARIATE_STATISTICS__STDDEVPA,
+        UNIVARIATE_STATISTICS_STDDEVPA,
 
         /// <summary> Standard dev.</summary>
-        UNIVARIATE_STATISTICS__STDDEV,
+        UNIVARIATE_STATISTICS_STDDEV,
 
         /// <summary> Variance.</summary>
-        UNIVARIATE_STATISTICS__VARIANCE,
+        UNIVARIATE_STATISTICS_VARIANCE,
 
         /// <summary> Weighted average.</summary>
-        WEIGHTED_AVERAGE__AVERAGE,
+        WEIGHTED_AVERAGE_AVERAGE,
 
         /// <summary> CorrelationStatistics.</summary>
-        CORRELATION__CORRELATION,
+        CORRELATION_CORRELATION,
 
         /// <summary> Slope.</summary>
-        REGRESSION__SLOPE,
+        REGRESSION_SLOPE,
 
         /// <summary> Y-intercept.</summary>
-        REGRESSION__YINTERCEPT,
+        REGRESSION_YINTERCEPT,
 
         /// <summary> Count.</summary>
-        SIZE_VIEW__SIZE,
+        SIZE_VIEW_SIZE,
 
         /// <summary>XAverage </summary>
-        REGRESSION__XAVERAGE,
+        REGRESSION_XAVERAGE,
 
         /// <summary>XStandardDeviationPop </summary>
-        REGRESSION__XSTANDARDDEVIATIONPOP,
+        REGRESSION_XSTANDARDDEVIATIONPOP,
 
         /// <summary>XStandardDeviationSample </summary>
-        REGRESSION__XSTANDARDDEVIATIONSAMPLE,
+        REGRESSION_XSTANDARDDEVIATIONSAMPLE,
 
         /// <summary>XSum </summary>
-        REGRESSION__XSUM,
+        REGRESSION_XSUM,
 
         /// <summary>XVariance </summary>
-        REGRESSION__XVARIANCE,
+        REGRESSION_XVARIANCE,
 
         /// <summary>YAverage </summary>
-        REGRESSION__YAVERAGE,
+        REGRESSION_YAVERAGE,
 
         /// <summary>YStandardDeviationPop </summary>
-        REGRESSION__YSTANDARDDEVIATIONPOP,
+        REGRESSION_YSTANDARDDEVIATIONPOP,
 
         /// <summary>YStandardDeviationSample </summary>
-        REGRESSION__YSTANDARDDEVIATIONSAMPLE,
+        REGRESSION_YSTANDARDDEVIATIONSAMPLE,
 
         /// <summary>YSum </summary>
-        REGRESSION__YSUM,
+        REGRESSION_YSUM,
 
         /// <summary>YVariance </summary>
-        REGRESSION__YVARIANCE,
+        REGRESSION_YVARIANCE,
 
         /// <summary>dataPoints </summary>
-        REGRESSION__DATAPOINTS,
+        REGRESSION_DATAPOINTS,
 
         /// <summary>n </summary>
-        REGRESSION__N,
+        REGRESSION_N,
 
         /// <summary>sumX </summary>
-        REGRESSION__SUMX,
+        REGRESSION_SUMX,
 
         /// <summary>sumXSq </summary>
-        REGRESSION__SUMXSQ,
+        REGRESSION_SUMXSQ,
 
         /// <summary>sumXY </summary>
-        REGRESSION__SUMXY,
+        REGRESSION_SUMXY,
 
         /// <summary>sumY </summary>
-        REGRESSION__SUMY,
+        REGRESSION_SUMY,
 
         /// <summary>sumYSq </summary>
-        REGRESSION__SUMYSQ
+        REGRESSION_SUMYSQ
     }
 
     public static class ViewFieldEnumExtensions
@@ -107,88 +107,88 @@ namespace com.espertech.esper.common.@internal.view.derived
         public static string GetName(this ViewFieldEnum value)
         {
             switch (value) {
-                case ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS:
+                case ViewFieldEnum.UNIVARIATE_STATISTICS_DATAPOINTS:
                     return ("datapoints");
 
-                case ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL:
+                case ViewFieldEnum.UNIVARIATE_STATISTICS_TOTAL:
                     return ("total");
 
-                case ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE:
+                case ViewFieldEnum.UNIVARIATE_STATISTICS_AVERAGE:
                     return ("average");
 
-                case ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA:
+                case ViewFieldEnum.UNIVARIATE_STATISTICS_STDDEVPA:
                     return ("stddevpa");
 
-                case ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV:
+                case ViewFieldEnum.UNIVARIATE_STATISTICS_STDDEV:
                     return ("stddev");
 
-                case ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE:
+                case ViewFieldEnum.UNIVARIATE_STATISTICS_VARIANCE:
                     return ("variance");
 
-                case ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE:
+                case ViewFieldEnum.WEIGHTED_AVERAGE_AVERAGE:
                     return ("average");
 
-                case ViewFieldEnum.CORRELATION__CORRELATION:
+                case ViewFieldEnum.CORRELATION_CORRELATION:
                     return ("correlation");
 
-                case ViewFieldEnum.REGRESSION__SLOPE:
+                case ViewFieldEnum.REGRESSION_SLOPE:
                     return ("slope");
 
-                case ViewFieldEnum.REGRESSION__YINTERCEPT:
+                case ViewFieldEnum.REGRESSION_YINTERCEPT:
                     return ("YIntercept");
 
-                case ViewFieldEnum.SIZE_VIEW__SIZE:
+                case ViewFieldEnum.SIZE_VIEW_SIZE:
                     return ("size");
 
-                case ViewFieldEnum.REGRESSION__XAVERAGE:
+                case ViewFieldEnum.REGRESSION_XAVERAGE:
                     return ("XAverage");
 
-                case ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP:
+                case ViewFieldEnum.REGRESSION_XSTANDARDDEVIATIONPOP:
                     return ("XStandardDeviationPop");
 
-                case ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE:
+                case ViewFieldEnum.REGRESSION_XSTANDARDDEVIATIONSAMPLE:
                     return ("XStandardDeviationSample");
 
-                case ViewFieldEnum.REGRESSION__XSUM:
+                case ViewFieldEnum.REGRESSION_XSUM:
                     return ("XSum");
 
-                case ViewFieldEnum.REGRESSION__XVARIANCE:
+                case ViewFieldEnum.REGRESSION_XVARIANCE:
                     return ("XVariance");
 
-                case ViewFieldEnum.REGRESSION__YAVERAGE:
+                case ViewFieldEnum.REGRESSION_YAVERAGE:
                     return ("YAverage");
 
-                case ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP:
+                case ViewFieldEnum.REGRESSION_YSTANDARDDEVIATIONPOP:
                     return ("YStandardDeviationPop");
 
-                case ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE:
+                case ViewFieldEnum.REGRESSION_YSTANDARDDEVIATIONSAMPLE:
                     return ("YStandardDeviationSample");
 
-                case ViewFieldEnum.REGRESSION__YSUM:
+                case ViewFieldEnum.REGRESSION_YSUM:
                     return ("YSum");
 
-                case ViewFieldEnum.REGRESSION__YVARIANCE:
+                case ViewFieldEnum.REGRESSION_YVARIANCE:
                     return ("YVariance");
 
-                case ViewFieldEnum.REGRESSION__DATAPOINTS:
+                case ViewFieldEnum.REGRESSION_DATAPOINTS:
                     return ("dataPoints");
 
-                case ViewFieldEnum.REGRESSION__N:
+                case ViewFieldEnum.REGRESSION_N:
                     return ("n");
 
-                case ViewFieldEnum.REGRESSION__SUMX:
+                case ViewFieldEnum.REGRESSION_SUMX:
                     return ("sumX");
 
-                case ViewFieldEnum.REGRESSION__SUMXSQ:
+                case ViewFieldEnum.REGRESSION_SUMXSQ:
                     return ("sumXSq");
 
-                case ViewFieldEnum.REGRESSION__SUMXY:
+                case ViewFieldEnum.REGRESSION_SUMXY:
                     return ("sumXY");
 
-                case ViewFieldEnum.REGRESSION__SUMY:
+                case ViewFieldEnum.REGRESSION_SUMY:
                     return ("sumY");
 
-                case ViewFieldEnum.REGRESSION__SUMYSQ:
+                case ViewFieldEnum.REGRESSION_SUMYSQ:
                     return ("sumYSq");
             }
 

@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 
         public StmtForgeMethodUpdate(StatementBaseInfo @base)
         {
-            this._base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             string triggereventTypeName;
             EventType streamEventType;
             
-            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             if (streamSpec is FilterStreamSpecCompiled) {
                 var filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
@@ -88,17 +88,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 false);
 
             // create subselect information
-            IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-            IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-            SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, _base, services);
+            var filterSpecCompileds = new List<FilterSpecCompiled>();
+            var namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
+            var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
+                false, filterSpecCompileds, namedWindowConsumers, _base, services);
+
             additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
+            var subselectActivation = subSelectActivationDesc.Subselects;
 
             // handle subselects
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
-                _base, subselectActivation, typeService.StreamNames, typeService.EventTypes, new String[]{triggereventTypeName}, services);
-            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges = subSelectForgePlan.Subselects;
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                _base, subselectActivation, typeService.StreamNames, typeService.EventTypes, new string[]{triggereventTypeName}, services);
+            var subselectForges = subSelectForgePlan.Subselects;
             additionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
 
             var validationContext =

@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
             return NewInstance<StatViewAdditionalPropsEval>(
                 Constant(AdditionalProps),
-                CodegenEvaluators(AdditionalEvals, method, this.GetType(), classScope),
+                CodegenEvaluators(AdditionalEvals, method, GetType(), classScope),
                 Constant(AdditionalTypes),
                 DataInputOutputSerdeForgeExtensions.CodegenArray(AdditionalSerdes, method, classScope, null));
         }

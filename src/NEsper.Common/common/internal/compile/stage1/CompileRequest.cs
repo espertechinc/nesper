@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.compile.stage1
 {
@@ -11,17 +12,22 @@ namespace com.espertech.esper.common.@internal.compile.stage1
     {
         private readonly ICollection<CompilableClass> _classes;
         private readonly ModuleCompileTimeServices _moduleCompileTimeServices;
+        private readonly Consumer<object> _compileResultConsumer;
 
         public ICollection<CompilableClass> Classes => _classes;
 
         public ModuleCompileTimeServices ModuleCompileTimeServices => _moduleCompileTimeServices;
 
+        public Consumer<object> CompileResultConsumer => _compileResultConsumer;
+
         public CompileRequest(
             ICollection<CompilableClass> classes,
-            ModuleCompileTimeServices moduleCompileTimeServices)
+            ModuleCompileTimeServices moduleCompileTimeServices,
+            Consumer<object> compileResultConsumer)
         {
             _classes = classes;
             _moduleCompileTimeServices = moduleCompileTimeServices;
+            _compileResultConsumer = compileResultConsumer;
         }
     }
 }

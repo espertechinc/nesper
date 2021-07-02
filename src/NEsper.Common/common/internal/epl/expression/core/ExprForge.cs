@@ -33,31 +33,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
     public class ProxyExprForge : ExprForge
     {
-        public Func<ExprEvaluator> ProcExprEvaluator;
+        public Func<ExprEvaluator> procExprEvaluator;
 
         public Func<Type, CodegenMethodScope, ExprForgeCodegenSymbol, CodegenClassScope, CodegenExpression>
-            ProcEvaluateCodegen;
+            procEvaluateCodegen;
 
-        public Func<Type> ProcEvaluationType;
-        public Func<ExprForgeConstantType> ProcForgeConstantType;
-        public Func<ExprNodeRenderable> ProcForgeRenderable;
+        public Func<Type> procEvaluationType;
+        public Func<ExprForgeConstantType> procForgeConstantType;
+        public Func<ExprNodeRenderable> procForgeRenderable;
 
-        public ExprEvaluator ExprEvaluator => ProcExprEvaluator?.Invoke();
+        public ExprEvaluator ExprEvaluator => procExprEvaluator?.Invoke();
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
-            => ProcEvaluateCodegen?.Invoke(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+            => procEvaluateCodegen?.Invoke(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
 
         public Type EvaluationType
-            => ProcEvaluationType?.Invoke();
+            => procEvaluationType?.Invoke();
 
         public ExprForgeConstantType ForgeConstantType
-            => ProcForgeConstantType?.Invoke();
+            => procForgeConstantType?.Invoke();
 
         public ExprNodeRenderable ExprForgeRenderable
-            => ProcForgeRenderable?.Invoke();
+            => procForgeRenderable?.Invoke();
     }
 } // end of namespace

@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public sealed class OutputConditionPolledCountFactoryForge : OutputConditionPolledFactoryForge
     {
-        private readonly int eventRate;
-        private readonly VariableMetaData variableMetaData;
+        private readonly int _eventRate;
+        private readonly VariableMetaData _variableMetaData;
 
         public OutputConditionPolledCountFactoryForge(
             int eventRate,
             VariableMetaData variableMetaData)
         {
-            this.eventRate = eventRate;
-            this.variableMetaData = variableMetaData;
+            _eventRate = eventRate;
+            _variableMetaData = variableMetaData;
 
             if ((eventRate < 1) && (variableMetaData == null)) {
                 throw new ArgumentException(
@@ -46,22 +46,22 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         {
             // resolve variable at init-time via field
             CodegenExpression variableExpression = ConstantNull();
-            if (variableMetaData != null) {
+            if (_variableMetaData != null) {
                 variableExpression = VariableDeployTimeResolver.MakeVariableField(
-                    variableMetaData,
+                    _variableMetaData,
                     classScope,
-                    this.GetType());
+                    GetType());
             }
 
             CodegenMethod method = parent.MakeChild(
                 typeof(OutputConditionPolledCountFactory),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<OutputConditionPolledCountFactory>(
                     "factory",
                     NewInstance(typeof(OutputConditionPolledCountFactory)))
-                .SetProperty(Ref("factory"), "EventRate", Constant(eventRate))
+                .SetProperty(Ref("factory"), "EventRate", Constant(_eventRate))
                 .SetProperty(Ref("factory"), "Variable", variableExpression)
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

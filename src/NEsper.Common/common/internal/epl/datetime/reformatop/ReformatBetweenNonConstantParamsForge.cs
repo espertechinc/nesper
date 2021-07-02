@@ -27,10 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         private readonly ExprNode _start;
         private readonly DatetimeLongCoercer _startCoercer;
-        private ExprForge _forgeIncludeHigh;
-        private ExprForge _forgeIncludeLow;
+        private readonly ExprForge _forgeIncludeHigh;
+        private readonly ExprForge _forgeIncludeLow;
 
-        private bool _includeBoth;
+        private readonly bool _includeBoth;
         private bool? _includeHigh;
         private bool? _includeLow;
 

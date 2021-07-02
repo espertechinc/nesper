@@ -47,35 +47,35 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithOuterJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOuterJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUnkeyedTable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUnkeyedTable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoinIndexChoice(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraJoinIndexChoice());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFromClause(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraFromClause());
             return execs;
         }

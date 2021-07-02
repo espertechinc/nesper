@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
 	public class AggregationMethodSortedMinMaxBy : AggregationMultiFunctionAggregationMethod
 	{
-		private bool max;
+		private bool _max;
 
 		public bool Max {
-			get => max;
-			set => max = value;
+			get => _max;
+			set => _max = value;
 		}
 
 		public object GetValue(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			bool isNewData,
 			ExprEvaluatorContext exprEvaluatorContext)
 		{
-			if (max) {
+			if (_max) {
 				return state.LastValue;
 			}
 			else {

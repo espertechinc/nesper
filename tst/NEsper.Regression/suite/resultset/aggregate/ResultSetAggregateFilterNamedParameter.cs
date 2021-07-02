@@ -47,14 +47,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithIntoTableCountMinSketch(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateIntoTableCountMinSketch());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntoTable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateIntoTable(false));
             execs.Add(new ResultSetAggregateIntoTable(true));
             return execs;
@@ -62,42 +62,42 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithAccessAggPlugIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggPlugIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodPlugIn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodPlugIn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFilterNamedParamInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateFilterNamedParamInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAuditAndReuse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAuditAndReuse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAccessAggSortedMulticriteria(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggSortedMulticriteria());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAccessAggSortedUnbound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggSortedUnbound(false));
             execs.Add(new ResultSetAggregateAccessAggSortedUnbound(true));
             return execs;
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithAccessAggSortedBound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggSortedBound(false));
             execs.Add(new ResultSetAggregateAccessAggSortedBound(true));
             return execs;
@@ -113,21 +113,21 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithAccessAggLinearBoundMixedFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggLinearBoundMixedFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAccessAggLinearWIndex(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggLinearWIndex());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAccessAggLinearUnbound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggLinearUnbound(false));
             execs.Add(new ResultSetAggregateAccessAggLinearUnbound(true));
             return execs;
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithAccessAggLinearBound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateAccessAggLinearBound(false));
             execs.Add(new ResultSetAggregateAccessAggLinearBound(true));
             return execs;
@@ -143,49 +143,49 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
         public static IList<RegressionExecution> WithMethodAggRateBound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAggRateBound());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodAggRateUnbound(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAggRateUnbound());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodAggNth(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAggNth());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodAggLeaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAggLeaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodAggSQLMixedFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAggSQLMixedFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMethodAggSQLAll(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMethodAggSQLAll());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFirstAggSODA(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateFirstAggSODA(false));
             execs.Add(new ResultSetAggregateFirstAggSODA(true));
             return execs;

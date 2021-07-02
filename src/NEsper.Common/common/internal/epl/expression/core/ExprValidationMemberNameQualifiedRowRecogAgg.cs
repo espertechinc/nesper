@@ -13,16 +13,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprValidationMemberNameQualifiedRowRecogAgg : ExprValidationMemberName
     {
-        private readonly int streamNum;
+        private readonly int _streamNum;
 
         public ExprValidationMemberNameQualifiedRowRecogAgg(int streamNum)
         {
-            this.streamNum = streamNum;
+            this._streamNum = streamNum;
         }
 
         public CodegenFieldName AggregationResultFutureRef()
         {
-            return new CodegenFieldNameMatchRecognizeAgg(streamNum);
+            return new CodegenFieldNameMatchRecognizeAgg(_streamNum);
         }
 
         public CodegenFieldName PriorStrategy(int streamNum)

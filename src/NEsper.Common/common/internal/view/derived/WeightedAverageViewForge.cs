@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -29,13 +31,13 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// </summary>
     public class WeightedAverageViewForge : ViewFactoryForgeBase
     {
-        internal const string NAME = "Weighted-average";
+        private const string NAME = "Weighted-average";
 
-        internal StatViewAdditionalPropsForge additionalProps;
-        internal ExprNode fieldNameWeight;
-        internal ExprNode fieldNameX;
+        private StatViewAdditionalPropsForge _additionalProps;
+        private ExprNode _fieldNameWeight;
+        private ExprNode _fieldNameX;
 
-        private IList<ExprNode> viewParameters;
+        private IList<ExprNode> _viewParameters;
 
         public override string ViewName => NAME;
 
@@ -47,18 +49,19 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 true,
                 viewForgeEnv,
                 streamNumber);
@@ -71,10 +74,10 @@ namespace com.espertech.esper.common.@internal.view.derived
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            fieldNameX = validated[0];
-            fieldNameWeight = validated[1];
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
-            eventType = WeightedAverageView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+            _fieldNameX = validated[0];
+            _fieldNameWeight = validated[1];
+            _additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
+            eventType = WeightedAverageView.CreateEventType(_additionalProps, viewForgeEnv, streamNumber);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -86,12 +89,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                 viewForgeEnv.SerdeResolver);
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(WeightedAverageViewFactory);
         }
 
-        internal override string FactoryMethod()
+        // TBD: Go back and change casing on all of these
+        public override string FactoryMethod()
         {
             return "Weightedavg";
         }
@@ -102,22 +106,27 @@ namespace com.espertech.esper.common.@internal.view.derived
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (additionalProps != null) {
+            if (_additionalProps != null) {
                 method.Block.SetProperty(
                     factory,
                     "AdditionalProps",
-                    additionalProps.Codegen(method, classScope));
+                    _additionalProps.Codegen(method, classScope));
             }
 
             method.Block
                 .SetProperty(
                     factory,
                     "FieldNameXEvaluator",
-                    CodegenEvaluator(fieldNameX.Forge, method, GetType(), classScope))
+                    CodegenEvaluator(_fieldNameX.Forge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "FieldNameWeightEvaluator",
-                    CodegenEvaluator(fieldNameWeight.Forge, method, GetType(), classScope));
+                    CodegenEvaluator(_fieldNameWeight.Forge, method, GetType(), classScope));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_WEIGHTEDAVG;
         }
     }
 } // end of namespace

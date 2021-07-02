@@ -449,6 +449,24 @@ namespace com.espertech.esper.regressionrun.suite.context
 
             [Test, RunInApplicationDomain]
             public void WithInitTermNoTerminationCondition() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermNoTerminationCondition());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndFilterWithPatternCorrelatedWithAsName() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithStartEndFilterWithPatternCorrelatedWithAsName());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndPatternWithPatternCorrelatedWithAsName() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithStartEndPatternWithPatternCorrelatedWithAsName());
+
+            [Test, RunInApplicationDomain]
+            public void WithStartEndPatternWithFilterCorrelatedWithAsName() => RegressionRunner.Run(
+                _session,
+                ContextInitTerm.WithStartEndPatternWithFilterCorrelatedWithAsName());
+
+            [Test, RunInApplicationDomain]
+            public void WithInitTermWithTermEvent() => RegressionRunner.Run(_session, ContextInitTerm.WithInitTermWithTermEvent());
         }
     }
 } // end of namespace

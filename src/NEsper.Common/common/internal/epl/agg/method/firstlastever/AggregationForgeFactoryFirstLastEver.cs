@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 	    private AggregatorMethod _aggregator;
 
 	    public AggregationForgeFactoryFirstLastEver(ExprFirstLastEverNode parent, Type childType, DataInputOutputSerdeForge serde) {
-	        this._parent = parent;
-	        this._childType = childType;
-	        this._serde = serde;
+	        _parent = parent;
+	        _childType = childType;
+	        _serde = serde;
 	    }
 
 	    public override Type ResultType => _childType;

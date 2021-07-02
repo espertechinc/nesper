@@ -44,12 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			ModuleDependenciesCompileTime moduleDependencies,
 			bool isFireAndForget)
 		{
-			this._moduleName = moduleName;
-			this._moduleUses = moduleUses;
-			this._locals = locals;
-			this._path = path;
-			this._moduleDependencies = moduleDependencies;
-			this._isFireAndForget = isFireAndForget;
+			_moduleName = moduleName;
+			_moduleUses = moduleUses;
+			_locals = locals;
+			_path = path;
+			_moduleDependencies = moduleDependencies;
+			_isFireAndForget = isFireAndForget;
 		}
 
 		public ClassProvided ResolveClass(string name)
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 		{
 			var foundLocal = new List<Pair<Type, T>>();
 			foreach (var entry in locals.Classes) {
-				EPTypeHelper.TraverseAnnotations<T>(
+				EPChainableTypeHelper.TraverseAnnotations<T>(
 					entry.Value.ClassesMayNull,
 					(clazz, annotation) => {
 						var t = (T) annotation;
@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 		
 			IList<PathFunc<T>> foundPath = new List<PathFunc<T>>();
 			path.TraverseWithModule((moduleName, classProvided) => {
-				EPTypeHelper.TraverseAnnotations<T>(
+				EPChainableTypeHelper.TraverseAnnotations<T>(
 					classProvided.ClassesMayNull,
 					(
 						clazz,
@@ -291,9 +291,9 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 				Type clazz,
 				T annotation)
 			{
-				this.OptionalModuleName = optionalModuleName;
-				this.Clazz = clazz;
-				this.Annotation = annotation;
+				OptionalModuleName = optionalModuleName;
+				Clazz = clazz;
+				Annotation = annotation;
 			}
 
 			public string OptionalModuleName { get; }

@@ -12,11 +12,14 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -38,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             EventBeanCopyMethodForge copyMethod,
             EventBeanUpdateItemForge[] updateItems)
         {
-            this._eventType = eventType;
-            this._copyMethod = copyMethod;
+            _eventType = eventType;
+            _copyMethod = copyMethod;
             UpdateItems = updateItems;
         }
 
@@ -191,7 +194,8 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             
             var forgeExpressions = new EventBeanUpdateItemForgeWExpressions[updateItems.Length];
             for (var i = 0; i < updateItems.Length; i++) {
-                var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
+                var nullableType = types[i].TypeNormalized();
+                var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : nullableType;
                 forgeExpressions[i] = updateItems[i].ToExpression(targetType, exprMethod, exprSymbol, classScope);
             }
 
@@ -203,7 +207,6 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 Cast(_eventType.UnderlyingType, ExprDotUnderlying(Ref("target"))));
 
             for (var i = 0; i < updateItems.Length; i++) {
-                var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
                 var updateItem = updateItems[i];
                 var rhs = forgeExpressions[i].RhsExpression;
                 if (updateItems[i].IsUseTriggeringEvent) {
@@ -211,8 +214,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 }
                 
                 method.Block.Apply(Instblock(classScope, "qInfraUpdateRHSExpr", Constant(i)));
-                
-                if (types[i] == null && updateItem.OptionalWriter != null) {
+
+                var type = types[i];
+                if (type.IsNullTypeSafe() && updateItem.OptionalWriter != null) {
                     method.Block.Expression(
                         updateItem.OptionalWriter.WriteCodegen(
                             ConstantNull(),
@@ -223,18 +227,23 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     continue;
                 }
 
-                if (types[i] == typeof(void) || (updateItem.OptionalWriter == null && updateItem.OptionalArray == null)) {
+                if (type.IsVoid() || (updateItem.OptionalWriter == null && updateItem.OptionalArray == null)) {
                     method.Block
                         .Expression(rhs)
                         .Apply(Instblock(classScope, "aInfraUpdateRHSExpr", ConstantNull()));
                     continue;
                 }
 
+                var targetType = typeof(object);
+                if (!updateItems[i].IsUseUntypedAssignment && type != null) {
+                    targetType = type;
+                }
+                
                 var @ref = Ref("r" + i);
                 method.Block.DeclareVar(targetType, @ref.Ref, rhs);
 
                 CodegenExpression assigned = @ref;
-                var assignedType = types[i];
+                var assignedType = type;
                 if (updateItem.OptionalWidener != null) {
                     assigned = updateItem.OptionalWidener.WidenCodegen(@ref, method, classScope);
                     assignedType = updateItem.OptionalWidener.WidenResultType;
@@ -248,7 +257,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     CodegenBlock arrayBlock;
 
                     var elementType = arraySet.ArrayType.GetElementType();
-                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (assignedType == null || assignedType.CanBeNull());
+                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (assignedType.IsNullTypeSafe() || assignedType.CanBeNull());
                     if (arrayOfPrimitiveNullRHS) {
                         assigned = Unbox(assigned, assignedType);
                         arrayBlock = method.Block
@@ -285,7 +294,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     }
                 }
                 else {
-                    if (types[i].CanBeNull() && updateItem.IsNotNullableField) {
+                    if (type.CanBeNull() && updateItem.IsNotNullableField) {
                         method.Block
                             .IfNull(@ref)
                             .StaticMethod(

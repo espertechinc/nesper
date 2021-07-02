@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -34,14 +35,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeDOMGetterCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposeDOMGetterPreconfig());
             return execs;
         }
@@ -78,55 +79,40 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
 
-            CollectionAssert.AreEquivalent(
-                new[] {
-                    new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                env.Statement("s0").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("s0").EventType.PropertyDescriptors,
+                new SupportEventPropDesc("nested1", typeof(XmlNode))
+                    .WithFragment());
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             env.CompileDeploy(
                 "@Name('s1') select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.nested2.prop3 as prop3, nested1.nested2.prop3[0] as prop3_0, nested1.nested2 as nested2 from MyNestedStream#lastevent",
                 path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop1", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("prop2", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attr1", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor(
-                        "prop3",
-                        typeof(int?[]),
-                        typeof(int?),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor("prop3_0", typeof(int?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("nested2", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                env.Statement("s1").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("s1").EventType.PropertyDescriptors,
+                new SupportEventPropDesc("prop1", typeof(string)).WithComponentType(typeof(char)),
+                new SupportEventPropDesc("prop2", typeof(bool?)),
+                new SupportEventPropDesc("attr1", typeof(string)).WithComponentType(typeof(char)),
+                new SupportEventPropDesc("prop3", typeof(int?[])).WithComponentType(typeof(int?)).WithIndexed(),
+                new SupportEventPropDesc("prop3_0", typeof(int?)),
+                new SupportEventPropDesc("nested2", typeof(XmlNode)).WithFragment());
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s1").EventType);
 
             env.CompileDeploy("@Name('sw') select * from MyNestedStream", path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                env.Statement("sw").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("sw").EventType.PropertyDescriptors,
+                new SupportEventPropDesc("nested1", typeof(XmlNode)).WithFragment());
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("sw").EventType);
 
             env.CompileDeploy(
                 "@Name('iw') insert into MyNestedStreamTwo select nested1.* from " + eventTypeName + "#lastevent",
                 path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop1", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("prop2", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attr1", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("nested2", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                env.Statement("iw").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("iw").EventType.PropertyDescriptors,
+                new SupportEventPropDesc("prop1", typeof(string)).WithComponentType(typeof(char)).WithIndexed(),
+                new SupportEventPropDesc("prop2", typeof(bool?)),
+                new SupportEventPropDesc("attr1", typeof(string)).WithComponentType(typeof(char)).WithIndexed(),
+                new SupportEventPropDesc("nested2", typeof(XmlNode)).WithFragment());
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("iw").EventType);
 
             SupportXML.SendDefaultEvent(env.EventService, "test", eventTypeName);

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
     public class ProxyPollResultIndexingStrategy : PollResultIndexingStrategy
     {
-        public Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> ProcIndex;
+        public Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> procIndex;
 
         public ProxyPollResultIndexingStrategy()
         {
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public ProxyPollResultIndexingStrategy(
             Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> procIndex)
         {
-            ProcIndex = procIndex;
+            this.procIndex = procIndex;
         }
 
         public EventTable[] Index(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             bool isActiveCache,
             AgentInstanceContext agentInstanceContext)
         {
-            return ProcIndex?.Invoke(pollResult, isActiveCache, agentInstanceContext);
+            return procIndex?.Invoke(pollResult, isActiveCache, agentInstanceContext);
         }
     }
 } // end of namespace

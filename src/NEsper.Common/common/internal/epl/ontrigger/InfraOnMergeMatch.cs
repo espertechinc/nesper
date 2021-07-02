@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
     public class InfraOnMergeMatch
     {
-        private ExprEvaluator optionalCond;
-        private IList<InfraOnMergeAction> actions;
+        private readonly ExprEvaluator optionalCond;
+        private readonly IList<InfraOnMergeAction> actions;
 
         public InfraOnMergeMatch(
             ExprEvaluator optionalCond,
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
 
             object result = optionalCond.Evaluate(eventsPerStream, true, context);
-            return result != null && (Boolean) result;
+            return result != null && (bool) result;
         }
 
         public void ApplyNamedWindow(

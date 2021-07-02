@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     public class QueryPlanNodeForgeAllUnidirectionalOuter : QueryPlanNodeForge
     {
-        private readonly int streamNum;
+        private readonly int _streamNum;
 
         public QueryPlanNodeForgeAllUnidirectionalOuter(int streamNum)
         {
-            this.streamNum = streamNum;
+            this._streamNum = streamNum;
         }
 
         public override CodegenExpression Make(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance<QueryPlanNodeAllUnidirectionalOuter>(Constant(streamNum));
+            return NewInstance<QueryPlanNodeAllUnidirectionalOuter>(Constant(_streamNum));
         }
 
         public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)

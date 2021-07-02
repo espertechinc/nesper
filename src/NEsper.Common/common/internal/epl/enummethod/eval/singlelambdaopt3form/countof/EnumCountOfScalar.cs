@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override EnumEval EnumEvaluator {
 			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+				var inner = InnerExpression.ExprEvaluator;
 
 				return new ProxyEnumEval(
 					(
@@ -45,19 +45,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return 0;
 						}
 
-						int rowcount = 0;
-						ObjectArrayEventBean evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var rowcount = 0;
+						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
 						eventsLambda[StreamNumLambda] = evalEvent;
-						object[] props = evalEvent.Properties;
+						var props = evalEvent.Properties;
 						props[2] = enumcoll.Count;
 
-						int count = -1;
-						foreach (object next in enumcoll) {
+						var count = -1;
+						foreach (var next in enumcoll) {
 							count++;
 							props[0] = next;
 							props[1] = count;
 
-							object pass = inner.Evaluate(eventsLambda, isNewData, context);
+							var pass = inner.Evaluate(eventsLambda, isNewData, context);
 							if (pass == null || false.Equals(pass)) {
 								continue;
 							}
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(int);
 		}
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
 				block,
 				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+				InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope));
 			block.IncrementRef("rowcount");
 		}
 

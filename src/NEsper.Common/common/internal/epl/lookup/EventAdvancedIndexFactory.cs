@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         EventAdvancedIndexFactoryForge Forge { get; }
 
         AdvancedIndexConfigContextPartition ConfigureContextPartition(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             EventType eventType,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc,
             EventTableOrganization organization);

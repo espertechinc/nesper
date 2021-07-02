@@ -17,8 +17,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class WrapperEventBeanMapCopyMethod : EventBeanCopyMethod
     {
-        private readonly EventBeanTypedEventFactory eventAdapterService;
-        private readonly WrapperEventType wrapperEventType;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
+        private readonly WrapperEventType _wrapperEventType;
 
         /// <summary>
         ///     Ctor.
@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             WrapperEventType wrapperEventType,
             EventBeanTypedEventFactory eventAdapterService)
         {
-            this.wrapperEventType = wrapperEventType;
-            this.eventAdapterService = eventAdapterService;
+            this._wrapperEventType = wrapperEventType;
+            this._eventAdapterService = eventAdapterService;
         }
 
         public EventBean Copy(EventBean theEvent)
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var decorated = (DecoratingEventBean) theEvent;
             var decoratedUnderlying = decorated.UnderlyingEvent;
             IDictionary<string, object> copiedMap = new Dictionary<string, object>(decorated.DecoratingProperties);
-            return eventAdapterService.AdapterForTypedWrapper(decoratedUnderlying, copiedMap, wrapperEventType);
+            return _eventAdapterService.AdapterForTypedWrapper(decoratedUnderlying, copiedMap, _wrapperEventType);
         }
     }
 } // end of namespace

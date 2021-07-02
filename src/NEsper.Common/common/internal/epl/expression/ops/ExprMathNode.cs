@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -40,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isDivisionByZeroReturnsNull)
         {
             MathArithTypeEnum = mathArithTypeEnum;
-            this._isIntegerDivision = isIntegerDivision;
-            this._isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
+            _isIntegerDivision = isIntegerDivision;
+            _isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -85,13 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             foreach (var child in ChildNodes) {
-                var childType = child.Forge.EvaluationType;
-                if (!childType.IsNumeric()) {
-                    throw new ExprValidationException(
-                        "Implicit conversion from datatype '" +
-                        childType.CleanName() +
-                        "' to numeric is not allowed");
-                }
+                ExprNodeUtilityValidate.ValidateReturnsNumeric(child.Forge);
             }
 
             // Determine result type, set up compute function

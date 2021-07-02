@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class AggregationStateSortedForge : AggregationStateFactoryForge
     {
         internal readonly AggregationForgeFactoryAccessSorted factory;
-        private AggregatorAccessSorted aggregatorAccess;
+        private AggregatorAccessSorted _aggregatorAccess;
 
         public AggregationStateSortedForge(AggregationForgeFactoryAccessSorted factory)
         {
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope)
         {
-            aggregatorAccess = new AggregatorAccessSortedImpl(
+            _aggregatorAccess = new AggregatorAccessSortedImpl(
                 join,
                 this,
                 col,
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 factory.Parent.OptionalFilter);
         }
 
-        public AggregatorAccess Aggregator => aggregatorAccess;
+        public AggregatorAccess Aggregator => _aggregatorAccess;
 
         public CodegenExpression CodegenGetAccessTableState(
             int column,

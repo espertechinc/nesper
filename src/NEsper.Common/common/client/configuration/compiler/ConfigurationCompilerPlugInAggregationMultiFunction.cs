@@ -35,16 +35,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string[] functionNames,
             string multiFunctionForgeClassName)
         {
-            this.FunctionNames = functionNames;
-            this.MultiFunctionForgeClassName = multiFunctionForgeClassName;
+            FunctionNames = functionNames;
+            MultiFunctionForgeClassName = multiFunctionForgeClassName;
         }
 
         public ConfigurationCompilerPlugInAggregationMultiFunction(
             string[] functionNames,
             Type multiFunctionForgeClass)
         {
-            this.FunctionNames = functionNames;
-            this.MultiFunctionForgeClassName = multiFunctionForgeClass.FullName;
+            FunctionNames = functionNames;
+            MultiFunctionForgeClassName = multiFunctionForgeClass.FullName;
         }
 
         /// <summary>

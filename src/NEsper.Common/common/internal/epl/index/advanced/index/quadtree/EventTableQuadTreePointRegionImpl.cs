@@ -163,11 +163,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public string ToQueryPlan()
         {
-            return this.GetType().ToString();
+            return GetType().ToString();
         }
 
         public Type ProviderClass {
-            get => this.GetType();
+            get => GetType();
         }
 
         public int? NumberOfEvents {

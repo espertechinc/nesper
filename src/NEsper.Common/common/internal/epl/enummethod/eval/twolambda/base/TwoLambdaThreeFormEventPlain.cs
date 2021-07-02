@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 {
 	public abstract class TwoLambdaThreeFormEventPlain : EnumForgeBasePlain
 	{
-		private ExprForge _secondExpression;
+		private readonly ExprForge _secondExpression;
 
 		public ExprForge SecondExpression => _secondExpression;
 
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			int streamCountIncoming,
 			ExprForge secondExpression) : base(innerExpression, streamCountIncoming)
 		{
-			this._secondExpression = secondExpression;
+			_secondExpression = secondExpression;
 		}
 
 		public override CodegenExpression Codegen(
@@ -57,12 +57,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-			CodegenMethod methodNode = codegenMethodScope
-				.MakeChildWithScope(ReturnType(), this.GetType(), scope, codegenClassScope)
+			var scope = new ExprForgeCodegenSymbol(false, null);
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
 
-			CodegenExpression returnIfEmpty = ReturnIfEmptyOptional();
+			var returnIfEmpty = ReturnIfEmptyOptional();
 			if (returnIfEmpty != null) {
 				methodNode.Block
 					.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 
 			InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
 
-			CodegenBlock forEach = methodNode.Block
+			var forEach = methodNode.Block
 				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
 			ForEachBlock(forEach, methodNode, scope, codegenClassScope);

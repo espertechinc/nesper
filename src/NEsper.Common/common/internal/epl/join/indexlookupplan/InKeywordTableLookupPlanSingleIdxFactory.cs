@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
     /// </summary>
     public class InKeywordTableLookupPlanSingleIdxFactory : TableLookupPlan
     {
-        private ExprEvaluator[] expressions;
+        private readonly ExprEvaluator[] expressions;
 
         public InKeywordTableLookupPlanSingleIdxFactory(
             int lookupStream,

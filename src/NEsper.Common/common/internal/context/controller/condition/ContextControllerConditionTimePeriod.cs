@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                         agentInstanceContextX,
                         ScheduleObjectType.context,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    callback.RangeNotification(conditionPath, this, null, null, null, null);
+                    callback.RangeNotification(conditionPath, this, null, null, null, null, null);
 
                     agentInstanceContextX.InstrumentationProvider.AContextScheduledEval();
                 },

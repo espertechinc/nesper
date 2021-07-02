@@ -15,6 +15,7 @@ using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.util
     public class MethodResolver
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly IDictionary<Type, ICollection<Type>> WrappingConversions =
             new Dictionary<Type, ICollection<Type>>();
@@ -558,7 +559,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static MethodInfo ResolveMethodExactNonStatic(
             Type declaringClass,
-            String methodName,
+            string methodName,
             Type[] parameters)
         {
             try {
@@ -590,20 +591,24 @@ namespace com.espertech.esper.common.@internal.util
         {
             var parametersMethod = bestMatch.GetParameters().Select(p => p.ParameterType).ToArray();
             for (int i = 0; i < parametersMethod.Length; i++) {
-                if (parametersMethod[i].CanBeNull()) {
+                var paramMethod = parametersMethod[i];
+                if (paramMethod.CanBeNull()) {
                     continue;
                 }
-
+                
                 // if null-type parameter, or non-CLR class and boxed type matches
-                if (paramTypes[i] == null ||
+                var paramType = paramTypes[i];
+                var paramTypeIsNull = paramType.IsNullTypeSafe();
+                
+                if (paramTypeIsNull ||
                     (!declaringClass.GetType().FullName.StartsWith("System.") &&
-                     (parametersMethod[i].GetBoxedType()) == paramTypes[i])) {
-                    string paramTypeStr = paramTypes[i] == null ? "null" : paramTypes[i].Name;
+                     (paramMethod.GetBoxedType()) == paramType)) {
+                    string paramTypeStr = paramType == null ? "null" : paramType.Name;
                     Log.Info(
                         "Method '{0}' in class '{1}' expects primitive type '{2}' as parameter {3}, but receives a nullable (boxed) type {4}. This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.",
                         methodName,
-                        declaringClass.CleanName(),
-                        parametersMethod[i],
+                        declaringClass.TypeSafeName(),
+                        paramMethod,
                         i,
                         paramTypeStr);
                     return;
@@ -833,7 +838,7 @@ namespace com.espertech.esper.common.@internal.util
             Type genericParameterType,
             AtomicLong conversionCount)
         {
-            if ((invocationParameter == null) && declarationParameter.CanBeNull()) {
+            if (invocationParameter.IsNullTypeSafe() && declarationParameter.CanBeNull()) {
                 return true;
             }
 
@@ -966,7 +971,7 @@ namespace com.espertech.esper.common.@internal.util
             throw new MethodResolverNoSuchCtorException(message, conversionFailedCtor);
         }
 
-        private static String GetParametersPretty(Type[] paramTypes)
+        private static string GetParametersPretty(Type[] paramTypes)
         {
             var parameters = new StringBuilder();
             if (paramTypes != null && paramTypes.Length != 0) {

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AggregationMethodSortedWindow), GetType(), classScope);
 			method.Block
-				.DeclareVar<AggregationMethodSortedWindow>("strat", NewInstance(typeof(AggregationMethodSortedWindow)))
+				.DeclareVarNewInstance<AggregationMethodSortedWindow>("strat")
 				.MethodReturn(Ref("strat"));
 			return LocalMethod(method);
 		}

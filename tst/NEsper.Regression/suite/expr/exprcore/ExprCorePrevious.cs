@@ -54,161 +54,161 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTimeBatchWindowJoin(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousTimeBatchWindowJoin());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithPrevCountStarWithStaticMethod(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousPrevCountStarWithStaticMethod());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithExtTimedBatch(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousExtTimedBatch());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSortWindow(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousSortWindow());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithLengthWindowDynamic(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousLengthWindowDynamic());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithLengthBatch(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousLengthBatch());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTimeBatchWindow(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousTimeBatchWindow());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithExtTimedWindow(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousExtTimedWindow());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTimeWindow(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousTimeWindow());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithLengthWindowPerGroup(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousLengthWindowPerGroup());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithExtTimeWindowPerGroup(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousExtTimeWindowPerGroup());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTimeWindowPerGroup(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousTimeWindowPerGroup());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithLengthBatchPerGroup(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousLengthBatchPerGroup());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTimeBatchPerGroup(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousTimeBatchPerGroup());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithSortWindowPerGroup(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousSortWindowPerGroup());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithExprNameAndTypeAndSODA(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousExprNameAndTypeAndSODA());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithPerGroupTwoCriteria(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousPerGroupTwoCriteria());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithPrevCountStar(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousPrevCountStar());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTimeBatch(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousTimeBatch());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithLengthWindow(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousLengthWindow());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithPrevStream(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousPrevStream());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithLengthWindowWhere(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCorePreviousLengthWindowWhere());
 			return execs;
 		}

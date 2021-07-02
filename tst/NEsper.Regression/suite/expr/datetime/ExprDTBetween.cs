@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                "current_timestamp.between(" + fields + ", VAR_FALSE, VAR_FALSE) as val7 " +
                                "from SupportTimeStartEndA";
             env.CompileDeploy(eplCurrentTS, path).AddListener("s0");
-            LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsCurrentTs, typeof(bool?));
+            SupportEventPropUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsCurrentTs, typeof(bool?));
 
             env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
             EPAssertionUtil.AssertPropsAllValuesSame(
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), false, false) as val3 " +
                                "from SupportTimeStartEndA";
             env.CompileDeploy(eplConstants).AddListener("s0");
-            LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsConstants, typeof(bool?));
+            SupportEventPropUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsConstants, typeof(bool?));
 
             env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
             EPAssertionUtil.AssertProps(
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                    "current_timestamp.between(DateTimeOffsetStart, DateTimeOffsetEnd) as val7 " +
                                    "from SupportTimeStartEndA";
                 env.CompileDeploy(eplCurrentTS).AddListener("s0");
-                LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsCurrentTs, typeof(bool?));
+                SupportEventPropUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsCurrentTs, typeof(bool?));
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
                 EPAssertionUtil.AssertProps(
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                    "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000')) as val4 " +
                                    "from SupportTimeStartEndA";
                 env.CompileDeployAddListenerMile(eplConstants, "s0", 1);
-                LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsConstants, typeof(bool?));
+                SupportEventPropUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsConstants, typeof(bool?));
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
                 EPAssertionUtil.AssertPropsAllValuesSame(

@@ -18,31 +18,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 {
 	public class TwoLambdaThreeFormEventPlainFactory : EnumForgeDescFactory
 	{
-		private readonly EventType eventType;
-		private readonly string streamNameFirst;
-		private readonly string streamNameSecond;
-		private readonly EPType returnType;
-		private readonly TwoLambdaThreeFormEventPlainFactory.ForgeFunction function;
+		private readonly EventType _eventType;
+		private readonly string _streamNameFirst;
+		private readonly string _streamNameSecond;
+		private readonly ForgeFunction _function;
 
 		public TwoLambdaThreeFormEventPlainFactory(
 			EventType eventType,
 			string streamNameFirst,
 			string streamNameSecond,
-			EPType returnType,
 			ForgeFunction function)
 		{
-			this.eventType = eventType;
-			this.streamNameFirst = streamNameFirst;
-			this.streamNameSecond = streamNameSecond;
-			this.returnType = returnType;
-			this.function = function;
+			this._eventType = eventType;
+			this._streamNameFirst = streamNameFirst;
+			this._streamNameSecond = streamNameSecond;
+			this._function = function;
 		}
 
 		public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
 		{
 			return new EnumForgeLambdaDesc(
-				new EventType[] {eventType},
-				new string[] {parameterNum == 0 ? streamNameFirst : streamNameSecond});
+				new EventType[] {_eventType},
+				new string[] {parameterNum == 0 ? _streamNameFirst : _streamNameSecond});
 		}
 
 		public EnumForgeDesc MakeEnumForgeDesc(
@@ -50,17 +47,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			int streamCountIncoming,
 			StatementCompileTimeServices services)
 		{
-			ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-			ExprDotEvalParamLambda second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
-			EnumForge forge = function.Invoke(first, second, streamCountIncoming, returnType, services);
-			return new EnumForgeDesc(returnType, forge);
+			var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+			var second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
+			return _function.Invoke(first, second, streamCountIncoming, services);
 		}
 
-		public delegate EnumForge ForgeFunction(
+		public delegate EnumForgeDesc ForgeFunction(
 			ExprDotEvalParamLambda first,
 			ExprDotEvalParamLambda second,
 			int streamCountIncoming,
-			EPType typeInfo,
 			StatementCompileTimeServices services);
 	}
 } // end of namespace

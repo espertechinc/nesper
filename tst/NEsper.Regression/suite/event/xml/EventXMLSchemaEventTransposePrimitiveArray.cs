@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -33,14 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposePrimitiveArrayCreateSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EventXMLSchemaEventTransposePrimitiveArrayPreconfig());
             return execs;
         }
@@ -85,11 +86,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             // try array property in select
             env.CompileDeploy("@Name('s0') select * from " + eventTypeNameNested + "#lastevent", path).AddListener("s0");
 
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop3", typeof(int?[]), typeof(int?), false, false, true, false, false)
-                },
-                env.Statement("s0").EventType.PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("prop3", typeof(int?[])).WithComponentType(typeof(int?)).WithIndexed());
+                
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             EventSender sender = env.EventService.GetEventSender(eventTypeNameNested);

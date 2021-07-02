@@ -32,42 +32,42 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithRightJoinVariantOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinRightJoinVariantOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftJoinVariantTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftJoinVariantTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithLeftJoinVariantThree(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinLeftJoinVariantThree());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullJoinVariantOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullJoinVariantOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullJoinVariantTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullJoinVariantTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullJoinVariantThree(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullJoinVariantThree());
             return execs;
         }

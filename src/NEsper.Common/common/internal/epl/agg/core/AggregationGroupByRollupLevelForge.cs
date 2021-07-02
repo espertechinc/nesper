@@ -8,9 +8,11 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -114,12 +116,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                                 for (var i = 0; i < RollupKeys.Length; i++) {
                                     var index = RollupKeys[i];
                                     var keyExpr = ExprDotMethod(Ref("mk"), "GetKey", Constant(index));
-                                    expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
+                                    var type = _allGroupKeyTypes[index];
+                                    expressions[i] = type.IsNullTypeSafe() ? ConstantNull() : Cast(type, keyExpr);
                                 }
 
                                 var instance = _subKeyMultikey.ClassNameMK.Type != null
                                     ? NewInstance(_subKeyMultikey.ClassNameMK.Type, expressions)
-                                    : NewInstanceInner(_subKeyMultikey.ClassNameMK.Name, expressions);
+                                    : NewInstanceNamed(_subKeyMultikey.ClassNameMK.Name, expressions);
                                 
                                 block.BlockReturn(instance);
                             }

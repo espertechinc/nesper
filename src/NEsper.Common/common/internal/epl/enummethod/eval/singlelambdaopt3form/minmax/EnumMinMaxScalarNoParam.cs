@@ -28,15 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		EnumEval
 	{
 		private readonly bool _max;
-		private readonly EPType _resultType;
+		private readonly EPChainableType _resultType;
 
 		public EnumMinMaxScalarNoParam(
 			int streamCountIncoming,
 			bool max,
-			EPType resultType) : base(streamCountIncoming)
+			EPChainableType resultType) : base(streamCountIncoming)
 		{
-			this._max = max;
-			this._resultType = resultType;
+			_max = max;
+			_resultType = resultType;
 		}
 
 		public override EnumEval EnumEvaluator => this;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
-			Type innerTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(_resultType));
+			Type innerTypeBoxed = Boxing.GetBoxedType(EPChainableTypeHelper.GetCodegenReturnType(_resultType));
 
 			CodegenBlock block = codegenMethodScope
 				.MakeChild(innerTypeBoxed, typeof(EnumMinMaxScalarNoParam), codegenClassScope)

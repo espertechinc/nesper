@@ -7,15 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.index.unindexed
 {
     public class UnindexedEventTableFactoryFactory : EventTableFactoryFactoryBase
     {
-        public UnindexedEventTableFactoryFactory(int indexedStreamNum, int? subqueryNum, bool isFireAndForget)
+        private readonly StateMgmtSetting _stateMgmtSettings;
+
+        public UnindexedEventTableFactoryFactory(
+            int indexedStreamNum,
+            int? subqueryNum,
+            bool isFireAndForget,
+            StateMgmtSetting stateMgmtSettings)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
+            _stateMgmtSettings = stateMgmtSettings;
         }
 
         public override EventTableFactory Create(
@@ -27,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
                 eventType,
                 null,
                 isFireAndForget,
-                eventTableFactoryContext);
+                _stateMgmtSettings);
         }
     }
 } // end of namespace

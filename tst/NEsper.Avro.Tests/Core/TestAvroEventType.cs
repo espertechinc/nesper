@@ -14,6 +14,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -132,7 +133,7 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int), null, eventType, "myInt");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), typeof(byte), eventType, "myBytes");
             AssertPropertyType(typeof(double), null, eventType, "myDouble");
             AssertPropertyType(typeof(float), null, eventType, "myFloat");
             AssertPropertyType(typeof(long), null, eventType, "myLong");
@@ -533,7 +534,7 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int?), null, eventType, "myInt");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool?), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), typeof(byte), eventType, "myBytes");
             AssertPropertyType(typeof(double?), null, eventType, "myDouble");
             AssertPropertyType(typeof(float?), null, eventType, "myFloat");
             AssertPropertyType(typeof(long?), null, eventType, "myLong");

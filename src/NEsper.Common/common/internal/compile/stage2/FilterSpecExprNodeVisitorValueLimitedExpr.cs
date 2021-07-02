@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
+using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.script.core;
@@ -47,8 +48,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 IsLimited = false;
             }
 
-            if (exprNode is ExprVariableNode) {
-                var node = (ExprVariableNode) exprNode;
+            if (exprNode is ExprVariableNode node) {
                 if (!node.VariableMetadata.IsConstant) {
                     IsLimited = false;
                 }
@@ -61,11 +61,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                      exprNode is ExprDeclaredNode) {
                 IsLimited = false;
             }
-            else {
-                var plugIn = exprNode as ExprPlugInSingleRowNode;
+            else if (exprNode is ExprPlugInSingleRowNode plugIn) {
                 if (plugIn?.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
                     IsLimited = false;
                 }
+            } else if (exprNode is ExprTimestampNode) {
+                IsLimited = false;
             }
         }
     }

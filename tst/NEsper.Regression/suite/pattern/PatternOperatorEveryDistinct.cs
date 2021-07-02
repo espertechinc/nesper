@@ -48,119 +48,119 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithEveryDistinctMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternMonthScoped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFollowedByWithDistinct(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternFollowedByWithDistinct());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctWithinFollowedBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctWithinFollowedBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverFollowedBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverFollowedBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverNot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverNot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverOr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverOr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverAnd(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverAnd());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverTimerWithin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverTimerWithin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverRepeat(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverRepeat());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimerWithinOverDistinct(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerWithinOverDistinct());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRepeatOverDistinct(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternRepeatOverDistinct());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctOverFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctOverFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpireSeenBeforeKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternExpireSeenBeforeKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctWTime(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctWTime());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEveryDistinctSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternEveryDistinctSimple());
             return execs;
         }

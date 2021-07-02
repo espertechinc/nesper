@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -26,10 +27,10 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// </summary>
     public class SizeViewForge : ViewFactoryForgeBase
     {
-        internal const string NAME = "Size";
-        internal StatViewAdditionalPropsForge additionalProps;
+        private const string NAME = "Size";
+        private StatViewAdditionalPropsForge _additionalProps;
 
-        private IList<ExprNode> viewParameters;
+        private IList<ExprNode> _viewParameters;
 
         public override string ViewName => NAME;
 
@@ -38,23 +39,24 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 true,
                 viewForgeEnv,
                 streamNumber);
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 0, parentEventType, streamNumber, viewForgeEnv);
-            eventType = SizeView.CreateEventType(viewForgeEnv, additionalProps, streamNumber);
+            _additionalProps = StatViewAdditionalPropsForge.Make(validated, 0, parentEventType, streamNumber, viewForgeEnv);
+            eventType = SizeView.CreateEventType(viewForgeEnv, _additionalProps, streamNumber);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -66,12 +68,12 @@ namespace com.espertech.esper.common.@internal.view.derived
                 viewForgeEnv.SerdeResolver);
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(SizeViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Size";
         }
@@ -82,9 +84,14 @@ namespace com.espertech.esper.common.@internal.view.derived
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (additionalProps != null) {
-                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
+            if (_additionalProps != null) {
+                method.Block.SetProperty(factory, "AdditionalProps", _additionalProps.Codegen(method, classScope));
             }
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_SIZE;
         }
     }
 } // end of namespace

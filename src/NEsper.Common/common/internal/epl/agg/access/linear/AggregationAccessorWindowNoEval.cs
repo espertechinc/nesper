@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.util;
 
@@ -32,12 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.Method,
                 context.NamedMethods);
 
+            var arrayType = TypeHelper.GetArrayType(forge.ComponentType);
             context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    TypeHelper.GetArrayType(forge.ComponentType),
-                    "array",
-                    NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))

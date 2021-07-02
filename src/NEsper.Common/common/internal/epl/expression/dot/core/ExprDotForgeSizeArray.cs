@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprDotForge DotForge => this;
 
-        public EPType TypeInfo => EPTypeHelper.SingleValue(typeof(int?));
+        public EPChainableType TypeInfo => EPChainableTypeHelper.SingleValueNonNull(typeof(int?));
 
         public void Visit(ExprDotEvalVisitor visitor)
         {

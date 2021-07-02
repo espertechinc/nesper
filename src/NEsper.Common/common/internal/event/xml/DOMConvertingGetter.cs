@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class DOMConvertingGetter : EventPropertyGetterSPI
     {
-        private readonly DOMPropertyGetter getter;
-        private readonly SimpleTypeParserSPI parser;
+        private readonly DOMPropertyGetter _getter;
+        private readonly SimpleTypeParserSPI _parser;
 
         /// <summary>
         ///     Ctor.
@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             DOMPropertyGetter domPropertyGetter,
             Type returnType)
         {
-            getter = domPropertyGetter;
-            parser = SimpleTypeParserFactory.GetParser(returnType);
+            _getter = domPropertyGetter;
+            _parser = SimpleTypeParserFactory.GetParser(returnType);
         }
 
         public object Get(EventBean obj)
@@ -50,8 +50,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var node = (XmlNode) obj.Underlying;
-            var result = getter.GetValueAsNode(node);
-            return GetParseTextValue(result, parser);
+            var result = _getter.GetValueAsNode(node);
+            return GetParseTextValue(result, _parser);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -103,11 +103,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 true,
                 typeof(SimpleTypeParser),
                 SimpleTypeParserFactory.CodegenSimpleParser(
-                    parser,
+                    _parser,
                     codegenClassScope.NamespaceScope.InitMethod,
                     GetType(),
                     codegenClassScope));
-            var inner = getter.UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
+            var inner = _getter.UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
             return StaticMethod(GetType(), "GetParseTextValue", inner, parserMember);
         }
 

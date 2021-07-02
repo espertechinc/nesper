@@ -21,19 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class BindSelectExprProcessorForge : SelectExprProcessorForge
     {
-        private readonly SelectExprProcessorForge syntheticProcessorForge;
-        private readonly BindProcessorForge bindProcessorForge;
+        private readonly SelectExprProcessorForge _syntheticProcessorForge;
+        private readonly BindProcessorForge _bindProcessorForge;
 
         public BindSelectExprProcessorForge(
             SelectExprProcessorForge syntheticProcessorForge,
             BindProcessorForge bindProcessorForge)
         {
-            this.syntheticProcessorForge = syntheticProcessorForge;
-            this.bindProcessorForge = bindProcessorForge;
+            this._syntheticProcessorForge = syntheticProcessorForge;
+            this._bindProcessorForge = bindProcessorForge;
         }
 
         public EventType ResultEventType {
-            get => syntheticProcessorForge.ResultEventType;
+            get => _syntheticProcessorForge.ResultEventType;
         }
 
         public CodegenMethod ProcessCodegen(
@@ -46,18 +46,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         {
             CodegenMethod processMethod = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
 
             CodegenExpressionRef isSynthesize = selectSymbol.GetAddSynthesize(processMethod);
-            CodegenMethod syntheticMethod = syntheticProcessorForge.ProcessCodegen(
+            CodegenMethod syntheticMethod = _syntheticProcessorForge.ProcessCodegen(
                 resultEventType,
                 eventBeanFactory,
                 processMethod,
                 selectSymbol,
                 exprSymbol,
                 codegenClassScope);
-            CodegenMethod bindMethod = bindProcessorForge.ProcessCodegen(processMethod, exprSymbol, codegenClassScope);
+            CodegenMethod bindMethod = _bindProcessorForge.ProcessCodegen(processMethod, exprSymbol, codegenClassScope);
             CodegenExpression isNewData = exprSymbol.GetAddIsNewData(processMethod);
             CodegenExpression exprCtx = exprSymbol.GetAddExprEvalCtx(processMethod);
 
@@ -81,8 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 .AssignRef("syntheticEvent", LocalMethod(syntheticMethod))
                 .BlockEnd()
                 .DeclareVar<object[]>("parameters", LocalMethod(bindMethod))
-                .MethodReturn(
-                    NewInstance<NaturalEventBean>(resultEventType, Ref("parameters"), Ref("syntheticEvent")));
+                .MethodReturn(NewInstance<NaturalEventBean>(resultEventType, Ref("parameters"), Ref("syntheticEvent")));
 
             return processMethod;
         }

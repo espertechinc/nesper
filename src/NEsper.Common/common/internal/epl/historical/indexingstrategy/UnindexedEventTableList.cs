@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.util;
@@ -24,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
     /// </summary>
     public class UnindexedEventTableList : EventTable
     {
-        private readonly IList<EventBean> eventSet;
-        private readonly int streamNum;
+        private readonly IList<EventBean> _eventSet;
+        private readonly int _streamNum;
 
         /// <summary>
         ///     Ctor.
@@ -36,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             IList<EventBean> eventSet,
             int streamNum)
         {
-            this.eventSet = eventSet;
-            this.streamNum = streamNum;
+            this._eventSet = eventSet;
+            this._streamNum = streamNum;
         }
 
         public void AddRemove(
@@ -49,13 +50,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
             if (newData != null) {
                 for (int ii = 0; ii < newData.Length; ii++) {
-                    eventSet.Add(newData[ii]);
+                    _eventSet.Add(newData[ii]);
                 }
             }
 
             if (oldData != null) {
                 foreach (var removeEvent in oldData) {
-                    eventSet.Remove(removeEvent);
+                    _eventSet.Remove(removeEvent);
                 }
             }
 
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             if (events != null) {
                 for (int ii = 0; ii < events.Length; ii++) {
-                    eventSet.Add(events[ii]);
+                    _eventSet.Add(events[ii]);
                 }
             }
         }
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             if (events != null) {
                 for (var ii = 0; ii < events.Length; ii++) {
-                    eventSet.Remove(events[ii]);
+                    _eventSet.Remove(events[ii]);
                 }
             }
         }
@@ -88,17 +89,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             EventBean @event,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            eventSet.Add(@event);
+            _eventSet.Add(@event);
         }
 
         public void Remove(
             EventBean @event,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            eventSet.Remove(@event);
+            _eventSet.Remove(@event);
         }
 
-        public bool IsEmpty => eventSet.IsEmpty();
+        public bool IsEmpty => _eventSet.IsEmpty();
 
         public string ToQueryPlan()
         {
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Clear()
         {
-            eventSet.Clear();
+            _eventSet.Clear();
         }
 
         public void Destroy()
@@ -115,17 +116,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             Clear();
         }
 
-        public int? NumberOfEvents => eventSet.Count;
+        public int? NumberOfEvents => _eventSet.Count;
 
         public int NumKeys => 0;
 
-        public object Index => eventSet;
+        public object Index => _eventSet;
 
         public EventTableOrganization Organization => new EventTableOrganization(
             null,
             false,
             false,
-            streamNum,
+            _streamNum,
             null,
             EventTableOrganizationType.UNORGANIZED);
 
@@ -138,11 +139,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            if (eventSet == null) {
+            if (_eventSet == null) {
                 return CollectionUtil.NULL_EVENT_ITERATOR;
             }
 
-            return eventSet.GetEnumerator();
+            return _eventSet.GetEnumerator();
         }
 
         public override string ToString()

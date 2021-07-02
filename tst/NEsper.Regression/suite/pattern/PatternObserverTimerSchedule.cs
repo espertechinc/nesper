@@ -36,49 +36,49 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithTimerScheduleUnlimitedRecurringPeriod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleUnlimitedRecurringPeriod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimerScheduleDateWithPeriod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleDateWithPeriod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimerScheduleJustPeriod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleJustPeriod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimerScheduleJustDate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleJustDate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimerScheduleLimitedWDateAndPeriod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleLimitedWDateAndPeriod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithObserverTimerScheduleMultiform(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternObserverTimerScheduleMultiform());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTimerScheduleSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternTimerScheduleSimple());
             return execs;
         }

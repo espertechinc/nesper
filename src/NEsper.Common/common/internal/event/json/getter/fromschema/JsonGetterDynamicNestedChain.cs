@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             string underlyingClassName,
             JsonEventPropertyGetter[] getters)
         {
-            this._underlyingClassName = underlyingClassName;
-            this._getters = getters;
+            _underlyingClassName = underlyingClassName;
+            _getters = getters;
         }
 
         public CodegenExpression EventBeanGetCodegen(

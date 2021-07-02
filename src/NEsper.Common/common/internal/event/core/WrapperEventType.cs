@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         internal readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
 
-        private readonly bool isNoMapProperties;
-        private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache;
+        private readonly bool _isNoMapProperties;
+        private readonly IDictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
 
         /// <summary>
         ///     The underlying wrapped event type.
@@ -64,14 +64,14 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </summary>
         internal EventTypeMetadata metadata;
 
-        private int numPropertiesUnderlyingType;
-        private EventPropertyDescriptor[] propertyDesc;
-        private IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
+        private int _numPropertiesUnderlyingType;
+        private EventPropertyDescriptor[] _propertyDesc;
+        private IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
 
-        private string[] propertyNames;
+        private string[] _propertyNames;
 
-        private EventPropertyDescriptor[] writableProperties;
-        private IDictionary<string, Pair<EventPropertyDescriptor, EventPropertyWriterSPI>> writers;
+        private EventPropertyDescriptor[] _writableProperties;
+        private IDictionary<string, Pair<EventPropertyDescriptor, EventPropertyWriterSPI>> _writers;
 
         internal WrapperEventType(
             EventTypeMetadata metadata,
@@ -103,9 +103,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 null,
                 null,
                 beanEventTypeFactory);
-            isNoMapProperties = properties.IsEmpty();
+            _isNoMapProperties = properties.IsEmpty();
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
+            _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
 
             UpdatePropertySet();
 
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventPropertyGetterSPI GetGetterSPI(string property)
         {
-            var cachedGetter = propertyGetterCache.Get(property);
+            var cachedGetter = _propertyGetterCache.Get(property);
             if (cachedGetter != null) {
                 return cachedGetter;
             }
@@ -162,14 +162,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                     eventBeanTypedEventFactory,
                     underlyingMapType,
                     mapGetter);
-                propertyGetterCache.Put(property, getter);
+                _propertyGetterCache.Put(property, getter);
                 return getter;
             }
 
             if (underlyingEventType.IsProperty(property)) {
                 var underlyingGetter = ((EventTypeSPI) underlyingEventType).GetGetterSPI(property);
                 var getter = new WrapperUnderlyingPropertyGetter(this, underlyingGetter);
-                propertyGetterCache.Put(property, getter);
+                _propertyGetterCache.Put(property, getter);
                 return getter;
             }
 
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var decoMapped = underlyingMapType.GetGetterMappedSPI(mappedProperty);
             if (decoMapped != null) {
                 return new ProxyEventPropertyGetterMappedSPI {
-                    ProcGet = (
+                    procGet = (
                         theEvent,
                         mapKey) => {
                         if (!(theEvent is DecoratingEventBean)) {
@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return decoMapped.Get(wrapped, mapKey);
                     },
 
-                    ProcEventBeanGetMappedCodegen = (
+                    procEventBeanGetMappedCodegen = (
                         codegenMethodScope,
                         codegenClassScope,
                         beanExpression,
@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var decoIndexed = underlyingMapType.GetGetterIndexedSPI(indexedProperty);
             if (decoIndexed != null) {
                 return new ProxyEventPropertyGetterIndexedSPI {
-                    ProcGet = (
+                    procGet = (
                         theEvent,
                         index) => {
                         if (!(theEvent is DecoratingEventBean)) {
@@ -277,7 +277,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return decoIndexed.Get(wrapped, index);
                     },
 
-                    ProcEventBeanGetIndexedCodegen = (
+                    procEventBeanGetIndexedCodegen = (
                         codegenMethodScope,
                         codegenClassScope,
                         beanExpression,
@@ -372,7 +372,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
             CheckInitProperties();
-            return propertyDescriptorMap.Get(propertyName);
+            return _propertyDescriptorMap.Get(propertyName);
         }
 
         public FragmentEventType GetFragmentType(string property)
@@ -387,29 +387,29 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventPropertyWriterSPI GetWriter(string propertyName)
         {
-            if (writableProperties == null) {
+            if (_writableProperties == null) {
                 InitializeWriters();
             }
 
-            var pair = writers.Get(propertyName);
+            var pair = _writers.Get(propertyName);
 
             return pair?.Second;
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            if (writableProperties == null) {
+            if (_writableProperties == null) {
                 InitializeWriters();
             }
 
-            var pair = writers.Get(propertyName);
+            var pair = _writers.Get(propertyName);
 
             return pair?.First;
         }
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
-            if (writableProperties == null) {
+            if (_writableProperties == null) {
                 InitializeWriters();
             }
 
@@ -452,13 +452,13 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventBeanWriter GetWriter(string[] properties)
         {
-            if (writableProperties == null) {
+            if (_writableProperties == null) {
                 InitializeWriters();
             }
 
             var isOnlyMap = true;
             for (var i = 0; i < properties.Length; i++) {
-                if (!writers.ContainsKey(properties[i])) {
+                if (!_writers.ContainsKey(properties[i])) {
                     return null;
                 }
 
@@ -493,7 +493,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             var writerArr = new EventPropertyWriter[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                writerArr[i] = writers.Get(properties[i]).Second;
+                writerArr[i] = _writers.Get(properties[i]).Second;
             }
 
             return new WrapperEventBeanPropertyWriter(writerArr);
@@ -502,7 +502,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public string[] PropertyNames {
             get {
                 CheckInitProperties();
-                return propertyNames;
+                return _propertyNames;
             }
         }
 
@@ -510,7 +510,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             get {
                 // If the additional properties are empty, such as when wrapping a native event by means of wildcard-only select
                 // then the underlying type is simply the wrapped type.
-                if (isNoMapProperties) {
+                if (_isNoMapProperties) {
                     return underlyingEventType.UnderlyingType;
                 }
 
@@ -521,23 +521,23 @@ namespace com.espertech.esper.common.@internal.@event.core
         public IList<EventPropertyDescriptor> PropertyDescriptors {
             get {
                 CheckInitProperties();
-                return propertyDesc;
+                return _propertyDesc;
             }
         }
 
         public EventPropertyDescriptor[] WriteableProperties {
             get {
-                if (writableProperties == null) {
+                if (_writableProperties == null) {
                     InitializeWriters();
                 }
 
-                return writableProperties;
+                return _writableProperties;
             }
         }
 
         private void CheckInitProperties()
         {
-            if (numPropertiesUnderlyingType != underlyingEventType.PropertyDescriptors.Count) {
+            if (_numPropertiesUnderlyingType != underlyingEventType.PropertyDescriptors.Count) {
                 UpdatePropertySet();
             }
         }
@@ -545,10 +545,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         private void UpdatePropertySet()
         {
             var compositeProperties = GetCompositeProperties(underlyingEventType, underlyingMapType);
-            propertyNames = compositeProperties.PropertyNames;
-            propertyDescriptorMap = compositeProperties.PropertyDescriptorMap;
-            propertyDesc = compositeProperties.Descriptors;
-            numPropertiesUnderlyingType = underlyingEventType.PropertyDescriptors.Count;
+            _propertyNames = compositeProperties.PropertyNames;
+            _propertyDescriptorMap = compositeProperties.PropertyDescriptorMap;
+            _propertyDesc = compositeProperties.Descriptors;
+            _numPropertiesUnderlyingType = underlyingEventType.PropertyDescriptors.Count;
         }
 
         private static PropertyDescriptorComposite GetCompositeProperties(
@@ -601,14 +601,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var propertyName = writableMapProp.PropertyName;
                 writables.Add(writableMapProp);
                 EventPropertyWriterSPI writer = new ProxyEventPropertyWriterSPI {
-                    ProcWrite = (
+                    procWrite = (
                         value,
                         target) => {
                         var decorated = (DecoratingEventBean) target;
                         decorated.DecoratingProperties.Put(propertyName, value);
                     },
 
-                    ProcWriteCodegen = (
+                    procWriteCodegen = (
                         assigned,
                         und,
                         target,
@@ -637,14 +637,14 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     writables.Add(writableUndProp);
                     EventPropertyWriterSPI writer = new ProxyEventPropertyWriterSPI {
-                        ProcWrite = (
+                        procWrite = (
                             value,
                             target) => {
                             var decorated = (DecoratingEventBean) target;
                             innerWriter.Write(value, decorated.UnderlyingEvent);
                         },
 
-                        ProcWriteCodegen = (
+                        procWriteCodegen = (
                             assigned,
                             und,
                             target,
@@ -670,8 +670,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
             }
 
-            writers = writerMap;
-            writableProperties = writables.ToArray();
+            _writers = writerMap;
+            _writableProperties = writables.ToArray();
         }
 
         private void CheckForRepeatedPropertyNames(

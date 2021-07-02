@@ -51,13 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 indexTypeName,
                 1,
                 parameters[1],
-                AdvancedIndexQuadTreeConstants.PARAM_YMIN);
+                PARAM_YMIN);
             ValidateParameterReturnTypeNumber(indexTypeName, 2, parameters[2], PARAM_WIDTH);
             ValidateParameterReturnTypeNumber(
                 indexTypeName,
                 3,
                 parameters[3],
-                AdvancedIndexQuadTreeConstants.PARAM_HEIGHT);
+                PARAM_HEIGHT);
             if (parameters.Length > 4) {
                 ValidateParameterReturnType(typeof(int?), indexTypeName, 4, parameters[4], PARAM_LEAFCAPACITY);
             }

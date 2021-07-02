@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	public class ExprDotForgeGroupByOneParam : ExprDotForgeLambdaThreeForm
 	{
 
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
@@ -30,17 +30,32 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			throw new IllegalStateException();
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			return lambda => EPTypeHelper.SingleValue(typeof(IDictionary<object, object>));
+			return lambda => {
+				var key = lambda.BodyForge.EvaluationType;
+				
+				Type component;
+				if (collectionComponentType != null) {
+					component = collectionComponentType;
+				} else {
+					component = inputEventType.UnderlyingType;
+				}
+
+				var value = typeof(ICollection<>).MakeGenericType(component);
+				var map = typeof(IDictionary<,>).MakeGenericType(key, value);
+				return new EPChainableTypeClass(map);
+			};
+			
+			return lambda => EPChainableTypeHelper.SingleValueNonNull(typeof(IDictionary<object, object>));
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)

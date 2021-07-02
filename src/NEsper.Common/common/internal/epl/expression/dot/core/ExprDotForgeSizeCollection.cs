@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 		    return target?.AsObjectList(MagicMarker.SingletonInstance).Count;
 	    }
 
-	    public EPType TypeInfo => EPTypeHelper.SingleValue(typeof(int?));
+	    public EPChainableType TypeInfo => EPChainableTypeHelper.SingleValueNonNull(typeof(int?));
 
 	    public void Visit(ExprDotEvalVisitor visitor) {
 	        visitor.VisitArrayLength();

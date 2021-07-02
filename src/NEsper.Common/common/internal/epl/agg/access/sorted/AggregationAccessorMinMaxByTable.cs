@@ -22,20 +22,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class AggregationAccessorMinMaxByTable : AggregationAccessorMinMaxByBase,
         AggregationAccessorForge
     {
-        private readonly TableMetaData table;
+        private readonly TableMetaData _table;
 
         public AggregationAccessorMinMaxByTable(
             bool max,
             TableMetaData table)
             : base(max)
         {
-            this.table = table;
+            this._table = table;
         }
 
         public override void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_table, context.ClassScope, GetType());
             var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             context.Method.Block.DeclareVar<EventBean>(
                     "@event",

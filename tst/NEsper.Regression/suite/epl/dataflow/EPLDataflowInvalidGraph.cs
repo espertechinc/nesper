@@ -35,12 +35,12 @@ WithInstantiate(execs);
         }
 public static IList<RegressionExecution> WithInstantiate(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowInvalidInstantiate());
     return execs;
 }public static IList<RegressionExecution> WithCompile(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowInvalidCompile());
     return execs;
 }
@@ -204,7 +204,7 @@ public static IList<RegressionExecution> WithInstantiate(IList<RegressionExecuti
                     "MyGraph",
                     epl,
                     "Failed to instantiate data flow 'MyGraph': Failed to find OnInput method on for operator 'MySBInputOp#1(out1)' class " +
-                    typeof(MySBInputOp).Name +
+                    nameof(MySBInputOp) +
                     ", expected an OnInput method that takes any of {Object, Object[");
             }
         }

@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public bool HasMatchRecognize { get; set; }
 
-        public AuditProvider AuditProvider { get; set; }
+        public AuditProvider AuditProvider { get; set; } = AuditProviderDefault.INSTANCE;
 
         public bool IsInstrumented { get; set; }
 

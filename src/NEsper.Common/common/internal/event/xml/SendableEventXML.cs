@@ -14,22 +14,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
 {
     public class SendableEventXML : SendableEvent
     {
-        private readonly XmlNode @event;
-        private readonly string typeName;
+        private readonly XmlNode _event;
+        private readonly string _typeName;
 
         public SendableEventXML(
             XmlNode @event,
             string typeName)
         {
-            this.@event = @event;
-            this.typeName = typeName;
+            this._event = @event;
+            this._typeName = typeName;
         }
 
         public void Send(EventServiceSendEventCommon eventService)
         {
-            eventService.SendEventXMLDOM(@event, typeName);
+            eventService.SendEventXMLDOM(_event, _typeName);
         }
 
-        public object Underlying => @event;
+        public object Underlying => _event;
     }
 } // end of namespace

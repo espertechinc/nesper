@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
 {
     public class XPathPropertyGetterCodegenFieldSharable : CodegenFieldSharable
     {
-        private readonly BaseXMLEventType baseXMLEventType;
-        private readonly XPathPropertyGetter xPathPropertyGetter;
+        private readonly BaseXMLEventType _baseXmlEventType;
+        private readonly XPathPropertyGetter _xPathPropertyGetter;
 
         public XPathPropertyGetterCodegenFieldSharable(
             BaseXMLEventType baseXMLEventType,
             XPathPropertyGetter xPathPropertyGetter)
         {
-            this.baseXMLEventType = baseXMLEventType;
-            this.xPathPropertyGetter = xPathPropertyGetter;
+            this._baseXmlEventType = baseXMLEventType;
+            this._xPathPropertyGetter = xPathPropertyGetter;
         }
 
         public Type Type()
@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return StaticMethod(
                 typeof(XPathPropertyGetterCodegenFieldSharable),
                 "ResolveXPathPropertyGetter",
-                EventTypeUtility.ResolveTypeCodegen(baseXMLEventType, EPStatementInitServicesConstants.REF),
-                Constant(xPathPropertyGetter.Property));
+                EventTypeUtility.ResolveTypeCodegen(_baseXmlEventType, EPStatementInitServicesConstants.REF),
+                Constant(_xPathPropertyGetter.Property));
         }
 
         public static XPathPropertyGetter ResolveXPathPropertyGetter(
@@ -83,17 +83,17 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             var that = (XPathPropertyGetterCodegenFieldSharable) o;
 
-            if (!baseXMLEventType.Equals(that.baseXMLEventType)) {
+            if (!_baseXmlEventType.Equals(that._baseXmlEventType)) {
                 return false;
             }
 
-            return xPathPropertyGetter.Equals(that.xPathPropertyGetter);
+            return _xPathPropertyGetter.Equals(that._xPathPropertyGetter);
         }
 
         public override int GetHashCode()
         {
-            var result = baseXMLEventType.GetHashCode();
-            result = 31 * result + xPathPropertyGetter.GetHashCode();
+            var result = _baseXmlEventType.GetHashCode();
+            result = 31 * result + _xPathPropertyGetter.GetHashCode();
             return result;
         }
     }

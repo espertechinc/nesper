@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public FilterSpecCompilerIndexLimitedLookupableGetterForge(ExprNode lookupable)
         {
-            this._lookupable = lookupable;
+            _lookupable = lookupable;
         }
 
         public CodegenExpression EventBeanWithCtxGet(

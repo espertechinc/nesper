@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
@@ -21,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         Type EventTableClass { get; }
 
         EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber);
 
         string ToQueryPlan();

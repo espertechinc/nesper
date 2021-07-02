@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
@@ -45,11 +46,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ThreadingCommon threadingService)
         {
-            this._runtime = runtime;
-            this._beanEventType = beanEventType;
-            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _runtime = runtime;
+            _beanEventType = beanEventType;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             _compatibleClasses = new HashSet<Type>();
-            this._threadingService = threadingService;
+            _threadingService = threadingService;
         }
 
         public void SendEvent(object theEvent)
@@ -89,9 +90,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         else {
                             throw new EPException(
                                 "Event object of type " +
-                                theEvent.GetType().CleanName() +
+                                theEvent.GetType().TypeSafeName() +
                                 " does not equal, extend or implement the type " +
-                                _beanEventType.UnderlyingType.CleanName() +
+                                _beanEventType.UnderlyingType.TypeSafeName() +
                                 " of event type '" +
                                 _beanEventType.Name +
                                 "'");

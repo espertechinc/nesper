@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> Withg(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeExHandlerInvalidAgg());
             return execs;
         }
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 configuration.Common.AddEventType(typeof(SupportBean));
 
                 var runtime = EPRuntimeProvider.GetRuntime(
-                    typeof(ClientRuntimeExceptionHandlerNoHandler).Name,
+                    nameof(ClientRuntimeExceptionHandlerNoHandler),
                     configuration);
 
                 var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";

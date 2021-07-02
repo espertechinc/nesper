@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
@@ -65,23 +66,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             // Must be the same boxed type returned by expressions under this
             var typeOne = subselectExpression.ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-
-            // collections, array or map not supported
-            if (typeOne.IsArray ||
-                typeOne.IsGenericCollection() ||
-                typeOne.IsGenericDictionary()) {
-                throw new ExprValidationException(
-                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-            }
-
+            ExprNodeUtilityValidate.ValidateLHSTypeAnyAllSomeIn(typeOne);
+            
             Type typeTwo;
             if (subselectExpression.SelectClause != null) {
-                typeTwo = subselectExpression.SelectClause[0].Forge.EvaluationType;
-            }
-            else {
+                var selectType = subselectExpression.SelectClause[0].Forge.EvaluationType;
+                if (selectType.IsNullTypeSafe()) {
+                    throw new ExprValidationException("Null-type value not allowed for the IN, ANY, SOME or ALL keywords");
+                }
+                typeTwo = selectType;
+            } else {
                 typeTwo = subselectExpression.RawEventType.UnderlyingType;
             }
-
+            
             var aggregated = Aggregated(subselectExpression.SubselectAggregationType);
             var grouped = Grouped(subselectExpression.StatementSpecCompiled.Raw.GroupByExpressions);
             var selectEval = subselectExpression.SelectClause == null
@@ -96,14 +93,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     if (!typeOne.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeOne.CleanName() +
+                            typeOne.TypeSafeName() +
                             "' to numeric is not allowed");
                     }
 
                     if (!typeTwo.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeTwo.CleanName() +
+                            typeTwo.TypeSafeName() +
                             "' to numeric is not allowed");
                     }
                 }
@@ -287,9 +284,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
-                    typeTwo.CleanName() +
+                    typeTwo.TypeSafeName() +
                     "' to '" +
-                    typeOne.CleanName() +
+                    typeOne.TypeSafeName() +
                     "' is not allowed");
             }
 

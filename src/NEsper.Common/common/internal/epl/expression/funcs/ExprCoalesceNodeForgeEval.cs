@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -21,15 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCoalesceNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprCoalesceNodeForge forge;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprCoalesceNodeForge _forge;
 
         internal ExprCoalesceNodeForgeEval(
             ExprCoalesceNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -40,13 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             object value;
 
             // Look for the first non-null return value
-            for (var i = 0; i < evaluators.Length; i++) {
-                value = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            for (var i = 0; i < _evaluators.Length; i++) {
+                value = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (value != null) {
                     // Check if we need to coerce
-                    if (forge.IsNumericCoercion[i]) {
-                        value = TypeHelper.CoerceBoxed(value, forge.EvaluationType);
+                    if (_forge.IsNumericCoercion[i]) {
+                        value = TypeHelper.CoerceBoxed(value, _forge.EvaluationType);
                     }
 
                     return value;
@@ -62,12 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (forge.EvaluationType == null) {
+            var forgeEvaluationType = forge.EvaluationType;
+            if (forgeEvaluationType.IsNullTypeSafe()) {
                 return ConstantNull();
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType,
+                forgeEvaluationType,
                 typeof(ExprCoalesceNodeForgeEval),
                 codegenClassScope);
 
@@ -89,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                             doneWithReturn = true;
                         }
                         else {
-                            var coercer = SimpleNumberCoercerFactory.GetCoercer(reftype, forge.EvaluationType);
+                            var coercer = SimpleNumberCoercerFactory.GetCoercer(reftype, forgeEvaluationType);
                             block.MethodReturn(coercer.CoerceCodegen(Ref(refname), reftype));
                             doneWithReturn = true;
                         }
@@ -103,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     }
                     else {
                         blockIf.BlockReturn(
-                            TypeHelper.CoerceNumberBoxedToBoxedCodegen(Ref(refname), reftype, forge.EvaluationType));
+                            TypeHelper.CoerceNumberBoxedToBoxedCodegen(Ref(refname), reftype, forgeEvaluationType));
                     }
                 }
 

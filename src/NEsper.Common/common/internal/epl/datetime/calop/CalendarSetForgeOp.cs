@@ -97,15 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     .AddParam(typeof(DateTimeEx), "dtx");
                 var valueExpr = forge.valueExpr
                     .EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
+                var coercion = SimpleNumberCoercerFactory.CoercerInt
+                    .CoerceCodegenMayNull(valueExpr, evaluationType, methodNode, codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar<int?>(
-                        "value",
-                        SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                            valueExpr,
-                            forge.valueExpr.EvaluationType,
-                            methodNode,
-                            codegenClassScope))
+                    .DeclareVar<int?>("value", coercion)
                     .IfRefNullReturnNull("value")
                     .Expression(
                         ExprDotMethod(
@@ -130,15 +126,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 .MakeChild(typeof(DateTimeOffset), typeof(CalendarSetForgeOp), codegenClassScope)
                 .AddParam(typeof(DateTimeOffset), "dto");
             var evaluationType = forge.valueExpr.EvaluationType;
-
+            var valueExpr = forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
+            var coercion = SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                valueExpr,
+                evaluationType,
+                methodNode,
+                codegenClassScope);
+            
             methodNode.Block
-                .DeclareVar<int?>(
-                    "value",
-                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
-                        evaluationType,
-                        methodNode,
-                        codegenClassScope))
+                .DeclareVar<int?>("value", coercion)
                 .IfRefNull("value")
                 .BlockReturn(Ref("dto"))
                 .MethodReturn(
@@ -162,15 +158,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 .MakeChild(typeof(DateTime), typeof(CalendarSetForgeOp), codegenClassScope)
                 .AddParam(typeof(DateTime), "dateTime");
             var evaluationType = forge.valueExpr.EvaluationType;
-
+            var valueExpr = forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
+            var coercion = SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                valueExpr,
+                evaluationType,
+                methodNode,
+                codegenClassScope);
+            
             methodNode.Block
-                .DeclareVar<int?>(
-                    "value",
-                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
-                        evaluationType,
-                        methodNode,
-                        codegenClassScope))
+                .DeclareVar<int?>("value", coercion)
                 .IfRefNull("value")
                 .BlockReturn(Ref("dateTime"))
                 .MethodReturn(

@@ -21,9 +21,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayFragmentArrayPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EventType fragmentEventType;
-        private readonly int propertyIndex;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventType _fragmentEventType;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -36,14 +36,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.propertyIndex = propertyIndex;
-            this.fragmentEventType = fragmentEventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._propertyIndex = propertyIndex;
+            this._fragmentEventType = fragmentEventType;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public object GetObjectArray(object[] array)
         {
-            return array[propertyIndex];
+            return array[_propertyIndex];
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 return value;
             }
 
-            return BaseNestableEventUtil.GetBNFragmentArray(value, fragmentEventType, eventBeanTypedEventFactory);
+            return BaseNestableEventUtil.GetBNFragmentArray(value, _fragmentEventType, _eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "oa")
                 .Block

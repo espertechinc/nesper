@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             ILockable tableLevelLock,
             IEnumerable<EventBean> contents)
         {
-            this._tableLevelLock = tableLevelLock;
-            this._contents = contents;
+            _tableLevelLock = tableLevelLock;
+            _contents = contents;
         }
 
         public ICollection<EventBean> Lookup(

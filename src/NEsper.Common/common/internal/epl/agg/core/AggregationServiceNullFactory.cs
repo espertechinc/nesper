@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -31,8 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         public AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            ImportServiceRuntime importService,
+            ExprEvaluatorContext exprEvaluatorContext,
             bool isSubquery,
             int? subqueryNumber,
             int[] groupId)
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(NewInstanceInner(classNames.ServiceFactory, Ref("this")));
+            method.Block.MethodReturn(NewInstanceNamed(classNames.ServiceFactory, Ref("this")));
         }
 
         public AggregationCodegenRowLevelDesc RowLevelDesc => AggregationCodegenRowLevelDesc.EMPTY;

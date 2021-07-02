@@ -57,19 +57,28 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             WithSubstParamMultiStmt(execs);
             WithSubstParamArray(execs);
             WithODAInvalidConstantUseSubsParamsInstead(execs);
+            WithClientCompileSubstParamGenericType(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithClientCompileSubstParamGenericType(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamGenericType(false));
+            execs.Add(new ClientCompileSubstParamGenericType(true));
             return execs;
         }
 
         public static IList<RegressionExecution> WithODAInvalidConstantUseSubsParamsInstead(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAInvalidConstantUseSubsParamsInstead());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamArray(false));
             execs.Add(new ClientCompileSubstParamArray(true));
             return execs;
@@ -77,112 +86,112 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithSubstParamMultiStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamMultiStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamResolverContext(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamResolverContext());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamInvalidParametersTyped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidParametersTyped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamInvalidParametersUntyped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidParametersUntyped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamInvalidInsufficientValues(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidInsufficientValues());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamInvalidNoCallback(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidNoCallback());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamInvalidUse(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidUse());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamPrimitiveVsBoxed(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamPrimitiveVsBoxed());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamSimpleNoParameter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleNoParameter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleTwoParameterWhere());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleTwoParameterFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamWInheritance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamWInheritance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamSimpleOneParameterWCast(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleOneParameterWCast());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamUnnamedParameterWType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamUnnamedParameterWType(false));
             execs.Add(new ClientCompileSubstParamUnnamedParameterWType(true));
             return execs;
@@ -190,14 +199,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithSubstParamMethodInvocation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamMethodInvocation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubstParamNamedParameter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamNamedParameter(false));
             execs.Add(new ClientCompileSubstParamNamedParameter(true));
             return execs;
@@ -329,6 +338,53 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             DeploymentOptions options)
         {
             env.Deploy(compiled, options).UndeployAll();
+        }
+
+        private class ClientCompileSubstParamGenericType : RegressionExecution
+        {
+            private readonly bool soda;
+
+            public ClientCompileSubstParamGenericType(bool soda)
+            {
+                this.soda = soda;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select " +
+                          "?:a0:System.Collections.Generic.IList<String> as c0, " +
+                          "?:a1:System.Collections.Generic.IDictionary<String,Int32> as c1 " +
+                          "from SupportBean";
+                var compiled = env.Compile(soda, epl, new CompilerArguments(env.Configuration));
+
+                var options = new DeploymentOptions().WithStatementSubstitutionParameter(
+                    env => {
+                        env.SetObject("a0", new List<string>() {"a"});
+                        env.SetObject("a1", Collections.SingletonDataMap("k1", 10));
+                    });
+
+                try {
+                    env.Deployment.Deploy(compiled, options);
+                }
+                catch (EPDeployException e) {
+                    throw new EPRuntimeException(e);
+                }
+
+                env.AddListener("s0");
+
+                var eventType = env.Statement("s0").EventType;
+                Assert.AreEqual(typeof(IList<string>), eventType.GetPropertyType("c0"));
+                Assert.AreEqual(typeof(IDictionary<string, int>), eventType.GetPropertyType("c1"));
+
+                env.SendEventBean(new SupportBean());
+
+                var @event = env.Listener("s0").AssertOneGetNewAndReset();
+                var eventData = @event.Get("c0").UnwrapIntoArray<object>();
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a"}, eventData);
+                EPAssertionUtil.AssertPropsMap(@event.Get("c1").UnwrapStringDictionary(), "k1".SplitCsv(), 10);
+
+                env.UndeployAll();
+            }
         }
 
         private class ClientCompileSODAInvalidConstantUseSubsParamsInstead : RegressionExecution

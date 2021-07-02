@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 using System.Linq;
 
 #if NETCORE
@@ -25,6 +26,21 @@ namespace com.espertech.esper.regressionrun.runner
         public RegressionSession(Configuration configuration)
         {
             Configuration = configuration;
+            configuration.Compiler.Logging.EnableCode = true;
+            configuration.Compiler.Logging.AuditDirectory = @"E:\Logs\NEsper\NEsper.Regression.Review";
+
+            foreach (var directory in Directory.GetDirectories(configuration.Compiler.Logging.AuditDirectory)) {
+                var directoryName = Path.GetFileName(directory);
+                switch (directoryName) {
+                    case "bin":
+                    case "obj":
+                        break;
+                    default:
+                        Directory.Delete(directory, true);
+                        break;
+                }
+            }
+
 #if NETCORE
             LoadContext = new DisposableAssemblyLoadContext();
             Configuration.Container.Register<AssemblyLoadContext>(

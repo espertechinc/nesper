@@ -17,21 +17,22 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.extend.view
 {
     public class MyTrendSpotterViewForge : ViewFactoryForge
     {
-        private ExprNode parameter;
-        private IList<ExprNode> viewParameters;
+        private ExprNode _parameter;
+        private IList<ExprNode> _viewParameters;
 
         public void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            _viewParameters = parameters;
         }
         
         public IList<ViewFactoryForge> InnerForges =>
@@ -43,12 +44,13 @@ namespace com.espertech.esper.regressionlib.support.extend.view
         public void Attach(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 "Trend spotter view",
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 false,
                 viewForgeEnv,
                 streamNumber);
@@ -58,14 +60,11 @@ namespace com.espertech.esper.regressionlib.support.extend.view
             }
 
             var resultType = validated[0].Forge.EvaluationType;
-            if (resultType != typeof(int?) &&
-                resultType != typeof(int) &&
-                resultType != typeof(double?) &&
-                resultType != typeof(double)) {
+            if (!resultType.IsInt32() && !resultType.IsDouble()) {
                 throw new ViewParameterException(message);
             }
 
-            parameter = validated[0];
+            _parameter = validated[0];
 
             var eventTypeMap = new LinkedHashMap<string, object>();
             eventTypeMap.Put("trendcount", typeof(long?));
@@ -90,7 +89,7 @@ namespace com.espertech.esper.regressionlib.support.extend.view
                     (SAIFFInitializeSymbol) symbols,
                     classScope)
                 .Eventtype("eventType", EventType)
-                .Exprnode("parameter", parameter)
+                .Exprnode("parameter", _parameter)
                 .Build();
         }
 

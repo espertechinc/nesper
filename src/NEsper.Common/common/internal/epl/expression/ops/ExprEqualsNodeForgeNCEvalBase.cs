@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator rhs)
         {
             this.parent = parent;
-            this.Lhs = lhs;
-            this.Rhs = rhs;
+            Lhs = lhs;
+            Rhs = rhs;
         }
 
         public abstract object Evaluate(

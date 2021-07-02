@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     public class CodegenExpressionCastUnderlying : CodegenExpression
     {
         private readonly Type _clazz;
-        private readonly String _clazzName;
+        private readonly string _clazzName;
         private readonly CodegenExpression _expression;
 
         public CodegenExpressionCastUnderlying(

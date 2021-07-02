@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -39,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[2], "Contained.countof((x, i) => x.P00 + i = 10)");
 				builder.WithExpression(fields[3], "Contained.countof((x, i, s) => x.P00 + i + s = 100)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9")).Expect(fields, 3, 2, 1, 0);
 
@@ -70,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[2], "Strvals.countof((x, i) => x = 'E1' and i >= 1)");
 				builder.WithExpression(fields[3], "Strvals.countof((x, i, s) => x = 'E1' and i >= 1 and s > 2)");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2")).Expect(fields, 2, 1, 0, 0);
 

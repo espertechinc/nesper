@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEntryPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly BeanEventType eventType;
-        private readonly int propertyIndex;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly BeanEventType _eventType;
+        private readonly int _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -37,14 +37,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             BeanEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.propertyIndex = propertyIndex;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.eventType = eventType;
+            this._propertyIndex = propertyIndex;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._eventType = eventType;
         }
 
         public object GetObjectArray(object[] array)
         {
-            return array[propertyIndex];
+            return array[_propertyIndex];
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -65,12 +65,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object GetFragment(EventBean eventBean)
         {
-            if (eventType == null) {
+            if (_eventType == null) {
                 return null;
             }
 
             var result = Get(eventBean);
-            return BaseNestableEventUtil.GetBNFragmentPono(result, eventType, eventBeanTypedEventFactory);
+            return BaseNestableEventUtil.GetBNFragmentPono(result, _eventType, _eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (eventType == null) {
+            if (_eventType == null) {
                 return ConstantNull();
             }
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (eventType == null) {
+            if (_eventType == null) {
                 return ConstantNull();
             }
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 typeof(BeanEventType),
                 Cast(
                     typeof(BeanEventType),
-                    EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)));
+                    EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
                 "GetBNFragmentPono",

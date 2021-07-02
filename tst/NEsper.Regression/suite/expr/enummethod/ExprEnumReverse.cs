@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
 				builder.WithExpression(fields[0], "Contained.reverse()");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<SupportBean_ST0>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"))
 					.Verify("c0", val => AssertST0Id(val, "E3,E2,E1"));
@@ -66,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Strvals.reverse()");
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Verify("c0", val => AssertValuesArrayScalar(val, "E4", "E5", "E1", "E2"));

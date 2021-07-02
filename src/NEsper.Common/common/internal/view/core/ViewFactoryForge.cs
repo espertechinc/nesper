@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.view.core
         void Attach(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv);
+            ViewForgeEnv viewForgeEnv,
+            bool grouped);
 
         EventType EventType { get; }
 

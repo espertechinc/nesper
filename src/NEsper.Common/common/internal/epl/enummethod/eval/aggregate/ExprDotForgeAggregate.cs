@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -24,7 +26,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 {
 	public class ExprDotForgeAggregate : ExprDotForgeEnumMethodBase
 	{
-
 		public override EnumForgeDescFactory GetForgeFactory(
 			DotMethodFP footprint,
 			IList<ExprNode> parameters,
@@ -39,8 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 			var firstName = goesNode.GoesToNames[0];
 			var secondName = goesNode.GoesToNames[1];
 
-			IDictionary<string, object> fields = new Dictionary<string, object>();
+			var fields = new Dictionary<string, object>();
 			var initializationType = parameters[0].Forge.EvaluationType;
+			if (initializationType.IsNullTypeSafe()) {
+				throw new ExprValidationException("Initialization value is null-typed");
+			}
 			fields.Put(firstName, initializationType);
 			if (inputEventType == null) {
 				fields.Put(secondName, collectionComponentType);
@@ -87,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				var init = bodiesAndParameters[0].BodyForge;
 				var compute = (ExprDotEvalParamLambda) bodiesAndParameters[1];
 				EnumAggregateScalar forge = new EnumAggregateScalar(streamCountIncoming, init, compute.BodyForge, _evalEventType, compute.GoesToNames.Count);
-				var type = EPTypeHelper.SingleValue(init.EvaluationType.GetBoxedType());
+				var type = EPChainableTypeHelper.SingleValueNonNull(init.EvaluationType.GetBoxedType());
 				return new EnumForgeDesc(type, forge);
 			}
 		}
@@ -130,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				var init = bodiesAndParameters[0].BodyForge;
 				var compute = (ExprDotEvalParamLambda) bodiesAndParameters[1];
 				var forge = new EnumAggregateEvent(streamCountIncoming, init, compute.BodyForge, _evalEventType, _numParameters);
-				var type = EPTypeHelper.SingleValue(init.EvaluationType.GetBoxedType());
+				var type = EPChainableTypeHelper.SingleValueNonNull(init.EvaluationType.GetBoxedType());
 				return new EnumForgeDesc(type, forge);
 			}
 		}

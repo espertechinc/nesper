@@ -12,22 +12,22 @@ namespace com.espertech.esper.common.@internal.@event.arr
 {
     public class SendableEventObjectArray : SendableEvent
     {
-        private readonly object[] @event;
-        private readonly string typeName;
+        private readonly object[] _event;
+        private readonly string _typeName;
 
         public SendableEventObjectArray(
             object[] @event,
             string typeName)
         {
-            this.@event = @event;
-            this.typeName = typeName;
+            this._event = @event;
+            this._typeName = typeName;
         }
 
         public void Send(EventServiceSendEventCommon eventService)
         {
-            eventService.SendEventObjectArray(@event, typeName);
+            eventService.SendEventObjectArray(_event, _typeName);
         }
 
-        public object Underlying => @event;
+        public object Underlying => _event;
     }
 } // end of namespace

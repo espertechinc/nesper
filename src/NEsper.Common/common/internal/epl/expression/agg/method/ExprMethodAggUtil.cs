@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             return new ProxyExprEvaluator {
-                ProcEvaluate = (
+                procEvaluate = (
                     eventsPerStream,
                     isNewData,
                     exprEvaluatorContext) => {

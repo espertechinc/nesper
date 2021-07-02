@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 		{
 			IList<CodegenTypedParam> @params = new List<CodegenTypedParam>();
 			for (var i = 0; i < _types.Length; i++) {
-				@params.Add(new CodegenTypedParam(_types[i].GetBoxedType(), "k" + i));
+				var boxed = _types[i].IsNullType() ? typeof(object) : _types[i].GetBoxedType();
+				@params.Add(new CodegenTypedParam(boxed, "k" + i));
 			}
 
 			var ctor = new CodegenCtor(typeof(StmtClassForgeableMultiKey), ClassName, includeDebugSymbols, @params);
@@ -143,12 +145,15 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					var self = Ref("k" + i);
 					var other = Ref("k.k" + i);
 					if (i < length - 1) {
-						var notEquals = GetNotEqualsExpression(_types[i], self, other);
-						equalsMethod.Block.IfCondition(notEquals).BlockReturn(ConstantFalse());
-					}
-					else {
-						var equals = GetEqualsExpression(_types[i], self, other);
-						equalsMethod.Block.MethodReturn(equals);
+						if (_types[i] != null) {
+							var notEquals = GetNotEqualsExpression(_types[i], self, other);
+							equalsMethod.Block.IfCondition(notEquals).BlockReturn(ConstantFalse());
+						}
+					} else if (_types[i] != null) {
+							var equals = GetEqualsExpression(_types[i], self, other);
+							equalsMethod.Block.MethodReturn(equals);
+					} else {
+						equalsMethod.Block.MethodReturn(ConstantTrue());
 					}
 				}
 
@@ -172,15 +177,20 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				}
 
 				if (i < length - 1) {
-					var notEquals = GetNotEqualsExpression(_types[i], self, other);
-					equalsMethod.Block
-						.IfCondition(notEquals)
-						.BlockReturn(ConstantFalse());
+					if (_types[i] != null) {
+						var notEquals = GetNotEqualsExpression(_types[i], self, other);
+						equalsMethod.Block
+							.IfCondition(notEquals)
+							.BlockReturn(ConstantFalse());
+					}
 				}
-				else {
+				else if (_types != null) {
 					var equals = GetEqualsExpression(_types[i], self, other);
 					equalsMethod.Block
 						.MethodReturn(equals);
+				}
+				else {
+					equalsMethod.Block.MethodReturn(ConstantTrue());
 				}
 			}
 		}
@@ -255,13 +265,17 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			// 	return Conditional(NotEqualsNull(key), ExprDotMethod(key, "GetHashCode"), Constant(0));
 			// }
 
+			if (type.IsNullType()) {
+				return Constant(0);
+			}
+			
 			return StaticMethod(typeof(CompatExtensions), "DeepHash", key);
 		}
 
 		private void MakeToStringMethod(CodegenMethod toStringMethod)
 		{
 			toStringMethod.Block
-				.DeclareVar<StringBuilder>("b", NewInstance(typeof(StringBuilder)))
+				.DeclareVarNewInstance<StringBuilder>("b")
 				.ExprDotMethod(Ref("b"), "Append", Constant(nameof(MultiKey)))
 				.ExprDotMethod(Ref("b"), "Append", Constant("<"));
 
@@ -272,6 +286,11 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 				var self = Ref("k" + i);
 				CodegenExpression text = self;
+				if (_types[i].IsNullType()) {
+					toStringMethod.Block.ExprDotMethod(Ref("b"), "Append", Constant("null"));
+					continue;
+				}
+
 				if (_types[i].IsArray) {
 					text = StaticMethod(typeof(CompatExtensions), "RenderAny", self);
 				}

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
             CodegenClassScope classScope)
         {
             return ExprDotMethod(
-                NewInstanceInner(_serializerClassName),
+                NewInstanceNamed(_serializerClassName),
                 "Serialize",
                 refs.Context,
                 refs.Field);

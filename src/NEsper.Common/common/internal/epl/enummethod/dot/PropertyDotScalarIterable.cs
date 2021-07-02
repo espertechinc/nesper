@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -251,7 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().GetSimpleName());
+            writer.Write(GetType().GetSimpleName());
         }
     }
 } // end of namespace

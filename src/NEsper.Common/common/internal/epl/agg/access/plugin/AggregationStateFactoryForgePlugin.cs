@@ -17,16 +17,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationStateFactoryForgePlugin : AggregationStateFactoryForge
     {
-        private readonly AggregationForgeFactoryAccessPlugin forgeFactory;
-        private readonly AggregationMultiFunctionStateModeManaged mode;
-        private AggregatorAccessPlugin access;
+        private readonly AggregationForgeFactoryAccessPlugin _forgeFactory;
+        private readonly AggregationMultiFunctionStateModeManaged _mode;
+        private AggregatorAccessPlugin _access;
 
         public AggregationStateFactoryForgePlugin(
             AggregationForgeFactoryAccessPlugin forgeFactory,
             AggregationMultiFunctionStateModeManaged mode)
         {
-            this.forgeFactory = forgeFactory;
-            this.mode = mode;
+            this._forgeFactory = forgeFactory;
+            this._mode = mode;
         }
 
         public void InitAccessForge(
@@ -36,18 +36,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope)
         {
-            access = new AggregatorAccessPlugin(
+            _access = new AggregatorAccessPlugin(
                 col,
                 join,
                 ctor,
                 membersColumnized,
                 classScope,
-                forgeFactory.AggregationExpression.OptionalFilter,
-                mode);
+                _forgeFactory.AggregationExpression.OptionalFilter,
+                _mode);
         }
 
         public AggregatorAccess Aggregator {
-            get => access;
+            get => _access;
         }
 
         public CodegenExpression CodegenGetAccessTableState(
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         }
 
         public ExprNode Expression {
-            get => forgeFactory.AggregationExpression;
+            get => _forgeFactory.AggregationExpression;
         }
     }
 } // end of namespace

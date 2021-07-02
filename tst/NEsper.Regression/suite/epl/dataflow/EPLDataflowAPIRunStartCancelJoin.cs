@@ -52,72 +52,72 @@ WithBlockingRunJoin(execs);
         }
 public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowBlockingRunJoin());
     return execs;
 }public static IList<RegressionExecution> WithFastCompleteNonBlocking(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFastCompleteNonBlocking());
     return execs;
 }public static IList<RegressionExecution> WithRunBlocking(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowRunBlocking());
     return execs;
 }public static IList<RegressionExecution> WithFastCompleteBlocking(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowFastCompleteBlocking());
     return execs;
 }public static IList<RegressionExecution> WithNonBlockingJoinSingleRunnable(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowNonBlockingJoinSingleRunnable());
     return execs;
 }public static IList<RegressionExecution> WithBlockingMultipleRunnable(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowBlockingMultipleRunnable());
     return execs;
 }public static IList<RegressionExecution> WithNonBlockingJoinMultipleRunnable(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowNonBlockingJoinMultipleRunnable());
     return execs;
 }public static IList<RegressionExecution> WithInvalidJoinRun(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowInvalidJoinRun());
     return execs;
 }public static IList<RegressionExecution> WithNonBlockingCancel(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowNonBlockingCancel());
     return execs;
 }public static IList<RegressionExecution> WithBlockingCancel(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowBlockingCancel());
     return execs;
 }public static IList<RegressionExecution> WithBlockingException(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowBlockingException());
     return execs;
 }public static IList<RegressionExecution> WithNonBlockingException(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowNonBlockingException());
     return execs;
 }public static IList<RegressionExecution> WithNonBlockingJoinException(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowNonBlockingJoinException());
     return execs;
 }public static IList<RegressionExecution> WithNonBlockingJoinCancel(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowNonBlockingJoinCancel());
     return execs;
 }

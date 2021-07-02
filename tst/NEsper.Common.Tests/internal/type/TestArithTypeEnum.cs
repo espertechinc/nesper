@@ -35,7 +35,13 @@ namespace com.espertech.esper.common.@internal.type
         public void TestAddDouble()
         {
             var computer = MathArithType.GetComputer(
-                MathArithTypeEnum.ADD, typeof(double?), typeof(double?), typeof(double?), false, false, null);
+                MathArithTypeEnum.ADD,
+                typeof(double?),
+                typeof(double?),
+                typeof(double?),
+                false,
+                false,
+                null);
             Assert.AreEqual(12.1d, computer.Compute(5.5, 6.6));
         }
 
@@ -43,7 +49,10 @@ namespace com.espertech.esper.common.@internal.type
         public void TestAllComputers()
         {
             Type[] testClasses = {
-                typeof(float), typeof(double), typeof(int), typeof(long)
+                typeof(float), 
+                typeof(double),
+                typeof(int),
+                typeof(long)
             };
 
             foreach (var clazz in testClasses)

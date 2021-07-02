@@ -43,6 +43,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.helper;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.prior;
@@ -70,13 +71,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             var streamNames = StatementForgeMethodSelectUtil.DetermineStreamNames(statementSpec.StreamSpecs);
             var numStreams = streamNames.Length;
-            if (numStreams == 0) {
-                throw new ExprValidationException("The from-clause is required but has not been specified");
-            }
 
             // first we create streams for subselects, if there are any
             SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, @base, services);
+                false, filterSpecCompileds, namedWindowConsumers, @base, services);
             IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
             additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
@@ -138,8 +136,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     }
 
                     var patternType = ViewableActivatorPatternForge.MakeRegisterPatternType(
-                        @base,
+                        @base.ModuleName,
                         stream,
+                        null,
                         patternStreamSpec,
                         services);
                     var patternContext = new PatternContext(0, patternStreamSpec.MatchedEventMapMeta, false, -1, false);
@@ -386,7 +385,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             if (hasPrior) {
                 for (var stream = 0; stream < numStreams; stream++) {
                     if (!viewResourceDelegateDesc[stream].PriorRequests.IsEmpty()) {
-                        viewForges[stream].Add(new PriorEventViewForge(viewForges[stream].IsEmpty(), streamEventTypes[stream]));
+                        var unbound = viewForges[stream].IsEmpty();
+                        var stateMgmtSettings = unbound ? StateMgmtSettingDefault.INSTANCE : services.StateMgmtSettingsProvider.GetView(
+                            @base.StatementRawInfo, stream, false, false, AppliesTo.WINDOW_PRIOR);
+                        viewForges[stream].Add(new PriorEventViewForge(unbound, streamEventTypes[stream], stateMgmtSettings));
                         var serdeForgeables = SerdeEventTypeUtility.Plan(
                             streamEventTypes[stream], @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver);
                         additionalForgeables.AddAll(serdeForgeables);

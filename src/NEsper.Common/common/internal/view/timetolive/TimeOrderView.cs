@@ -119,6 +119,9 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     var oldDataItem = oldData[i];
                     object sortValues = GetTimestamp(oldDataItem);
                     var result = CollectionUtil.RemoveEventByKeyLazyListMap(sortValues, oldDataItem, sortedEvents);
+                    if (!result) {
+                        result = CollectionUtil.RemoveEventUnkeyedLazyListMap(oldDataItem, sortedEvents);
+                    }
                     if (result) {
                         eventCount--;
                         if (postOldEventsArray == null) {

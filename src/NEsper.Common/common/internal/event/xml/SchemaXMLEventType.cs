@@ -34,11 +34,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class SchemaXMLEventType : BaseXMLEventType
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly bool isPropertyExpressionXPath;
-        private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache;
-        private readonly string rootElementNamespace;
+        
+        private readonly bool _isPropertyExpressionXPath;
+        private readonly IDictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
+        private readonly string _rootElementNamespace;
 
-        private readonly SchemaElementComplex schemaModelRoot;
+        private readonly SchemaElementComplex _schemaModelRoot;
 
         public SchemaXMLEventType(
             EventTypeMetadata eventTypeMetadata,
@@ -56,11 +57,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 eventTypeResolver,
                 xmlEventTypeFactory)
         {
-            propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
+            _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             SchemaModel = schemaModel;
-            rootElementNamespace = config.RootElementNamespace;
-            schemaModelRoot = SchemaUtil.FindRootElement(schemaModel, rootElementNamespace, RootElementName);
-            isPropertyExpressionXPath = config.IsXPathPropertyExpr;
+            _rootElementNamespace = config.RootElementNamespace;
+            _schemaModelRoot = SchemaUtil.FindRootElement(schemaModel, _rootElementNamespace, RootElementName);
+            _isPropertyExpressionXPath = config.IsXPathPropertyExpr;
             RepresentsFragmentOfProperty = representsFragmentOfProperty;
             RepresentsOriginalTypeName = representsOriginalTypeName;
 
@@ -80,21 +81,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
             IList<ExplicitPropertyDescriptor> additionalSchemaProps = new List<ExplicitPropertyDescriptor>();
 
             // Add a property for each complex child element
-            foreach (SchemaElementComplex complex in schemaModelRoot.ComplexElements) {
+            foreach (SchemaElementComplex complex in _schemaModelRoot.ComplexElements) {
                 var propertyName = complex.Name;
                 var returnType = typeof(XmlNode);
-                Type propertyComponentType = null;
 
                 if (complex.OptionalSimpleType != null) {
                     returnType = SchemaUtil.ToReturnType(complex);
-                    if (returnType == typeof(string)) {
-                        propertyComponentType = typeof(char);
-                    }
                 }
 
                 if (complex.IsArray) {
                     returnType = typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
-                    propertyComponentType = typeof(XmlNode);
                 }
 
                 var isFragment = false;
@@ -106,7 +102,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    propertyComponentType,
                     false,
                     false,
                     complex.IsArray,
@@ -117,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             // Add a property for each simple child element
-            foreach (var simple in schemaModelRoot.SimpleElements) {
+            foreach (var simple in _schemaModelRoot.SimpleElements) {
                 var propertyName = simple.Name;
                 var returnType = SchemaUtil.ToReturnType(simple);
                 var componentType = GenericExtensions.GetComponentType(returnType);
@@ -126,7 +121,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    componentType,
                     false,
                     false,
                     isIndexed,
@@ -137,7 +131,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             // Add a property for each attribute
-            foreach (var attribute in schemaModelRoot.Attributes) {
+            foreach (var attribute in _schemaModelRoot.Attributes) {
                 var propertyName = attribute.Name;
                 var returnType = SchemaUtil.ToReturnType(attribute);
                 var componentType = GenericExtensions.GetComponentType(returnType);
@@ -146,7 +140,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    componentType,
                     false,
                     false,
                     isIndexed,
@@ -174,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(property);
 
-            var item = prop.GetPropertyTypeSchema(schemaModelRoot);
+            var item = prop.GetPropertyTypeSchema(_schemaModelRoot);
             if (item == null || !CanFragment(item)) {
                 return null;
             }
@@ -254,7 +247,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return typeof(XmlNode);
             }
 
-            var item = prop.GetPropertyTypeSchema(schemaModelRoot);
+            var item = prop.GetPropertyTypeSchema(_schemaModelRoot);
             if (item == null) {
                 return null;
             }
@@ -271,7 +264,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string propertyExpression,
             bool allowSimpleProperties)
         {
-            var getter = propertyGetterCache.Get(propertyExpression);
+            var getter = _propertyGetterCache.Get(propertyExpression);
             if (getter != null) {
                 return getter;
             }
@@ -319,17 +312,17 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
             }
 
-            if (!isPropertyExpressionXPath) {
+            if (!_isPropertyExpressionXPath) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
                 var isDynamic = prop.IsDynamic;
 
                 if (!isDynamic) {
-                    var item = prop.GetPropertyTypeSchema(schemaModelRoot);
+                    var item = prop.GetPropertyTypeSchema(_schemaModelRoot);
                     if (item == null) {
                         return null;
                     }
 
-                    getter = prop.GetGetterDOM(schemaModelRoot, EventBeanTypedEventFactory, this, propertyExpression);
+                    getter = prop.GetGetterDOM(_schemaModelRoot, EventBeanTypedEventFactory, this, propertyExpression);
                     if (getter == null) {
                         return null;
                     }
@@ -356,7 +349,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     propertyExpression,
                     NamespaceContext,
                     RootElementName,
-                    rootElementNamespace,
+                    _rootElementNamespace,
                     SchemaModel,
                     EventBeanTypedEventFactory,
                     this,
@@ -364,7 +357,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     ConfigurationEventTypeXMLDOM.DefaultNamespace);
             }
 
-            propertyGetterCache.Put(propertyExpression, getter);
+            _propertyGetterCache.Put(propertyExpression, getter);
             return getter;
         }
 

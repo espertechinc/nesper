@@ -10,10 +10,12 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -139,51 +141,56 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             for (var i = 0; i < forgeRenderable.ChildNodes.Length; i++) {
                 var child = forgeRenderable.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
-                var refname = "r" + i;
-
-                block.DeclareVar(
-                    childType,
-                    refname,
-                    child.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
-
-                if (child.EvaluationType.CanNotBeNull()) {
-                    if (!forge.IsMustCoerce) {
-                        block
-                            .AssignArrayElement(
-                                "array",
-                                Constant(i),
-                                Unbox(Ref(refname), childType));
-                    }
-                    else {
-                        block
-                            .AssignArrayElement(
-                                "array",
-                                Constant(i),
-                                forge.Coercer.CoerceCodegen(Ref(refname), childType));
-                    }
+                if (childType.IsNullTypeSafe()) {
+                    // no action
                 }
                 else {
-                    var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
-                    if (!forge.IsMustCoerce) {
-                        ifNotNull
-                            .AssignArrayElement(
-                                "array",
-                                Constant(i),
-                                Unbox(Ref(refname), childType));
+                    var refname = "r" + i;
+
+                    block.DeclareVar(
+                        childType,
+                        refname,
+                        child.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
+
+                    if (child.EvaluationType.CanNotBeNull()) {
+                        if (!forge.IsMustCoerce) {
+                            block
+                                .AssignArrayElement(
+                                    "array",
+                                    Constant(i),
+                                    Unbox(Ref(refname), childType));
+                        }
+                        else {
+                            block
+                                .AssignArrayElement(
+                                    "array",
+                                    Constant(i),
+                                    forge.Coercer.CoerceCodegen(Ref(refname), childType));
+                        }
                     }
                     else {
-                        ifNotNull
-                            .AssignArrayElement(
-                                "array",
-                                Constant(i),
-                                forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
-                    }
+                        var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                        if (!forge.IsMustCoerce) {
+                            ifNotNull
+                                .AssignArrayElement(
+                                    "array",
+                                    Constant(i),
+                                    Unbox(Ref(refname), childType));
+                        }
+                        else {
+                            ifNotNull
+                                .AssignArrayElement(
+                                    "array",
+                                    Constant(i),
+                                    forge.Coercer.CoerceCodegen(Ref(refname), childType));
+                        }
 
-                    if (requiresPrimitive) {
-                        block.IfCondition(
-                                EqualsNull(Ref(refname)))
-                            .BlockThrow(
-                                NewInstance(typeof(EPException), Constant(PRIMITIVE_ARRAY_NULL_MSG)));
+                        if (requiresPrimitive) {
+                            block.IfCondition(
+                                    EqualsNull(Ref(refname)))
+                                .BlockThrow(
+                                    NewInstance(typeof(EPException), Constant(PRIMITIVE_ARRAY_NULL_MSG)));
+                        }
                     }
                 }
             }

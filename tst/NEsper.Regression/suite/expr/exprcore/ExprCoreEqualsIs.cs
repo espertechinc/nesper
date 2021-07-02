@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.suite.context;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
@@ -26,35 +27,58 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			WithIsCoercionSameType(execs);
 			WithIsMultikeyWArray(execs);
 			WithInvalid(execs);
+			WithNull(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithNull(IList<RegressionExecution> execs = null)
+		{
+			execs ??= new List<RegressionExecution>();
+			execs.Add(new ExprCoreEqualsNull());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreEqualsInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithIsMultikeyWArray(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreEqualsIsMultikeyWArray());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithIsCoercionSameType(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreEqualsIsCoercionSameType());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithIsCoercion(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreEqualsIsCoercion());
 			return execs;
+		}
+
+		private class ExprCoreEqualsNull : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(fields, "TheString = null", "TheString is null", "null = TheString", "null is TheString", "null = null", "null is null");
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+				builder.WithAssertion(new SupportBean("x", 0)).Expect(fields, null, false, null, false, null, true);
+				builder.WithAssertion(new SupportBean(null, 0)).Expect(fields, null, true, null, true, null, true);
+				builder.Run(env);
+				env.UndeployAll();
+			}
 		}
 
 		private class ExprCoreEqualsInvalid : RegressionExecution

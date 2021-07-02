@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerEvaluatorArrPrimitiveToColl : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
 
         public InnerEvaluatorArrPrimitiveToColl(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            this._rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var array = (Array) rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = (Array) _rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (array == null) {
                 return null;
             }

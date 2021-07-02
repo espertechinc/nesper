@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             BeanEventType beanEventType,
             IObjectCopier copier)
         {
-            this._beanEventType = beanEventType;
-            this._copier = copier;
+            _beanEventType = beanEventType;
+            _copier = copier;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)

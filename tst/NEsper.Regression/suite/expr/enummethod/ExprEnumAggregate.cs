@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -25,38 +26,65 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			List<RegressionExecution> execs = new List<RegressionExecution>();
 			execs.Add(new ExprEnumAggregateEvents());
 			execs.Add(new ExprEnumAggregateScalar());
+			execs.Add(new ExprEnumAggregateInvalid());
 			return execs;
 		}
+
+		internal class ExprEnumAggregateInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+
+				// invalid incompatible params
+				epl = "select Contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'Integer' to string is not allowed");
+
+				// null-init-value for aggregate
+				epl = "select Contained.aggregate(null, (result, item) => result) from SupportBean_ST0_Container";
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'Contained.aggregate(null,)': Initialization value is null-typed");
+			}
+		}
+
 
 		internal class ExprEnumAggregateEvents : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
+				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
 				builder.WithExpression(fields[0], "Contained.aggregate(0, (result, item) => result + item.P00)");
 				builder.WithExpression(fields[1], "Contained.aggregate('', (result, item) => result || ', ' || item.Id)");
 				builder.WithExpression(fields[2], "Contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.Id)");
 				builder.WithExpression(fields[3], "Contained.aggregate(0, (result, item, i) => result + item.P00 + i*10)");
 				builder.WithExpression(fields[4], "Contained.aggregate(0, (result, item, i, s) => result + item.P00 + i*10 + s*100)");
+				builder.WithExpression(fields[5], "Contained.aggregate(0, (result, item) => null)");
 
 				builder.WithStatementConsumer(
-					stmt => LambdaAssertionUtil.AssertTypes(
+					stmt => SupportEventPropUtil.AssertTypes(
 						stmt.EventType,
 						fields,
-						new[] {typeof(int?), typeof(string), typeof(string), typeof(int?), typeof(int?)}));
+						new[] {
+							typeof(int?), typeof(string), typeof(string), typeof(int?), typeof(int?), typeof(int?)
+						}));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2"))
-					.Expect(fields, 25, ", E1, E2, E2", "E1,E2,E2", 12 + 21 + 22, 312 + 321 + 322);
+					.Expect(fields, 25, ", E1, E2, E2", "E1,E2,E2", 12 + 21 + 22, 312 + 321 + 322, null);
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
-					.Expect(fields, null, null, null, null, null);
+					.Expect(fields, null, null, null, null, null, null);
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value(new string[0]))
-					.Expect(fields, 0, "", "", 0, 0);
+					.Expect(fields, 0, "", "", 0, 0, 0);
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12"))
-					.Expect(fields, 12, ", E1", "E1", 12, 112);
+					.Expect(fields, 12, ", E1", "E1", 12, 112, null);
 
 				builder.Run(env);
 			}
@@ -66,24 +94,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string[] fields = "c0,c1,c2".SplitCsv();
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Strvals.aggregate('', (result, item) => result || '+' || item)");
 				builder.WithExpression(fields[1], "Strvals.aggregate('', (result, item, i) => result || '+' || item || '_' || Convert.ToString(i))");
-				builder.WithExpression(
-					fields[2],
-					"Strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+				builder.WithExpression(fields[2], "Strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+				builder.WithExpression(fields[3], "Strvals.aggregate('', (result, item, i, s) => null)");
 
-				builder.WithStatementConsumer(stmt => LambdaAssertionUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
+				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
 				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
-					.Expect(fields, "+E1+E2+E3", "+E1_0+E2_1+E3_2", "+E1_0_3+E2_1_3+E3_2_3");
+					.Expect(fields, "+E1+E2+E3", "+E1_0+E2_1+E3_2", "+E1_0_3+E2_1_3+E3_2_3", null);
 
-				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, "+E1", "+E1_0", "+E1_0_1");
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, "+E1", "+E1_0", "+E1_0_1", null);
 
-				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, "", "", "");
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, "", "", "", "");
 
-				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null);
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null);
 
 				builder.Run(env);
 			}

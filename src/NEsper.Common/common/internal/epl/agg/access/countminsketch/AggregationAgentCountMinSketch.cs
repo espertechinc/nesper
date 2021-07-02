@@ -16,17 +16,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
     public class AggregationAgentCountMinSketch : AggregationMultiFunctionAgent
     {
-        private ExprEvaluator optionalFilterEval;
-        private ExprEvaluator stringEval;
+        private ExprEvaluator _optionalFilterEval;
+        private ExprEvaluator _stringEval;
 
         public ExprEvaluator StringEval {
-            get => stringEval;
-            set => stringEval = value;
+            get => _stringEval;
+            set => _stringEval = value;
         }
 
         public ExprEvaluator OptionalFilterEval {
-            get => optionalFilterEval;
-            set => optionalFilterEval = value;
+            get => _optionalFilterEval;
+            set => _optionalFilterEval = value;
         }
 
         public void ApplyEnter(
@@ -35,14 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             AggregationRow row,
             int column)
         {
-            if (optionalFilterEval != null) {
-                var pass = optionalFilterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            if (_optionalFilterEval != null) {
+                var pass = _optionalFilterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (pass == null || false.Equals(pass)) {
                     return;
                 }
             }
 
-            var value = stringEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            var value = _stringEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
             if (value == null) {
                 return;
             }

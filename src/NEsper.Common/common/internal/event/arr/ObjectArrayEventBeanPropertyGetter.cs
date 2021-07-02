@@ -22,20 +22,20 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly int propertyIndex;
-        private readonly Type underlyingType;
+        private readonly int _propertyIndex;
+        private readonly Type _underlyingType;
 
         public ObjectArrayEventBeanPropertyGetter(
             int propertyIndex,
             Type underlyingType)
         {
-            this.propertyIndex = propertyIndex;
-            this.underlyingType = underlyingType;
+            this._propertyIndex = propertyIndex;
+            this._underlyingType = underlyingType;
         }
 
         public object GetObjectArray(object[] array)
         {
-            var eventBean = array[propertyIndex];
+            var eventBean = array[_propertyIndex];
 
             var theEvent = (EventBean) eventBean;
             return theEvent?.Underlying;
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object GetFragment(EventBean obj)
         {
-            return BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[propertyIndex];
+            return BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[_propertyIndex];
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -112,19 +112,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
         }
 
         private CodegenMethod GetObjectArrayCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(underlyingType, GetType(), codegenClassScope)
+            return codegenMethodScope.MakeChild(_underlyingType, GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("eventBean", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("eventBean", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnNull("eventBean")
-                .MethodReturn(Cast(underlyingType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("eventBean")))));
+                .MethodReturn(Cast(_underlyingType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("eventBean")))));
         }
     }
 } // end of namespace

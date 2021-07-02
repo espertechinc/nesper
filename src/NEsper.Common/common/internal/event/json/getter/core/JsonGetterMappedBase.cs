@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             string key,
             string underlyingClassName)
         {
-            this.Key = key;
-            this.UnderlyingClassName = underlyingClassName;
+            Key = key;
+            UnderlyingClassName = underlyingClassName;
         }
 
         public abstract string FieldName { get; }

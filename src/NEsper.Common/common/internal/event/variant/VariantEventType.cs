@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -28,10 +29,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
     /// </summary>
     public class VariantEventType : EventTypeSPI
     {
-        private readonly IDictionary<string, VariantPropertyDesc> propertyDesc;
-        private readonly IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
-        private readonly VariantPropResolutionStrategy propertyResStrategy;
-        private IDictionary<string, EventPropertyGetter> propertyGetterCodegeneratedCache;
+        private readonly IDictionary<string, VariantPropertyDesc> _propertyDesc;
+        private readonly IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
+        private readonly VariantPropResolutionStrategy _propertyResStrategy;
+        private IDictionary<string, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
         ///     Ctor.
@@ -47,42 +48,41 @@ namespace com.espertech.esper.common.@internal.@event.variant
             IsVariantAny = variantSpec.TypeVariance == TypeVariance.ANY;
             VariantPropertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
             if (IsVariantAny) {
-                propertyResStrategy = new VariantPropResolutionStrategyAny(this);
+                _propertyResStrategy = new VariantPropResolutionStrategyAny(this);
             }
             else {
-                propertyResStrategy = new VariantPropResolutionStrategyDefault(this);
+                _propertyResStrategy = new VariantPropResolutionStrategyDefault(this);
             }
 
-            propertyDesc = new Dictionary<string, VariantPropertyDesc>();
+            _propertyDesc = new Dictionary<string, VariantPropertyDesc>();
 
             foreach (var type in Variants) {
                 foreach (var property in CollectionUtil.CopyAndSort(type.PropertyNames)) {
-                    if (!propertyDesc.ContainsKey(property)) {
+                    if (!_propertyDesc.ContainsKey(property)) {
                         FindProperty(property);
                     }
                 }
             }
 
-            var propertyNameKeySet = propertyDesc.Keys;
+            var propertyNameKeySet = _propertyDesc.Keys;
             PropertyNames = propertyNameKeySet.ToArray();
 
             // for each of the properties in each type, attempt to load the property to build a property list
-            PropertyDescriptors = new EventPropertyDescriptor[propertyDesc.Count];
-            propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
+            PropertyDescriptors = new EventPropertyDescriptor[_propertyDesc.Count];
+            _propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
             var count = 0;
-            foreach (var desc in propertyDesc) {
+            foreach (var desc in _propertyDesc) {
                 var type = desc.Value.PropertyType;
                 var descriptor = new EventPropertyDescriptor(
                     desc.Key,
                     type,
-                    type.GetIndexType(),
                     false,
                     false,
                     type.IsIndexed(),
                     false,
                     desc.Value.PropertyType.IsFragmentableType());
                 PropertyDescriptors[count++] = descriptor;
-                propertyDescriptorMap.Put(desc.Key, descriptor);
+                _propertyDescriptorMap.Put(desc.Key, descriptor);
             }
         }
 
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public Type GetPropertyType(string property)
         {
-            var entry = propertyDesc.Get(property);
+            var entry = _propertyDesc.Get(property);
             if (entry != null) {
                 return entry.PropertyType;
             }
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public EventPropertyGetterSPI GetGetterSPI(string property)
         {
-            var entry = propertyDesc.Get(property);
+            var entry = _propertyDesc.Get(property);
             if (entry != null) {
                 return entry.Getter;
             }
@@ -124,11 +124,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public EventPropertyGetter GetGetter(string propertyName)
         {
-            if (propertyGetterCodegeneratedCache == null) {
-                propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            if (_propertyGetterCodegeneratedCache == null) {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
             }
 
-            var getter = propertyGetterCodegeneratedCache.Get(propertyName);
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
             if (getter != null) {
                 return getter;
             }
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 return null;
             }
 
-            propertyGetterCodegeneratedCache.Put(propertyName, getterSPI);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterSPI);
             return getterSPI;
         }
 
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public bool IsProperty(string property)
         {
-            var entry = propertyDesc.Get(property);
+            var entry = _propertyDesc.Get(property);
             if (entry != null) {
                 return entry.IsProperty;
             }
@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
-            return propertyDescriptorMap.Get(propertyName);
+            return _propertyDescriptorMap.Get(propertyName);
         }
 
         public FragmentEventType GetFragmentType(string property)
@@ -235,9 +235,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         private VariantPropertyDesc FindProperty(string propertyName)
         {
-            var desc = propertyResStrategy.ResolveProperty(propertyName, Variants);
+            var desc = _propertyResStrategy.ResolveProperty(propertyName, Variants);
             if (desc != null) {
-                propertyDesc.Put(propertyName, desc);
+                _propertyDesc.Put(propertyName, desc);
             }
 
             return desc;

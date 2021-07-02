@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         public PropertyEvaluatorForge OptionalPropertyEvaluator { get; }
 
         public int FilterCallbackId {
-            set { this.filterCallbackId = value; }
+            set { filterCallbackId = value; }
         }
 
         /// <summary>
@@ -148,9 +148,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public override int GetHashCode()
         {
-            int hashCode = FilterForEventType.GetHashCode();
-            foreach (FilterSpecPlanPathForge path in Parameters.Paths) {
-                foreach (FilterSpecPlanPathTripletForge triplet in path.Triplets) {
+            var hashCode = FilterForEventType.GetHashCode();
+            foreach (var path in Parameters.Paths) {
+                foreach (var triplet in path.Triplets) {
                     hashCode ^= 31 * triplet.GetHashCode();
                 }
             }
@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var map = new OrderedListDictionary<FilterOperator, IList<FilterSpecPlanPathTripletForge>>(COMPARATOR_PARAMETERS);
 
-            foreach (FilterSpecPlanPathTripletForge parameter in parameters.Triplets) {
+            foreach (var parameter in parameters.Triplets) {
                 if (!map.TryGetValue(parameter.Param.FilterOperator, out var list)) {
                     list = new List<FilterSpecPlanPathTripletForge>();
                     map[parameter.Param.FilterOperator] = list;
@@ -223,10 +223,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     EventTypeUtility.ResolveTypeCodegen(FilterForEventType, EPStatementInitServicesConstants.REF))
                 .DeclareVar<FilterSpecPlan>(
                     "plan",
-                    LocalMethod(
-                        Parameters.CodegenWithEventType(method, classScope),
+                    Parameters.CodegenWithEventType(
+                        method,
                         Ref("eventType"),
-                        symbols.GetAddInitSvc(method)))
+                        symbols.GetAddInitSvc(method),
+                        classScope))
                 .DeclareVar<FilterSpecActivatable>(
                     "activatable",
                     NewInstance<FilterSpecActivatable>(

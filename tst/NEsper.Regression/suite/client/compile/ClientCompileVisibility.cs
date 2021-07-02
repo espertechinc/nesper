@@ -70,84 +70,84 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithBusRequiresPublic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityBusRequiresPublic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDisambiguateWithUses(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityDisambiguateWithUses());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAmbiguousTwoPath(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAmbiguousTwoPath());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnnotationInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAnnotationInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnnotationBusEventType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAnnotationBusEventType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithModuleNameOption(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityModuleNameOption());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnnotationPublic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAnnotationPublic());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnnotationProtected(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAnnotationProtected());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAnnotationPrivate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAnnotationPrivate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDefaultPrivate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityDefaultPrivate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAmbiguousPathWithPreconfigured(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityAmbiguousPathWithPreconfigured());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientVisibilityNamedWindowSimple());
             return execs;
         }
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     .Replace("${PREFIX}", "")
                     .Replace("${NAMESPACE}", namespc);
                 var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
-                epl = epl + userEPL;
+                epl += userEPL;
                 env.CompileDeploy(epl).UndeployAll();
             }
         }

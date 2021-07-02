@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
@@ -28,7 +30,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenMethod : CodegenMethodScope
     {
-        protected CodegenMethod(
+        internal CodegenMethod(
             Type returnType,
             string returnTypeName,
             Type generator,
@@ -39,7 +41,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new ArgumentException("Invalid null generator");
             }
 
-            ReturnType = returnType;
+            ReturnType = returnType?.Flexify();
             ReturnTypeName = returnTypeName;
             OptionalSymbolProvider = optionalSymbolProvider;
             Block = new CodegenBlock(this);
@@ -87,7 +89,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenMethodWGraph AssignedMethod { get; set; }
         
-        public String AssignedProviderClassName { get; set;  }
+        public string AssignedProviderClassName { get; set;  }
 
         public CodegenMethod WithStatic(bool value)
         {
@@ -230,7 +232,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             if (symbolProvider == null) {
                 throw new ArgumentException("No symbol provider");
             }
-
+            
             return new CodegenMethod(returnType, null, generator, symbolProvider, env);
         }
 

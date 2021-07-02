@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -31,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this._forge = forge;
-            this._lhs = lhs;
-            this._rhs = rhs;
+            _forge = forge;
+            _lhs = lhs;
+            _rhs = rhs;
         }
 
         public object Evaluate(

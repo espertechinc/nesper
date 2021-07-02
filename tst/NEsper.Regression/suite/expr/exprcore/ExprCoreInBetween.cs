@@ -59,154 +59,154 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static IList<RegressionExecution> WithInBetweenInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInBetweenInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithBetweenNumericCoercionDouble(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBetweenNumericCoercionDouble());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInRange(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInRange());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithBetweenNumericCoercionLong(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBetweenNumericCoercionLong());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInNumericCoercionDouble(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInNumericCoercionDouble());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInNumericCoercionLong(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInNumericCoercionLong());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInBoolExpr(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInBoolExpr());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithBetweenNumericExpr(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBetweenNumericExpr());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithBetweenStringExpr(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBetweenStringExpr());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithBetweenBigIntBigDecExpr(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreBetweenBigIntBigDecExpr());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInStringExpr(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInStringExpr());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInStringExprOM(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInStringExprOM());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionArrayConst(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionArrayConst());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionObjectArrayProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionObjectArrayProp());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionMixed(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionMixed());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionMaps(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionMaps());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionColl(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionColl());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionArrays(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionArrays());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInCollectionArrayProp(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInCollectionArrayProp());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInArraySubstitution(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInArraySubstitution());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInObject(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInObject());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithInNumeric(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ExprCoreInNumeric());
 			return execs;
 		}
@@ -280,10 +280,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 								.SetObject(1, new[] {10, 20, 30})));
 				env.AddListener("s0");
 
-				env.SendEventBean(new SupportBean("E1", 10), typeof(SupportBean).Name);
+				env.SendEventBean(new SupportBean("E1", 10), nameof(SupportBean));
 				Assert.IsTrue((Boolean) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-				env.SendEventBean(new SupportBean("E2", 9), typeof(SupportBean).Name);
+				env.SendEventBean(new SupportBean("E2", 9), nameof(SupportBean));
 				Assert.IsFalse((Boolean) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
 				env.UndeployAll();
@@ -453,11 +453,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var caseExpr = "@Name('s0') select TheString in (\"a\",\"b\",\"c\") as result from " + typeof(SupportBean).Name;
+				var caseExpr = "@Name('s0') select TheString in (\"a\",\"b\",\"c\") as result from " + nameof(SupportBean);
 				var model = new EPStatementObjectModel();
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 				model.SelectClause = SelectClause.Create().Add(Expressions.In("TheString", "a", "b", "c"), "result");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 
 				TryString(
 					env,
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				model = new EPStatementObjectModel();
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 				model.SelectClause = SelectClause.Create().Add(Expressions.NotIn("TheString", "a", "b", "c"), "result");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 				SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 
 				TryString(
@@ -658,7 +658,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select IntPrimitive in (ShortBoxed, IntBoxed, LongBoxed) as result from " + typeof(SupportBean).Name;
+				var epl = "@Name('s0') select IntPrimitive in (ShortBoxed, IntBoxed, LongBoxed) as result from " + nameof(SupportBean);
 
 				env.CompileDeploy(epl).AddListener("s0");
 				Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -679,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select IntBoxed in (FloatBoxed, DoublePrimitive, LongBoxed) as result from " + typeof(SupportBean).Name;
+				var epl = "@Name('s0') select IntBoxed in (FloatBoxed, DoublePrimitive, LongBoxed) as result from " + nameof(SupportBean);
 				env.CompileDeploy(epl).AddListener("s0");
 
 				Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -846,7 +846,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select IntBoxed between FloatBoxed and DoublePrimitive as result from " + typeof(SupportBean).Name;
+				var epl = "@Name('s0') select IntBoxed between FloatBoxed and DoublePrimitive as result from " + nameof(SupportBean);
 				env.CompileDeploy(epl).AddListener("s0");
 
 				Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
@@ -876,7 +876,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					epl,
-					"Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+					"Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
 			}
 		}
 

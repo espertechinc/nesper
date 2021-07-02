@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotForgeUnpackBeanTable : ExprDotForge,
         ExprDotEval
     {
-        private readonly EPType returnType;
+        private readonly EPChainableType returnType;
         private readonly TableMetaData tableMetadata;
 
         public ExprDotForgeUnpackBeanTable(
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             TableMetaData tableMetadata)
         {
             this.tableMetadata = tableMetadata;
-            this.returnType = EPTypeHelper.SingleValue(tableMetadata.PublicEventType.UnderlyingType);
+            returnType = EPChainableTypeHelper.SingleValueNonNull(tableMetadata.PublicEventType.UnderlyingType);
         }
 
         public object Evaluate(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, classScope, GetType());
             CodegenMethod methodNode = parent
-                .MakeChild(typeof(Object[]), typeof(ExprDotForgeUnpackBeanTable), classScope)
+                .MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), classScope)
                 .AddParam(typeof(EventBean), "target");
 
             CodegenExpressionRef refEPS = symbols.GetAddEPS(methodNode);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo {
+        public EPChainableType TypeInfo {
             get => returnType;
         }
 

@@ -35,35 +35,35 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public static IList<RegressionExecution> WithPrecedencePatterns(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAPrecedencePatterns());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPrecedenceExpressions(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAPrecedenceExpressions());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEPLtoOMtoStmt(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAEPLtoOMtoStmt());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCreateFromOMComplete(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSODACreateFromOMComplete());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCreateFromOM(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientCompileSODACreateFromOM());
             return execs;
         }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 SerializableObjectCopier.CopyMayFail(env.Container, model);
             }

@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.index.sorted
@@ -20,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         private readonly Type _indexType;
         private readonly EventPropertyValueGetter _valueGetter;
         private readonly DataInputOutputSerde _indexSerde;
-
+        private readonly StateMgmtSetting _stateMgmtSettings;
+        
         public PropertySortedFactoryFactory(
             int indexedStreamNum,
             int? subqueryNum,
@@ -28,13 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             string indexProp,
             Type indexType,
             EventPropertyValueGetter valueGetter,
-            DataInputOutputSerde indexSerde)
+            DataInputOutputSerde indexSerde,
+            StateMgmtSetting stateMgmtSettings)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             _indexProp = indexProp;
             _indexType = indexType;
             _valueGetter = valueGetter;
             _indexSerde = indexSerde;
+            _stateMgmtSettings = stateMgmtSettings;
         }
 
         public override EventTableFactory Create(
@@ -50,7 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
                 _indexSerde,
                 null,
                 isFireAndForget,
-                eventTableFactoryContext);
+                eventTableFactoryContext,
+                _stateMgmtSettings);
         }
     }
 } // end of namespace

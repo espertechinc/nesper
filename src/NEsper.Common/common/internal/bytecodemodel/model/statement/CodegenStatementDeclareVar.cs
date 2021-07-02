@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             string var,
             CodegenExpression optionalInitializer)
         {
-            _clazz = clazz ?? throw new ArgumentException("Class cannot be null");
+            _clazz = clazz?.Flexify() ?? throw new ArgumentException("Class cannot be null");
             _typeName = null;
             _var = var;
             _optionalInitializer = optionalInitializer;

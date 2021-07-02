@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                method.ReturnType,
-                null)
+                method.ReturnType)
         {
             _key = key;
             _method = method;
@@ -68,8 +67,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-
-        public override Type BeanPropType => _method.ReturnType;
 
         public override Type TargetType => _method.DeclaringType;
 
@@ -161,19 +158,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
         }
 
-        protected internal static CodegenMethod GetBeanPropInternalCodegen(
+        private static CodegenMethod GetBeanPropInternalCodegen(
             CodegenMethodScope codegenMethodScope,
             Type targetType,
             MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
-            var parameterTypes = method.GetParameterTypes();
             var returnType = method.ReturnType;
+            var parameterTypes = method.GetParameterTypes();
+            var parameterType = parameterTypes[0];
             return codegenMethodScope.MakeChild(returnType, typeof(KeyedMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
-                .AddParam(parameterTypes[0], "key")
+                .AddParam(parameterType, "key")
                 .Block
-                .DebugStack()
                 .MethodReturn(ExprDotMethod(Ref("@object"), method.Name, Ref("key")));
         }
 

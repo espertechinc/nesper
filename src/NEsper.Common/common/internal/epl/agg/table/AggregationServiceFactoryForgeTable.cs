@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(AggregationServiceFactoryTable), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(AggregationServiceFactoryTable), GetType(), classScope);
             method.Block
                 .DeclareVar<AggregationServiceFactoryTable>(
                     "factory",

@@ -20,12 +20,12 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class DataInputOutputSerdeForgeEventSerde : DataInputOutputSerdeForge {
-	    private readonly string methodName;
-	    private readonly Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[] functions;
+	    private readonly string _methodName;
+	    private readonly Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[] _functions;
 
 	    public DataInputOutputSerdeForgeEventSerde(string methodName, params Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[] functions) {
-	        this.methodName = methodName;
-	        this.functions = functions;
+	        this._methodName = methodName;
+	        this._functions = functions;
 	    }
 
 	    public string ForgeClassName() {
@@ -33,14 +33,14 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 	    }
 
 	    public CodegenExpression Codegen(CodegenMethod method, CodegenClassScope classScope, CodegenExpression optionalEventTypeResolver) {
-	        CodegenExpression[] @params = new CodegenExpression[functions.Length];
+	        CodegenExpression[] @params = new CodegenExpression[_functions.Length];
 	        DataInputOutputSerdeForgeParameterizedVars vars = new DataInputOutputSerdeForgeParameterizedVars(method, classScope, optionalEventTypeResolver);
 	        for (int i = 0; i < @params.Length; i++) {
-	            @params[i] = functions[i].Invoke(vars);
+	            @params[i] = _functions[i].Invoke(vars);
 	        }
 	        return ExprDotMethodChain(optionalEventTypeResolver)
 		        .Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
-		        .Add(methodName, @params);
+		        .Add(_methodName, @params);
 	    }
 	}
 } // end of namespace

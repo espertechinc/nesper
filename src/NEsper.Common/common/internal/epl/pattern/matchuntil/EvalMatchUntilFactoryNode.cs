@@ -34,32 +34,32 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
         public ExprEvaluator LowerBounds {
             get => lowerBounds;
-            set { this.lowerBounds = value; }
+            set { lowerBounds = value; }
         }
 
         public ExprEvaluator UpperBounds {
             get => upperBounds;
-            set { this.upperBounds = value; }
+            set { upperBounds = value; }
         }
 
         public ExprEvaluator SingleBound {
             get => singleBound;
-            set { this.singleBound = value; }
+            set { singleBound = value; }
         }
 
         public EvalFactoryNode[] Children {
             get => children;
-            set { this.children = value; }
+            set { children = value; }
         }
 
         public MatchedEventConvertor OptionalConvertor {
             get => optionalConvertor;
-            set { this.optionalConvertor = value; }
+            set { optionalConvertor = value; }
         }
 
         public int[] TagsArrayed {
             get => tagsArrayed;
-            set { this.tagsArrayed = value; }
+            set { tagsArrayed = value; }
         }
 
         public override bool IsFilterChildNonQuitting {

@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanWriterPerProp : EventBeanWriter
     {
-        private readonly ObjectArrayEventBeanPropertyWriter[] writers;
+        private readonly ObjectArrayEventBeanPropertyWriter[] _writers;
 
         /// <summary>
         ///     Ctor.
@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="writers">names of properties to write</param>
         public ObjectArrayEventBeanWriterPerProp(ObjectArrayEventBeanPropertyWriter[] writers)
         {
-            this.writers = writers;
+            this._writers = writers;
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var arrayEvent = (ObjectArrayBackedEventBean) theEvent;
             var arr = arrayEvent.Properties;
 
-            for (var i = 0; i < writers.Length; i++) {
-                writers[i].Write(values[i], arr);
+            for (var i = 0; i < _writers.Length; i++) {
+                _writers[i].Write(values[i], arr);
             }
         }
     }

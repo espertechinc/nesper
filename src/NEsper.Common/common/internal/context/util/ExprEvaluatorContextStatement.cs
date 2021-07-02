@@ -6,12 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.epl.variable.core;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
@@ -84,5 +89,23 @@ namespace com.espertech.esper.common.@internal.context.util
                 return statementContext.TableExprEvaluatorContext;
             }
         }
+        
+        public string ContextName => statementContext.ContextName;
+        
+        public string EPLWhenAvailable => statementContext.EPLWhenAvailable;
+
+        public TimeZoneInfo TimeZone => statementContext.TimeZone;
+
+        public TimeAbacus TimeAbacus => statementContext.TimeAbacus;
+
+        public VariableManagementService VariableManagementService => statementContext.VariableManagementService;
+
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory => statementContext.EventBeanTypedEventFactory;
+
+        public string ModuleName => statementContext.ModuleName;
+
+        public bool IsWritesToTables => statementContext.IsWritesToTables;
+
+        public Attribute[] Annotations => statementContext.Annotations;
     }
 } // end of namespace

@@ -31,14 +31,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithUniqueIndexCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectUniqueIndexCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIndexChoicesOverdefinedWhere(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectIndexChoicesOverdefinedWhere());
             return execs;
         }

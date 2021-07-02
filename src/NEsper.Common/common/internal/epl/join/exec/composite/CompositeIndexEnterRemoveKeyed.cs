@@ -20,12 +20,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public CompositeIndexEnterRemoveKeyed(EventPropertyValueGetter hashGetter)
         {
-            this._hashGetter = hashGetter;
+            _hashGetter = hashGetter;
         }
 
         public CompositeIndexEnterRemove Next {
-            get => this._next;
-            set => this._next = value;
+            get => _next;
+            set => _next = value;
         }
 
         public void Enter(

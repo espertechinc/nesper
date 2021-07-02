@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             bool isReportInactive,
             IReaderWriterLockManager lockManager)
         {
-            this.runtimeURI = runtimeUri;
+            runtimeURI = runtimeUri;
             this.isReportInactive = isReportInactive;
 
             metrics = new StatementMetric[initialSize];

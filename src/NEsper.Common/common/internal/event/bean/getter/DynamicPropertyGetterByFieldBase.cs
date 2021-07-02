@@ -162,9 +162,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
-			this._beanEventTypeFactory = beanEventTypeFactory;
+			_beanEventTypeFactory = beanEventTypeFactory;
 			_cache = new CopyOnWriteList<DynamicPropertyDescriptorByField>();
-			this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+			_eventBeanTypedEventFactory = eventBeanTypedEventFactory;
 		}
 
 		public object GetBeanProp(object @object) {

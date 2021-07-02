@@ -29,21 +29,21 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithInsertInto(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeUnmatchedInsertInto());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCreateStatement(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeUnmatchedCreateStatement());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSendEvent(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeUnmatchedSendEvent());
             return execs;
         }

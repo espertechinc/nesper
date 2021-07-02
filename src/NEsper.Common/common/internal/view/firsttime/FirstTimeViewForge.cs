@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
         DataWindowBatchingViewForge
     {
         private int scheduleCallbackId = -1;
-        internal TimePeriodComputeForge timePeriodComputeForge;
+        private TimePeriodComputeForge timePeriodComputeForge;
 
         public override string ViewName => "First-Time";
 
@@ -61,20 +62,21 @@ namespace com.espertech.esper.common.@internal.view.firsttime
                 streamNumber);
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(FirstTimeViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Firsttime";
         }
@@ -93,6 +95,11 @@ namespace com.espertech.esper.common.@internal.view.firsttime
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_FIRSTTIME;
         }
     }
 } // end of namespace

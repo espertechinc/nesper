@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EPStatementInitServices services)
             : base(eventType, isParentBatchWindow, services)
         {
-            this.consumersNonContext = NamedWindowUtil.CreateConsumerMap(isPrioritized);
+            consumersNonContext = NamedWindowUtil.CreateConsumerMap(isPrioritized);
         }
 
         public IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> GetConsumersNonContext()
@@ -54,9 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             };
 
             // Construct consumer view, allow a callback to this view to remove the consumer
-            bool audit = AuditEnum.STREAM.GetAudit(consumerDesc.AgentInstanceContext.StatementContext.Annotations) !=
-                         null;
-            NamedWindowConsumerView consumerView = new NamedWindowConsumerView(
+            var audit = AuditEnum.STREAM.GetAudit(consumerDesc.AgentInstanceContext.StatementContext.Annotations) !=
+                        null;
+            var consumerView = new NamedWindowConsumerView(
                 consumerDesc.NamedWindowConsumerId,
                 consumerDesc.FilterEvaluator,
                 consumerDesc.OptPropertyEvaluator,
@@ -66,14 +66,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 audit);
 
             // Keep a list of consumer views per statement to accomodate joins and subqueries
-            IList<NamedWindowConsumerView> viewsPerStatements =
+            var viewsPerStatements =
                 consumersNonContext.Get(consumerDesc.AgentInstanceContext.EpStatementAgentInstanceHandle);
             if (viewsPerStatements == null) {
                 viewsPerStatements = new CopyOnWriteList<NamedWindowConsumerView>();
 
                 // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
                 // without the runtime lock
-                IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> newConsumers =
+                var newConsumers =
                     NamedWindowUtil.CreateConsumerMap(isPrioritized);
                 newConsumers.PutAll(consumersNonContext);
                 newConsumers.Put(consumerDesc.AgentInstanceContext.EpStatementAgentInstanceHandle, viewsPerStatements);
@@ -89,9 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             EPStatementAgentInstanceHandle handleRemoved = null;
             // Find the consumer view
-            foreach (KeyValuePair<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> entry in
+            foreach (var entry in
                 consumersNonContext) {
-                bool foundAndRemoved = entry.Value.Remove(namedWindowConsumerView);
+                var foundAndRemoved = entry.Value.Remove(namedWindowConsumerView);
                 // Remove the consumer view
                 if (foundAndRemoved && (entry.Value.Count == 0)) {
                     // Remove the handle if this list is now empty
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             if (handleRemoved != null) {
-                IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> newConsumers =
+                var newConsumers =
                     NamedWindowUtil.CreateConsumerMap(isPrioritized);
                 newConsumers.PutAll(consumersNonContext);
                 newConsumers.Remove(handleRemoved);

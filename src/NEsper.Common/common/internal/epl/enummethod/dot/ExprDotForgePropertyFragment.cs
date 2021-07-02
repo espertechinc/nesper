@@ -26,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 	{
 
 		private readonly EventPropertyGetterSPI _getter;
-		private readonly EPType _returnType;
+		private readonly EPChainableType _returnType;
 
 		public ExprDotForgePropertyFragment(
 			EventPropertyGetterSPI getter,
-			EPType returnType)
+			EPChainableType returnType)
 		{
 			_getter = getter;
 			_returnType = returnType;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			return _getter.GetFragment((EventBean) target);
 		}
 
-		public EPType TypeInfo => _returnType;
+		public EPChainableType TypeInfo => _returnType;
 
 		public void Visit(ExprDotEvalVisitor visitor)
 		{
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			ExprForgeCodegenSymbol symbols,
 			CodegenClassScope classScope)
 		{
-			var type = EPTypeHelper.GetCodegenReturnType(_returnType);
+			var type = EPChainableTypeHelper.GetCodegenReturnType(_returnType);
 			if (innerType == typeof(EventBean)) {
 				return CodegenLegoCast.CastSafeFromObjectType(type, _getter.EventBeanFragmentCodegen(inner, parent, classScope));
 			}

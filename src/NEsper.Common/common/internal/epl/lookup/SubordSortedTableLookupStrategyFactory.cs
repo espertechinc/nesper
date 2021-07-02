@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.sorted;
 using com.espertech.esper.common.@internal.epl.join.exec.sorted;
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             string expression,
             QueryGraphValueEntryRange range)
         {
-            this._expression = expression;
+            _expression = expression;
             strategy = SortedAccessStrategyFactory.Make(isNWOnTrigger, -1, numStreams, range);
         }
 
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             return new SubordSortedTableLookupStrategy(this, (PropertySortedEventTable) eventTable[0]);

@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -27,10 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         ExprForge,
         ExprEvaluator
     {
-        private readonly int numGroupKeys;
-        private readonly int groupKeyIndex;
-        private readonly Type returnType;
-        private readonly CodegenFieldName aggregationResultFutureMemberName;
+        private readonly int _numGroupKeys;
+        private readonly int _groupKeyIndex;
+        private readonly Type _returnType;
+        private readonly CodegenFieldName _aggregationResultFutureMemberName;
 
         public ExprAggregateNodeGroupKey(
             int numGroupKeys,
@@ -38,10 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             Type returnType,
             CodegenFieldName aggregationResultFutureMemberName)
         {
-            this.numGroupKeys = numGroupKeys;
-            this.groupKeyIndex = groupKeyIndex;
-            this.returnType = returnType;
-            this.aggregationResultFutureMemberName = aggregationResultFutureMemberName;
+            this._numGroupKeys = numGroupKeys;
+            this._groupKeyIndex = groupKeyIndex;
+            this._returnType = returnType;
+            this._aggregationResultFutureMemberName = aggregationResultFutureMemberName;
         }
 
         public object Evaluate(
@@ -58,28 +59,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             ExprForgeCodegenSymbol symbol,
             CodegenClassScope classScope)
         {
+            if (_returnType.IsNullType()) {
+                return ConstantNull();
+            }
             CodegenExpression future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                aggregationResultFutureMemberName,
+                _aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
-            CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(_returnType, GetType(), classScope);
             
             method.Block.DeclareVar<object>("key", ExprDotMethod(future, "GetGroupKey", ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId")));
             method.Block
                 .IfCondition(InstanceOf(Ref("key"), typeof(MultiKey)))
                 .DeclareVar<MultiKey>("mk", Cast(typeof(MultiKey), Ref("key")))
-                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotMethod(Ref("mk"), "GetKey", Constant(groupKeyIndex))));
+                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(_returnType, ExprDotMethod(Ref("mk"), "GetKey", Constant(_groupKeyIndex))));
 
             method.Block.IfCondition(InstanceOf(Ref("key"), typeof(MultiKeyArrayWrap)))
                 .DeclareVar<MultiKeyArrayWrap>("mk", Cast(typeof(MultiKeyArrayWrap), Ref("key")))
-                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(Ref("mk"), "Array")));
+                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(_returnType, ExprDotName(Ref("mk"), "Array")));
 
-            method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, Ref("key")));
+            method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(_returnType, Ref("key")));
             
             return LocalMethod(method);
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprForgeConstantType ForgeConstantType {

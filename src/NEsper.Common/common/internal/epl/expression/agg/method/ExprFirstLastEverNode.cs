@@ -13,6 +13,9 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 using System;
 
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.util;
+
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {
     /// <summary>
@@ -58,6 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
             else {
                 resultType = positionalParams[0].Forge.EvaluationType;
+                if (resultType.IsNullTypeSafe()) {
+                    throw new ExprValidationException("Null-type is not allowed");
+                }
             }
 
             var serde = validationContext.SerdeResolver.SerdeForAggregation(resultType, validationContext.StatementRawInfo);

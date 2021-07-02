@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(double), GetType(), classScope);
-            var result = CodegenLegoMethodExpression.CodegenExpression(_runtimeConstant.Forge, method, classScope, true);
+            var result = CodegenLegoMethodExpression.CodegenExpression(_runtimeConstant.Forge, method, classScope);
             method.Block.MethodReturn(
                 ExprDotMethod(
                     LocalMethod(result, ConstantNull(), ConstantTrue(), ConstantNull()),

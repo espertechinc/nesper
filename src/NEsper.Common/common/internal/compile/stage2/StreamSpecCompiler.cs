@@ -45,8 +45,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public static StreamSpecCompiledDesc Compile(
             StreamSpecRaw spec,
-            ISet<string> eventTypeReferences,
-            bool isInsertInto,
             bool isJoin,
             bool isContextDeclaration,
             bool isOnTrigger,
@@ -62,10 +60,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (spec is FilterStreamSpecRaw filterStreamSpecRaw) {
                 return CompileFilter(
                     filterStreamSpecRaw,
-                    isInsertInto,
-                    isJoin,
-                    isContextDeclaration,
-                    isOnTrigger,
                     optionalStreamName,
                     statementRawInfo,
                     services);
@@ -74,12 +68,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (spec is PatternStreamSpecRaw patternStreamSpecRaw) {
                 return CompilePattern(
                     patternStreamSpecRaw,
-                    eventTypeReferences,
-                    isInsertInto,
                     isJoin,
                     isContextDeclaration,
                     isOnTrigger,
-                    optionalStreamName,
                     streamNum,
                     statementRawInfo,
                     services);
@@ -96,10 +87,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public static StreamSpecCompiledDesc CompileFilter(
             FilterStreamSpecRaw streamSpec,
-            bool isInsertInto,
-            bool isJoin,
-            bool isContextDeclaration,
-            bool isOnTrigger,
             string optionalStreamName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
@@ -124,7 +111,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     new[] {true},
                     false,
                     false);
-                FilterSpecValidatedDesc descX = FilterSpecCompiler.ValidateAllowSubquery(
+                var descX = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
                     streamTypeService,
@@ -132,7 +119,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     null,
                     statementRawInfo,
                     services);
-                TableQueryStreamSpec tableStreamSpec = new TableQueryStreamSpec(
+                var tableStreamSpec = new TableQueryStreamSpec(
                     streamSpec.OptionalStreamName,
                     streamSpec.ViewSpecs,
                     streamSpec.Options,
@@ -153,7 +140,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     false,
                     false);
 
-                FilterSpecValidatedDesc validated = FilterSpecCompiler.ValidateAllowSubquery(
+                var validated = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
                     streamTypeService,
@@ -172,7 +159,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         services);
                 }
 
-                NamedWindowConsumerStreamSpec consumer = new NamedWindowConsumerStreamSpec(
+                var consumer = new NamedWindowConsumerStreamSpec(
                     namedWindowInfo,
                     streamSpec.OptionalStreamName,
                     streamSpec.ViewSpecs,
@@ -194,7 +181,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 false,
                 false);
 
-            FilterSpecCompiledDesc desc = FilterSpecCompiler.MakeFilterSpec(
+            var desc = FilterSpecCompiler.MakeFilterSpec(
                 eventType, 
                 eventTypeName,
                 rawFilterSpec.FilterExpressions,
@@ -205,7 +192,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 statementRawInfo,
                 services);
             
-            FilterStreamSpecCompiled compiled = new FilterStreamSpecCompiled(
+            var compiled = new FilterStreamSpecCompiled(
                 desc.FilterSpecCompiled,
                 streamSpec.ViewSpecs,
                 streamSpec.OptionalStreamName,
@@ -216,20 +203,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public static StreamSpecCompiledDesc CompilePattern(
             PatternStreamSpecRaw streamSpecRaw,
-            ISet<string> eventTypeReferences,
-            bool isInsertInto,
             bool isJoin,
             bool isContextDeclaration,
             bool isOnTrigger,
-            string optionalStreamName,
             int streamNum,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             return CompilePatternWTags(
                 streamSpecRaw,
-                eventTypeReferences,
-                isInsertInto,
                 null,
                 null,
                 isJoin,
@@ -242,8 +224,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public static StreamSpecCompiledDesc CompilePatternWTags(
             PatternStreamSpecRaw streamSpecRaw,
-            ISet<string> eventTypeReferences,
-            bool isInsertInto,
             MatchEventSpec tags,
             ISet<string> priorAllTags,
             bool isJoin,
@@ -260,23 +240,26 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     "Discard-partials and suppress-matches is not supported in a joins, context declaration and on-action");
             }
 
+            var allowDuplicateTags = false;
             if (tags == null) {
+                allowDuplicateTags = true; // pattern without prior state
                 tags = new MatchEventSpec();
             }
 
             var nodeStack = new Stack<EvalForgeNode>();
 
             // determine ordered tags
-            ISet<string> allTagNamesOrdered = FilterSpecCompilerTagUtil.AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
+            var allTagNamesOrdered = FilterSpecCompilerTagUtil.AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
 
             // construct root : assigns factory node ids
             var top = streamSpecRaw.EvalForgeNode;
-            var root = new EvalRootForgeNode(services.IsAttachPatternText, top, statementRawInfo.Annotations);
+            var root = new EvalRootForgeNode(services.IsAttachPatternText, top, statementRawInfo, streamNum, services.StateMgmtSettingsProvider);
             var additionalForgeables = new List<StmtClassForgeableFactory>();
             
             RecursiveCompile(
                 top,
                 tags,
+                allowDuplicateTags,
                 nodeStack,
                 allTagNamesOrdered,
                 streamNum,
@@ -291,7 +274,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 services.ImportServiceCompileTime);
             hook?.Pattern(root);
 
-            PatternStreamSpecCompiled compiled = new PatternStreamSpecCompiled(
+            var compiled = new PatternStreamSpecCompiled(
                 root,
                 tags.TaggedEventTypes,
                 tags.ArrayEventTypes,
@@ -308,6 +291,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         private static void RecursiveCompile(
             EvalForgeNode evalNode,
             MatchEventSpec tags,
+            bool allowDuplicateTags,
             Stack<EvalForgeNode> parentNodeStack,
             ISet<string> allTagNamesOrdered,
             int streamNum,
@@ -320,6 +304,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 RecursiveCompile(
                     child,
                     tags,
+                    allowDuplicateTags,
                     parentNodeStack,
                     allTagNamesOrdered,
                     streamNum,
@@ -361,6 +346,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
                 if (optionalTag != null) {
                     var pair = tags.TaggedEventTypes.Get(optionalTag);
+                    if (!allowDuplicateTags && pair != null) {
+                        throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
+                                                          "' is already assigned");
+                    }
+
                     EventType existingType = null;
                     if (pair != null) {
                         existingType = pair.First;
@@ -368,6 +358,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                     if (existingType == null) {
                         pair = tags.ArrayEventTypes.Get(optionalTag);
+                        if (!allowDuplicateTags && pair != null) {
+                            throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
+                                                              "' is already assigned");
+                        }
+
                         if (pair != null) {
                             throw new ExprValidationException(
                                 "Tag '" +
@@ -482,7 +477,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
                 var exprNodes = filterNode.RawFilterSpec.FilterExpressions;
 
-                FilterSpecCompiledDesc compiled = FilterSpecCompiler.MakeFilterSpec(
+                var compiled = FilterSpecCompiler.MakeFilterSpec(
                     resolvedEventType,
                     eventName,
                     exprNodes,

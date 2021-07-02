@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 
         public ExpressionResultCacheServiceHolder(int declareExprCacheSize)
         {
-            this._declareExprCacheSize = declareExprCacheSize;
+            _declareExprCacheSize = declareExprCacheSize;
         }
 
         public ExpressionResultCacheForPropUnwrap GetAllocateUnwrapProp()

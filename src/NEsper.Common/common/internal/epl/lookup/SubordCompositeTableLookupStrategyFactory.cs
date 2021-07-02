@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             return new SubordCompositeTableLookupStrategy(this, (PropertyCompositeEventTable) eventTable[0]);

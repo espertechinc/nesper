@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(implementation, this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(implementation, GetType(), classScope);
             method.Block
                 .DeclareVar(implementation, "conv", NewInstance(implementation))
                 .SetProperty(

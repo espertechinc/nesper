@@ -16,32 +16,32 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     public class EventBeanManufacturerCtor : EventBeanManufacturer
     {
-        private readonly BeanEventType beanEventType;
-        private readonly ConstructorInfo constructor;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+        private readonly BeanEventType _beanEventType;
+        private readonly ConstructorInfo _constructor;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
 
         public EventBeanManufacturerCtor(
             ConstructorInfo constructor,
             EventType beanEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.constructor = constructor;
-            this.beanEventType = (BeanEventType) beanEventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._constructor = constructor;
+            this._beanEventType = (BeanEventType) beanEventType;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public EventBean Make(object[] properties)
         {
             var instance = MakeUnderlying(properties);
-            return eventBeanTypedEventFactory.AdapterForTypedObject(instance, beanEventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedObject(instance, _beanEventType);
         }
 
         public object MakeUnderlying(object[] properties)
         {
             return InstanceManufacturerFastCtor.MakeUnderlyingFromFastCtor(
                 properties,
-                constructor,
-                beanEventType.UnderlyingType);
+                _constructor,
+                _beanEventType.UnderlyingType);
         }
     }
 } // end of namespace

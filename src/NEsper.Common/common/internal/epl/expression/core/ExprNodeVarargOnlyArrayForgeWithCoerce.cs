@@ -13,15 +13,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     internal class ExprNodeVarargOnlyArrayForgeWithCoerce : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evals;
-        private readonly ExprNodeVarargOnlyArrayForge forge;
+        private readonly ExprEvaluator[] _evals;
+        private readonly ExprNodeVarargOnlyArrayForge _forge;
 
         public ExprNodeVarargOnlyArrayForgeWithCoerce(
             ExprNodeVarargOnlyArrayForge forge,
             ExprEvaluator[] evals)
         {
-            this.forge = forge;
-            this.evals = evals;
+            this._forge = forge;
+            this._evals = evals;
         }
 
         public object Evaluate(
@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var array = Arrays.CreateInstanceChecked(forge.varargClass, evals.Length);
-            for (var i = 0; i < evals.Length; i++) {
-                var value = evals[i].Evaluate(eventsPerStream, isNewData, context);
-                if (forge.optionalCoercers[i] != null) {
-                    value = forge.optionalCoercers[i].CoerceBoxed(value);
+            var array = Arrays.CreateInstanceChecked(_forge.varargClass, _evals.Length);
+            for (var i = 0; i < _evals.Length; i++) {
+                var value = _evals[i].Evaluate(eventsPerStream, isNewData, context);
+                if (_forge.optionalCoercers[i] != null) {
+                    value = _forge.optionalCoercers[i].CoerceBoxed(value);
                 }
 
                 array.SetValue(value, i);

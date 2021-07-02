@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<FilterSpecParamInValueForge> values = new List<FilterSpecParamInValueForge>();
 
             ExprNode lastNotEqualsExprNode = null;
-            foreach (FilterSpecPlanPathTripletForge triplet in parameters) {
-                FilterSpecParamForge paramForge = triplet.Param;
+            foreach (var triplet in parameters) {
+                var paramForge = triplet.Param;
                 if (paramForge is FilterSpecParamConstantForge) {
                     var constantParam = (FilterSpecParamConstantForge) paramForge;
                     var constant = constantParam.FilterConstant;
@@ -125,9 +125,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 lastNotEqualsExprNode = filterParamExprMap.RemoveEntry(triplet);
             }
 
-            FilterSpecParamInForge param = new FilterSpecParamInForge(
+            var param = new FilterSpecParamInForge(
                 parameters[0].Param.Lookupable, FilterOperator.NOT_IN_LIST_OF_VALUES, values);
-            FilterSpecPlanPathTripletForge tripletForge = new FilterSpecPlanPathTripletForge(param, null);
+            var tripletForge = new FilterSpecPlanPathTripletForge(param, null);
             filterParamExprMap.Put(lastNotEqualsExprNode, tripletForge);
         }
     }

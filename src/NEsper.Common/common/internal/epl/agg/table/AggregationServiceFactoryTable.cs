@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.settings;
 
@@ -24,37 +25,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
 
         public Table Table
         {
-            set { this.table = value; }
+            set => table = value;
         }
 
         public TableColumnMethodPairEval[] MethodPairs
         {
-            set { this.methodPairs = value; }
+            set => methodPairs = value;
         }
 
         public AggregationMultiFunctionAgent[] AccessAgents
         {
-            set { this.accessAgents = value; }
+            set => accessAgents = value;
         }
 
         public int[] AccessColumnsZeroOffset
         {
-            set { this.accessColumnsZeroOffset = value; }
+            set => accessColumnsZeroOffset = value;
         }
 
         public AggregationGroupByRollupDesc GroupByRollupDesc
         {
-            set { this.groupByRollupDesc = value; }
+            set => groupByRollupDesc = value;
         }
 
         public AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            ImportServiceRuntime importService,
+            ExprEvaluatorContext exprEvaluatorContext,
             bool isSubquery,
             int? subqueryNumber,
             int[] groupId)
         {
-            var tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
+            var tableInstance = table.GetTableInstance(exprEvaluatorContext.AgentInstanceId);
             if (!table.MetaData.IsKeyed)
             {
                 var tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;

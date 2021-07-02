@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             EventType namedWindowAsType,
             Type returnType)
         {
-            this._streamNum = streamNum;
-            this._namedWindowAsType = namedWindowAsType;
-            this._returnType = returnType;
+            _streamNum = streamNum;
+            _namedWindowAsType = namedWindowAsType;
+            _returnType = returnType;
         }
 
         public object Evaluate(
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

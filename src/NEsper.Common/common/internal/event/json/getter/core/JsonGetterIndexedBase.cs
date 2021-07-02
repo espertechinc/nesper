@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             EventType optionalInnerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.Index = index;
-            this.UnderlyingClassName = underlyingClassName;
-            this.OptionalInnerType = optionalInnerType;
-            this.EventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            Index = index;
+            UnderlyingClassName = underlyingClassName;
+            OptionalInnerType = optionalInnerType;
+            EventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public abstract CodegenExpression UnderlyingFragmentCodegen(

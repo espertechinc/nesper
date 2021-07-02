@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
     /// </summary>
     public class InKeywordTableLookupPlanMultiIdxForge : TableLookupPlanForge
     {
-        private ExprNode keyExpr;
+        private readonly ExprNode keyExpr;
 
         public InKeywordTableLookupPlanMultiIdxForge(
             int lookupStream,

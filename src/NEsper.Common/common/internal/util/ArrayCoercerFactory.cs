@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.util
                 return new CoercerNarrow(toElement);
             }
 
-            throw new ArgumentException($"Cannot coerce array of type '{fromElement.CleanName()}' to array type '{resultType.CleanName()}'");
+            throw new ArgumentException($"Cannot coerce array of type '{fromElement.TypeSafeName()}' to array type '{resultType.TypeSafeName()}'");
         }
 
         public static Array WidenArray(object source)

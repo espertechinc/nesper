@@ -63,6 +63,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public TestEPLScriptExpression() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
+            public void WithGenericResultType() => RegressionRunner.Run(_session, EPLScriptExpression.WithGenericResultType());
+            
+            [Test, RunInApplicationDomain]
             public void WithReturnNullWhenNumeric() => RegressionRunner.Run(_session, EPLScriptExpression.WithReturnNullWhenNumeric());
 
             [Test, RunInApplicationDomain]

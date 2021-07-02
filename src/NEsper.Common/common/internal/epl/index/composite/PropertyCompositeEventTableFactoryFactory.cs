@@ -41,17 +41,17 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             EventPropertyValueGetter[] rangeGetters,
             DataInputOutputSerde[] rangeKeySerdes)
         {
-            this._indexedStreamNum = indexedStreamNum;
-            this._subqueryNum = subqueryNum;
-            this._isFireAndForget = isFireAndForget;
-            this._keyProps = keyProps;
-            this._keyTypes = keyTypes;
-            this._keyGetter = keyGetter;
-            this._keySerde = keySerde;
-            this._rangeProps = rangeProps;
-            this._rangeTypes = rangeTypes;
-            this._rangeGetters = rangeGetters;
-            this._rangeKeySerdes = rangeKeySerdes;
+            _indexedStreamNum = indexedStreamNum;
+            _subqueryNum = subqueryNum;
+            _isFireAndForget = isFireAndForget;
+            _keyProps = keyProps;
+            _keyTypes = keyTypes;
+            _keyGetter = keyGetter;
+            _keySerde = keySerde;
+            _rangeProps = rangeProps;
+            _rangeTypes = rangeTypes;
+            _rangeGetters = rangeGetters;
+            _rangeKeySerdes = rangeKeySerdes;
         }
 
         public EventTableFactory Create(

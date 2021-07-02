@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 				: TypeWidenerFactory.CodegenWidener(_widener, method, GetType(), classScope);
 
 			method.Block
-				.DeclareVar<InternalEventRouterWriterArrayElement>("desc", NewInstance(typeof(InternalEventRouterWriterArrayElement)))
+				.DeclareVarNewInstance<InternalEventRouterWriterArrayElement>("desc")
 				.SetProperty(Ref("desc"), "IndexExpression", indexExpr)
 				.SetProperty(Ref("desc"), "RhsExpression", rhsExpr)
 				.SetProperty(Ref("desc"), "TypeWidener", typeWidenerExpr)

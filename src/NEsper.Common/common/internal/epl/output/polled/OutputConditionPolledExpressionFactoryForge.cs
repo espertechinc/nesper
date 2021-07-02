@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public class OutputConditionPolledExpressionFactoryForge : OutputConditionPolledFactoryForge
     {
-        private readonly ExprForge whenExpressionNode;
-        private readonly VariableReadWritePackageForge variableReadWritePackage;
-        private bool isUsingBuiltinProperties;
+        private readonly ExprForge _whenExpressionNode;
+        private readonly VariableReadWritePackageForge _variableReadWritePackage;
+        private readonly bool _isUsingBuiltinProperties;
 
         /// <summary>
         /// Ctor.
@@ -46,28 +46,28 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             string statementName,
             StatementCompileTimeServices services)
         {
-            this.whenExpressionNode = whenExpressionNode.Forge;
+            _whenExpressionNode = whenExpressionNode.Forge;
 
             // determine if using properties
-            isUsingBuiltinProperties = false;
+            _isUsingBuiltinProperties = false;
             if (ContainsBuiltinProperties(whenExpressionNode)) {
-                isUsingBuiltinProperties = true;
+                _isUsingBuiltinProperties = true;
             }
             else {
                 if (assignments != null) {
                     foreach (var assignment in assignments) {
                         if (ContainsBuiltinProperties(assignment.Expression)) {
-                            isUsingBuiltinProperties = true;
+                            _isUsingBuiltinProperties = true;
                         }
                     }
                 }
             }
 
             if (assignments != null) {
-                variableReadWritePackage = new VariableReadWritePackageForge(assignments, statementName, services);
+                _variableReadWritePackage = new VariableReadWritePackageForge(assignments, statementName, services);
             }
             else {
-                variableReadWritePackage = null;
+                _variableReadWritePackage = null;
             }
         }
 
@@ -79,16 +79,16 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             var symbols = new SAIFFInitializeSymbol();
             var variableInit = classScope.NamespaceScope
                 .InitMethod
-                .MakeChildWithScope(typeof(VariableReadWritePackage), this.GetType(), symbols, classScope)
+                .MakeChildWithScope(typeof(VariableReadWritePackage), GetType(), symbols, classScope)
                 .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             variableInit.Block
-                .MethodReturn(variableReadWritePackage.Make(variableInit, symbols, classScope));
+                .MethodReturn(_variableReadWritePackage.Make(variableInit, symbols, classScope));
             var variableRW = classScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
                 typeof(VariableReadWritePackage),
                 LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
 
-            var method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), GetType(), classScope);
             method.Block
                 .DeclareVar<OutputConditionPolledExpressionFactory>(
                     "factory",
@@ -96,9 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 .SetProperty(
                     Ref("factory"),
                     "WhenExpression",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(whenExpressionNode, method, this.GetType(), classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluator(_whenExpressionNode, method, GetType(), classScope))
                 .SetProperty(Ref("factory"), "VariableReadWritePackage", variableRW)
-                .SetProperty(Ref("factory"), "IsUsingBuiltinProperties", Constant(isUsingBuiltinProperties))
+                .SetProperty(Ref("factory"), "IsUsingBuiltinProperties", Constant(_isUsingBuiltinProperties))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }

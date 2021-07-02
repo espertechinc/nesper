@@ -15,29 +15,29 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventBeanFactoryBeanWrapped : EventBeanFactory
     {
-        private readonly EventType beanEventType;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EventType wrapperEventType;
+        private readonly EventType _beanEventType;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventType _wrapperEventType;
 
         public EventBeanFactoryBeanWrapped(
             EventType beanEventType,
             EventType wrapperEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.beanEventType = beanEventType;
-            this.wrapperEventType = wrapperEventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._beanEventType = beanEventType;
+            this._wrapperEventType = wrapperEventType;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
-        public Type UnderlyingType => beanEventType.UnderlyingType;
+        public Type UnderlyingType => _beanEventType.UnderlyingType;
 
         public EventBean Wrap(object underlying)
         {
-            var bean = eventBeanTypedEventFactory.AdapterForTypedObject(underlying, beanEventType);
-            return eventBeanTypedEventFactory.AdapterForTypedWrapper(
+            var bean = _eventBeanTypedEventFactory.AdapterForTypedObject(underlying, _beanEventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedWrapper(
                 bean,
                 Collections.GetEmptyMap<string, object>(),
-                wrapperEventType);
+                _wrapperEventType);
         }
     }
 } // end of namespace

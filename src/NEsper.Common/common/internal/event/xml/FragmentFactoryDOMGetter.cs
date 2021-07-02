@@ -23,10 +23,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class FragmentFactoryDOMGetter : FragmentFactorySPI
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly string propertyExpression;
-        private readonly BaseXMLEventType xmlEventType;
-        private volatile EventType fragmentType;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly string _propertyExpression;
+        private readonly BaseXMLEventType _xmlEventType;
+        private volatile EventType _fragmentType;
 
         /// <summary>
         ///     Ctor.
@@ -39,9 +39,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             BaseXMLEventType xmlEventType,
             string propertyExpression)
         {
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.xmlEventType = xmlEventType;
-            this.propertyExpression = propertyExpression;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._xmlEventType = xmlEventType;
+            this._propertyExpression = propertyExpression;
         }
 
         public CodegenExpression Make(
@@ -51,22 +51,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var xmlType = Cast(
                 typeof(BaseXMLEventType),
-                EventTypeUtility.ResolveTypeCodegen(xmlEventType, EPStatementInitServicesConstants.REF));
-            return NewInstance<FragmentFactoryDOMGetter>(factory, xmlType, Constant(propertyExpression));
+                EventTypeUtility.ResolveTypeCodegen(_xmlEventType, EPStatementInitServicesConstants.REF));
+            return NewInstance<FragmentFactoryDOMGetter>(factory, xmlType, Constant(_propertyExpression));
         }
 
         public EventBean GetEvent(XmlNode result)
         {
-            if (fragmentType == null) {
-                var type = xmlEventType.GetFragmentType(propertyExpression);
+            if (_fragmentType == null) {
+                var type = _xmlEventType.GetFragmentType(_propertyExpression);
                 if (type == null) {
                     return null;
                 }
 
-                fragmentType = type.FragmentType;
+                _fragmentType = type.FragmentType;
             }
 
-            return eventBeanTypedEventFactory.AdapterForTypedDOM(result, fragmentType);
+            return _eventBeanTypedEventFactory.AdapterForTypedDOM(result, _fragmentType);
         }
     }
 } // end of namespace

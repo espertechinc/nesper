@@ -37,12 +37,12 @@ namespace com.espertech.esper.common.@internal.filterspec
 			Coercer numberCoercer)
 			: base(lookupable, filterOperator)
 		{
-			this._value = value;
-			this._convertor = convertor;
-			this._numberCoercer = numberCoercer;
+			_value = value;
+			_convertor = convertor;
+			_numberCoercer = numberCoercer;
 		}
 
-		public override CodegenMethod MakeCodegen(
+		public override CodegenExpression MakeCodegen(
 			CodegenClassScope classScope,
 			CodegenMethodScope parent,
 			SAIFFInitializeSymbolWEventType symbols)
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 				.BlockReturn(FilterValueSetParamImpl.CodegenNew(valueExpr));
 
 			method.Block.MethodReturn(inner);
-			return method;
+			return LocalMethod(method);
 		}
 
 		public override void ValueExprToString(

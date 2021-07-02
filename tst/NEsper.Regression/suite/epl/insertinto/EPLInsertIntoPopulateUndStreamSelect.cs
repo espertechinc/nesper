@@ -42,28 +42,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStreamInsertWWidenOA(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoStreamInsertWWidenOA());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowRep(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedWindowRep());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowInheritsMap(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNamedWindowInheritsMap());
             return execs;
         }

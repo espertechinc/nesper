@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.output.condition;
@@ -22,6 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     {
         private readonly ResultSetProcessorOutputConditionType _conditionType;
         private readonly EventType[] _eventTypes;
+        private readonly StateMgmtSetting _changeSetStateMgmtSettings;
 
         public OutputProcessViewConditionFactory(OutputProcessViewConditionSpec spec)
             : base(
@@ -29,8 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 spec.IsDistinct,
                 spec.DistinctKeyGetter,
                 spec.AfterTimePeriod,
-                spec.AfterConditionNumberOfEvents,
-                spec.ResultEventType)
+                spec.AfterConditionNumberOfEvents)
         {
             OutputConditionFactory = spec.OutputConditionFactory;
             StreamCount = spec.StreamCount;
@@ -40,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             IsUnaggregatedUngrouped = spec.IsUnaggregatedUngrouped;
             SelectClauseStreamSelectorEnum = spec.SelectClauseStreamSelector;
             _eventTypes = spec.EventTypes;
+            _changeSetStateMgmtSettings = spec.ChangeSetStateMgmtSettings;
         }
 
         public OutputConditionFactory OutputConditionFactory { get; }
@@ -145,8 +147,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         isAfterConditionSatisfied,
                         this,
                         agentInstanceContext,
-                        StreamCount > 1,
-                        _eventTypes);
+                        _eventTypes,
+                        _changeSetStateMgmtSettings);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
@@ -158,8 +160,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     this,
                     agentInstanceContext,
                     postProcess,
-                    StreamCount > 1,
-                    _eventTypes);
+                    _eventTypes,
+                    _changeSetStateMgmtSettings);
             }
         }
     }

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             _type = type;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(_type);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(_type);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {

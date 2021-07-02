@@ -14,6 +14,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var path = new RegressionPath();
 
-			RunAssertion(env, true, BEAN_TYPENAME, FBEAN, typeof(InfraNestedIndexedPropLvl1), typeof(InfraNestedIndexedPropLvl1).FullName, path);
+			//RunAssertion(env, true, BEAN_TYPENAME, FBEAN, typeof(InfraNestedIndexedPropLvl1[]), typeof(InfraNestedIndexedPropLvl1).FullName, path);
 			RunAssertion(env, true, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1", path);
 			RunAssertion(env, true, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
 			RunAssertion(env, true, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".l1", path);
@@ -62,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"@Name('types') @public @buseventtype " +
 				"create json schema " + JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1[]);\n";
 			env.CompileDeploy(eplJson, path);
-			RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object), JSON_TYPENAME + "_1", path);
+			RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object[]), JSON_TYPENAME + "_1", path);
 			env.UndeployModuleContaining("types");
 
 			// Json-Class-Provided
@@ -79,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"@name('types') @public @buseventtype " +
 				"create json schema " + JSONPROVIDED_TYPENAME + "(l1 " + JSONPROVIDED_TYPENAME + "_1[]);\n";
 			env.CompileDeploy(eplJsonProvided, path);
-			RunAssertion(env, false, JSONPROVIDED_TYPENAME, FJSON, typeof(MyLocalJSONProvidedLvl1), "EventInfraPropertyNestedIndexedJsonProvided_1", path);
+			RunAssertion(env, false, JSONPROVIDED_TYPENAME, FJSON, typeof(MyLocalJSONProvidedLvl1[]), "EventInfraPropertyNestedIndexedJsonProvided_1", path);
 
 			env.UndeployAll();
 		}
@@ -181,10 +182,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				? env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName)
 				: env.Runtime.EventTypeService.GetEventType(env.DeploymentId("types"), typeName);
 
-			var arrayType = nestedClass == typeof(object[]) ? nestedClass : TypeHelper.GetArrayType(nestedClass);
-			//arrayType = arrayType == typeof(GenericRecord[]) ? typeof(ICollection) : arrayType;
 			var expectedType = new object[][] {
-				new object[] {"l1", arrayType, fragmentTypeName, true}
+				new object[] {"l1", nestedClass, fragmentTypeName, true}
 			};
 			SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
@@ -195,8 +194,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				Assert.IsTrue(eventType.IsProperty(prop));
 			}
 
-			Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("l1"), arrayType));
-			foreach (var prop in Arrays.AsList("l1[0].lvl1", "l1[0].l2[0].lvl2", "l1[0].l2[0].l3[0].lvl3")) {
+			Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("l1"), nestedClass));
+			foreach (var prop in new [] { "l1[0].lvl1", "l1[0].l2[0].lvl2", "l1[0].l2[0].l3[0].lvl3" }) {
 				Assert.AreEqual(typeof(int?), eventType.GetPropertyType(prop).GetBoxedType());
 			}
 
@@ -210,12 +209,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			Assert.IsTrue(lvl2Fragment.IsIndexed);
 			Assert.AreEqual(isNative, lvl2Fragment.IsNative);
 
-			if (typeName.Equals(JSON_TYPENAME)) {
-				arrayType = TypeHelper.GetArrayType(SupportJsonEventTypeUtil.GetNestedUnderlyingType((JsonEventType) eventType, "l1"));
-				nestedClass = arrayType.GetElementType();
+			var received = eventType.GetPropertyDescriptor("l1");
+			var componentType = typeName.Equals(AVRO_TYPENAME) ? typeof(GenericRecord) : null;
+			if (nestedClass.IsArray) {
+				componentType = nestedClass.GetElementType();
 			}
 
-			Assert.AreEqual(new EventPropertyDescriptor("l1", arrayType, nestedClass, false, false, true, false, true), eventType.GetPropertyDescriptor("l1"));
+			if (typeName.Equals(JSON_TYPENAME)) {
+				nestedClass = received.PropertyType;
+				componentType = received.PropertyComponentType;
+			}
+
+			SupportEventPropUtil.AssertPropEquals(new SupportEventPropDesc("l1", nestedClass).WithComponentType(componentType).WithIndexed().WithFragment(), received);
 		}
 
 		private void RunAssertionTypeInvalidProp(

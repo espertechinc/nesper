@@ -51,105 +51,105 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithOrRewrite(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValOrRewrite());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInRangeWCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValInRangeWCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInSetOfValueWPatternWCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValInSetOfValueWPatternWCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDisqualify(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValDisqualify());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRelOpCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValRelOpCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsCoercion(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsCoercion());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsConstantVariable(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsConstantVariable());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsSubstitutionParams(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsSubstitutionParams());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsContextWithStart(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsContextWithStart());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsFromPatternWithDotMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsFromPatternWithDotMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsFromPatternHalfConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsFromPatternHalfConstant());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsFromPatternConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsFromPatternConstant());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsFromPatternMulti(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsFromPatternMulti());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsFromPatternSingle(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsFromPatternSingle());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEqualsIsConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptValEqualsIsConstant());
             return execs;
         }
@@ -514,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             string typeName,
             string filters)
         {
-            string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+            string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
             string epl = hook + "select * from " + typeName + "(" + filters + ") as me";
             SupportFilterPlanHook.Reset();
             env.Compile(epl, path);

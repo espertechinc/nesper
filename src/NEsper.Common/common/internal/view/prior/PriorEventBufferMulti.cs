@@ -39,9 +39,9 @@ namespace com.espertech.esper.common.@internal.view.prior
     public class PriorEventBufferMulti : ViewUpdatedCollection,
         RelativeAccessByEventNIndex
     {
-        private readonly int[] priorToIndexes;
-        private readonly int priorToIndexesSize;
-        private EventBean[] lastOldData;
+        private readonly int[] _priorToIndexes;
+        private readonly int _priorToIndexesSize;
+        private EventBean[] _lastOldData;
 
         /// <summary>
         ///     Ctor.
@@ -63,11 +63,11 @@ namespace com.espertech.esper.common.@internal.view.prior
             }
 
             // Copy the set of indexes into an array, sort in ascending order
-            priorToIndexesSize = priorToIndexSet.Length;
-            priorToIndexes = new int[priorToIndexesSize];
+            _priorToIndexesSize = priorToIndexSet.Length;
+            _priorToIndexes = new int[_priorToIndexesSize];
             var count = 0;
             foreach (var priorIndex in priorToIndexSet) {
-                priorToIndexes[count++] = priorIndex;
+                _priorToIndexes[count++] = priorIndex;
             }
 
             Array.Sort(priorToIndexSet);
@@ -85,9 +85,9 @@ namespace com.espertech.esper.common.@internal.view.prior
             EventBean theEvent,
             int priorToIndex)
         {
-            if (priorToIndex >= priorToIndexesSize) {
+            if (priorToIndex >= _priorToIndexesSize) {
                 throw new ArgumentException(
-                    "Index " + priorToIndex + " not allowed, max size is " + priorToIndexesSize);
+                    "Index " + priorToIndex + " not allowed, max size is " + _priorToIndexesSize);
             }
 
             var priorEvents = PriorEventMap.Get(theEvent);
@@ -115,9 +115,9 @@ namespace com.espertech.esper.common.@internal.view.prior
             EventBean[] oldData)
         {
             // Remove last old data posted in previous post
-            if (lastOldData != null) {
-                for (var i = 0; i < lastOldData.Length; i++) {
-                    PriorEventMap.Remove(lastOldData[i]);
+            if (_lastOldData != null) {
+                for (var i = 0; i < _lastOldData.Length; i++) {
+                    PriorEventMap.Remove(_lastOldData[i]);
                 }
             }
 
@@ -130,9 +130,9 @@ namespace com.espertech.esper.common.@internal.view.prior
                     NewEvents.Add(newEvent);
 
                     // Save prior index events in array
-                    var priorEvents = new EventBean[priorToIndexesSize];
-                    for (var j = 0; j < priorToIndexesSize; j++) {
-                        var priorIndex = priorToIndexes[j];
+                    var priorEvents = new EventBean[_priorToIndexesSize];
+                    for (var j = 0; j < _priorToIndexesSize; j++) {
+                        var priorIndex = _priorToIndexes[j];
                         priorEvents[j] = NewEvents.Get(priorIndex);
                     }
 
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             }
 
             // Save old data to be removed next time we get posted results
-            lastOldData = oldData;
+            _lastOldData = oldData;
         }
 
         public void Destroy()
@@ -157,9 +157,9 @@ namespace com.espertech.esper.common.@internal.view.prior
             PriorEventBufferChangeCaptureMulti capture)
         {
             // Remove last old data posted in previous post
-            if (lastOldData != null) {
-                for (var i = 0; i < lastOldData.Length; i++) {
-                    var oldDataItem = lastOldData[i];
+            if (_lastOldData != null) {
+                for (var i = 0; i < _lastOldData.Length; i++) {
+                    var oldDataItem = _lastOldData[i];
                     PriorEventMap.Remove(oldDataItem);
                     capture.Removed(oldDataItem);
                 }
@@ -174,9 +174,9 @@ namespace com.espertech.esper.common.@internal.view.prior
                     NewEvents.Add(newEvent);
 
                     // Save prior index events in array
-                    var priorEvents = new EventBean[priorToIndexesSize];
-                    for (var j = 0; j < priorToIndexesSize; j++) {
-                        var priorIndex = priorToIndexes[j];
+                    var priorEvents = new EventBean[_priorToIndexesSize];
+                    for (var j = 0; j < _priorToIndexesSize; j++) {
+                        var priorIndex = _priorToIndexes[j];
                         priorEvents[j] = NewEvents.Get(priorIndex);
                     }
 
@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             }
 
             // Save old data to be removed next time we get posted results
-            lastOldData = oldData;
+            _lastOldData = oldData;
         }
     }
 } // end of namespace

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprFilterSpecLookupable
     {
-        private readonly String _expression;
+        private readonly string _expression;
         [NonSerialized] private readonly ExprEventEvaluator _eval;
         private readonly Type _returnType;
         private readonly bool _isNonPropertyEval;
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         [NonSerialized] private readonly ExprEvaluator _expr;
 
         public ExprFilterSpecLookupable(
-            String expression,
+            string expression,
             ExprEventEvaluator eval,
             ExprEvaluator expr,
             Type returnType,

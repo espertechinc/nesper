@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class WrapperEventBeanPropertyWriter : EventBeanWriter
     {
-        private readonly EventPropertyWriter[] writerArr;
+        private readonly EventPropertyWriter[] _writerArr;
 
         /// <summary>
         ///     Ctor.
@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="writerArr">writers are writing properties.</param>
         public WrapperEventBeanPropertyWriter(EventPropertyWriter[] writerArr)
         {
-            this.writerArr = writerArr;
+            this._writerArr = writerArr;
         }
 
         public void Write(
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBean theEvent)
         {
             for (var i = 0; i < values.Length; i++) {
-                writerArr[i].Write(values[i], theEvent);
+                _writerArr[i].Write(values[i], theEvent);
             }
         }
     }

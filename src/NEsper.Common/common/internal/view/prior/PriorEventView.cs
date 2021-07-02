@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.view.prior
     public class PriorEventView : ViewSupport,
         ViewDataVisitable
     {
-        protected internal ViewUpdatedCollection buffer;
-        private new Viewable parent;
+        private readonly ViewUpdatedCollection _buffer;
+        private Viewable _parent;
 
         /// <summary>
         ///     Ctor.
@@ -29,37 +29,37 @@ namespace com.espertech.esper.common.@internal.view.prior
         /// <param name="buffer">is handling the actual storage of events for use in the 'prior' expression</param>
         public PriorEventView(ViewUpdatedCollection buffer)
         {
-            this.buffer = buffer;
+            _buffer = buffer;
         }
 
         public override Viewable Parent {
-            set => parent = value;
+            set => _parent = value;
         }
 
         /// <summary>
         ///     Returns the underlying buffer used for access to prior events.
         /// </summary>
         /// <returns>buffer</returns>
-        public ViewUpdatedCollection Buffer => buffer;
+        public ViewUpdatedCollection Buffer => _buffer;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => _parent.EventType;
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(buffer, "Prior");
+            viewDataVisitor.VisitPrimary(_buffer, "Prior");
         }
 
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            buffer.Update(newData, oldData);
+            _buffer.Update(newData, oldData);
             child.Update(newData, oldData);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return parent.GetEnumerator();
+            return _parent.GetEnumerator();
         }
     }
 } // end of namespace

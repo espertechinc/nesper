@@ -13,22 +13,22 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
 {
     public class MyCountToPatternGuard : Guard
     {
-        private readonly int numCountTo;
-        private readonly Quitable quitable;
+        private readonly int _numCountTo;
+        private readonly Quitable _quitable;
 
-        private int counter;
+        private int _counter;
 
         public MyCountToPatternGuard(
             int numCountTo,
             Quitable quitable)
         {
-            this.numCountTo = numCountTo;
-            this.quitable = quitable;
+            this._numCountTo = numCountTo;
+            this._quitable = quitable;
         }
 
         public void StartGuard()
         {
-            counter = 0;
+            _counter = 0;
         }
 
         public void StopGuard()
@@ -38,9 +38,9 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
 
         public bool Inspect(MatchedEventMap matchEvent)
         {
-            counter++;
-            if (counter > numCountTo) {
-                quitable.GuardQuit();
+            _counter++;
+            if (_counter > _numCountTo) {
+                _quitable.GuardQuit();
                 return false;
             }
 

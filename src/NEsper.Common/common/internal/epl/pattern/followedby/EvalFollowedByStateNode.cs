@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             : base(parentNode)
         {
             this.evalFollowedByNode = evalFollowedByNode;
-            this.nodes = new Dictionary<EvalStateNode, int>();
+            nodes = new Dictionary<EvalStateNode, int>();
         }
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     matchEvent,
                     isFollowedByQuitted,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
+                ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
             }
             else {
                 // Else start a new sub-expression for the next-in-line filter
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     false,
                     evalFollowedByNode.factoryNode,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateFalse(this, true);
+                ParentEvaluator.EvaluateFalse(this, true);
                 QuitInternal();
             }
 

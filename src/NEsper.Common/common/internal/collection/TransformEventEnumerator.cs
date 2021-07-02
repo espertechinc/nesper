@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.collection
             IEnumerator<EventBean> sourceEnumerator,
             TransformEventMethod transformEventMethod)
         {
-            this._sourceEnumerator = sourceEnumerator;
-            this._transformEventMethod = transformEventMethod;
+            _sourceEnumerator = sourceEnumerator;
+            _transformEventMethod = transformEventMethod;
         }
 
         /// <summary>

@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashedGetterCRC32SingleForge : EventPropertyValueGetterForge
     {
-        private readonly ExprNode eval;
-        private readonly int granularity;
+        private readonly ExprNode _eval;
+        private readonly int _granularity;
 
         public ContextControllerHashedGetterCRC32SingleForge(
             ExprNode eval,
             int granularity)
         {
-            this.eval = eval;
-            this.granularity = granularity;
+            this._eval = eval;
+            this._granularity = granularity;
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
+            CodegenMethod method = parent.MakeChild(typeof(object), GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
-            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope, true);
+            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(_eval.Forge, method, classScope);
             method.Block
                 .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
                 .DeclareVar<string>(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                         typeof(ContextControllerHashedGetterCRC32SingleForge),
                         "StringToCRC32Hash",
                         Ref("code"),
-                        Constant(granularity)));
+                        Constant(_granularity)));
 
             return LocalMethod(method, beanExpression);
         }

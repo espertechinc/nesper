@@ -35,28 +35,28 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static IList<RegressionExecution> WithNotDefaultTrue(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOperatorAndNotDefaultTrue());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWithEveryAndTerminationOptimization(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOperatorAndWithEveryAndTerminationOptimization());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWHarness(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOperatorAndWHarness());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new PatternOperatorAndSimple());
             return execs;
         }

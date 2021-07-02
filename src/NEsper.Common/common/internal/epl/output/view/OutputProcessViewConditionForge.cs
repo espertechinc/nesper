@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -42,6 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly int _streamCount;
         private readonly bool _terminable;
         private readonly bool _unaggregatedUngrouped;
+        private readonly StateMgmtSetting _changeSetStateMgmtSettings;
 
         public OutputProcessViewConditionForge(
             OutputStrategyPostProcessForge outputStrategyPostProcessForge,
@@ -57,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool unaggregatedUngrouped,
             SelectClauseStreamSelectorEnum selectClauseStreamSelector,
             EventType[] eventTypes,
-            EventType resultEventType)
+            EventType resultEventType,
+            StateMgmtSetting changeSetStateMgmtSettings)
         {
             _outputStrategyPostProcessForge = outputStrategyPostProcessForge;
             _isDistinct = isDistinct;
@@ -73,6 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             _selectClauseStreamSelector = selectClauseStreamSelector;
             _eventTypes = eventTypes;
             _resultEventType = resultEventType;
+            _changeSetStateMgmtSettings = changeSetStateMgmtSettings;
         }
 
         public bool IsCodeGenerated => false;
@@ -148,6 +152,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     spec,
                     "EventTypes",
                     EventTypeUtility.ResolveTypeArrayCodegen(_eventTypes, EPStatementInitServicesConstants.REF))
+                .SetProperty(
+                    spec,
+                    "ChangeSetStateMgmtSettings",
+                    _changeSetStateMgmtSettings.ToExpression())
                 .MethodReturn(NewInstance<OutputProcessViewConditionFactory>(spec));
         }
 

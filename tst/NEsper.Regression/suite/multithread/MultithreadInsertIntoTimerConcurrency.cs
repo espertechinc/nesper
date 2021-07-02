@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             path.Add(compiled);
             SupportCompileDeployUtil.Deploy(compiled, runtime);
 
-            epl = epl + " output every 10 seconds";
+            epl += " output every 10 seconds";
             compiled = SupportCompileDeployUtil.Compile(epl, configuration, path);
             SupportCompileDeployUtil.DeployAddListener(compiled, "insert", noActionUpdateListener, runtime);
 

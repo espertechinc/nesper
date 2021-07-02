@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	public class ExprDotForgeMinByMaxBy : ExprDotForgeLambdaThreeForm
 	{
 
-		protected override EPType InitAndNoParamsReturnType(
+		protected override EPChainableType InitAndNoParamsReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
@@ -29,21 +29,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
 			EnumMethodEnum enumMethod,
-			EPType type,
+			EPChainableType type,
 			StatementCompileTimeServices services)
 		{
 			throw new IllegalStateException();
 		}
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+		protected override ThreeFormInitFunction InitAndSingleParamReturnType(
 			EventType inputEventType,
 			Type collectionComponentType)
 		{
-			if (inputEventType == null) {
-				return lambda => EPTypeHelper.SingleValue(collectionComponentType);
-			}
-
-			return lambda => EPTypeHelper.SingleEvent(inputEventType);
+			return lambda => {
+				ValidateNonNull(lambda.BodyForge.EvaluationType);
+				return EPChainableTypeHelper.SingleEvent(inputEventType);
+			};
 		}
 
 		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)

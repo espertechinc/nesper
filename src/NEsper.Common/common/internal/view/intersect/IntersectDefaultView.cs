@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -31,33 +32,35 @@ namespace com.espertech.esper.common.@internal.view.intersect
         ViewDataVisitableContainer,
         IntersectViewMarker
     {
-        internal readonly AgentInstanceContext agentInstanceContext;
-        internal readonly IntersectViewFactory factory;
-        internal readonly View[] views;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly IntersectViewFactory _factory;
+        private readonly View[] _views;
 
         public IntersectDefaultView(
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext,
             IntersectViewFactory factory,
             IList<View> viewList)
         {
-            agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
-            this.factory = factory;
-            views = viewList.ToArray();
+            _agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
+            _factory = factory;
+            _views = viewList.ToArray();
 
             for (var i = 0; i < viewList.Count; i++) {
                 var view = new LastPostObserverView(i);
-                views[i].Child = view;
+                _views[i].Child = view;
                 view.Observer = this;
             }
         }
 
-        public View[] ViewContained => views;
+        public View[] ViewContained => _views;
 
-        public IntersectViewFactory ViewFactory => factory;
+        public IntersectViewFactory ViewFactory => _factory;
+
+        public View[] RelatedViews => _views;
 
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (var view in views) {
+            foreach (var view in _views) {
                 (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
@@ -66,10 +69,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _factory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_factory, newData, oldData);
 
-            var localState = factory.DefaultViewLocalStatePerThread;
+            var localState = _factory.DefaultViewLocalStatePerThread;
 
             if (newData != null) {
                 // new events must go to all views
@@ -77,10 +80,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 localState.HasRemovestreamData = false; // changed by observer logic to indicate new data
                 localState.IsRetainObserverEvents = true; // enable retain logic in observer
                 try {
-                    foreach (var view in views) {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
+                    foreach (var view in _views) {
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newData, oldData);
                         view.Update(newData, oldData);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
                 finally {
@@ -108,14 +111,14 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
                         localState.IsDiscardObserverEvents = true;
                         try {
-                            for (var j = 0; j < views.Length; j++) {
+                            for (var j = 0; j < _views.Length; j++) {
                                 if (i != j) {
-                                    agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                                        factory,
+                                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                                        _factory,
                                         null,
                                         viewOldData);
-                                    views[j].Update(null, viewOldData);
-                                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                                    _views[j].Update(null, viewOldData);
+                                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                                 }
                             }
                         }
@@ -128,37 +131,37 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 }
 
                 // indicate new and, possibly, old data
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newData, oldData);
                 child.Update(newData, oldData);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
             else if (oldData != null) {
                 // handle remove stream
                 localState.IsDiscardObserverEvents = true; // disable reaction logic in observer
                 try {
-                    foreach (var view in views) {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
+                    foreach (var view in _views) {
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, oldData);
                         view.Update(null, oldData);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
                 finally {
                     localState.IsDiscardObserverEvents = false;
                 }
 
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, oldData);
                 child.Update(null, oldData);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
-        public override EventType EventType => factory.EventType;
+        public override EventType EventType => _factory.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return views[0].GetEnumerator();
+            return _views[0].GetEnumerator();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
@@ -171,7 +174,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             EventBean[] newEvents,
             EventBean[] oldEvents)
         {
-            var localState = factory.DefaultViewLocalStatePerThread;
+            var localState = _factory.DefaultViewLocalStatePerThread;
 
             if (oldEvents == null || localState.IsDiscardObserverEvents) {
                 return;
@@ -186,11 +189,11 @@ namespace com.espertech.esper.common.@internal.view.intersect
             // remove old data from all other views
             localState.IsDiscardObserverEvents = true;
             try {
-                for (var i = 0; i < views.Length; i++) {
+                for (var i = 0; i < _views.Length; i++) {
                     if (i != streamId) {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldEvents);
-                        views[i].Update(null, oldEvents);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, oldEvents);
+                        _views[i].Update(null, oldEvents);
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
             }
@@ -198,14 +201,14 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 localState.IsDiscardObserverEvents = false;
             }
 
-            agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldEvents);
+            _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, null, oldEvents);
             child.Update(null, oldEvents);
-            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            VisitViewContained(viewDataVisitor, factory, views);
+            VisitViewContained(viewDataVisitor, _factory, _views);
         }
 
         public static void VisitViewContained(

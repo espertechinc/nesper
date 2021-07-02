@@ -27,7 +27,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 {
 	public class EventJsonAdapter
 	{
-
 		public static IList<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
@@ -79,12 +78,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"@JsonSchemaField(Name=mydate, adapter='" + typeof(InvalidAdapterJSONDate).FullName + "') create json schema JsonEvent(mydate Date)",
-					"Json schema field adapter class 'InvalidAdapterJSONDate' does not have a default constructor");
+					"Json schema field adapter class '" + nameof(InvalidAdapterJSONDate) + "' does not have a default constructor");
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					"@JsonSchemaField(Name=mydate, adapter='" + nameof(SupportJsonFieldAdapterStringDate) + "') create json schema JsonEvent(mydate String)",
-					"Json schema field adapter class 'SupportJsonFieldAdapterStringDate' mismatches the return type of the parse method, expected 'String' but found 'Date'");
+					"Json schema field adapter class '" + nameof(SupportJsonFieldAdapterStringDate) + "' mismatches the return type of the parse method, expected 'String' but found 'Date'");
 			}
 		}
 

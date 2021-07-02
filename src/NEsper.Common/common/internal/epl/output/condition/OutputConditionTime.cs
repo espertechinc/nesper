@@ -42,9 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             : base(outputCallback)
         {
             this.context = context;
-            this.parent = outputConditionTimeFactory;
+            parent = outputConditionTimeFactory;
 
-            this.scheduleSlot = context.StatementContext.ScheduleBucket.AllocateSlot();
+            scheduleSlot = context.StatementContext.ScheduleBucket.AllocateSlot();
             if (isStartConditionOnCreation) {
                 UpdateOutputCondition(0, 0);
             }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
         public override string ToString()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         private void ScheduleCallback()
@@ -124,8 +124,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                         context,
                         ScheduleObjectType.outputratelimiting,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    this.isCallbackScheduled = false;
-                    this.outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
+                    isCallbackScheduled = false;
+                    outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
                     ScheduleCallback();
                     context.InstrumentationProvider.AOutputRateConditionScheduledEval();
                 },

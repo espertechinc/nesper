@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 for (int i = 0; i < _wildCardType.Length; i++) {
-                    if (_wildCardType[i] != LikeUtil.PERCENT_CHAR) {
+                    if (_wildCardType[i] != PERCENT_CHAR) {
                         return false;
                     }
                 }
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.util
                         continue;
                     }
                     else if (c == '_') {
-                        _wildCardType[_iLen] = LikeUtil.UNDERSCORE_CHAR;
+                        _wildCardType[_iLen] = UNDERSCORE_CHAR;
 
                         if (_iFirstWildCard == -1) {
                             _iFirstWildCard = _iLen;

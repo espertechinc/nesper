@@ -24,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLContainedEventDocSample());
-            execs.Add(new EPLContainedEventIntArray());
+            WithEventDocSample(execs);
+            WithEventIntArray(execs);
+            WithStringArrayWithWhere(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStringArrayWithWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLContainedStringArrayWithWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventIntArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedEventIntArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedEventDocSample());
             return execs;
         }
 
@@ -47,17 +68,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                              "@Name('s0') select id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where id not in (idsBefore);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                AssertSend(env, "A,B,C", "D,E", new object[][] {
-                    new object[] {"D"}, 
-                    new object[] {"E"}
-                });
+                AssertSend(
+                    env,
+                    "A,B,C",
+                    "D,E",
+                    new object[][] {
+                        new object[] {"D"},
+                        new object[] {"E"}
+                    });
                 AssertSend(env, "A,C", "C,A", null);
-                AssertSend(env, "A", "B", new object[][] {
-                    new object[] {"B"}
-                });
-                AssertSend(env, "A,B", "F,B,A", new object[][] {
-                    new object[] {"F"}
-                });
+                AssertSend(
+                    env,
+                    "A",
+                    "B",
+                    new object[][] {
+                        new object[] {"B"}
+                    });
+                AssertSend(
+                    env,
+                    "A,B",
+                    "F,B,A",
+                    new object[][] {
+                        new object[] {"F"}
+                    });
 
                 env.UndeployAll();
             }

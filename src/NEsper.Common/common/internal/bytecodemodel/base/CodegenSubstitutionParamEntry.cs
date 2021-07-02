@@ -49,9 +49,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             var numbered = classScope.NamespaceScope.SubstitutionParamsByNumber;
             var named = classScope.NamespaceScope.SubstitutionParamsByName;
-            if (numbered.IsEmpty() && named.IsEmpty()) {
-                return;
-            }
 
             if (!numbered.IsEmpty() && !named.IsEmpty()) {
                 throw new IllegalStateException("Both named and numbered substitution parameters are non-empty");

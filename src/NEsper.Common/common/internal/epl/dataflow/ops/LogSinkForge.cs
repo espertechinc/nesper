@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             return new SAIFFInitializeBuilder(
                     OP_PACKAGE_NAME + ".logsink.LogSinkFactory",
-                    this.GetType(),
+                    GetType(),
                     "log",
                     parent,
                     symbols,

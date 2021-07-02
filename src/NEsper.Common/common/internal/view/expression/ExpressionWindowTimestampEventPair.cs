@@ -12,23 +12,23 @@ namespace com.espertech.esper.common.@internal.view.expression
 {
     public class ExpressionWindowTimestampEventPair
     {
-        private readonly long timestamp;
-        private readonly EventBean theEvent;
+        private readonly long _timestamp;
+        private readonly EventBean _theEvent;
 
         public ExpressionWindowTimestampEventPair(
             long timestamp,
             EventBean theEvent)
         {
-            this.timestamp = timestamp;
-            this.theEvent = theEvent;
+            this._timestamp = timestamp;
+            this._theEvent = theEvent;
         }
 
         public long Timestamp {
-            get => timestamp;
+            get => _timestamp;
         }
 
         public EventBean TheEvent {
-            get => theEvent;
+            get => _theEvent;
         }
     }
 } // end of namespace

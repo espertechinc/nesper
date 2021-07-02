@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalMethodContext(string functionName)
         {
-            this._functionName = functionName;
+            _functionName = functionName;
         }
 
         public object Evaluate(

@@ -17,6 +17,8 @@ using com.espertech.esper.compat.collections;
 
 using Castle.DynamicProxy;
 
+using com.espertech.esper.common.client.util;
+
 namespace com.espertech.esper.common.@internal.epl.annotation
 {
     /// <summary>

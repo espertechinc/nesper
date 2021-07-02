@@ -25,6 +25,7 @@ using com.espertech.esper.regressionlib.support.extend.vdw;
 using com.espertech.esper.regressionlib.support.extend.view;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -275,19 +276,13 @@ namespace com.espertech.esper.regressionrun.suite.client
         [Test, RunInApplicationDomain]
         public void TestClientExtendUDFVarargs()
         {
-            RegressionRunner.Run(_session, new ClientExtendUDFVarargs());
+            RegressionRunner.Run(_session, ClientExtendUDFVarargs.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientExtendUDFInlinedClass()
         {
             RegressionRunner.Run(_session, ClientExtendUDFInlinedClass.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientExtendAggregationFunction()
-        {
-            RegressionRunner.Run(_session, ClientExtendAggregationFunction.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -327,12 +322,6 @@ namespace com.espertech.esper.regressionrun.suite.client
         }
 
         [Test, RunInApplicationDomain]
-        public void TestClientExtendSingleRowFunction()
-        {
-            RegressionRunner.Run(_session, ClientExtendSingleRowFunction.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestClientExtendAdapterLoaderLoad()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -350,18 +339,154 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Dispose();
         }
 
-        [Test, RunInApplicationDomain]
+        /// <summary>
+        /// Auto-test(s): ClientExtendAggregationFunction
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientExtendAggregationFunction.Executions());
+        /// </code>
+        /// </summary>
 
-        public void TestClientExtendDateTimeMethod()
+        public class TestClientExtendAggregationFunction : AbstractTestBase
         {
-            RegressionRunner.Run(_session, ClientExtendDateTimeMethod.Executions());
+            public TestClientExtendAggregationFunction() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithTable() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithTable());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidCannotResolve() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithInvalidCannotResolve());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidUse() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithInvalidUse());
+
+            [Test, RunInApplicationDomain]
+            public void WithFailedValidation() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithFailedValidation());
+
+            [Test, RunInApplicationDomain]
+            public void WithCodegeneratedCount() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithCodegeneratedCount());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiParamSingleArray() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithMultiParamSingleArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiParamNoParam() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithMultiParamNoParam());
+
+            [Test, RunInApplicationDomain]
+            public void WithMultiParamMulti() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithMultiParamMulti());
+
+            [Test, RunInApplicationDomain]
+            public void WithManagedMappedPropertyLookAlike() => RegressionRunner.Run(
+                _session,
+                ClientExtendAggregationFunction.WithManagedMappedPropertyLookAlike());
+
+            [Test, RunInApplicationDomain]
+            public void WithManagedDotMethod() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithManagedDotMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithManagedDistinctAndStarParam() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithManagedDistinctAndStarParam());
+
+            [Test, RunInApplicationDomain]
+            public void WithManagedGrouped() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithManagedGrouped());
+
+            [Test, RunInApplicationDomain]
+            public void WithManagedWindow() => RegressionRunner.Run(_session, ClientExtendAggregationFunction.WithManagedWindow());
         }
 
-        [Test, RunInApplicationDomain]
+        /// <summary>
+        /// Auto-test(s): ClientExtendSingleRowFunction
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientExtendSingleRowFunction.Executions());
+        /// </code>
+        /// </summary>
 
-        public void TestClientExtendEnumMethod()
+        public class TestClientExtendSingleRowFunction : AbstractTestBase
         {
-            RegressionRunner.Run(_session, ClientExtendEnumMethod.Executions());
+            public TestClientExtendSingleRowFunction() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithFailedValidation() => RegressionRunner.Run(_session, ClientExtendSingleRowFunction.WithFailedValidation());
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleMethod() => RegressionRunner.Run(_session, ClientExtendSingleRowFunction.WithSingleMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithChainMethod() => RegressionRunner.Run(_session, ClientExtendSingleRowFunction.WithChainMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithPropertyOrSingleRowMethod() => RegressionRunner.Run(_session, ClientExtendSingleRowFunction.WithPropertyOrSingleRowMethod());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventBeanFootprint() => RegressionRunner.Run(_session, ClientExtendSingleRowFunction.WithEventBeanFootprint());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ClientExtendDateTimeMethod
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientExtendDateTimeMethod.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientExtendDateTimeMethod : AbstractTestBase
+        {
+            public TestClientExtendDateTimeMethod() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ClientExtendDateTimeMethod.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithReformat() => RegressionRunner.Run(_session, ClientExtendDateTimeMethod.WithReformat());
+
+            [Test, RunInApplicationDomain]
+            public void WithTransform() => RegressionRunner.Run(_session, ClientExtendDateTimeMethod.WithTransform());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ClientExtendEnumMethod
+        /// <code>
+        /// RegressionRunner.Run(_session, ClientExtendEnumMethod.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestClientExtendEnumMethod : AbstractTestBase
+        {
+            public TestClientExtendEnumMethod() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithLambdaScalarStateAndValue() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithLambdaScalarStateAndValue());
+
+            [Test, RunInApplicationDomain]
+            public void WithLambdaScalarInputValueAndIndex() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithLambdaScalarInputValueAndIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithLambdaEventInputValueAndIndex() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithLambdaEventInputValueAndIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithTwoLambdaParameters() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithTwoLambdaParameters());
+
+            [Test, RunInApplicationDomain]
+            public void WithPredicateReturnSingleEvent() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithPredicateReturnSingleEvent());
+
+            [Test, RunInApplicationDomain]
+            public void WithPredicateReturnEvents() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithPredicateReturnEvents());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarEarlyExit() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithScalarEarlyExit());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarNoLambdaWithParams() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithScalarNoLambdaWithParams());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarLambdaMedian() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithScalarLambdaMedian());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventLambdaMedian() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithEventLambdaMedian());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarNoParamMedian() => RegressionRunner.Run(_session, ClientExtendEnumMethod.WithScalarNoParamMedian());
         }
     }
 } // end of namespace

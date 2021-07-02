@@ -13,14 +13,18 @@ using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
@@ -81,7 +85,7 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                CastUnderlying(typeof(GenericRecord), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -92,7 +96,7 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                CastUnderlying(typeof(GenericRecord), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -103,7 +107,7 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                CastUnderlying(typeof(GenericRecord), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -113,7 +117,11 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            #if false
+            if (_propertyType.IsNullTypeSafe()) {
+                return ConstantNull();
+            }
+
+#if false
             return CodegenExpressionBuilder.Cast(
                 _propertyType,
                 CodegenExpressionBuilder.StaticMethod(
@@ -121,15 +129,15 @@ namespace NEsper.Avro.Getter
                     "Get",
                     underlyingExpression,
                     CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
-            #else
+#else
             return CodegenLegoCast.CastSafeFromObjectType(
                 _propertyType,
-                CodegenExpressionBuilder.StaticMethod(
+                StaticMethod(
                     typeof(GenericRecordExtensions),
                     "Get",
                     underlyingExpression,
-                    CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
-            #endif
+                    Constant(_propertyIndex.Name)));
+#endif
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -137,7 +145,7 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.ConstantTrue();
+            return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -146,10 +154,10 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             if (_fragmentType == null) {
-                return CodegenExpressionBuilder.ConstantNull();
+                return ConstantNull();
             }
 
-            return CodegenExpressionBuilder.LocalMethod(
+            return LocalMethod(
                 GetAvroFragmentCodegen(codegenMethodScope, codegenClassScope),
                 underlyingExpression);
         }
@@ -202,12 +210,12 @@ namespace NEsper.Avro.Getter
                 .Block
                 .DeclareVar<object>(
                     "value",
-                    UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope))
+                    UnderlyingGetCodegen(Ref("record"), codegenMethodScope, codegenClassScope))
                 .MethodReturn(
-                    CodegenExpressionBuilder.StaticMethod(
+                    StaticMethod(
                         GetType(),
                         "GetFragmentAvro",
-                        CodegenExpressionBuilder.Ref("value"),
+                        Ref("value"),
                         factory,
                         type));
         }

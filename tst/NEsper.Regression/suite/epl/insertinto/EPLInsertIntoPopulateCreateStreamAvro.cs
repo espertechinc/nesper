@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -36,14 +38,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static IList<RegressionExecution> WithNewSchema(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoNewSchema());
             return execs;
         }
 
         public static IList<RegressionExecution> WithCompatExisting(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoCompatExisting());
             return execs;
         }
@@ -65,12 +67,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var epl = "@Name('s0') insert into AvroExistingType select " +
                           "1 as MyLong," +
                           "{1L, 2L} as MyLongArray," +
-                          typeof(EPLInsertIntoPopulateCreateStreamAvro).Name +
+                          nameof(EPLInsertIntoPopulateCreateStreamAvro) +
                           ".MakeByteArray() as MyByteArray, " +
-                          typeof(EPLInsertIntoPopulateCreateStreamAvro).Name +
+                          nameof(EPLInsertIntoPopulateCreateStreamAvro) +
                           ".MakeMapStringString() as MyMap " +
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
+
+                SupportEventPropUtil.AssertTypes(
+                    env.Statement("s0").EventType,
+                    "MyLong,MyLongArray,MyByteArray,MyMap".SplitCsv(),
+                    new [] {
+                        typeof(long),
+                        typeof(ICollection<long>),
+                        typeof(byte[]),
+                        typeof(IDictionary<string, string>)
+                    });
 
                 env.SendEventBean(new SupportBean());
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();

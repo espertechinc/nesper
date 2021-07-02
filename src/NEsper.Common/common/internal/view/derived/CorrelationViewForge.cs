@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -29,10 +31,10 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// </summary>
     public class CorrelationViewForge : ViewFactoryForgeBase
     {
-        internal StatViewAdditionalPropsForge additionalProps;
-        internal ExprNode expressionX;
-        internal ExprNode expressionY;
-        private IList<ExprNode> viewParameters;
+        private StatViewAdditionalPropsForge _additionalProps;
+        private ExprNode _expressionX;
+        private ExprNode _expressionY;
+        private IList<ExprNode> _viewParameters;
 
         public override string ViewName => "Correlation";
 
@@ -44,18 +46,19 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
             int streamNumber,
-            ViewForgeEnv viewForgeEnv)
+            ViewForgeEnv viewForgeEnv,
+            bool grouped)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 true,
                 viewForgeEnv,
                 streamNumber);
@@ -67,11 +70,11 @@ namespace com.espertech.esper.common.@internal.view.derived
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            expressionX = validated[0];
-            expressionY = validated[1];
+            _expressionX = validated[0];
+            _expressionY = validated[1];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
-            eventType = CorrelationView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+            _additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
+            eventType = CorrelationView.CreateEventType(_additionalProps, viewForgeEnv, streamNumber);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -83,12 +86,12 @@ namespace com.espertech.esper.common.@internal.view.derived
                 viewForgeEnv.SerdeResolver);
         }
 
-        internal override Type TypeOfFactory()
+        public override Type TypeOfFactory()
         {
             return typeof(CorrelationViewFactory);
         }
 
-        internal override string FactoryMethod()
+        public override string FactoryMethod()
         {
             return "Correlation";
         }
@@ -99,19 +102,24 @@ namespace com.espertech.esper.common.@internal.view.derived
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (additionalProps != null) {
-                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
+            if (_additionalProps != null) {
+                method.Block.SetProperty(factory, "AdditionalProps", _additionalProps.Codegen(method, classScope));
             }
 
             method.Block
                 .SetProperty(
                     factory,
                     "ExpressionXEval",
-                    CodegenEvaluator(expressionX.Forge, method, GetType(), classScope))
+                    CodegenEvaluator(_expressionX.Forge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "ExpressionYEval",
-                    CodegenEvaluator(expressionY.Forge, method, GetType(), classScope));
+                    CodegenEvaluator(_expressionY.Forge, method, GetType(), classScope));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_CORRELATION;
         }
     }
 } // end of namespace

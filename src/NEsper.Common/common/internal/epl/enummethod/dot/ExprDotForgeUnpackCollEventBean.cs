@@ -29,9 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         public ExprDotForgeUnpackCollEventBean(EventType type)
         {
-            TypeInfo = EPTypeHelper.CollectionOfSingleValue(
-                type.UnderlyingType,
-                typeof(EventBean));
+            TypeInfo = EPChainableTypeHelper.CollectionOfSingleValue(
+                type.UnderlyingType);
         }
 
         public object Evaluate(
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo { get; }
+        public EPChainableType TypeInfo { get; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {

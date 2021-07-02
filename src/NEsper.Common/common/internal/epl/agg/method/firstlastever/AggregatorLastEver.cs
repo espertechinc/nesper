@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
             //   time.
             _lastValue = membersColumnized.AddMember(col, typeof(object), "lastValue");
-            this._serde = classScope.AddOrGetDefaultFieldSharable(
+            _serde = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeClassTyped(
                     CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE,
                     childType,

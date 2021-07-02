@@ -49,84 +49,84 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithDisqualify(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolDisqualify());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolMultiple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithWithEquals(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolWithEquals());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPatternValueWithConst(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolPatternValueWithConst());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextValueWithConst(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolContextValueWithConst());
             return execs;
         }
 
         public static IList<RegressionExecution> WithContextValueDeep(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolContextValueDeep());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoValueConcat(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolNoValueConcat());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoValueExprRegexpSelf(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolNoValueExprRegexpSelf());
             return execs;
         }
 
         public static IList<RegressionExecution> WithConstValueRegexpLHS(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolConstValueRegexpLHS());
             return execs;
         }
 
         public static IList<RegressionExecution> WithConstValueRegexpRHSPerformance(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolConstValueRegexpRHSPerformance());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMixedValueRegexpRHS(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolMixedValueRegexpRHS());
             return execs;
         }
 
         public static IList<RegressionExecution> WithConstValueRegexpRHS(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOptReboolConstValueRegexpRHS());
             return execs;
         }
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                                  "@public create expression MyHandThrough {v => v};" +
                                  "@public create expression string js:MyJavaScript() [\"a\"];\n";
                 env.Compile(objects, path);
-                string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+                string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
 
                 // Core disqualifing: non-constant variables, tables, subselects, lambda, plug-in UDF with filter-opt-disabled, scripts
                 AssertDisqualified(env, path, "SupportBean", hook + "select * from SupportBean(TheString regexp MYVARIABLE_NONCONSTANT)");

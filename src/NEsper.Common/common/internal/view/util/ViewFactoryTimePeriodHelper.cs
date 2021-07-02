@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.view.util
                     expressionNumber,
                     streamNumber);
                 var returnType = validated.Forge.EvaluationType.GetBoxedType();
-                if (!returnType.IsNumeric()) {
+                if (returnType == null || !returnType.IsNumeric()) {
                     throw new ViewParameterException(expectedMessage);
                 }
 

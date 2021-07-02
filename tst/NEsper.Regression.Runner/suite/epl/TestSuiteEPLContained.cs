@@ -30,46 +30,91 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLContained
     {
-        private RegressionSession session;
+        private RegressionSession _session;
 
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Dispose();
-            session = null;
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLContainedEventSimple()
-        {
-            RegressionRunner.Run(session, EPLContainedEventSimple.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLContainedEventArray()
-        {
-            RegressionRunner.Run(session, EPLContainedEventArray.Executions());
+            _session.Dispose();
+            _session = null;
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventExample()
         {
-            RegressionRunner.Run(session, EPLContainedEventExample.Executions(session.Container.ResourceManager()));
+            RegressionRunner.Run(_session, EPLContainedEventExample.Executions(_session.Container.ResourceManager()));
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLContainedEventNested()
+        /// <summary>
+        /// Auto-test(s): EPLContainedEventNested
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLContainedEventNested.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLContainedEventNested : AbstractTestBase
         {
-            RegressionRunner.Run(session, EPLContainedEventNested.Executions());
+            public TestEPLContainedEventNested() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLContainedEventNested.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnderlyingSelect() => RegressionRunner.Run(_session, EPLContainedEventNested.WithUnderlyingSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubSelect() => RegressionRunner.Run(_session, EPLContainedEventNested.WithSubSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithPatternSelect() => RegressionRunner.Run(_session, EPLContainedEventNested.WithPatternSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithColumnSelect() => RegressionRunner.Run(_session, EPLContainedEventNested.WithColumnSelect());
+
+            [Test, RunInApplicationDomain]
+            public void WithWhere() => RegressionRunner.Run(_session, EPLContainedEventNested.WithWhere());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimple() => RegressionRunner.Run(_session, EPLContainedEventNested.WithSimple());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowOnTrigger() => RegressionRunner.Run(_session, EPLContainedEventNested.WithNamedWindowOnTrigger());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowSubquery() => RegressionRunner.Run(_session, EPLContainedEventNested.WithNamedWindowSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowFilter() => RegressionRunner.Run(_session, EPLContainedEventNested.WithNamedWindowFilter());
         }
 
+        /// <summary>
+        /// Auto-test(s): EPLContainedEventArray
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLContainedEventArray.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLContainedEventArray : AbstractTestBase
+        {
+            public TestEPLContainedEventArray() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithStringArrayWithWhere() => RegressionRunner.Run(_session, EPLContainedEventArray.WithStringArrayWithWhere());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventIntArray() => RegressionRunner.Run(_session, EPLContainedEventArray.WithEventIntArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventDocSample() => RegressionRunner.Run(_session, EPLContainedEventArray.WithEventDocSample());
+        }
+        
         /// <summary>
         /// Auto-test(s): EPLContainedEventSplitExpr
         /// <code>
@@ -89,6 +134,51 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             [Test, RunInApplicationDomain]
             public void WithScriptContextValue() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithScriptContextValue());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLContainedEventSimple
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLContainedEventSimple.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLContainedEventSimple : AbstractTestBase
+        {
+            public TestEPLContainedEventSimple() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithWithSubqueryResult() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithWithSubqueryResult());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayProperty() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithArrayProperty());
+
+            [Test, RunInApplicationDomain]
+            public void WithSplitWords() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithSplitWords());
+
+            [Test, RunInApplicationDomain]
+            public void WithIRStreamArrayItem() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithIRStreamArrayItem());
+
+            [Test, RunInApplicationDomain]
+            public void WithAloneCount() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithAloneCount());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoin() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinCount() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithJoinCount());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnidirectionalJoinCount() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithUnidirectionalJoinCount());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnidirectionalJoin() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithUnidirectionalJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithNamedWindowPremptive() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithNamedWindowPremptive());
+
+            [Test, RunInApplicationDomain]
+            public void WithPropertyAccess() => RegressionRunner.Run(_session, EPLContainedEventSimple.WithPropertyAccess());
         }
         
         private static void Configure(Configuration configuration)

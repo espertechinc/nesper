@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
@@ -77,21 +79,37 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public static Nested GetNested(this SupportEnumTwo enumValue)
         {
-            return new Nested(GetAssociatedValue(enumValue));
+            return new Nested(GetAssociatedValue(enumValue), GetMystrings(enumValue));
+        }
+
+        public static IList<string> GetMyStringsAsList(this SupportEnumTwo enumValue)
+        {
+            return GetMystrings(enumValue);
         }
 
         public class Nested
         {
-            public Nested(int value)
+            public Nested(int value, string[] mystrings)
             {
                 Value = value;
+                MyStrings = mystrings;
             }
 
             public int Value { get; }
+            public string[] MyStrings { get; }
 
             public int GetValue()
             {
                 return Value;
+            }
+            
+            public string[] GetMystrings() {
+                return MyStrings;
+            }
+
+            public IList<String> GetMyStringsNestedAsList()
+            {
+                return MyStrings;
             }
         }
     }

@@ -14,22 +14,22 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public class EventBeanFactoryObjectArray : EventBeanFactory
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EventType type;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventType _type;
 
         public EventBeanFactoryObjectArray(
             EventType type,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.type = type;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._type = type;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public Type UnderlyingType => typeof(object[]);
 
         public EventBean Wrap(object underlying)
         {
-            return eventBeanTypedEventFactory.AdapterForTypedObjectArray((object[]) underlying, type);
+            return _eventBeanTypedEventFactory.AdapterForTypedObjectArray((object[]) underlying, _type);
         }
     }
 } // end of namespace

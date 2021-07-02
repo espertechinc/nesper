@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -35,17 +36,17 @@ WithSendEventDynamicType(execs);
         }
 public static IList<RegressionExecution> WithSendEventDynamicType(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowSendEventDynamicType());
     return execs;
 }public static IList<RegressionExecution> WithBeacon(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowBeacon());
     return execs;
 }public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
 {
-    execs = execs ?? new List<RegressionExecution>();
+    execs ??= new List<RegressionExecution>();
     execs.Add(new EPLDataflowAllTypes());
     return execs;
 }

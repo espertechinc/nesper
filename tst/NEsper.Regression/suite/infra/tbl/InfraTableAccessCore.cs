@@ -57,140 +57,140 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithTableAccessMultikeyWArrayTwoArrayKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableAccessMultikeyWArrayTwoArrayKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableAccessMultikeyWArrayOneArrayKey(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableAccessMultikeyWArrayOneArrayKey());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableAccessCoreSplitStream(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableAccessCoreSplitStream());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnMergeExpressions(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOnMergeExpressions());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraSubquery());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNamedWindowAndFireAndForget(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraNamedWindowAndFireAndForget());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedMixedMethodAndAccess(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraGroupedMixedMethodAndAccess());
             return execs;
         }
 
         public static IList<RegressionExecution> WithMultiStmtContributing(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraMultiStmtContributing());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOrderOfAggregationsAndPush(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraOrderOfAggregationsAndPush());
             return execs;
         }
 
         public static IList<RegressionExecution> WithUngroupedWContext(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraUngroupedWContext());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedSingleKeyNoContext(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraGroupedSingleKeyNoContext());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedThreeKeyNoContext(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraGroupedThreeKeyNoContext());
             return execs;
         }
 
         public static IList<RegressionExecution> WithGroupedTwoKeyNoContext(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraGroupedTwoKeyNoContext());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExpressionAliasAndDecl(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraExpressionAliasAndDecl());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTopLevelReadUnGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTopLevelReadUnGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTopLevelReadGrouped2Keys(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTopLevelReadGrouped2Keys());
             return execs;
         }
 
         public static IList<RegressionExecution> WithExprSelectClauseRenderingUnnamedCol(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraExprSelectClauseRenderingUnnamedCol());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFilterBehavior(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraFilterBehavior());
             return execs;
         }
 
         public static IList<RegressionExecution> WithIntegerIndexedPropertyLookAlike(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraIntegerIndexedPropertyLookAlike());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTableAccessCoreUnGroupedWindowAndSum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraTableAccessCoreUnGroupedWindowAndSum());
             return execs;
         }

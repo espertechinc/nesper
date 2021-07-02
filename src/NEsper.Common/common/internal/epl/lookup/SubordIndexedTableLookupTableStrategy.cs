@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordTableLookupStrategy inner,
             ILockable @lock)
         {
-            this._inner = inner;
-            this._lock = @lock;
+            _inner = inner;
+            _lock = @lock;
         }
 
         public ICollection<EventBean> Lookup(

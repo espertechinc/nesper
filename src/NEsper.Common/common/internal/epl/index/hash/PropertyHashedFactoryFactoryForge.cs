@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -25,11 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 {
     public class PropertyHashedFactoryFactoryForge : EventTableFactoryFactoryForgeBase
     {
-        private readonly EventType eventType;
-        private readonly CoercionDesc hashCoercionDesc;
-        private readonly string[] indexedProps;
-        private readonly bool unique;
-        private readonly MultiKeyClassRef multiKeyClassRef;
+        private readonly EventType _eventType;
+        private readonly CoercionDesc _hashCoercionDesc;
+        private readonly string[] _indexedProps;
+        private readonly bool _unique;
+        private readonly MultiKeyClassRef _multiKeyClassRef;
+        private readonly StateMgmtSetting _stateMgmtSettings;
         
         public PropertyHashedFactoryFactoryForge(
             int indexedStreamNum,
@@ -39,18 +41,20 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             EventType eventType,
             bool unique,
             CoercionDesc hashCoercionDesc,
-            MultiKeyClassRef multiKeyClassRef)
+            MultiKeyClassRef multiKeyClassRef,
+            StateMgmtSetting stateMgmtSettings)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
-            this.indexedProps = indexedProps;
-            this.eventType = eventType;
-            this.unique = unique;
-            this.hashCoercionDesc = hashCoercionDesc;
-            this.multiKeyClassRef = multiKeyClassRef;
+            _indexedProps = indexedProps;
+            _eventType = eventType;
+            _unique = unique;
+            _hashCoercionDesc = hashCoercionDesc;
+            _multiKeyClassRef = multiKeyClassRef;
+            _stateMgmtSettings = stateMgmtSettings;
         }
 
         public override Type EventTableClass =>
-            unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTable);
+            _unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTable);
 
         protected override Type TypeOf()
         {
@@ -63,23 +67,23 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             CodegenClassScope classScope)
         {
             IList<CodegenExpression> @params = new List<CodegenExpression>();
-            @params.Add(Constant(indexedProps));
-            @params.Add(Constant(hashCoercionDesc.CoercionTypes));
-            @params.Add(Constant(unique));
-            var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, indexedProps);
-            var getters = EventTypeUtility.GetGetters(eventType, indexedProps);
+            @params.Add(Constant(_indexedProps));
+            @params.Add(Constant(_unique));
+            var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, _indexedProps);
+            var getters = EventTypeUtility.GetGetters(_eventType, _indexedProps);
             var getter = MultiKeyCodegen.CodegenGetterMayMultiKey(
-                eventType,
+                _eventType,
                 getters,
                 propertyTypes,
-                hashCoercionDesc.CoercionTypes,
-                multiKeyClassRef,
+                _hashCoercionDesc.CoercionTypes,
+                _multiKeyClassRef,
                 method,
                 classScope);
 
             @params.Add(getter);
             @params.Add(ConstantNull()); // no fire-and-forget transform for subqueries
-            @params.Add(multiKeyClassRef.GetExprMKSerde(method, classScope));
+            @params.Add(_multiKeyClassRef.GetExprMKSerde(method, classScope));
+            @params.Add(_stateMgmtSettings.ToExpression());
 
             return @params;
         }
@@ -87,11 +91,11 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public override string ToQueryPlan()
         {
             return GetType().Name +
-                   (unique ? " unique" : " non-unique") +
+                   (_unique ? " unique" : " non-unique") +
                    " streamNum=" +
                    indexedStreamNum +
                    " propertyNames=" +
-                   indexedProps.RenderAny();
+                   _indexedProps.RenderAny();
         }
     }
 } // end of namespace

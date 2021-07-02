@@ -121,6 +121,9 @@ namespace com.espertech.esper.common.client.soda
                         expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write("]");
                     }
+                    if (numArrayDimensions > Children.Count) {
+                        writer.Write("[]");
+                    }
                 }
             }
         }

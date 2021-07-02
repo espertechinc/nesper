@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.client.compile;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
@@ -374,6 +375,11 @@ namespace com.espertech.esper.regressionrun.suite.client
             {
             }
 
+            [Test, RunInApplicationDomain]
+            public void WithClientCompileSubstParamGenericType() => RegressionRunner.Run(
+                _session,
+                ClientCompileSubstitutionParams.WithClientCompileSubstParamGenericType());
+            
             [Test, RunInApplicationDomain]
             public void WithODAInvalidConstantUseSubsParamsInstead() => RegressionRunner.Run(
                 _session,

@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 JoinPreloadMethod preloadMethod,
                 JoinSetComposerDesc joinSetComposerDesc)
             {
-                this._outputProcessView = viewable;
-                this._preloadMethod = preloadMethod;
-                this._joinSetComposerDesc = joinSetComposerDesc;
+                _outputProcessView = viewable;
+                _preloadMethod = preloadMethod;
+                _joinSetComposerDesc = joinSetComposerDesc;
             }
 
             public OutputProcessView Viewable => _outputProcessView;

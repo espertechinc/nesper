@@ -9,11 +9,13 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -21,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotScalarUnpackEventEval : ExprDotEvalRootChildInnerEval
     {
-        private ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
 
         public InnerDotScalarUnpackEventEval(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            this._rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(
@@ -33,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object target = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            if (target is EventBean) {
-                return ((EventBean) target).Underlying;
+            var target = _rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (target is EventBean eventBean) {
+                return eventBean.Underlying;
             }
 
             return target;
@@ -47,21 +49,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                forge.RootForge.EvaluationType,
-                typeof(InnerDotScalarUnpackEventEval),
-                codegenClassScope);
+            var type = forge.RootForge.EvaluationType;
+            if (type.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var methodNode = codegenMethodScope.MakeChild(type, typeof(InnerDotScalarUnpackEventEval), codegenClassScope);
 
             methodNode.Block
                 .DeclareVar<object>(
                     "target",
                     forge.RootForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                 .IfInstanceOf("target", typeof(EventBean))
-                .BlockReturn(
-                    CodegenLegoCast.CastSafeFromObjectType(
-                        forge.RootForge.EvaluationType,
-                        ExprDotName(Cast(typeof(EventBean), Ref("target")), "Underlying")))
-                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(forge.RootForge.EvaluationType, Ref("target")));
+                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(type, ExprDotName(Cast(typeof(EventBean), Ref("target")), "Underlying")))
+                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(type, Ref("target")));
             return LocalMethod(methodNode);
         }
 

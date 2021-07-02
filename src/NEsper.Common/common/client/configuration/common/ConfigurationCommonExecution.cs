@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.client.configuration.common
     {
         public ConfigurationCommonExecution()
         {
-            this.ThreadingProfile = ThreadingProfile.NORMAL;
+            ThreadingProfile = ThreadingProfile.NORMAL;
         }
 
         /// <summary>

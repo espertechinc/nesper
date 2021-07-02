@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             public NamedWindowConsumerPreloadDispatchNonJoin(AgentInstanceContext agentInstanceContext)
             {
-                this._agentInstanceContext = agentInstanceContext;
+                _agentInstanceContext = agentInstanceContext;
             }
 
             public void ExecutePreload()

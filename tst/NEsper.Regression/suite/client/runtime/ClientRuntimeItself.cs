@@ -40,35 +40,35 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithWrongCompileMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeWrongCompileMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSPIBeanAnonymousType(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSPIBeanAnonymousType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSPIStatementSelection(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSPIStatementSelection());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSPICompileReflective(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSPICompileReflective());
             return execs;
         }
 
         public static IList<RegressionExecution> WithItselfTransientConfiguration(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeItselfTransientConfiguration());
             return execs;
         }

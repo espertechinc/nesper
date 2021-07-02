@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -21,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     {
         public class SelectExprInsertNativeWidening : SelectExprInsertNativeBase
         {
-            private readonly TypeWidenerSPI[] wideners;
+            private readonly TypeWidenerSPI[] _wideners;
 
             public SelectExprInsertNativeWidening(
                 EventType eventType,
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 TypeWidenerSPI[] wideners)
                 : base(eventType, eventManufacturer, exprForges)
             {
-                this.wideners = wideners;
+                this._wideners = wideners;
             }
 
             public override CodegenMethod ProcessCodegen(
@@ -53,39 +54,45 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             typeof(object),
                             CodegenExpressionBuilder.Constant(exprForges.Length)));
                 for (var i = 0; i < exprForges.Length; i++) {
+                    var evaluationType = exprForges[i].EvaluationType;
                     var expression = CodegenLegoMayVoid.ExpressionMayVoid(
-                        exprForges[i].EvaluationType,
+                        evaluationType,
                         exprForges[i],
                         methodNode,
                         exprSymbol,
                         codegenClassScope);
-                    if (wideners[i] == null) {
+                    if (_wideners[i] == null) {
                         block.AssignArrayElement("values", CodegenExpressionBuilder.Constant(i), expression);
                     }
                     else {
                         var refname = "evalResult" + i;
-                        block.DeclareVar(exprForges[i].EvaluationType, refname, expression);
-                        if (exprForges[i].EvaluationType.CanBeNull()) {
-                            block.IfRefNotNull(refname)
-                                .AssignArrayElement(
+                        if (evaluationType.IsNullTypeSafe()) {
+                            // no action
+                        }
+                        else {
+                            block.DeclareVar(evaluationType, refname, expression);
+                            if (evaluationType.CanBeNull()) {
+                                block.IfRefNotNull(refname)
+                                    .AssignArrayElement(
+                                        "values",
+                                        CodegenExpressionBuilder.Constant(i),
+                                        _wideners[i]
+                                            .WidenCodegen(
+                                                CodegenExpressionBuilder.Ref(refname),
+                                                methodNode,
+                                                codegenClassScope))
+                                    .BlockEnd();
+                            }
+                            else {
+                                block.AssignArrayElement(
                                     "values",
                                     CodegenExpressionBuilder.Constant(i),
-                                    wideners[i]
+                                    _wideners[i]
                                         .WidenCodegen(
                                             CodegenExpressionBuilder.Ref(refname),
                                             methodNode,
-                                            codegenClassScope))
-                                .BlockEnd();
-                        }
-                        else {
-                            block.AssignArrayElement(
-                                "values",
-                                CodegenExpressionBuilder.Constant(i),
-                                wideners[i]
-                                    .WidenCodegen(
-                                        CodegenExpressionBuilder.Ref(refname),
-                                        methodNode,
-                                        codegenClassScope));
+                                            codegenClassScope));
+                            }
                         }
                     }
                 }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -87,16 +88,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
             instance.AddMember(NAME_UNBOUNDHELPER, typeof(ResultSetProcessorRowPerGroupRollupUnboundHelper));
+            
+            StateMgmtSetting stateMgmtSettings = forge.OutputSnapshotSettings.Invoke();
+            
             instance.ServiceCtor.Block.AssignRef(
                 NAME_UNBOUNDHELPER,
                 ExprDotMethod(
                     factory,
                     "MakeRSRowPerGroupRollupSnapshotUnbound",
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     Ref("this"),
                     Constant(forge.GroupKeyTypes),
                     Constant(forge.NumStreams),
-                    eventTypes));
+                    eventTypes,
+                    stateMgmtSettings.ToExpression()));
 
             var generateGroupKeysView = GenerateGroupKeysViewCodegen(forge, classScope, instance);
             var generateOutputEventsView = GenerateOutputEventsViewCodegen(forge, classScope, instance);
@@ -130,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,

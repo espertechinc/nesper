@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return typeof(EventBean);
 		}
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
 				block,
 				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+				InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope));
 			block.AssignRef("result", Ref("next"));
 		}
 

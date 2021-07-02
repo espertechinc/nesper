@@ -19,14 +19,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     {
         public class SelectExprInsertNativeNoEval : SelectExprProcessorForge
         {
-            private readonly EventBeanManufacturerForge eventManufacturer;
+            private readonly EventBeanManufacturerForge _eventManufacturer;
 
             public SelectExprInsertNativeNoEval(
                 EventType eventType,
                 EventBeanManufacturerForge eventManufacturer)
             {
                 ResultEventType = eventType;
-                this.eventManufacturer = eventManufacturer;
+                this._eventManufacturer = eventManufacturer;
             }
 
             public EventType ResultEventType { get; }
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 var manufacturer = codegenClassScope.AddDefaultFieldUnshared(
                     true,
                     typeof(EventBeanManufacturer),
-                    eventManufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
+                    _eventManufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
                 methodNode.Block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         manufacturer,

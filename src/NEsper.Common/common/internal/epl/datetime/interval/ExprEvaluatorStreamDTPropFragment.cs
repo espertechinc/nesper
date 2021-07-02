@@ -24,19 +24,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly EventPropertyGetterSPI getterFragment;
-        private readonly EventPropertyGetterSPI getterTimestamp;
+        private readonly EventPropertyGetterSPI _getterFragment;
+        private readonly EventPropertyGetterSPI _getterTimestamp;
 
-        private readonly int streamId;
+        private readonly int _streamId;
 
         public ExprEvaluatorStreamDTPropFragment(
             int streamId,
             EventPropertyGetterSPI getterFragment,
             EventPropertyGetterSPI getterTimestamp)
         {
-            this.streamId = streamId;
-            this.getterFragment = getterFragment;
-            this.getterTimestamp = getterTimestamp;
+            this._streamId = streamId;
+            this._getterFragment = getterFragment;
+            this._getterTimestamp = getterTimestamp;
         }
 
         public object Evaluate(
@@ -44,17 +44,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var theEvent = eventsPerStream[streamId];
+            var theEvent = eventsPerStream[_streamId];
             if (theEvent == null) {
                 return null;
             }
 
-            var @event = getterFragment.GetFragment(theEvent);
+            var @event = _getterFragment.GetFragment(theEvent);
             if (!(@event is EventBean)) {
                 return null;
             }
 
-            return getterTimestamp.Get((EventBean) @event);
+            return _getterTimestamp.Get((EventBean) @event);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -74,17 +74,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(_streamId)))
                 .IfRefNullReturnNull("theEvent")
                 .DeclareVar<object>(
                     "@event",
-                    getterFragment.EventBeanFragmentCodegen(Ref("theEvent"), methodNode, codegenClassScope))
+                    _getterFragment.EventBeanFragmentCodegen(Ref("theEvent"), methodNode, codegenClassScope))
                 .IfCondition(Not(InstanceOf(Ref("@event"), typeof(EventBean))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(long),
-                        getterTimestamp.EventBeanGetCodegen(
+                        _getterTimestamp.EventBeanGetCodegen(
                             Cast(typeof(EventBean), Ref("@event")),
                             methodNode,
                             codegenClassScope)));

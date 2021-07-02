@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     typeof(ResultSetProcessorUtil),
                     METHOD_APPLYAGGVIEWRESULT,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     REF_OLDDATA,
                     Ref("eventsPerStream"));
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 typeof(ResultSetProcessorUtil),
                 METHOD_APPLYAGGJOINRESULT,
                 MEMBER_AGGREGATIONSVC,
-                MEMBER_AGENTINSTANCECONTEXT,
+                MEMBER_EXPREVALCONTEXT,
                 REF_NEWDATA,
                 REF_OLDDATA);
         }
@@ -83,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 typeof(ResultSetProcessorUtil),
                 METHOD_APPLYAGGJOINRESULT,
                 MEMBER_AGGREGATIONSVC,
-                MEMBER_AGENTINSTANCECONTEXT,
+                MEMBER_EXPREVALCONTEXT,
                 REF_NEWDATA,
                 REF_OLDDATA);
 
@@ -111,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     typeof(ResultSetProcessorUtil),
                     METHOD_APPLYAGGVIEWRESULT,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     REF_OLDDATA,
                     Ref("eventsPerStream"));
@@ -140,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .StaticMethod(
                     typeof(ResultSetProcessorUtil),
                     METHOD_CLEARANDAGGREGATEUNGROUPED,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     MEMBER_AGGREGATIONSVC,
                     REF_VIEWABLE)
                 .DeclareVar<IEnumerator<EventBean>>(
@@ -149,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .DeclareVar<ArrayDeque<EventBean>>(
                     "deque",
                     StaticMethod(typeof(ResultSetProcessorUtil), METHOD_ITERATORTODEQUE, Ref("enumerator")))
-                .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
+                .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_EXPREVALCONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
@@ -170,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         "For",
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         Ref("this"),
-                        MEMBER_AGENTINSTANCECONTEXT));
+                        MEMBER_EXPREVALCONTEXT));
                 return iterator;
             }
 
@@ -191,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                     "EvaluateHavingClause",
                                     Ref("eventsPerStream"),
                                     Constant(true),
-                                    MEMBER_AGENTINSTANCECONTEXT)))
+                                    MEMBER_EXPREVALCONTEXT)))
                         .BlockContinue();
                 }
 
@@ -204,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT))
+                            MEMBER_EXPREVALCONTEXT))
                     .ExprDotMethod(
                         Ref("orderKeys"),
                         "Add",
@@ -213,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             "GetSortKey",
                             Ref("eventsPerStream"),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
             }
 
             iterator.Block.MethodReturn(
@@ -223,7 +224,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     Ref("outgoingEvents"),
                     Ref("orderKeys"),
                     REF_ORDERBYPROCESSOR,
-                    MEMBER_AGENTINSTANCECONTEXT));
+                    MEMBER_EXPREVALCONTEXT));
             return iterator;
         }
 
@@ -244,7 +245,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_JOINSET,
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     method.Block.DeclareVar<EventBean[]>(
@@ -258,7 +259,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_JOINSET,
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
             }
             else {
@@ -272,7 +273,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_JOINSET,
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     var select = GetSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
@@ -286,7 +287,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_JOINSET,
                             ConstantTrue(),
                             ConstantTrue(),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
             }
 
@@ -295,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
         public static void ClearMethodCodegen(CodegenMethod method)
         {
-            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT);
+            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_EXPREVALCONTEXT);
         }
 
         public static void ProcessOutputLimitedJoinCodegen(
@@ -354,10 +355,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
 
             if (forge.IsOutputAll) {
+                var stateMgmtSettings = forge.OutputAllHelperSettings.Invoke();
                 instance.AddMember(NAME_OUTPUTALLUNORDHELPER, typeof(ResultSetProcessorRowPerEventOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLUNORDHELPER,
-                    ExprDotMethod(factory, "MakeRSRowPerEventOutputAll", Ref("this"), MEMBER_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(factory, "MakeRSRowPerEventOutputAll", Ref("this"), MEMBER_EXPREVALCONTEXT, stateMgmtSettings.ToExpression()));
                 method.Block.ExprDotMethod(
                     Member(NAME_OUTPUTALLUNORDHELPER),
                     methodName,
@@ -369,7 +371,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 instance.AddMember(NAME_OUTPUTLASTUNORDHELPER, typeof(ResultSetProcessorRowPerEventOutputLastHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTLASTUNORDHELPER,
-                    ExprDotMethod(factory, "MakeRSRowPerEventOutputLast", Ref("this"), MEMBER_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(factory, "MakeRSRowPerEventOutputLast", Ref("this"), MEMBER_EXPREVALCONTEXT));
                 method.Block.ExprDotMethod(
                     Member(NAME_OUTPUTLASTUNORDHELPER),
                     methodName,
@@ -444,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     typeof(ResultSetProcessorUtil),
                     METHOD_APPLYAGGJOINRESULT,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     REF_OLDDATA);
 
@@ -460,7 +462,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                         else {
                             forEach.StaticMethod(
@@ -473,7 +475,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
                                 Ref("oldEventsSortKey"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                     }
                     else {
@@ -487,7 +489,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                         else {
                             var select = PopulateSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
@@ -500,7 +502,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
                                 Ref("oldEventsSortKey"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                     }
                 }
@@ -516,7 +518,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                     else {
                         forEach.StaticMethod(
@@ -529,7 +531,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
                             Ref("newEventsSortKey"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
                 else {
@@ -542,7 +544,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                     else {
                         var select = PopulateSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
@@ -555,7 +557,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
                             Ref("newEventsSortKey"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
             }
@@ -595,7 +597,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     typeof(ResultSetProcessorUtil),
                     METHOD_APPLYAGGJOINRESULT,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     Ref("newData"),
                     Ref("oldData"));
 
@@ -610,7 +612,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 Ref("oldData"),
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                     else {
                         var select = GetSelectJoinEventsHavingCodegen(classScope, instance);
@@ -622,7 +624,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 Ref("oldData"),
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
 
                     forEach.IfCondition(
@@ -651,7 +653,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             Ref("newData"),
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     var select = GetSelectJoinEventsHavingCodegen(classScope, instance);
@@ -663,7 +665,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             Ref("newData"),
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
 
                 forEach.IfCondition(
@@ -714,7 +716,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         typeof(ResultSetProcessorUtil),
                         METHOD_APPLYAGGVIEWRESULT,
                         MEMBER_AGGREGATIONSVC,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         REF_NEWDATA,
                         REF_OLDDATA,
                         Ref("eventsPerStream"));
@@ -731,7 +733,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                         else {
                             forEach.StaticMethod(
@@ -743,7 +745,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                     }
                     else {
@@ -757,7 +759,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                         }
                         else {
                             var select = PopulateSelectEventsHavingWithOrderByCodegen(classScope, instance);
@@ -770,7 +772,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 REF_ISSYNTHESIZE,
                                 Ref("oldEvents"),
                                 Ref("oldEventsSortKey"),
-                                MEMBER_AGENTINSTANCECONTEXT);
+                                MEMBER_EXPREVALCONTEXT);
                             throw new UnsupportedOperationException();
                         }
                     }
@@ -787,7 +789,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                     else {
                         forEach.StaticMethod(
@@ -800,7 +802,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
                             Ref("newEventsSortKey"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
                 else {
@@ -813,7 +815,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                     else {
                         var select = PopulateSelectEventsHavingWithOrderByCodegen(classScope, instance);
@@ -826,7 +828,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             REF_ISSYNTHESIZE,
                             Ref("newEvents"),
                             Ref("newEventsSortKey"),
-                            MEMBER_AGENTINSTANCECONTEXT);
+                            MEMBER_EXPREVALCONTEXT);
                     }
                 }
             }
@@ -864,7 +866,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         typeof(ResultSetProcessorUtil),
                         METHOD_APPLYAGGVIEWRESULT,
                         MEMBER_AGGREGATIONSVC,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         Ref("newData"),
                         Ref("oldData"),
                         Ref("eventsPerStream"));
@@ -880,7 +882,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 Ref("oldData"),
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
                     else {
                         var select = GetSelectEventsHavingCodegen(classScope, instance);
@@ -892,7 +894,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 Ref("oldData"),
                                 ConstantFalse(),
                                 REF_ISSYNTHESIZE,
-                                MEMBER_AGENTINSTANCECONTEXT));
+                                MEMBER_EXPREVALCONTEXT));
                     }
 
                     forEach.IfCondition(
@@ -921,7 +923,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             Ref("newData"),
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
                 else {
                     var select = GetSelectEventsHavingCodegen(classScope, instance);
@@ -933,7 +935,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             Ref("newData"),
                             ConstantTrue(),
                             REF_ISSYNTHESIZE,
-                            MEMBER_AGENTINSTANCECONTEXT));
+                            MEMBER_EXPREVALCONTEXT));
                 }
 
                 forEach.IfCondition(

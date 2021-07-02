@@ -91,6 +91,16 @@ namespace com.espertech.esper.compiler.client
         /// <returns>callback returning the module uses</returns>
         public ModuleUsesOption ModuleUses { get; set; }
 
+        /// <summary>
+        /// Returns the classback for inlined-class compilation wherein the callback receives class output
+        /// </summary>
+        public InlinedClassInspectionOption InlinedClassInspection { get; set; }
+        
+        /// <summary>
+        /// For internal-use-only and subject-to-change-between-versions, state-management settings
+        /// </summary>
+        public StateMgmtSettingOption StateMgmtSetting { get; set; }
+        
         public CompilerOptions SetAccessModifierEventType(AccessModifierEventTypeOption value)
         {
             AccessModifierEventType = value;
@@ -162,5 +172,18 @@ namespace com.espertech.esper.compiler.client
             ModuleUses = value;
             return this;
         }
+
+        public CompilerOptions SetInlinedClassInspection(InlinedClassInspectionOption value)
+        {
+            InlinedClassInspection = value;
+            return this;
+        }
+
+        public CompilerOptions SetStateMgmtSetting(StateMgmtSettingOption value)
+        {
+            StateMgmtSetting = value;
+            return this;
+        }
+
     }
 } // end of namespace

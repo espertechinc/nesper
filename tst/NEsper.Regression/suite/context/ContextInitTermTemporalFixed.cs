@@ -55,140 +55,140 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         public static IList<RegressionExecution> WithEndMultiCrontab(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndMultiCrontab());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndDBHistorical(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndDBHistorical());
             return execs;
         }
 
         public static IList<RegressionExecution> With9End5AggGrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStart9End5AggGrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> With9End5AggUngrouped(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStart9End5AggUngrouped());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndStartTurnedOn(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndStartTurnedOn());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndStartTurnedOff(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndStartTurnedOff());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndNWFireAndForget(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndNWFireAndForget());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndNWSameContextOnExpr(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndNWSameContextOnExpr());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndSubselectCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndSubselectCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndSubselect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndSubselect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndPatternWithTime(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndPatternWithTime());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndPrevPriorAndAggregation(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndPrevPriorAndAggregation());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndContextCreateDestroy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndContextCreateDestroy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndPatternStartedPatternEnded(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndPatternStartedPatternEnded());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndFilterStartedFilterEndedOutputSnapshot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndFilterStartedFilterEndedOutputSnapshot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndStartAfterEndAfter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndStartAfterEndAfter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndFilterStartedPatternEndedCorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndFilterStartedPatternEndedCorrelated());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndFilterStartedFilterEndedCorrelatedOutputSnapshot(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndFilterStartedFilterEndedCorrelatedOutputSnapshot());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEndContextPartitionSelection(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextStartEndContextPartitionSelection());
             return execs;
         }

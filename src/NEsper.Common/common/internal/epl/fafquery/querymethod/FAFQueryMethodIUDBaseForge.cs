@@ -72,8 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            this.annotations = spec.Annotations;
-            this.hasTableAccess = spec.Raw.IntoTableSpec != null ||
+            annotations = spec.Annotations;
+            hasTableAccess = spec.Raw.IntoTableSpec != null ||
                                   (spec.TableAccessNodes != null && spec.TableAccessNodes.Count > 0);
             if (spec.Raw.InsertIntoDesc != null &&
                 services.TableCompileTimeResolver.Resolve(spec.Raw.InsertIntoDesc.EventTypeName) != null) {
@@ -92,15 +92,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FAFQueryMethodHelper.ValidateFAFQuery(spec);
 
             // obtain processor
-            StreamSpecCompiled streamSpec = spec.StreamSpecs[0];
+            var streamSpec = spec.StreamSpecs[0];
             processor = FireAndForgetProcessorForgeFactory.ValidateResolveProcessor(streamSpec);
 
             // obtain name and type
-            string processorName = processor.NamedWindowOrTableName;
-            EventType eventType = processor.EventTypeRspInputEvents;
+            var processorName = processor.NamedWindowOrTableName;
+            var eventType = processor.EventTypeRspInputEvents;
 
             // determine alias
-            string aliasName = processorName;
+            var aliasName = processorName;
             if (streamSpec.OptionalStreamName != null) {
                 aliasName = streamSpec.OptionalStreamName;
             }
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var @base = new StatementBaseInfo(compilable, spec, null, statementRawInfo, null);
             var subqueryNamedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
             var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                EmptyList<FilterSpecCompiled>.Instance, subqueryNamedWindowConsumers, @base, services);
+                false, EmptyList<FilterSpecCompiled>.Instance, subqueryNamedWindowConsumers, @base, services);
             var subselectActivation = subSelectActivationDesc.Subselects;
             _additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
@@ -117,19 +117,19 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var namesPerStream = new[] {aliasName};
             var typesPerStream = new[] { processor.EventTypePublic };
             var eventTypeNames = new[] {typesPerStream[0].Name};
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
                 @base, subselectActivation, namesPerStream, typesPerStream, eventTypeNames, services);
             _subselectForges = subSelectForgePlan.Subselects;
             _additionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
 
             // compile filter to optimize access to named window
-            StreamTypeServiceImpl typeService = new StreamTypeServiceImpl(
+            var typeService = new StreamTypeServiceImpl(
                 new[] {eventType},
                 new[] {aliasName},
                 new[] {true},
                 true,
                 false);
-            ExcludePlanHint excludePlanHint = ExcludePlanHint.GetHint(
+            var excludePlanHint = ExcludePlanHint.GetHint(
                 typeService.StreamNames,
                 statementRawInfo,
                 services);
@@ -178,15 +178,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionRef queryMethod = Ref("qm");
+            var queryMethod = Ref("qm");
+            CodegenExpression annotationsExpression = (annotations == null)
+                ? ConstantNull()
+                : MakeAnnotations(typeof(Attribute[]), annotations, method, classScope);
+            
             method.Block
                 .DeclareVar(TypeOfMethod(), queryMethod.Ref, NewInstance(TypeOfMethod()))
-                .SetProperty(
-                    queryMethod,
-                    "Annotations",
-                    annotations == null
-                        ? ConstantNull()
-                        : LocalMethod(MakeAnnotations(typeof(Attribute[]), annotations, method, classScope)))
+                .SetProperty(queryMethod, "Annotations", annotationsExpression)
                 .SetProperty(
                     queryMethod, "Processor", processor.Make(method, symbols, classScope))
                 .SetProperty(
@@ -203,7 +202,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(
                         tableAccessForges,
-                        this.GetType(),
+                        GetType(),
                         method,
                         symbols,
                         classScope))

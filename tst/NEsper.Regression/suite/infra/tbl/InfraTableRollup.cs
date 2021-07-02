@@ -32,21 +32,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithGroupingSetThreeDim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraGroupingSetThreeDim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRollupTwoDim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraRollupTwoDim());
             return execs;
         }
 
         public static IList<RegressionExecution> WithRollupOneDim(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraRollupOneDim());
             return execs;
         }

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.@join.indexlookupplan;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -37,21 +38,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherJoin());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLOtherDocSample());
             return execs;
         }
@@ -112,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@Hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as S0 where S1.P10 = P00) from SupportBean_S1 as S1",
                     path);
                 var subq = SupportQueryPlanIndexHook.GetAndResetSubqueries()[0];
-                Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subq.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordFullTableScanLookupStrategyFactoryForge), subq.TableLookupStrategy);
 
                 // test named window
                 env.CompileDeploy("create window S0Window#keepall as SupportBean_S0", path);
@@ -121,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@Hint('exclude_plan(true)') on SupportBean_S1 as S1 select * from S0Window as S0 where S1.P10 = S0.P00",
                     path);
                 var onExpr = SupportQueryPlanIndexHook.GetAndResetOnExpr();
-                Assert.AreEqual(typeof(SubordWMatchExprLookupStrategyAllFilteredForge).Name, onExpr.StrategyName);
+                Assert.AreEqual(nameof(SubordWMatchExprLookupStrategyAllFilteredForge), onExpr.StrategyName);
 
                 env.UndeployAll();
             }

@@ -23,8 +23,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 		private readonly Type _originator;
 		private readonly string _refName;
 		private readonly CodegenClassScope _classScope;
-
-		private CodegenMethod _method;
+		private readonly bool _methodProvided;
+		private readonly CodegenMethod _method;
+		private readonly CodegenBlock _block;
 		private bool _closed;
 
 		public CodegenSetterBuilder(
@@ -37,12 +38,47 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 			_originator = originator;
 			_refName = refName;
 			_classScope = classScope;
+			_methodProvided = false;
 
 			_method = parent.MakeChild(returnType, originator, classScope);
-			_method.Block.DeclareVar(returnType, refName, NewInstance(returnType));
+			_block = _method.Block;
+			_block.DeclareVar(returnType, refName, NewInstance(returnType));
+		}
+		
+		public CodegenSetterBuilder(
+			Type returnType,
+			Type originator,
+			string refName,
+			CodegenClassScope classScope,
+			CodegenMethod method)
+		{
+			_originator = originator;
+			_refName = refName;
+			_classScope = classScope;
+			_method = method;
+			_block = _method.Block;
+			_methodProvided = true;
+			_block.DeclareVarNewInstance(returnType, refName);
 		}
 
-		public CodegenSetterBuilder Constant(
+		public CodegenSetterBuilder(
+			Type returnType,
+			Type originator,
+			string refName,
+			CodegenClassScope classScope,
+			CodegenMethod method,
+			CodegenExpression initializer)
+		{
+			_originator = originator;
+			_refName = refName;
+			_classScope = classScope;
+			_method = method;
+			_block = _method.Block;
+			_methodProvided = true;
+			_block.DeclareVar(returnType, refName, initializer);
+		}
+
+		public CodegenSetterBuilder ConstantExplicit(
 			string name,
 			object value)
 		{
@@ -50,7 +86,44 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 				throw new ArgumentException("Expected a non-expression value, received " + value);
 			}
 
-			return SetValue(name, value == null ? ConstantNull() : CodegenExpressionBuilder.Constant(value));
+			return SetValue(name, value == null ? ConstantNull() : Constant(value));
+		}
+
+		
+		public CodegenSetterBuilder ConstantDefaultChecked(string name, bool value) {
+			if (!value) {
+				return this;
+			}
+			return SetValue(name, Constant(value));
+		}
+
+		public CodegenSetterBuilder ConstantDefaultChecked(string name, int value) {
+			if (value == 0) {
+				return this;
+			}
+			return SetValue(name, Constant(value));
+		}
+
+		public CodegenSetterBuilder ConstantDefaultChecked(string name, bool? value) {
+			return ConstantDefaultCheckedObj(name, value);
+		}
+
+		public CodegenSetterBuilder ConstantDefaultChecked(string name, int? value) {
+			return ConstantDefaultCheckedObj(name, value);
+		}
+
+		public CodegenSetterBuilder ConstantDefaultCheckedObj(string name, object value) {
+			if (value == null) {
+				return this;
+			}
+			return SetValue(name, Constant(value));
+		}
+
+		public CodegenSetterBuilder ExpressionDefaultChecked(string name, CodegenExpression expression) {
+			if (expression.Equals(ConstantNull())) {
+				return this;
+			}
+			return SetValue(name, expression);
 		}
 
 		public CodegenSetterBuilder Expression(
@@ -64,7 +137,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 			string name,
 			Func<CodegenMethod, CodegenExpression> expressionFunc)
 		{
-			CodegenExpression expression = expressionFunc.Invoke(_method);
+			var expression = expressionFunc.Invoke(_method);
 			return SetValue(name, expression ?? ConstantNull());
 		}
 
@@ -75,34 +148,48 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 			CodegenSetterBuilderItemConsumer<T> consumer = (
 				o,
 				parent,
-				scope) => CodegenExpressionBuilder.Constant(o);
+				scope) => Constant(o);
 			return SetValue(name, BuildMap(values, consumer, _originator, _method, _classScope));
 		}
 
-		public CodegenSetterBuilder Map<TI>(
+		public CodegenSetterBuilder Map<T>(
 			string name,
-			IDictionary<string, TI> values,
-			CodegenSetterBuilderItemConsumer<TI> consumer)
+			IDictionary<string, T> values,
+			CodegenSetterBuilderItemConsumer<T> consumer)
 		{
 			return SetValue(name, BuildMap(values, consumer, _originator, _method, _classScope));
 		}
 
+		public CodegenExpressionRef RefName => Ref(_refName);
+		
 		public CodegenExpression Build()
 		{
+			if (_methodProvided) {
+				throw new IllegalStateException("Builder build is reserved for the case when the method is not already provided");
+			}
+			
 			if (_closed) {
 				throw new IllegalStateException("Builder already completed build");
 			}
 
 			_closed = true;
-			_method.Block.MethodReturn(Ref(_refName));
+			_block.MethodReturn(Ref(_refName));
 			return LocalMethod(_method);
 		}
 
-		public CodegenMethod GetMethod()
+		private CodegenSetterBuilder SetValue(
+			string name,
+			CodegenExpression expression)
 		{
-			return _method;
+			_block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
+			return this;
 		}
 
+		private string GetBeanCap(string name)
+		{
+			return name.Substring(0, 1).ToUpper() + name.Substring(1);
+		}
+		
 		private static CodegenExpression BuildMap<TV>(
 			IDictionary<string, TV> map,
 			CodegenSetterBuilderItemConsumer<TV> valueConsumer,
@@ -118,16 +205,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 				return EnumValue(typeof(EmptyDictionary<string, TV>), "Instance");
 			}
 
-			CodegenMethod child = method.MakeChild(typeof(IDictionary<string, TV>), originator, classScope);
+			var child = method.MakeChild(typeof(IDictionary<string, TV>), originator, classScope);
 			if (map.Count == 1) {
-				KeyValuePair<string, TV> single = map.First();
-				CodegenExpression value = BuildMapValue(single.Value, valueConsumer, originator, child, classScope);
+				var single = map.First();
+				var value = BuildMapValue(single.Value, valueConsumer, originator, child, classScope);
 				child.Block.MethodReturn(
 					StaticMethod(
 						typeof(Collections),
 						"SingletonMap",
 						new[] {typeof(string), typeof(TV)},
-						CodegenExpressionBuilder.Constant(single.Key),
+						Constant(single.Key),
 						value));
 			}
 			else {
@@ -135,9 +222,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 					typeof(IDictionary<string, TV>),
 					"map",
 					NewInstance(typeof(LinkedHashMap<string, TV>)));
-				foreach (KeyValuePair<string, TV> entry in map) {
-					CodegenExpression value = BuildMapValue(entry.Value, valueConsumer, originator, child, classScope);
-					child.Block.ExprDotMethod(Ref("map"), "Put", CodegenExpressionBuilder.Constant(entry.Key), value);
+				foreach (var entry in map) {
+					var value = BuildMapValue(entry.Value, valueConsumer, originator, child, classScope);
+					child.Block.ExprDotMethod(Ref("map"), "Put", Constant(entry.Key), value);
 				}
 
 				child.Block.MethodReturn(Ref("map"));
@@ -158,19 +245,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 			}
 
 			return valueConsumer.Invoke(value, method, classScope);
-		}
-
-		private CodegenSetterBuilder SetValue(
-			string name,
-			CodegenExpression expression)
-		{
-			_method.Block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
-			return this;
-		}
-
-		private string GetBeanCap(string name)
-		{
-			return name.Substring(0, 1).ToUpper() + name.Substring(1);
 		}
 	}
 } // end of namespace

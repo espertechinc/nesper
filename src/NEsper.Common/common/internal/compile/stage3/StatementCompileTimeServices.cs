@@ -33,6 +33,7 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
@@ -154,5 +155,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public bool IsFireAndForget => _services.IsFireAndForget;
 
         public ClassProvidedExtension ClassProvidedExtension => _classProvidedExtension;
+        
+        public StateMgmtSettingsProvider StateMgmtSettingsProvider => _services.StateMgmtSettingsProvider;
     }
 } // end of namespace

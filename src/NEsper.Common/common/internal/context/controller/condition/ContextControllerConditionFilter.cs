@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
@@ -157,7 +158,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 lastEvent = theEvent;
             }
 
-            callback.RangeNotification(conditionPath, this, theEvent, null, null, null);
+            IDictionary<string, object> terminationProperties = null;
+            if (filter.OptionalFilterAsName != null) {
+                terminationProperties = Collections.SingletonDataMap(filter.OptionalFilterAsName, theEvent);
+            }
+            
+            callback.RangeNotification(conditionPath, this, theEvent, null, null, null, terminationProperties);
         }
     }
 } // end of namespace

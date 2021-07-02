@@ -9,8 +9,10 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -22,15 +24,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type requiredParam,
             Type providedParam)
         {
-            Type boxedRequired = requiredParam.GetBoxedType();
-            Type boxedProvided = providedParam.GetBoxedType();
-            if (boxedRequired != boxedProvided &&
-                !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
+            bool matches;
+
+            if (requiredParam.IsNullType()) {
+                matches = providedParam == TypeHelper.NullType;
+            } else if (providedParam.IsNullType()) {
+                matches = false;
+            }
+            else {
+                var boxedRequired = requiredParam.GetBoxedType();
+                var boxedProvided = providedParam.GetBoxedType();
+                matches = boxedRequired == boxedProvided ||
+                          TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired);
+            }
+
+
+            if (!matches) {
                 throw new ExprValidationException(
                     "The required parameter type is " +
-                    requiredParam.CleanName() +
+                    requiredParam.TypeSafeName() +
                     " and provided is " +
-                    providedParam.CleanName());
+                    providedParam.TypeSafeName());
             }
         }
 

@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
     public class ProxyExprNodeRenderable : ExprNodeRenderable
     {
-        public Action<TextWriter, ExprPrecedenceEnum, ExprNodeRenderableFlags> ProcToEPL;
+        public Action<TextWriter, ExprPrecedenceEnum, ExprNodeRenderableFlags> procToEPL;
 
         public ProxyExprNodeRenderable()
         {
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ProxyExprNodeRenderable(Action<TextWriter, ExprPrecedenceEnum, ExprNodeRenderableFlags> procToEpl)
         {
-            ProcToEPL = procToEpl;
+            procToEPL = procToEpl;
         }
 
         public void ToEPL(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            ProcToEPL(writer, parentPrecedence, flags);
+            procToEPL(writer, parentPrecedence, flags);
         }
     }
 } // end of namespace

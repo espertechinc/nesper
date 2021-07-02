@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			bool max) : base(lambda, fieldEventType, numParameters)
 		{
 			this.max = max;
-			this.innerTypeBoxed = InnerExpression.EvaluationType.GetBoxedType();
+			innerTypeBoxed = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 		}
 
-		public override Type ReturnType()
+		public override Type ReturnTypeOfMethod()
 		{
 			return innerTypeBoxed;
 		}

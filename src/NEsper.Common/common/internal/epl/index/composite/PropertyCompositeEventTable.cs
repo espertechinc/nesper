@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public int? NumberOfEvents => null;

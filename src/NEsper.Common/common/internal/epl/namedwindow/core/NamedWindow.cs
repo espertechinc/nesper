@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         StatementContext StatementContext { get; set; }
 
-        NamedWindowInstance GetNamedWindowInstance(AgentInstanceContext agentInstanceContext);
+        NamedWindowInstance GetNamedWindowInstance(ExprEvaluatorContext exprEvaluatorContext);
 
         NamedWindowInstance GetNamedWindowInstance(int cpid);
 

@@ -50,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             bool[] requiredPerStream,
             BaseAssemblyNodeFactory[] assemblyInstructionFactories)
         {
-            this._rootStream = rootStream;
-            this._rootStreamName = rootStreamName;
-            this._numStreams = numStreams;
-            this._lookupInstructions = lookupInstructions;
-            this._requiredPerStream = requiredPerStream;
+            _rootStream = rootStream;
+            _rootStreamName = rootStreamName;
+            _numStreams = numStreams;
+            _lookupInstructions = lookupInstructions;
+            _requiredPerStream = requiredPerStream;
 
             // We have a list of factories that are pointing to each other in a tree, i.e.:
             // F1 (=>F3), F2 (=>F3), F3
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             /// <param name="rootStream">is the root stream for which we get results</param>
             public MyResultAssembler(int rootStream)
             {
-                this._rootStream = rootStream;
+                _rootStream = rootStream;
             }
 
             public void Result(

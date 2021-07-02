@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public override string ToString()
         {
-            return this.GetType().Name + " name=" + name;
+            return GetType().Name + " name=" + name;
         }
 
         public bool AddAcquiredLock(ILockable @lock)

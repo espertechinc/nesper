@@ -32,14 +32,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static IList<RegressionExecution> WithSecondaryIndexUpd(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraDeleteSecondaryIndexUpd());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFlow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new InfraDeleteFlow());
             return execs;
         }

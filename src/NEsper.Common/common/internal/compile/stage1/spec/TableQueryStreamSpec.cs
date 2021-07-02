@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         StreamSpecCompiled
     {
         private readonly TableMetaData table;
-        private IList<ExprNode> filterExpressions;
+        private readonly IList<ExprNode> filterExpressions;
 
         public TableQueryStreamSpec(
             string optionalStreamName,

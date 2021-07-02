@@ -63,15 +63,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = array ? typeof(EventBean[]) : typeof(EventBean);
+            var target = array ? typeof(EventBean[]) : typeof(EventBean);
             var methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(PropertyDotNonLambdaFragmentForge), codegenClassScope);
-
+                .MakeChild(target, typeof(PropertyDotNonLambdaFragmentForge), codegenClassScope);
+            
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(Cast(returnType, getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                .MethodReturn(Cast(target, getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

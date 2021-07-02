@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.context.util
     /// </summary>
     public class EPStatementHandleCallbackFilter : FilterHandle
     {
-        private EPStatementAgentInstanceHandle agentInstanceHandle;
+        private readonly EPStatementAgentInstanceHandle agentInstanceHandle;
 
         private FilterHandleCallback filterCallback;
         // private ScheduleHandleCallback scheduleCallback;
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.context.util
             FilterHandleCallback callback)
         {
             this.agentInstanceHandle = agentInstanceHandle;
-            this.filterCallback = callback;
+            filterCallback = callback;
         }
 
         public int StatementId {

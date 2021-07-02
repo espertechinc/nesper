@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 
 		public DIOSortedRefCountedSet(DataInputOutputSerde inner)
 		{
-			this._inner = inner;
+			_inner = inner;
 		}
 
 		public override void Write(

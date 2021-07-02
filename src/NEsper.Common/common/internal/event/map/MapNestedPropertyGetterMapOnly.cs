@@ -22,52 +22,52 @@ namespace com.espertech.esper.common.@internal.@event.map
     /// </summary>
     public class MapNestedPropertyGetterMapOnly : MapEventPropertyGetter
     {
-        private readonly MapEventPropertyGetter[] mapGetterChain;
+        private readonly MapEventPropertyGetter[] _mapGetterChain;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="getterChain">is the chain of getters to retrieve each nested property</param>
-        /// <param name="eventAdaperService">is a factory for PONO bean event types</param>
+        /// <param name="eventAdapterService">is a factory for PONO bean event types</param>
         public MapNestedPropertyGetterMapOnly(
             IList<EventPropertyGetterSPI> getterChain,
-            EventBeanTypedEventFactory eventAdaperService)
+            EventBeanTypedEventFactory eventAdapterService)
         {
-            mapGetterChain = new MapEventPropertyGetter[getterChain.Count];
+            _mapGetterChain = new MapEventPropertyGetter[getterChain.Count];
             for (var i = 0; i < getterChain.Count; i++) {
-                mapGetterChain[i] = (MapEventPropertyGetter) getterChain[i];
+                _mapGetterChain[i] = (MapEventPropertyGetter) getterChain[i];
             }
         }
 
         public object GetMap(IDictionary<string, object> map)
         {
-            var result = mapGetterChain[0].GetMap(map);
+            var result = _mapGetterChain[0].GetMap(map);
             return HandleGetterTrailingChain(result);
         }
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)
         {
-            if (!mapGetterChain[0].IsMapExistsProperty(map)) {
+            if (!_mapGetterChain[0].IsMapExistsProperty(map)) {
                 return false;
             }
 
-            var result = mapGetterChain[0].GetMap(map);
+            var result = _mapGetterChain[0].GetMap(map);
             return HandleIsExistsTrailingChain(result);
         }
 
         public object Get(EventBean eventBean)
         {
-            var result = mapGetterChain[0].Get(eventBean);
+            var result = _mapGetterChain[0].Get(eventBean);
             return HandleGetterTrailingChain(result);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            if (!mapGetterChain[0].IsExistsProperty(eventBean)) {
+            if (!_mapGetterChain[0].IsExistsProperty(eventBean)) {
                 return false;
             }
 
-            var result = mapGetterChain[0].Get(eventBean);
+            var result = _mapGetterChain[0].Get(eventBean);
             return HandleIsExistsTrailingChain(result);
         }
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var resultExpression = mapGetterChain[0]
+            var resultExpression = _mapGetterChain[0]
                 .UnderlyingGetCodegen(
                     underlyingExpression,
                     codegenMethodScope,
@@ -145,11 +145,11 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .IfConditionReturnConst(
-                    Not(mapGetterChain[0].UnderlyingExistsCodegen(Ref("map"), codegenMethodScope, codegenClassScope)),
+                    Not(_mapGetterChain[0].UnderlyingExistsCodegen(Ref("map"), codegenMethodScope, codegenClassScope)),
                     false)
                 .DeclareVar<object>(
                     "result",
-                    mapGetterChain[0].UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
+                    _mapGetterChain[0].UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
                         HandleIsExistsTrailingChainCodegen(codegenMethodScope, codegenClassScope),
@@ -158,14 +158,14 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         private bool HandleIsExistsTrailingChain(object result)
         {
-            for (var i = 1; i < mapGetterChain.Length; i++) {
+            for (var i = 1; i < _mapGetterChain.Length; i++) {
                 if (result == null) {
                     return false;
                 }
 
-                var getter = mapGetterChain[i];
+                var getter = _mapGetterChain[i];
 
-                if (i == mapGetterChain.Length - 1) {
+                if (i == _mapGetterChain.Length - 1) {
                     if (!(result is IDictionary<string, object>)) {
                         if (result is EventBean) {
                             return getter.IsExistsProperty((EventBean) result);
@@ -200,11 +200,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             var block = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "result")
                 .Block;
-            for (var i = 1; i < mapGetterChain.Length; i++) {
+            for (var i = 1; i < _mapGetterChain.Length; i++) {
                 block.IfRefNullReturnFalse("result");
-                var getter = mapGetterChain[i];
+                var getter = _mapGetterChain[i];
 
-                if (i == mapGetterChain.Length - 1) {
+                if (i == _mapGetterChain.Length - 1) {
                     block.IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                         .IfInstanceOf("result", typeof(EventBean))
                         .AssignRef(
@@ -248,12 +248,12 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         private object HandleGetterTrailingChain(object result)
         {
-            for (var i = 1; i < mapGetterChain.Length; i++) {
+            for (var i = 1; i < _mapGetterChain.Length; i++) {
                 if (result == null) {
                     return null;
                 }
 
-                var getter = mapGetterChain[i];
+                var getter = _mapGetterChain[i];
                 if (!(result is IDictionary<string, object>)) {
                     if (result is EventBean) {
                         result = getter.Get((EventBean) result);
@@ -277,9 +277,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "result")
                 .Block;
-            for (var i = 1; i < mapGetterChain.Length; i++) {
+            for (var i = 1; i < _mapGetterChain.Length; i++) {
                 block.IfRefNullReturnNull("result");
-                var getter = mapGetterChain[i];
+                var getter = _mapGetterChain[i];
                 block.IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                     .IfInstanceOf("result", typeof(EventBean))
                     .AssignRef(

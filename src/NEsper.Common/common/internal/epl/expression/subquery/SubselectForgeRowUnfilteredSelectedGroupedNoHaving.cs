@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -40,11 +42,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
@@ -70,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddMatchingEvents(method)));
 
             if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }
@@ -78,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 var methodSelect = ExprNodeUtilityCodegen.CodegenMapSelect(
                     subselect.SelectClause,
                     subselect.SelectAsNames,
-                    this.GetType(),
+                    GetType(),
                     method,
                     classScope);
                 CodegenExpression select = LocalMethod(
@@ -101,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var eventBeanSvc =
                 classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);

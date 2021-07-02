@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanArrayPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly int propertyIndex;
-        private readonly Type underlyingType;
+        private readonly int _propertyIndex;
+        private readonly Type _underlyingType;
 
         /// <summary>
         ///     Ctor.
@@ -34,14 +34,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int propertyIndex,
             Type underlyingType)
         {
-            this.propertyIndex = propertyIndex;
-            this.underlyingType = underlyingType;
+            this._propertyIndex = propertyIndex;
+            this._underlyingType = underlyingType;
         }
 
         public object GetObjectArray(object[] oa)
         {
-            var inner = oa[propertyIndex];
-            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(underlyingType, (EventBean[]) inner);
+            var inner = oa[_propertyIndex];
+            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(_underlyingType, (EventBean[]) inner);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetFragment(EventBean obj)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj);
-            return array[propertyIndex];
+            return array[_propertyIndex];
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
         }
 
         private CodegenMethod GetObjectArrayCodegen(
@@ -127,11 +127,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "oa")
                 .Block
-                .DeclareVar<object>("inner", ArrayAtIndex(Ref("oa"), Constant(propertyIndex)))
+                .DeclareVar<object>("inner", ArrayAtIndex(Ref("oa"), Constant(_propertyIndex)))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArrayCodegen(
-                            underlyingType,
+                            _underlyingType,
                             codegenMethodScope,
                             codegenClassScope),
                         Cast(typeof(EventBean[]), Ref("inner"))));

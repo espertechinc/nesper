@@ -15,8 +15,8 @@ namespace com.espertech.esper.common.@internal.view.prior
 {
     public class PriorEventViewRelAccess : RelativeAccessByEventNIndex
     {
-        private readonly RelativeAccessByEventNIndex buffer;
-        private readonly int relativeIndex;
+        private readonly RelativeAccessByEventNIndex _buffer;
+        private readonly int _relativeIndex;
 
         /// <summary>
         /// Ctor.
@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.view.prior
             RelativeAccessByEventNIndex buffer,
             int relativeIndex)
         {
-            this.buffer = buffer;
-            this.relativeIndex = relativeIndex;
+            this._buffer = buffer;
+            this._relativeIndex = relativeIndex;
         }
 
         public EventBean GetRelativeToEvent(
             EventBean theEvent,
             int prevIndex)
         {
-            return buffer.GetRelativeToEvent(theEvent, relativeIndex);
+            return _buffer.GetRelativeToEvent(theEvent, _relativeIndex);
         }
 
         public EventBean GetRelativeToEnd(int index)

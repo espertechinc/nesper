@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	{
 		protected readonly int numParameters;
 
-		public abstract Type ReturnType();
+		public abstract Type ReturnTypeOfMethod();
 
 		public abstract CodegenExpression ReturnIfEmptyOptional();
 
@@ -71,13 +71,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 			var scope = new ExprForgeCodegenSymbol(false, null);
 			var methodNode = codegenMethodScope
-				.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+				.MakeChildWithScope(ReturnTypeOfMethod(), GetType(), scope, codegenClassScope)
+				.AddParam(PARAMS);
 			var block = methodNode.Block;
 
 			var returnEmpty = ReturnIfEmptyOptional();
 			if (returnEmpty != null) {
-				block.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+				block.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
 					.BlockReturn(returnEmpty);
 			}
 
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					typeof(ObjectArrayEventBean),
 					"indexEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters - 1)), indexTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
+				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"));
 			block.DeclareVar<int>("count", Constant(-1));
 			if (numParameters == 3) {
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				var forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
 					.IncrementRef("count")
 					.AssignArrayElement("props", Constant(0), Ref("count"))
-					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
+					.AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("next"));
 				ForEachBlock(forEach, methodNode, scope, codegenClassScope);
 			}
 

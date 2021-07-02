@@ -68,7 +68,20 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return ExprNodeUtilityCompare.DeepEqualsNullChecked(FilterNegate, other.FilterNegate, true);
         }
 
-        public CodegenMethod CodegenWithEventType(
+        public CodegenExpression CodegenWithEventType(
+            CodegenMethodScope parent,
+            CodegenExpression eventType,
+            CodegenExpression stmtInitSvc,
+            CodegenClassScope classScope)
+        {
+            if (Paths.Length == 0) {
+                return PublicConstValue(typeof(FilterSpecPlan), "EMPTY_PLAN");
+            }
+            var method = CodegenWithEventType(parent, classScope);
+            return LocalMethod(method, eventType, stmtInitSvc);
+        }
+
+        private CodegenMethod CodegenWithEventType(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
@@ -87,7 +100,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             method.Block
-                .DeclareVar<FilterSpecPlan>("plan", NewInstance(typeof(FilterSpecPlan)))
+                .DeclareVarNewInstance<FilterSpecPlan>("plan")
                 .SetProperty(Ref("plan"), "Paths", Ref("paths"))
                 .SetProperty(Ref("plan"), "FilterConfirm", OptionalEvaluator(FilterConfirm, method, classScope))
                 .SetProperty(Ref("plan"), "FilterNegate", OptionalEvaluator(FilterNegate, method, classScope))

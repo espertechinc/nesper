@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string key)
             : base(clazz, writerMember)
         {
-            this._key = key;
+            _key = key;
         }
 
         public override void Write(

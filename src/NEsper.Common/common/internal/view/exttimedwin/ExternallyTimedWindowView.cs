@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
 
         private readonly EventBean[] eventsPerStream = new EventBean[1];
         internal readonly TimeWindow timeWindow;
-        private ViewUpdatedCollection viewUpdatedCollection;
+        private readonly ViewUpdatedCollection viewUpdatedCollection;
         protected AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext;
         private readonly TimePeriodProvide timePeriodProvide;
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         {
             this.factory = factory;
             this.viewUpdatedCollection = viewUpdatedCollection;
-            this.timeWindow = new TimeWindow(agentInstanceViewFactoryContext.IsRemoveStream);
+            timeWindow = new TimeWindow(agentInstanceViewFactoryContext.IsRemoveStream);
             this.agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
             this.timePeriodProvide = timePeriodProvide;
         }

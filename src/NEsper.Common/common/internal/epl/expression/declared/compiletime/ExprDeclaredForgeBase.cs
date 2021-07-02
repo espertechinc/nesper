@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.runtime;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -32,14 +34,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         ExprEnumerationForge,
         ExprEnumerationEval
     {
-        private readonly bool audit;
-        private readonly bool isCache;
-        private readonly ExprDeclaredNodeImpl parent;
-        private readonly string statementName;
-        [NonSerialized] private ExprEnumerationEval innerEvaluatorLambdaLazy;
+        private readonly bool _audit;
+        private readonly bool _isCache;
+        private readonly ExprDeclaredNodeImpl _parent;
+        private readonly string _statementName;
+        [NonSerialized] private ExprEnumerationEval _innerEvaluatorLambdaLazy;
 
-        [NonSerialized] private ExprEvaluator innerEvaluatorLazy;
-        [NonSerialized] private ExprTypableReturnEval innerEvaluatorTypableLazy;
+        [NonSerialized] private ExprEvaluator _innerEvaluatorLazy;
+        [NonSerialized] private ExprTypableReturnEval _innerEvaluatorTypableLazy;
 
         public ExprDeclaredForgeBase(
             ExprDeclaredNodeImpl parent,
@@ -48,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             bool audit,
             string statementName)
         {
-            this.parent = parent;
+            this._parent = parent;
             InnerForge = innerForge;
-            this.isCache = isCache;
-            this.audit = audit;
-            this.statementName = statementName;
+            this._isCache = isCache;
+            this._audit = audit;
+            this._statementName = statementName;
         }
 
         public ExprTypableReturnEval TypableReturnEvaluator => this;
@@ -65,8 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
         }
 
-        public ExprNodeRenderable ExprForgeRenderable => parent;
-        public ExprNodeRenderable EnumForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => _parent;
+        public ExprNodeRenderable EnumForgeRenderable => _parent;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
             EventBean[] eventsPerStream,
@@ -76,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             InitInnerEvaluatorLambda();
             eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream, isNewData, context);
             var result =
-                innerEvaluatorLambdaLazy.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+                _innerEvaluatorLambdaLazy.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
             return result;
         }
 
@@ -87,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             InitInnerEvaluatorLambda();
             eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream, isNewData, context);
-            return innerEvaluatorLambdaLazy.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            return _innerEvaluatorLambdaLazy.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
 
         public EventBean EvaluateGetEventBean(
@@ -96,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprEvaluatorContext context)
         {
             InitInnerEvaluatorLambda();
-            return innerEvaluatorLambdaLazy.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return _innerEvaluatorLambdaLazy.EvaluateGetEventBean(eventsPerStream, isNewData, context);
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
@@ -192,11 +194,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (!audit) {
+            if (!_audit) {
                 return EvaluateCodegenNoAudit(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
             }
+            
+            var inner = InnerForge.EvaluationType;
+            if (inner.IsNullType()) {
+                return ConstantNull();
+            }
 
-            var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
+            var evaluationType = requiredType == typeof(object) ? typeof(object) : inner;
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprDeclaredForgeBase),
@@ -211,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         .Get("AuditProvider")
                         .Add(
                             "Exprdef",
-                            Constant(parent.Prototype.Name),
+                            Constant(_parent.Prototype.Name),
                             Ref("result"),
                             exprSymbol.GetAddExprEvalCtx(methodNode)))
                 .MethodReturn(Ref("result"));
@@ -234,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     codegenMethodScope,
                     exprSymbol,
                     codegenClassScope)
-                .Qparams(GetInstrumentationQParams(parent, codegenClassScope))
+                .Qparams(GetInstrumentationQParams(_parent, codegenClassScope))
                 .Build();
         }
 
@@ -246,11 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
-        public bool? IsMultirow {
-            get {
-                return (InnerForge as ExprTypableReturnForge)?.IsMultirow;
-            }
-        }
+        public bool? IsMultirow => (InnerForge as ExprTypableReturnForge)?.IsMultirow;
 
         public object[] EvaluateTypableSingle(
             EventBean[] eventsPerStream,
@@ -258,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprEvaluatorContext context)
         {
             InitInnerEvaluatorTypable();
-            return innerEvaluatorTypableLazy.EvaluateTypableSingle(eventsPerStream, isNewData, context);
+            return _innerEvaluatorTypableLazy.EvaluateTypableSingle(eventsPerStream, isNewData, context);
         }
 
         public CodegenExpression EvaluateTypableSingleCodegen(
@@ -278,7 +281,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprEvaluatorContext context)
         {
             InitInnerEvaluatorTypable();
-            return innerEvaluatorTypableLazy.EvaluateTypableMulti(eventsPerStream, isNewData, context);
+            return _innerEvaluatorTypableLazy.EvaluateTypableMulti(eventsPerStream, isNewData, context);
         }
 
         public CodegenExpression EvaluateTypableMultiCodegen(
@@ -299,7 +302,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             InitInnerEvaluator();
             eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream, isNewData, context);
-            return innerEvaluatorLazy.Evaluate(eventsPerStream, isNewData, context);
+            return _innerEvaluatorLazy.Evaluate(eventsPerStream, isNewData, context);
         }
 
         protected internal static CodegenExpression[] GetInstrumentationQParams(
@@ -324,6 +327,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var inner = InnerForge.EvaluationType;
+            if (inner.IsNullType()) {
+                return ConstantNull();
+            }
+            
             var evaluationType = DetermineEvaluationType(requiredType);
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
@@ -385,7 +393,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var block = methodNode.Block;
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
-            if (isCache) {
+            if (_isCache) {
                 CodegenExpression eval = ExprDotName(Ref("entry"), "Result");
                 if (evaluationType != typeof(object)) {
                     eval = Cast(InnerForge.EvaluationType, eval);
@@ -446,7 +454,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var block = methodNode.Block;
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
-            if (isCache) {
+            if (_isCache) {
                 block
                     .DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
                         "cache",
@@ -503,7 +511,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var block = methodNode.Block;
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
-            if (isCache) {
+            if (_isCache) {
                 block
                     .DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
                         "cache",
@@ -539,15 +547,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         private void InitInnerEvaluator()
         {
-            if (innerEvaluatorLazy == null) {
-                innerEvaluatorLazy = InnerForge.ExprEvaluator;
+            if (_innerEvaluatorLazy == null) {
+                _innerEvaluatorLazy = InnerForge.ExprEvaluator;
             }
         }
 
         private void InitInnerEvaluatorLambda()
         {
-            if (InnerForge is ExprEnumerationForge && innerEvaluatorLambdaLazy == null) {
-                innerEvaluatorLambdaLazy = ((ExprEnumerationForge) InnerForge).ExprEvaluatorEnumeration;
+            if (InnerForge is ExprEnumerationForge && _innerEvaluatorLambdaLazy == null) {
+                _innerEvaluatorLambdaLazy = ((ExprEnumerationForge) InnerForge).ExprEvaluatorEnumeration;
             }
         }
 
@@ -560,7 +568,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             return ExpressionDeployTimeResolver.MakeRuntimeCacheKeyField(
                 Ref("statementFields"),
-                parent.PrototypeWVisibility,
+                _parent.PrototypeWVisibility,
                 codegenClassScope,
                 GetType());
         }

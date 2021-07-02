@@ -38,70 +38,70 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public static IList<RegressionExecution> WithGroupBySumStartEager(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchGroupBySumStartEager());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPreviousAndPrior(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchPreviousAndPrior());
             return execs;
         }
 
         public static IList<RegressionExecution> WithForceOutputStartNoEagerSum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchForceOutputStartNoEagerSum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithForceOutputStartEagerSum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchForceOutputStartEagerSum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStartEager(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchStartEager());
             return execs;
         }
 
         public static IList<RegressionExecution> WithForceOutputSum(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchForceOutputSum());
             return execs;
         }
 
         public static IList<RegressionExecution> WithForceOutputTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchForceOutputTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithForceOutputOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchForceOutputOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchSceneTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ViewTimeLengthBatchSceneOne());
             return execs;
         }

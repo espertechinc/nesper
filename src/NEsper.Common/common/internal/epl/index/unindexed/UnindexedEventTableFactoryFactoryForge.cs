@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -19,12 +20,16 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
 {
     public class UnindexedEventTableFactoryFactoryForge : EventTableFactoryFactoryForgeBase
     {
+        private readonly StateMgmtSetting _stateMgmtSettings;
+
         public UnindexedEventTableFactoryFactoryForge(
             int indexedStreamNum,
             int? subqueryNum,
-            bool isFireAndForget)
+            bool isFireAndForget,
+            StateMgmtSetting stateMgmtSettings)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
+            _stateMgmtSettings = stateMgmtSettings;
         }
 
         public override Type EventTableClass => typeof(UnindexedEventTable);
@@ -44,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return Collections.GetEmptyList<CodegenExpression>();
+            return Collections.SingletonList<CodegenExpression>(_stateMgmtSettings.ToExpression());
         }
     }
 } // end of namespace

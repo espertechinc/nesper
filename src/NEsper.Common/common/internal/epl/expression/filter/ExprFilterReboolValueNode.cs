@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.filter
 		public ExprNodeRenderable ExprForgeRenderable {
 			get {
 				return new ProxyExprNodeRenderable() {
-					ProcToEPL = (
+					procToEPL = (
 						writer,
 						parentPrecedence,
 						flags) => {

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         /// </summary>
         protected internal readonly AgentInstanceContext agentInstanceContext;
 
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
 
         /// <summary>
         ///     Event type.
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         protected internal readonly EventType eventType;
 
         protected internal readonly ViewFactory viewFactory;
-        private EventBean lastNewEvent;
+        private EventBean _lastNewEvent;
 
         private object[] _lastValuesEventNew;
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
             // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
             EventBean oldValues = null;
-            if (lastNewEvent == null) {
+            if (_lastNewEvent == null) {
                 if (child != null) {
                     oldValues = PopulateMap(
                         _statisticsBean,
@@ -120,9 +120,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             // add data points to the bean
             if (newData != null) {
                 for (var i = 0; i < newData.Length; i++) {
-                    eventsPerStream[0] = newData[i];
-                    var xnum = ExpressionXEval.Evaluate(eventsPerStream, true, agentInstanceContext);
-                    var ynum = ExpressionYEval.Evaluate(eventsPerStream, true, agentInstanceContext);
+                    _eventsPerStream[0] = newData[i];
+                    var xnum = ExpressionXEval.Evaluate(_eventsPerStream, true, agentInstanceContext);
+                    var ynum = ExpressionYEval.Evaluate(_eventsPerStream, true, agentInstanceContext);
                     if (xnum != null && ynum != null) {
                         double x = xnum.AsDouble();
                         double y = ynum.AsDouble();
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                     for (var val = 0; val < additionalEvals.Length; val++) {
                         _lastValuesEventNew[val] = additionalEvals[val]
                             .Evaluate(
-                                eventsPerStream,
+                                _eventsPerStream,
                                 true,
                                 agentInstanceContext);
                     }
@@ -149,9 +149,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             // remove data points from the bean
             if (oldData != null) {
                 for (var i = 0; i < oldData.Length; i++) {
-                    eventsPerStream[0] = oldData[i];
-                    var xnum = ExpressionXEval.Evaluate(eventsPerStream, true, agentInstanceContext);
-                    var ynum = ExpressionYEval.Evaluate(eventsPerStream, true, agentInstanceContext);
+                    _eventsPerStream[0] = oldData[i];
+                    var xnum = ExpressionXEval.Evaluate(_eventsPerStream, true, agentInstanceContext);
+                    var ynum = ExpressionYEval.Evaluate(_eventsPerStream, true, agentInstanceContext);
                     if (xnum != null && ynum != null) {
                         double x = xnum.AsDouble();
                         double y = ynum.AsDouble();
@@ -170,18 +170,18 @@ namespace com.espertech.esper.common.@internal.view.derived
                     _lastValuesEventNew);
                 EventBean[] newEvents = {newDataMap};
                 EventBean[] oldEvents;
-                if (lastNewEvent == null) {
+                if (_lastNewEvent == null) {
                     oldEvents = new[] {oldValues};
                 }
                 else {
-                    oldEvents = new[] {lastNewEvent};
+                    oldEvents = new[] {_lastNewEvent};
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
                 child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
-                lastNewEvent = newDataMap;
+                _lastNewEvent = newDataMap;
             }
 
             agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();

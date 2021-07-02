@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         {
             CodegenMethod method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateNW),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .DeclareVar<StatementAgentInstanceFactoryCreateNW>(
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             insertFromFilter.Forge,
                             method,
-                            this.GetType(),
+                            GetType(),
                             classScope))
                 .SetProperty(
                     Ref("saiff"),
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 .SetProperty(
                     Ref("saiff"),
                     "ResultSetProcessorFactoryProvider",
-                    NewInstanceInner(
+                    NewInstanceNamed(
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method),
                         Ref("statementFields")))

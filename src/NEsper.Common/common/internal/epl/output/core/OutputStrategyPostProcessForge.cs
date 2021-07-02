@@ -25,12 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public class OutputStrategyPostProcessForge
     {
-        private readonly bool audit;
-        private readonly SelectClauseStreamSelectorEnum? insertIntoStreamSelector;
-        private readonly bool isRouted;
-        private readonly bool routeToFront;
-        private readonly SelectClauseStreamSelectorEnum selectStreamSelector;
-        private readonly TableMetaData table;
+        private readonly bool _audit;
+        private readonly SelectClauseStreamSelectorEnum? _insertIntoStreamSelector;
+        private readonly bool _isRouted;
+        private readonly bool _routeToFront;
+        private readonly SelectClauseStreamSelectorEnum _selectStreamSelector;
+        private readonly TableMetaData _table;
 
         public OutputStrategyPostProcessForge(
             bool isRouted,
@@ -40,15 +40,15 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             TableMetaData table,
             bool audit)
         {
-            this.isRouted = isRouted;
-            this.insertIntoStreamSelector = insertIntoStreamSelector;
-            this.selectStreamSelector = selectStreamSelector;
-            this.routeToFront = routeToFront;
-            this.table = table;
-            this.audit = audit;
+            this._isRouted = isRouted;
+            this._insertIntoStreamSelector = insertIntoStreamSelector;
+            this._selectStreamSelector = selectStreamSelector;
+            this._routeToFront = routeToFront;
+            this._table = table;
+            this._audit = audit;
         }
 
-        public bool HasTable => table != null;
+        public bool HasTable => _table != null;
 
         /// <summary>
         ///     Code for post-process, "result" can be null, "force-update" can be passed in
@@ -68,15 +68,15 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
             // handle non-null
             var ifResultNotNull = ifChild.IfRefNotNull("result");
-            if (isRouted) {
-                if (insertIntoStreamSelector != null) {
-                    if (insertIntoStreamSelector.Value.IsSelectsIStream()) {
+            if (_isRouted) {
+                if (_insertIntoStreamSelector != null) {
+                    if (_insertIntoStreamSelector.Value.IsSelectsIStream()) {
                         ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
                             Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
                     }
 
-                    if (insertIntoStreamSelector.Value.IsSelectsRStream()) {
+                    if (_insertIntoStreamSelector.Value.IsSelectsRStream()) {
                         ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
                             Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 }
             }
 
-            if (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY) {
+            if (_selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY) {
                 ifResultNotNull.IfCondition(NotEqualsNull(ExprDotName(Ref("result"), "Second")))
                     .ExprDotMethod(
                         MEMBER_CHILD,
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         "NewResult",
                         PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
             }
-            else if (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) {
+            else if (_selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) {
                 ifResultNotNull.IfCondition(
                         Or(
                             NotEqualsNull(ExprDotName(Ref("result"), "First")),
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 .BlockReturnNoValue()
                 .ForEach(typeof(EventBean), "routed", Ref("events"));
 
-            if (audit) {
+            if (_audit) {
                 forEach.Expression(
                     ExprDotMethodChain(MEMBER_AGENTINSTANCECONTEXT)
                         .Get("AuditProvider")
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         "Route",
                         Ref("routed"),
                         MEMBER_AGENTINSTANCECONTEXT,
-                        Constant(routeToFront)));
+                        Constant(_routeToFront)));
 
             return method;
         }
@@ -171,18 +171,18 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var resolveTable = table == null
+            var resolveTable = _table == null
                 ? ConstantNull()
-                : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method));
-            var insertIntoStreamSelectorExpr = insertIntoStreamSelector == null
+                : TableDeployTimeResolver.MakeResolveTable(_table, symbols.GetAddInitSvc(method));
+            var insertIntoStreamSelectorExpr = _insertIntoStreamSelector == null
                 ? ConstantNull()
-                : EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.Value.GetName());
+                : EnumValue(typeof(SelectClauseStreamSelectorEnum), _insertIntoStreamSelector.Value.GetName());
             
             return NewInstance<OutputStrategyPostProcessFactory>(
-                Constant(isRouted),
+                Constant(_isRouted),
                 insertIntoStreamSelectorExpr,
-                EnumValue(typeof(SelectClauseStreamSelectorEnum), selectStreamSelector.GetName()),
-                Constant(routeToFront),
+                EnumValue(typeof(SelectClauseStreamSelectorEnum), _selectStreamSelector.GetName()),
+                Constant(_routeToFront),
                 resolveTable);
         }
     }

@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
                 // Determine object type returned by method
                 beanClass = methodReflection.ReturnType;
-                if (beanClass == typeof(void) || beanClass == typeof(void) || beanClass.IsBuiltinDataType()) {
+                if (beanClass.IsVoid() || beanClass.IsBuiltinDataType()) {
                     throw new ExprValidationException(
                         "Invalid return type for static method '" +
                         methodReflection.Name +
@@ -416,7 +416,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             if (fail) {
                 throw new ExprValidationException(
-                    "Getter method '" + typeGetterMethod.Name + "' does not return " + metadataClass.CleanName());
+                    "Getter method '" + typeGetterMethod.Name + "' does not return " + metadataClass.TypeSafeName());
             }
 
             return typeGetterMethod;

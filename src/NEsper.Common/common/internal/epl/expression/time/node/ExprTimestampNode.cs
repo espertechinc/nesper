@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                this.GetType(),
+                GetType(),
                 this,
                 "ExprTimestamp",
                 requiredType,
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 0) {
+            if (ChildNodes.Length != 0) {
                 throw new ExprValidationException("current_timestamp function node cannot have a child node");
             }
 

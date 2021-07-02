@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             this.classes.AddAll(classes);
 
             try {
-                EPTypeHelper.TraverseAnnotations<ExtensionSingleRowFunctionAttribute>(
+                EPChainableTypeHelper.TraverseAnnotations<ExtensionSingleRowFunctionAttribute>(
                     classes,
                     (
                         clazz,
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                         singleRowFunctionExtensions.Put(annotation.Name, new Pair<Type, ExtensionSingleRowFunctionAttribute>(clazz, annotation));
                     });
 
-                EPTypeHelper.TraverseAnnotations<ExtensionAggregationFunctionAttribute>(
+                EPChainableTypeHelper.TraverseAnnotations<ExtensionAggregationFunctionAttribute>(
                     classes,
                     (
                         clazz,
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                         aggregationFunctionExtensions.Put(annotation.Name, new Pair<Type, ExtensionAggregationFunctionAttribute>(clazz, annotation));
                     });
 
-                EPTypeHelper.TraverseAnnotations<ExtensionAggregationMultiFunctionAttribute>(
+                EPChainableTypeHelper.TraverseAnnotations<ExtensionAggregationMultiFunctionAttribute>(
                     classes,
                     (
                         clazz,

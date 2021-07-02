@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     /// </summary>
     public class EventBeanManufacturerObjectArrayForge : EventBeanManufacturerForge
     {
-        private readonly ObjectArrayEventType eventType;
-        private readonly int[] indexPerWritable;
-        private readonly bool oneToOne;
+        private readonly ObjectArrayEventType _eventType;
+        private readonly int[] _indexPerWritable;
+        private readonly bool _oneToOne;
 
         /// <summary>
         ///     Ctor.
@@ -36,10 +36,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             ObjectArrayEventType eventType,
             WriteablePropertyDescriptor[] properties)
         {
-            this.eventType = eventType;
+            this._eventType = eventType;
 
             var indexes = eventType.PropertiesIndexes;
-            indexPerWritable = new int[properties.Length];
+            _indexPerWritable = new int[properties.Length];
             var oneToOneMapping = true;
             for (var i = 0; i < properties.Length; i++) {
                 var propertyName = properties[i].PropertyName;
@@ -48,22 +48,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         "Failed to find property '" + propertyName + "' among the array indexes");
                 }
 
-                indexPerWritable[i] = index;
+                _indexPerWritable[i] = index;
                 if (index != i) {
                     oneToOneMapping = false;
                 }
             }
 
-            oneToOne = oneToOneMapping && properties.Length == eventType.PropertyNames.Length;
+            _oneToOne = oneToOneMapping && properties.Length == eventType.PropertyNames.Length;
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             return new EventBeanManufacturerObjectArray(
-                eventType,
+                _eventType,
                 eventBeanTypedEventFactory,
-                indexPerWritable,
-                oneToOne);
+                _indexPerWritable,
+                _oneToOne);
         }
 
         public CodegenExpression Make(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(this._eventType, EPStatementInitServicesConstants.REF));
 
             var makeUndLambda = new CodegenExpressionLambda(codegenBlock)
                 .WithParam<object[]>("properties")
@@ -101,18 +101,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenBlock block,
             CodegenClassScope codegenClassScope)
         {
-            if (oneToOne) {
+            if (_oneToOne) {
                 block.ReturnMethodOrBlock(Ref("properties"));
                 return;
             }
 
             block.DeclareVar<object[]>(
                 "cols",
-                NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
-            for (var i = 0; i < indexPerWritable.Length; i++) {
+                NewArrayByLength(typeof(object), Constant(_eventType.PropertyNames.Length)));
+            for (var i = 0; i < _indexPerWritable.Length; i++) {
                 block.AssignArrayElement(
                     Ref("cols"),
-                    Constant(indexPerWritable[i]),
+                    Constant(_indexPerWritable[i]),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }
 

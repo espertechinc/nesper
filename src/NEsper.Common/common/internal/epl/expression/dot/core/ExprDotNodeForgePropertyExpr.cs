@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -125,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             string expectedType,
             object received)
         {
-            var receivedText = received == null ? "null" : received.GetType().CleanName();
+            var receivedText = received == null ? "null" : received.GetType().TypeSafeName();
             return string.Format(
                 "Statement '{0}' property {1} parameter expression expected a value of {2} but received {3}",
                 statementName,

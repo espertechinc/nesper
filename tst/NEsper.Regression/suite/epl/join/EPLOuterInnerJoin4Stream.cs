@@ -36,42 +36,42 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public static IList<RegressionExecution> WithStarJoinVariantOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinStarJoinVariantOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithStarJoinVariantTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinStarJoinVariantTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullSidedJoinVariantOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullSidedJoinVariantOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullSidedJoinVariantTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullSidedJoinVariantTwo());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullMiddleJoinVariantOne(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullMiddleJoinVariantOne());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFullMiddleJoinVariantTwo(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLJoinFullMiddleJoinVariantTwo());
             return execs;
         }

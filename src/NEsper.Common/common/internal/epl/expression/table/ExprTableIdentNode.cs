@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public ExprEvaluator ExprEvaluator {
             get {
                 return new ProxyExprEvaluator {
-                    ProcEvaluate = (
+                    procEvaluate = (
                         eventsPerStream,
                         isNewData,
                         context) => {

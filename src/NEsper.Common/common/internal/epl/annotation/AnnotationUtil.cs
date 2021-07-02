@@ -16,6 +16,7 @@ using Castle.DynamicProxy;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -112,26 +113,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return annotations;
         }
 
-        public static CodegenMethod MakeAnnotations(
+        public static CodegenExpression MakeAnnotations(
             Type arrayType,
             Attribute[] annotations,
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(arrayType, typeof(AnnotationUtil), classScope);
-            method.Block.DeclareVar(
-                arrayType,
-                "annotations",
-                NewArrayByLength(arrayType.GetElementType(), Constant(annotations.Length)));
-            for (var i = 0; i < annotations.Length; i++) {
-                method.Block.AssignArrayElement(
-                    "annotations",
-                    Constant(i),
-                    MakeAnnotation(annotations[i], parent, classScope));
+            var componentType = arrayType.GetElementType();
+            var expressions = new CodegenExpression[annotations.Length];
+            for (int i = 0; i < annotations.Length; i++) {
+                expressions[i] = MakeAnnotation(annotations[i], parent, classScope);
             }
 
-            method.Block.MethodReturn(Ref("annotations"));
-            return method;
+            return NewArrayWithInit(componentType, expressions);
         }
 
         /// <summary>
@@ -263,14 +257,15 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             // handle non-array
-            if (!annotationAttribute.AnnotationType.IsArray) {
+            var annotationAttributeType = annotationAttribute.AnnotationType;
+            if (!annotationAttributeType.IsArray) {
                 // handle primitive value
-                if (!annotationAttribute.AnnotationType.IsAttribute()) {
+                if (!annotationAttributeType.IsAttribute()) {
                     // if expecting an enumeration type, allow string value
-                    if (annotationAttribute.AnnotationType.IsEnum && (value is string valueString)) {
+                    if (annotationAttributeType.IsEnum && (value is string valueString)) {
                         valueString = valueString.Trim();
 
-                        var annotationType = annotationAttribute.AnnotationType;
+                        var annotationType = annotationAttributeType;
                         try {
                             return Enum.Parse(annotationType, valueString, true);
                         }
@@ -279,7 +274,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                                 "Annotation '" +
                                 annotationClass.FullName +
                                 "' requires an enum-value '" +
-                                annotationAttribute.AnnotationType.FullName +
+                                annotationAttributeType.FullName +
                                 "' for attribute '" +
                                 annotationAttribute.Name +
                                 "' but received '" +
@@ -289,14 +284,14 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
 
                     // cast as required
-                    var caster = SimpleTypeCasterFactory.GetCaster(value.GetType(), annotationAttribute.AnnotationType);
+                    var caster = SimpleTypeCasterFactory.GetCaster(value.GetType(), annotationAttributeType);
                     var finalValue = caster.Cast(value);
                     if (finalValue == null) {
                         throw new AnnotationException(
                             "Annotation '" +
                             annotationClass.Name +
                             "' requires a " +
-                            annotationAttribute.AnnotationType.Name +
+                            annotationAttributeType.Name +
                             "-typed value for attribute '" +
                             annotationAttribute.Name +
                             "' but received " +
@@ -314,7 +309,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                         "Annotation '" +
                         annotationClass.GetSimpleName() +
                         "' requires a " +
-                        annotationAttribute.AnnotationType.GetSimpleName() +
+                        annotationAttributeType.GetSimpleName() +
                         "-typed value for attribute '" +
                         annotationAttribute.Name +
                         "' but received " +
@@ -331,7 +326,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     "Annotation '" +
                     annotationClass.GetSimpleName() +
                     "' requires a " +
-                    annotationAttribute.AnnotationType.GetSimpleName() +
+                    annotationAttributeType.GetSimpleName() +
                     "-typed value for attribute '" +
                     annotationAttribute.Name +
                     "' but received " +
@@ -340,7 +335,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     "-typed value");
             }
 
-            var componentType = annotationAttribute.AnnotationType.GetElementType();
+            var componentType = annotationAttributeType.GetElementType();
             var array = Arrays.CreateInstanceChecked(componentType, valueAsArray.Length);
 
             for (var i = 0; i < valueAsArray.Length; i++) {
@@ -371,7 +366,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 else {
                     var caster = SimpleTypeCasterFactory.GetCaster(
                         arrayValue.GetType(),
-                        annotationAttribute.AnnotationType.GetElementType());
+                        annotationAttributeType.GetElementType());
                     finalValue = caster.Cast(arrayValue);
                     if (finalValue == null) {
                         throw MakeArrayMismatchException(
@@ -404,7 +399,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         {
             var props = new List<AnnotationAttribute>();
 
-#if true
             var clazzProperties = annotationClass.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             if (clazzProperties.Length == 0) {
                 return Collections.GetEmptyList<AnnotationAttribute>();
@@ -427,34 +421,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
                 props.Add(annotationAttribute);
             }
-#else
-            var methods = annotationClass.GetMethods();
-            if (methods.Length == 0) {
-                return Collections.GetEmptyList<AnnotationAttribute>();
-            }
-
-            for (var i = 0; i < methods.Length; i++) {
-                var method = methods[i];
-                if (method.ReturnType == typeof(void)) {
-                    continue;
-                }
-
-                var parameters = method.GetParameters();
-                if (parameters.Length > 0) {
-                    continue;
-                }
-
-                var methodName = method.Name;
-                if (methodName.Equals("GetType") ||
-                    methodName.Equals("ToString") ||
-                    methodName.Equals("AnnotationType") ||
-                    methodName.Equals("GetHashCode")) {
-                    continue;
-                }
-
-                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TBD: method.DefaultValue
-            }
-#endif
 
             props.Sort(
                 (
@@ -735,11 +701,8 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     {
                         valueExpression = Clazz((Type) value);
                     }
-                    else if (property.PropertyType.IsArray && property.PropertyType.GetElementType().IsAttribute())
-                    {
-                        valueExpression = LocalMethod(
-                            MakeAnnotations(
-                                property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope));
+                    else if (property.PropertyType.IsArray && property.PropertyType.GetElementType().IsAttribute()) {
+                        valueExpression = MakeAnnotations(property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope);
                     }
                     else if (!property.PropertyType.IsAttribute())
                     {

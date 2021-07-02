@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -25,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -57,7 +59,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             EventType[] eventTypes,
-            MultiKeyClassRef multiKeyClassRef)
+            MultiKeyClassRef multiKeyClassRef,
+            Supplier<StateMgmtSetting> outputFirstSettings,
+            Supplier<StateMgmtSetting> outputAllSettings,
+            Supplier<StateMgmtSetting> outputLastSettings,
+            Supplier<StateMgmtSetting> outputSnapshotSettings)
         {
             ResultEventType = resultEventType;
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
@@ -79,6 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             EventTypes = eventTypes;
             GroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
             MultiKeyClassRef = multiKeyClassRef;
+            OutputFirstSettings = outputFirstSettings;
+            OutputAllSettings = outputAllSettings;
+            OutputLastSettings = outputLastSettings;
+            OutputSnapshotSettings = outputSnapshotSettings;
         }
 
         public MultiKeyClassRef MultiKeyClassRef { get; }
@@ -119,6 +129,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
         public Type[] GroupKeyTypes { get; }
 
+        public Supplier<StateMgmtSetting> OutputFirstSettings { get; }
+
+        public Supplier<StateMgmtSetting> OutputAllSettings { get; }
+
+        public Supplier<StateMgmtSetting> OutputLastSettings { get; }
+
+        public Supplier<StateMgmtSetting> OutputSnapshotSettings { get; }
+
         public void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
@@ -131,13 +149,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 GetType(),
                 classScope,
                 node => node.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
+                node => node.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",
@@ -179,7 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 classScope,
                                 factoryCtor,
                                 REF_EPS,
-                                ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT)));
 
                     var impl = NewInstance<ProxyHavingClauseEvaluator>(evaluateHaving);

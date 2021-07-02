@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalStreamNumEnumSingleForge(ExprEnumerationForge enumeration)
         {
-            this._enumeration = enumeration;
+            _enumeration = enumeration;
         }
 
         public ExprEvaluator ExprEvaluator {

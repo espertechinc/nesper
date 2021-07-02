@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         {
             var method = parent.MakeChild(typeof(JsonEventTypeDetail), typeof(JsonEventTypeDetail), classScope);
             method.Block
-                .DeclareVar<JsonEventTypeDetail>("detail", NewInstance(typeof(JsonEventTypeDetail)))
+                .DeclareVarNewInstance<JsonEventTypeDetail>("detail")
                 .SetProperty(Ref("detail"), "UnderlyingClassName", Constant(UnderlyingClassName))
                 .SetProperty(Ref("detail"), "OptionalUnderlyingProvided", Constant(OptionalUnderlyingProvided))
                 .SetProperty(Ref("detail"), "DelegateClassName", Constant(DelegateClassName))

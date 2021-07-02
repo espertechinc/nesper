@@ -15,6 +15,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.core;
@@ -82,20 +83,25 @@ namespace NEsper.Avro.Core
 
         public Type UnderlyingType => typeof(GenericRecord);
 
-        public Type GetPropertyType(string propertyName)
+        public Type GetPropertyTypeRaw(string propertyName)
         {
             var item = _propertyItems.Get(StringValue.UnescapeDot(propertyName));
             if (item != null) {
-                return item.SimplePropertyType;
+                return item.PropertyDescriptor.PropertyType;
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             return AvroPropertyUtil.PropertyType(_avroSchema, property);
         }
 
+        public Type GetPropertyType(string propertyName)
+        {
+            return GetPropertyTypeRaw(propertyName).TypeNormalized();
+        }
+
         public bool IsProperty(string propertyExpression)
         {
-            var propertyType = GetPropertyType(propertyExpression);
+            var propertyType = GetPropertyTypeRaw(propertyExpression);
             if (propertyType != null) {
                 return true;
             }
@@ -270,7 +276,6 @@ namespace NEsper.Avro.Core
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -287,7 +292,6 @@ namespace NEsper.Avro.Core
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -381,13 +385,11 @@ namespace NEsper.Avro.Core
                 _propertyNames[fieldNum] = field.Name;
 
                 var propertyType = AvroTypeUtil.PropertyType(field.Schema);
-                Type componentType = null;
                 var indexed = false;
                 var mapped = false;
                 FragmentEventType fragmentEventType = null;
 
                 if (field.Schema.Tag == global::Avro.Schema.Type.Array) {
-                    componentType = AvroTypeUtil.PropertyType(field.Schema.AsArraySchema().ItemSchema);
                     indexed = true;
                     if (field.Schema.AsArraySchema().ItemSchema.Tag == global::Avro.Schema.Type.Record) {
                         fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
@@ -400,15 +402,12 @@ namespace NEsper.Avro.Core
                 }
                 else if (field.Schema.Tag == global::Avro.Schema.Type.Map) {
                     mapped = true;
-                    componentType = AvroTypeUtil.PropertyType(field.Schema.AsMapSchema().ValueSchema);
                 }
                 else if (field.Schema.Tag == global::Avro.Schema.Type.String) {
-                    componentType = typeof(char);
                     indexed = true;
                 }
                 else {
                     if (propertyType == typeof(string)) {
-                        componentType = typeof(char);
                         indexed = true;
                     }
 
@@ -429,13 +428,12 @@ namespace NEsper.Avro.Core
                 var descriptor = new EventPropertyDescriptor(
                     field.Name,
                     propertyType,
-                    componentType,
                     false,
                     false,
                     indexed,
                     mapped,
                     fragmentEventType != null);
-                var item = new PropertySetDescriptorItem(descriptor, propertyType, getter, fragmentEventType);
+                var item = new PropertySetDescriptorItem(descriptor, getter, fragmentEventType);
                 _propertyItems.Put(field.Name, item);
                 _propertyDescriptors[fieldNum] = descriptor;
 

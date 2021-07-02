@@ -44,91 +44,91 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         public static IList<RegressionExecution> WithrowGroupedIndexSharedMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedIndexSharedMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedMultikeyWArray(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedMultikeyWArray());
             return execs;
         }
 
         public static IList<RegressionExecution> WithcolumnGroupBy(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMulticolumnGroupBy());
             return execs;
         }
 
         public static IList<RegressionExecution> WithcolumnInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMulticolumnInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithcolumnGroupedWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMulticolumnGroupedWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithcolumnGroupedContextPartitioned(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMulticolumnGroupedContextPartitioned());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedUncorrelatedIteratorAndExpressionDef(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedUncorrelatedIteratorAndExpressionDef());
             return execs;
         }
 
         public static IList<RegressionExecution> WithcolumnGroupedUncorrelatedUnfiltered(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMulticolumnGroupedUncorrelatedUnfiltered());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedNamedWindowSubqueryIndexShared(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedNamedWindowSubqueryIndexShared());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedCorrelatedWHaving(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedCorrelatedWHaving());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedUncorrelatedWithEnumerationMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedUncorrelatedWithEnumerationMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedCorrelatedWithEnumMethod(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedCorrelatedWithEnumMethod());
             return execs;
         }
 
         public static IList<RegressionExecution> WithrowGroupedNoDataWindowUncorrelated(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowGroupedNoDataWindowUncorrelated());
             return execs;
         }

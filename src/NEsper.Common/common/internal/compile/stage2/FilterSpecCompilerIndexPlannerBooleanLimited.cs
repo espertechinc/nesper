@@ -63,13 +63,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             // there is no value expression, i.e. "select * from SupportBean(theString regexp 'abc')"
             var withValueExpr = (RewriteDescriptorWithValueExpr) desc;
-            ExprNode valueExpression = withValueExpr.ValueExpression;
+            var valueExpression = withValueExpr.ValueExpression;
             var valueExpressionType = valueExpression.Forge.EvaluationType;
             var replacement = new ExprFilterReboolValueNode(valueExpressionType);
             ExprNodeUtilityModify.ReplaceChildNode(withValueExpr.ValueExpressionParent, valueExpression, replacement);
             var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, services).WithIsFilterExpression(true).Build();
             var rebool = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.FILTER, constituent, validationContext);
-            DataInputOutputSerdeForge serde = services.SerdeResolver.SerdeForFilter(valueExpressionType, raw);
+            var serde = services.SerdeResolver.SerdeForFilter(valueExpressionType, raw);
             var convertor = GetMatchEventConvertor(valueExpression, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
 
             var reboolExpressionX = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(constituent, new ExprNodeRenderableFlags(false));
@@ -100,26 +100,26 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static RewriteDescriptor FindRewrite(ExprNode parent)
         {
-            IList<ExprNodeWithParentPair> valueExpressions = FindValueExpressionsDeepMayNull(parent);
+            var valueExpressions = FindValueExpressionsDeepMayNull(parent);
             if (valueExpressions == null) {
                 return new RewriteDescriptorNoValueExpr();
             }
 
             if (valueExpressions.Count == 1) {
-                ExprNodeWithParentPair pair = valueExpressions[0];
+                var pair = valueExpressions[0];
                 return new RewriteDescriptorWithValueExpr(pair.Node, pair.Parent);
             }
 
             // find a single value expression that is non-deploy-time-constant
             IList<ExprNodeWithParentPair> nonConstants = new List<ExprNodeWithParentPair>(valueExpressions.Count);
-            foreach (ExprNodeWithParentPair expr in valueExpressions) {
+            foreach (var expr in valueExpressions) {
                 if (!expr.Node.Forge.ForgeConstantType.IsConstant) {
                     nonConstants.Add(expr);
                 }
             }
 
             if (nonConstants.Count == 1) {
-                ExprNodeWithParentPair pair = nonConstants[0];
+                var pair = nonConstants[0];
                 return new RewriteDescriptorWithValueExpr(pair.Node, pair.Parent);
             }
 
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static IList<ExprNodeWithParentPair> FindValueExpressionsDeepMayNull(ExprNode parent)
         {
-            AtomicReference<IList<ExprNodeWithParentPair>> pairs = new AtomicReference<IList<ExprNodeWithParentPair>>();
+            var pairs = new AtomicReference<IList<ExprNodeWithParentPair>>();
             FindValueExpressionsDeepRecursive(parent, pairs);
             return pairs.Get();
         }
@@ -143,9 +143,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             if (parent is ExprNodeWithChainSpec) {
-                ExprNodeWithChainSpec chainableNode = (ExprNodeWithChainSpec) parent;
-                foreach (Chainable chainable in chainableNode.ChainSpec) {
-                    foreach (ExprNode param in chainable.GetParametersOrEmpty()) {
+                var chainableNode = (ExprNodeWithChainSpec) parent;
+                foreach (var chainable in chainableNode.ChainSpec) {
+                    foreach (var param in chainable.GetParametersOrEmpty()) {
                         FindValueExpr(param, parent, pairsRef);
                     }
                 }
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // add value expression, don't traverse child
-            IList<ExprNodeWithParentPair> pairs = pairsRef.Get();
+            var pairs = pairsRef.Get();
             if (pairs == null) {
                 pairs = new List<ExprNodeWithParentPair>(2);
                 pairsRef.Set(pairs);

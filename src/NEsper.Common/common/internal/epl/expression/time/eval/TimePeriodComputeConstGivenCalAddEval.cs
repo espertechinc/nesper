@@ -31,11 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             int indexMicroseconds,
             TimeZoneInfo timeZone)
         {
-            this.Adders = adders;
-            this.Added = added;
-            this.TimeAbacus = timeAbacus;
-            this.IndexMicroseconds = indexMicroseconds;
-            this.TimeZone = timeZone;
+            Adders = adders;
+            Added = added;
+            TimeAbacus = timeAbacus;
+            IndexMicroseconds = indexMicroseconds;
+            TimeZone = timeZone;
         }
 
         public long DeltaAdd(

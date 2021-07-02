@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             int numStreams,
             ExprEvaluator hashGetter)
         {
-            this._hashGetter = hashGetter;
-            this._isNwOnTrigger = isNWOnTrigger;
-            this._lookupStream = lookupStream;
+            _hashGetter = hashGetter;
+            _isNwOnTrigger = isNWOnTrigger;
+            _lookupStream = lookupStream;
 
             if (lookupStream != -1) {
                 _events = new EventBean[lookupStream + 1];
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public CompositeIndexQuery SetNext(CompositeIndexQuery next)
         {
-            this._next = next;
+            _next = next;
             return this;
         }
 

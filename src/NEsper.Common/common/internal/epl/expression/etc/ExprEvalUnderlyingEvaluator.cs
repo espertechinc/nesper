@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             int streamNum,
             Type resultType)
         {
-            this._streamNum = streamNum;
-            this._resultType = resultType;
+            _streamNum = streamNum;
+            _resultType = resultType;
         }
 
         public object Evaluate(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream?[_streamNum];
+            var @event = eventsPerStream?[_streamNum];
 
             return @event?.Underlying;
         }
@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(_resultType, this.GetType(), codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .IfNullReturnNull(refEPS)
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
-                    writer.Write(this.GetType().Name);
+                    writer.Write(GetType().Name);
                 });
             }
         }

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
             CodegenClassScope classScope,
             CodegenExpression optionalEventTypeResolver)
         {
-            return CodegenExpressionBuilder.NewInstanceInner(ClassName, optionalEventTypeResolver);
+            return CodegenExpressionBuilder.NewInstanceNamed(ClassName, optionalEventTypeResolver);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
     public class SelectEvalInsertCoercionMap : SelectExprProcessorForge
     {
-        private EventType resultEventType;
+        private readonly EventType resultEventType;
 
         public SelectEvalInsertCoercionMap(EventType resultEventType)
         {
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression bean = ExprDotName(

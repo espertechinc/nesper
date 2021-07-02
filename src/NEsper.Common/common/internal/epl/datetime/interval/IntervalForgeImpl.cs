@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.eval;
@@ -30,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
     public class IntervalForgeImpl : IntervalForge
     {
-        private readonly string parameterPropertyEnd;
-        private readonly string parameterPropertyStart;
-        private readonly int parameterStreamNum;
+        private readonly string _parameterPropertyEnd;
+        private readonly string _parameterPropertyStart;
+        private readonly int _parameterStreamNum;
 
         public IntervalForgeImpl(
             DatetimeMethodDesc method,
@@ -47,10 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
             if (expressions[0] is ExprStreamUnderlyingNode) {
                 var und = (ExprStreamUnderlyingNode) expressions[0];
-                parameterStreamNum = und.StreamId;
-                var type = streamTypeService.EventTypes[parameterStreamNum];
-                parameterPropertyStart = type.StartTimestampPropertyName;
-                if (parameterPropertyStart == null) {
+                _parameterStreamNum = und.StreamId;
+                var type = streamTypeService.EventTypes[_parameterStreamNum];
+                _parameterPropertyStart = type.StartTimestampPropertyName;
+                if (_parameterPropertyStart == null) {
                     throw new ExprValidationException(
                         "For date-time method '" +
                         methodNameUse +
@@ -59,22 +60,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         "', however no timestamp property has been defined for this event type");
                 }
 
-                timestampType = type.GetPropertyType(parameterPropertyStart);
-                var getter = ((EventTypeSPI) type).GetGetterSPI(parameterPropertyStart);
-                var getterReturnTypeBoxed = type.GetPropertyType(parameterPropertyStart).GetBoxedType();
-                ForgeTimestamp = new ExprEvaluatorStreamDTProp(parameterStreamNum, getter, getterReturnTypeBoxed);
+                var getter = ((EventTypeSPI) type).GetGetterSPI(_parameterPropertyStart);
+                var getterReturnType = type.GetPropertyType(_parameterPropertyStart);
+                if (getterReturnType.IsNullTypeSafe()) {
+                    throw new ExprValidationException($"Property '{_parameterPropertyStart}' does not exist or returns a null-type value");
+                }
+                timestampType = type.GetPropertyType(_parameterPropertyStart);
+                var getterReturnTypeBoxed = getterReturnType.GetBoxedType();
+
+                ForgeTimestamp = new ExprEvaluatorStreamDTProp(_parameterStreamNum, getter, getterReturnTypeBoxed);
 
                 if (type.EndTimestampPropertyName != null) {
-                    parameterPropertyEnd = type.EndTimestampPropertyName;
+                    _parameterPropertyEnd = type.EndTimestampPropertyName;
                     var getterEndTimestamp =
                         ((EventTypeSPI) type).GetGetterSPI(type.EndTimestampPropertyName);
                     forgeEndTimestamp = new ExprEvaluatorStreamDTProp(
-                        parameterStreamNum,
+                        _parameterStreamNum,
                         getterEndTimestamp,
                         getterReturnTypeBoxed);
                 }
                 else {
-                    parameterPropertyEnd = parameterPropertyStart;
+                    _parameterPropertyEnd = _parameterPropertyStart;
                 }
             }
             else {
@@ -84,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 string unresolvedPropertyName = null;
                 if (expressions[0] is ExprIdentNode) {
                     var identNode = (ExprIdentNode) expressions[0];
-                    parameterStreamNum = identNode.StreamId;
-                    parameterPropertyStart = identNode.ResolvedPropertyName;
-                    parameterPropertyEnd = parameterPropertyStart;
+                    _parameterStreamNum = identNode.StreamId;
+                    _parameterPropertyStart = identNode.ResolvedPropertyName;
+                    _parameterPropertyEnd = _parameterPropertyStart;
                     unresolvedPropertyName = identNode.UnresolvedPropertyName;
                 }
 
@@ -101,8 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                             tableCompileTimeResolver);
                         if (propertyDesc.First.FragmentEventType != null) {
                             var type = propertyDesc.First.FragmentEventType.FragmentType;
-                            parameterPropertyStart = type.StartTimestampPropertyName;
-                            if (parameterPropertyStart == null) {
+                            _parameterPropertyStart = type.StartTimestampPropertyName;
+                            if (_parameterPropertyStart == null) {
                                 throw new ExprValidationException(
                                     "For date-time method '" +
                                     methodNameUse +
@@ -111,28 +117,28 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                                     "', however no timestamp property has been defined for this event type");
                             }
 
-                            timestampType = type.GetPropertyType(parameterPropertyStart);
+                            timestampType = type.GetPropertyType(_parameterPropertyStart);
                             var getterFragment =
-                                ((EventTypeSPI) streamTypeService.EventTypes[parameterStreamNum]).GetGetterSPI(
+                                ((EventTypeSPI) streamTypeService.EventTypes[_parameterStreamNum]).GetGetterSPI(
                                     unresolvedPropertyName);
                             var getterStartTimestamp =
-                                ((EventTypeSPI) type).GetGetterSPI(parameterPropertyStart);
+                                ((EventTypeSPI) type).GetGetterSPI(_parameterPropertyStart);
                             ForgeTimestamp = new ExprEvaluatorStreamDTPropFragment(
-                                parameterStreamNum,
+                                _parameterStreamNum,
                                 getterFragment,
                                 getterStartTimestamp);
 
                             if (type.EndTimestampPropertyName != null) {
-                                parameterPropertyEnd = type.EndTimestampPropertyName;
+                                _parameterPropertyEnd = type.EndTimestampPropertyName;
                                 var getterEndTimestamp =
                                     ((EventTypeSPI) type).GetGetterSPI(type.EndTimestampPropertyName);
                                 forgeEndTimestamp = new ExprEvaluatorStreamDTPropFragment(
-                                    parameterStreamNum,
+                                    _parameterStreamNum,
                                     getterFragment,
                                     getterEndTimestamp);
                             }
                             else {
-                                parameterPropertyEnd = parameterPropertyStart;
+                                _parameterPropertyEnd = _parameterPropertyStart;
                             }
                         }
                     }
@@ -248,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             // check parameter info
-            if (parameterPropertyStart == null) {
+            if (_parameterPropertyStart == null) {
                 return null;
             }
 
@@ -258,9 +264,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 targetStreamNum,
                 targetPropertyStart,
                 targetPropertyEnd,
-                parameterStreamNum,
-                parameterPropertyStart,
-                parameterPropertyEnd);
+                _parameterStreamNum,
+                _parameterPropertyStart,
+                _parameterPropertyEnd);
         }
 
         public interface IIntervalOpForge

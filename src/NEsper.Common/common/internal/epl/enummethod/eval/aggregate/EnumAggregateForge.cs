@@ -16,10 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public abstract class EnumAggregateForge : EnumForge
     {
-        private ExprForge _initialization;
-        private ExprForge _innerExpression;
-        private ObjectArrayEventType _resultEventType;
-        private int _streamNumLambda;
+        private readonly ExprForge _initialization;
+        private readonly ExprForge _innerExpression;
+        private readonly ObjectArrayEventType _resultEventType;
+        private readonly int _streamNumLambda;
 
         protected EnumAggregateForge(
             ExprForge initialization,

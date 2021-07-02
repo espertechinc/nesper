@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.hook.enummethod;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.plugin;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;

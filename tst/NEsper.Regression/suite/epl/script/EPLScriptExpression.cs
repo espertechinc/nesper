@@ -42,75 +42,83 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             WithJavaScriptStatelessReturnPassArgs(execs);
             WithSubqueryParam(execs);
             WithReturnNullWhenNumeric(execs);
+            WithGenericResultType(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGenericResultType(IList<RegressionExecution> execs = null)
+        {
+            execs ??= new List<RegressionExecution>();
+            execs.Add(new EPLScriptGenericResultType());
             return execs;
         }
 
         public static IList<RegressionExecution> WithReturnNullWhenNumeric(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptReturnNullWhenNumeric());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSubqueryParam(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptSubqueryParam());
             return execs;
         }
 
         public static IList<RegressionExecution> WithJavaScriptStatelessReturnPassArgs(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptJavaScriptStatelessReturnPassArgs());
             return execs;
         }
 
         public static IList<RegressionExecution> WithParserMVELSelectNoArgConstant(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptParserMVELSelectNoArgConstant());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidScriptJS(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptInvalidScriptJS());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalidRegardlessDialect(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptInvalidRegardlessDialect());
             return execs;
         }
 
         public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptDocSamples());
             return execs;
         }
 
         public static IList<RegressionExecution> WithScriptReturningEvents(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptScriptReturningEvents());
             return execs;
         }
 
         public static IList<RegressionExecution> WithQuoteEscape(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptQuoteEscape());
             return execs;
         }
 
         public static IList<RegressionExecution> WithScripts(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new EPLScriptScripts());
             return execs;
         }
@@ -582,21 +590,40 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             }
         }
 
+        internal class EPLScriptGenericResultType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@name('s0') expression System.Collections.Generic.IList<String> js:myJSFunc(stringvalue) [\n" +
+                             "  function doSomething(stringvalue) {\n" +
+                             "    return null;\n" +
+                             "  }\n" +
+                             "  return doSomething(stringvalue);\n" +
+                             "]\n" +
+                             "select myJSFunc('test') as c0 from SupportBean_S0";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                Assert.AreEqual(typeof(IList<String>), env.Statement("s0").EventType.GetPropertyType("c0"));
+
+                env.UndeployAll();
+            }
+        }
+
         internal class EPLScriptReturnNullWhenNumeric : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema Event(host string); " +
-                          "create window DnsTrafficProfile#time(5 minutes) (host string); " +
-                          "expression double js:doSomething(p) [ " +
-                          "function doSomething(p) { " +
-                          "  Console.Out.WriteLine(p);" +
-                          "  Console.Out.WriteLine(p.Length);" +
-                          " } " +
-                          "doSomething(p); " +
-                          "] " +
-                          "@Name('out') select doSomething((select window(z.*) from DnsTrafficProfile as z)) as score from DnsTrafficProfile;" +
-                          "insert into DnsTrafficProfile select * from Event; ";
+                string epl = "create schema Event(host string); " +
+                             "create window DnsTrafficProfile#time(5 minutes) (host string); " +
+                             "expression double js:doSomething(p) [ " +
+                             "function doSomething(p) { " +
+                             "  Console.Out.WriteLine(p);" +
+                             "  Console.Out.WriteLine(p.Length);" +
+                             " } " +
+                             "doSomething(p); " +
+                             "] " +
+                             "@Name('out') select doSomething((select window(z.*) from DnsTrafficProfile as z)) as score from DnsTrafficProfile;" +
+                             "insert into DnsTrafficProfile select * from Event; ";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
                 env.AddListener("out");
 

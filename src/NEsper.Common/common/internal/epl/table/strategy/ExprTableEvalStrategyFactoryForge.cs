@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             method.Block
-                .DeclareVar<ExprTableEvalStrategyFactory>("factory", NewInstance(typeof(ExprTableEvalStrategyFactory)))
+                .DeclareVarNewInstance<ExprTableEvalStrategyFactory>("factory")
                 .SetProperty(Ref("factory"), "StrategyEnum", Constant(_strategyEnum))
                 .SetProperty(Ref("factory"), "Table", TableDeployTimeResolver.MakeResolveTable(_tableMeta, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("factory"), "GroupKeyEval", groupKeyEval)

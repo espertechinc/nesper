@@ -69,42 +69,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithAnyPathCompileMore(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterAnyPathCompileMore());
             return execs;
         }
 
         public static IList<RegressionExecution> WithEightPathLeftOrLLVRightOrLLV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterEightPathLeftOrLLVRightOrLLV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSixPathAndLeftOrLLVRightOrLL(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterSixPathAndLeftOrLLVRightOrLL());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoPathAndLeftOrLVVRightLL(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterTwoPathAndLeftOrLVVRightLL());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFourPathAndWithOrLLOrLLOrVV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterFourPathAndWithOrLLOrLLOrVV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithFourPathAndWithOrLLOrLLWithV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterFourPathAndWithOrLLOrLLWithV());
             execs.Add(new ExprFilterFourPathAndWithOrLLOrLLWithV());
             return execs;
@@ -112,140 +112,140 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static IList<RegressionExecution> WithFourPathAndWithOrLLOrLL(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterFourPathAndWithOrLLOrLL());
             return execs;
         }
 
         public static IList<RegressionExecution> WithThreePathOrWithAndLVAndLVAndLV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterThreePathOrWithAndLVAndLVAndLV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoPathAndLeftOrLVRightOrLL(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterTwoPathAndLeftOrLVRightOrLL());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoPathAndLeftOrLLRightV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterTwoPathAndLeftOrLLRightV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoPathOrLeftOrLVRightOrLV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterTwoPathOrLeftOrLVRightOrLV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoPathOrLeftLRightAndLWithV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterTwoPathOrLeftLRightAndLWithV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithTwoPathOrWithLLV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterTwoPathOrWithLLV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathAndWithOrLVVOrLVOrLV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathAndWithOrLVVOrLVOrLV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathOrWithLVV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathOrWithLVV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathOrLeftVRightAndWithLL(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathOrLeftVRightAndWithLL());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathAndLeftLOrVRightLOrV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathAndLeftLOrVRightLOrV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathAndLeftLRightVWithPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathAndLeftLRightVWithPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathAndLeftLRightV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathAndLeftLRightV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathOrLeftLRightVWithPattern(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathOrLeftLRightVWithPattern());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathOrLeftLRightV(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathOrLeftLRightV());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathNegate1Eq2WithContextCategory(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathNegate1Eq2WithContextCategory());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathNegate1Eq2WithContextFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathNegate1Eq2WithContextFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathNegate1Eq2WithStage(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathNegate1Eq2WithStage());
             return execs;
         }
 
         public static IList<RegressionExecution> WithOnePathNegate1Eq2WithDataflow(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterOnePathNegate1Eq2WithDataflow());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAndOrUnwinding(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ExprFilterAndOrUnwinding());
             return execs;
         }

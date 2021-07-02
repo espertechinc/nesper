@@ -30,10 +30,10 @@ namespace com.espertech.esper.common.@internal.view.prior
     public class PriorEventBufferSingle : ViewUpdatedCollection,
         RelativeAccessByEventNIndex
     {
-        private readonly int priorEventIndex;
-        private readonly IDictionary<EventBean, EventBean> priorEventMap;
-        private readonly RollingEventBuffer newEvents;
-        private EventBean[] lastOldData;
+        private readonly int _priorEventIndex;
+        private readonly IDictionary<EventBean, EventBean> _priorEventMap;
+        private readonly RollingEventBuffer _newEvents;
+        private EventBean[] _lastOldData;
 
         /// <summary>
         /// Ctor.
@@ -41,10 +41,10 @@ namespace com.espertech.esper.common.@internal.view.prior
         /// <param name="priorEventIndex">is the number-of-events prior to the current event we are interested in</param>
         public PriorEventBufferSingle(int priorEventIndex)
         {
-            this.priorEventIndex = priorEventIndex;
+            this._priorEventIndex = priorEventIndex;
             // Construct a rolling buffer of new data for holding max index + 1 (position 1 requires 2 events to keep)
-            newEvents = new RollingEventBuffer(priorEventIndex + 1);
-            priorEventMap = new Dictionary<EventBean, EventBean>();
+            _newEvents = new RollingEventBuffer(priorEventIndex + 1);
+            _priorEventMap = new Dictionary<EventBean, EventBean>();
         }
 
         public void Update(
@@ -52,9 +52,9 @@ namespace com.espertech.esper.common.@internal.view.prior
             EventBean[] oldData)
         {
             // Remove last old data posted in previous post
-            if (lastOldData != null) {
-                for (int i = 0; i < lastOldData.Length; i++) {
-                    priorEventMap.Remove(lastOldData[i]);
+            if (_lastOldData != null) {
+                for (int i = 0; i < _lastOldData.Length; i++) {
+                    _priorEventMap.Remove(_lastOldData[i]);
                 }
             }
 
@@ -64,15 +64,15 @@ namespace com.espertech.esper.common.@internal.view.prior
                     EventBean newEvent = newData[i];
 
                     // Add new event
-                    newEvents.Add(newEvent);
+                    _newEvents.Add(newEvent);
 
-                    EventBean priorEvent = newEvents.Get(priorEventIndex);
-                    priorEventMap.Put(newEvent, priorEvent);
+                    EventBean priorEvent = _newEvents.Get(_priorEventIndex);
+                    _priorEventMap.Put(newEvent, priorEvent);
                 }
             }
 
             // Save old data to be removed next time we get posted results
-            lastOldData = oldData;
+            _lastOldData = oldData;
         }
 
         public void Update(
@@ -81,10 +81,10 @@ namespace com.espertech.esper.common.@internal.view.prior
             PriorEventBufferChangeCaptureSingle captureSingle)
         {
             // Remove last old data posted in previous post
-            if (lastOldData != null) {
-                for (int i = 0; i < lastOldData.Length; i++) {
-                    EventBean oldDataItem = lastOldData[i];
-                    priorEventMap.Remove(oldDataItem);
+            if (_lastOldData != null) {
+                for (int i = 0; i < _lastOldData.Length; i++) {
+                    EventBean oldDataItem = _lastOldData[i];
+                    _priorEventMap.Remove(oldDataItem);
                     captureSingle.Removed(oldDataItem);
                 }
             }
@@ -95,16 +95,16 @@ namespace com.espertech.esper.common.@internal.view.prior
                     EventBean newEvent = newData[i];
 
                     // Add new event
-                    newEvents.Add(newEvent);
+                    _newEvents.Add(newEvent);
 
-                    EventBean priorEvent = newEvents.Get(priorEventIndex);
-                    priorEventMap.Put(newEvent, priorEvent);
+                    EventBean priorEvent = _newEvents.Get(_priorEventIndex);
+                    _priorEventMap.Put(newEvent, priorEvent);
                     captureSingle.Added(newEvent, priorEvent);
                 }
             }
 
             // Save old data to be removed next time we get posted results
-            lastOldData = oldData;
+            _lastOldData = oldData;
         }
 
         // Users are assigned an index
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             EventBean theEvent,
             int priorToIndex)
         {
-            return priorEventMap.Get(theEvent);
+            return _priorEventMap.Get(theEvent);
         }
 
         public EventBean GetRelativeToEnd(int index)
@@ -140,11 +140,11 @@ namespace com.espertech.esper.common.@internal.view.prior
         }
 
         public IDictionary<EventBean, EventBean> PriorEventMap {
-            get { return priorEventMap; }
+            get { return _priorEventMap; }
         }
 
         public RollingEventBuffer NewEvents {
-            get => newEvents;
+            get => _newEvents;
         }
 
         public void Destroy()
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.view.prior
         }
 
         public int NumEventsInsertBuf {
-            get => newEvents.Count;
+            get => _newEvents.Count;
         }
     }
 } // end of namespace

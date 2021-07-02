@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprEventIdentityEqualsNodeForge : ExprForge
     {
-        private readonly ExprEventIdentityEqualsNode node;
+        private readonly ExprEventIdentityEqualsNode _node;
 
         public ExprEventIdentityEqualsNodeForge(
             ExprEventIdentityEqualsNode node,
             ExprStreamUnderlyingNode undLeft,
             ExprStreamUnderlyingNode undRight)
         {
-            this.node = node;
+            this._node = node;
             UndLeft = undLeft;
             UndRight = undRight;
         }
@@ -48,6 +48,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public ExprNodeRenderable ExprForgeRenderable => node;
+        public ExprNodeRenderable ExprForgeRenderable => _node;
     }
 } // end of namespace

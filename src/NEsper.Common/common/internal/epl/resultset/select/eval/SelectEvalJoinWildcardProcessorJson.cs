@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(resultEventType.UnderlyingType, "tuple", NewInstanceInner(resultEventType.Detail.UnderlyingClassName));
+                .DeclareVar(resultEventType.UnderlyingType, "tuple", NewInstanceNamed(resultEventType.Detail.UnderlyingClassName));
             for (var i = 0; i < streamNames.Length; i++) {
                 var @event = ArrayAtIndex(refEPS, Constant(i));
                 var field = resultEventType.Detail.FieldDescriptors.Get(streamNames[i]);

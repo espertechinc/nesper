@@ -16,6 +16,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.hook.type;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.@event.avro;

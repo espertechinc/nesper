@@ -36,35 +36,35 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateWindowInvalid());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithListReference(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateWindowListReference());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTableIdentWCount(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateWindowTableIdentWCount());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithTableAccess(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateWindowTableAccess());
 			return execs;
 		}
 
 		public static IList<RegressionExecution> WithNonTable(IList<RegressionExecution> execs = null)
 		{
-			execs = execs ?? new List<RegressionExecution>();
+			execs ??= new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateWindowNonTable());
 			return execs;
 		}

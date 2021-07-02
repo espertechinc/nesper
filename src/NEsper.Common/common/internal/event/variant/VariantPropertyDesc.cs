@@ -28,6 +28,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
             EventPropertyGetterSPI getter,
             bool property)
         {
+            if (propertyType == null) {
+                throw new ArgumentNullException(nameof(propertyType));
+            }
+            
             PropertyType = propertyType;
             Getter = getter;
             IsProperty = property;

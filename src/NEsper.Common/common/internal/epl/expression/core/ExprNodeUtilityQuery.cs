@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static ExprForge[] ForgesForProperties(
             IList<EventType> eventTypes,
-            String[] propertyNames,
+            string[] propertyNames,
             int[] keyStreamNums)
         {
             ExprForge[] forges = new ExprForge[propertyNames.Length];

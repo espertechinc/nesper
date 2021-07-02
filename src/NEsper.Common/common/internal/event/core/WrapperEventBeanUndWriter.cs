@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class WrapperEventBeanUndWriter : EventBeanWriter
     {
-        private readonly EventBeanWriter undWriter;
+        private readonly EventBeanWriter _undWriter;
 
         /// <summary>
         ///     Ctor.
@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="undWriter">writer to the underlying object</param>
         public WrapperEventBeanUndWriter(EventBeanWriter undWriter)
         {
-            this.undWriter = undWriter;
+            this._undWriter = undWriter;
         }
 
         public void Write(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var wrappedEvent = (DecoratingEventBean) theEvent;
             var eventWrapped = wrappedEvent.UnderlyingEvent;
-            undWriter.Write(values, eventWrapped);
+            _undWriter.Write(values, eventWrapped);
         }
     }
 } // end of namespace

@@ -70,13 +70,11 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 var expressionText = scriptBodies.DeleteAt(0);
                 var parameters = ASTUtil.GetIdentList(ctx.columnList());
-                var optionalReturnType = ctx.classIdentifier() == null ? null : ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
-                var optionalReturnTypeArray = ctx.array != null;
+                var classIdent = ASTClassIdentifierHelper.Walk(ctx.classIdentifierWithDimensions());
+                var classIdentText = classIdent == null ? null : classIdent.ToEPL();
                 var optionalDialect = ctx.expressionDialect() == null ? null : ctx.expressionDialect().d.Text;
                 var optionalEventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.typeExpressionAnnotation(), tokenStream);
-                var script = new ExpressionScriptProvided(
-                    name, expressionText, parameters.ToArray(),
-                    optionalReturnType, optionalReturnTypeArray, optionalEventTypeName, optionalDialect);
+                var script = new ExpressionScriptProvided(name, expressionText, parameters.ToArray(), classIdentText, optionalEventTypeName, optionalDialect);
                 return new MyPair(null, script);
             }
 

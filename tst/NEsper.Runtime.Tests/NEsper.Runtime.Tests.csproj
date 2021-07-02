@@ -16,23 +16,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NUnit" Version="3.12.0"/>
+        <PackageReference Include="NUnit" Version="3.13.1" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(NetFramework)'=='true'">
-        <PackageReference Include="NUnit.ApplicationDomain" Version="11.1.0"/>
+        <PackageReference Include="NUnit.ApplicationDomain" Version="11.1.0" />
 	
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj"/>
-        <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj" />
+        <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(NetFramework)'=='true'">
-        <Compile Remove="RunInApplicationDomainAttribute.cs"/>
+        <Compile Remove="RunInApplicationDomainAttribute.cs" />
     </ItemGroup>
 </Project>

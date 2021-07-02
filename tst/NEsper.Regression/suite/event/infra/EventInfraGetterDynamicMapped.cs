@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -64,9 +66,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var mapepl = "@public @buseventtype create schema LocalEvent();\n";
 			RunAssertion(env, mapepl, map);
 
-			var mapType = "System.Collections.Generic.IDictionary<string, object>";
-			//var mapType = typeof(Properties).FullName;
-
+			//var mapType = "System.Collections.Generic.IDictionary<string, object>";
+			var mapType = typeof(Properties).FullName; 
+			
 			// Object-array
 			var oaepl =
 				"@public @buseventtype create objectarray schema LocalEvent();\n" +

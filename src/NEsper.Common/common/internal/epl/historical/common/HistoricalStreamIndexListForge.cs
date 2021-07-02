@@ -48,10 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             EventType[] typesPerStream,
             QueryGraphForge queryGraph)
         {
-            this._historicalStreamNum = historicalStreamNum;
-            this._typesPerStream = typesPerStream;
-            this._queryGraph = queryGraph;
-            this._pollingStreams = new SortedSet<int>();
+            _historicalStreamNum = historicalStreamNum;
+            _typesPerStream = typesPerStream;
+            _queryGraph = queryGraph;
+            _pollingStreams = new SortedSet<int>();
         }
 
         /// <summary>

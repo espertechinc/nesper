@@ -53,14 +53,6 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void AExprEquals(Boolean result);
 
-	    void QOutputProcessNonBuffered(EventBean[] newData, EventBean[] oldData);
-
-	    void AOutputProcessNonBuffered();
-
-	    void QOutputProcessNonBufferedJoin(ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
-
-	    void AOutputProcessNonBufferedJoin();
-
 	    void QSelectClause(EventBean[] eventsPerStream, bool newData, bool synthesize, ExprEvaluatorContext exprEvaluatorContext);
 
 	    void ASelectClause(bool newData, EventBean @event, object[] subscriberParameters);
@@ -181,7 +173,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void AExprPlugInSingleRow(object result);
 
-	    void QExprDotChain(EPType targetTypeInfo, object target, int numUnpacking);
+	    void QExprDotChain(EPChainableType targetTypeInfo, object target, int numUnpacking);
 
 	    void AExprDotChain();
 
@@ -195,7 +187,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void QExprDotChainElement(int num, string methodType, string methodName);
 
-	    void AExprDotChainElement(EPType typeInfo, object result);
+	    void AExprDotChainElement(EPChainableType typeInfo, object result);
 
 	    void QExprPrev(string text, bool newData);
 

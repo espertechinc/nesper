@@ -34,7 +34,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         RowRecogNFAViewScheduleCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RowRecogNFAView));
-        private const bool IsDebug = false;
 
         private readonly RowRecogNFAViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;
@@ -98,7 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     agentInstanceContext,
                     this,
                     desc.HasInterval,
-                    terminationStateCompare);
+                    terminationStateCompare,
+                    desc.PartitionMgmtStateMgmtSettings,
+                    desc.ScheduleMgmtStateMgmtSettings);
             }
             else {
                 var stateRepoGroupMeta = new RowRecogPartitionStateRepoGroupMeta(
@@ -111,7 +112,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     agentInstanceContext,
                     this,
                     desc.HasInterval,
-                    terminationStateCompare);
+                    terminationStateCompare,
+                    desc.PartitionMgmtStateMgmtSettings,
+                    desc.ScheduleMgmtStateMgmtSettings);
             }
         }
 
@@ -444,7 +447,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // find the earliest begin-event
             RowRecogNFAStateEntry found = null;
-            var min = Int32.MaxValue;
+            var min = int.MaxValue;
             var multipleMinimums = false;
             foreach (var state in endStates) {
                 if (state.MatchBeginEventSeqNo < min) {
@@ -1041,13 +1044,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var aggregationServices = new AggregationService[aggregationServiceFactories.Length];
                 for (var i = 0; i < aggregationServices.Length; i++) {
                     if (aggregationServiceFactories[i] != null) {
-                        aggregationServices[i] = aggregationServiceFactories[i]
-                            .MakeService(
-                                _agentInstanceContext,
-                                _agentInstanceContext.ImportServiceRuntime,
-                                false,
-                                null,
-                                null);
+                        aggregationServices[i] = aggregationServiceFactories[i].MakeService(_agentInstanceContext, false, null, null);
                         _factory.Desc.AggregationResultFutureAssignables[i].Assign(aggregationServices[i]);
                     }
                 }

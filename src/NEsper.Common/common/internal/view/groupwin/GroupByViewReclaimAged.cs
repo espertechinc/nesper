@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         AgentInstanceMgmtCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
 
-        private readonly Dictionary<GroupByViewAgedEntry, Pair<object, object>> groupedEvents =
+        private readonly Dictionary<GroupByViewAgedEntry, Pair<object, object>> _groupedEvents =
             new Dictionary<GroupByViewAgedEntry, Pair<object, object>>();
-        private readonly IDictionary<object, GroupByViewAgedEntry> subViewPerKey =
+        private readonly IDictionary<object, GroupByViewAgedEntry> _subViewPerKey =
             new Dictionary<object, GroupByViewAgedEntry>();
         private readonly GroupByViewFactory _groupByViewFactory;
-        private long? nextSweepTime;
+        private long? _nextSweepTime;
 
         public GroupByViewReclaimAged(
             GroupByViewFactory groupByGroupByViewFactory,
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (var entry in subViewPerKey) {
+            foreach (var entry in _subViewPerKey) {
                 GroupByViewUtil.RemoveSubview(entry.Value.Subview, services);
             }
         }
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             aiContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
 
             var currentTime = AgentInstanceContext.TimeProvider.Time;
-            if (nextSweepTime == null || nextSweepTime <= currentTime) {
+            if (_nextSweepTime == null || _nextSweepTime <= currentTime) {
                 if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                     Log.Debug(
                         "Reclaiming groups older then " +
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                         "msec in frequency");
                 }
 
-                nextSweepTime = currentTime + ViewFactory.ReclaimFrequency;
+                _nextSweepTime = currentTime + ViewFactory.ReclaimFrequency;
                 Sweep(currentTime);
             }
 
@@ -79,13 +79,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 var groupByValuesKey = GetGroupKey(theEvent);
 
                 // Get child views that belong to this group-by value combination
-                var subView = subViewPerKey.Get(groupByValuesKey);
+                var subView = _subViewPerKey.Get(groupByValuesKey);
 
                 // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
                 if (subView == null) {
                     var subview = GroupByViewUtil.MakeSubView(this, groupByValuesKey);
                     subView = new GroupByViewAgedEntry(subview, currentTime);
-                    subViewPerKey.Put(groupByValuesKey, subView);
+                    _subViewPerKey.Put(groupByValuesKey, subView);
                 }
                 else {
                     subView.SetLastUpdateTime(currentTime);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 }
 
                 // Update child views
-                foreach (var entry in groupedEvents) {
+                foreach (var entry in _groupedEvents) {
                     var newEvents = GroupByViewImpl.ConvertToArray(entry.Value.First);
                     var oldEvents = GroupByViewImpl.ConvertToArray(entry.Value.Second);
                     AgentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newEvents, oldEvents);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     AgentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
 
-                groupedEvents.Clear();
+                _groupedEvents.Clear();
             }
 
             AgentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
@@ -130,8 +130,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(GroupByViewImpl.VIEWNAME, subViewPerKey.Count);
-            foreach (var entry in subViewPerKey) {
+            viewDataVisitor.VisitPrimary(GroupByViewImpl.VIEWNAME, _subViewPerKey.Count);
+            foreach (var entry in _subViewPerKey) {
                 GroupByViewImpl.VisitView(viewDataVisitor, entry.Key, entry.Value.Subview);
             }
         }
@@ -150,24 +150,24 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             var groupByValuesKey = GetGroupKey(theEvent);
 
             // Get child views that belong to this group-by value combination
-            var subViews = subViewPerKey.Get(groupByValuesKey);
+            var subViews = _subViewPerKey.Get(groupByValuesKey);
 
             // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
             if (subViews == null) {
                 var subview = GroupByViewUtil.MakeSubView(this, groupByValuesKey);
                 var currentTime = AgentInstanceContext.StatementContext.TimeProvider.Time;
                 subViews = new GroupByViewAgedEntry(subview, currentTime);
-                subViewPerKey.Put(groupByValuesKey, subViews);
+                _subViewPerKey.Put(groupByValuesKey, subViews);
             }
             else {
                 subViews.SetLastUpdateTime(AgentInstanceContext.StatementContext.TimeProvider.Time);
             }
 
             // Construct a pair of lists to hold the events for the grouped value if not already there
-            var pair = groupedEvents.Get(subViews);
+            var pair = _groupedEvents.Get(subViews);
             if (pair == null) {
                 pair = new Pair<object, object>(null, null);
-                groupedEvents.Put(subViews, pair);
+                _groupedEvents.Put(subViews, pair);
             }
 
             // Add event to a child view event list for later child update that includes new and old events
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private void Sweep(long currentTime)
         {
             var removed = new ArrayDeque<object>();
-            foreach (var entry in subViewPerKey) {
+            foreach (var entry in _subViewPerKey) {
                 var age = currentTime - entry.Value.LastUpdateTime;
                 if (age > ViewFactory.ReclaimMaxAge) {
                     removed.Add(entry.Key);
@@ -195,7 +195,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             foreach (var key in removed) {
-                var entry = subViewPerKey.Delete(key);
+                var entry = _subViewPerKey.Delete(key);
                 GroupByViewUtil.RemoveSubview(
                     entry.Subview,
                     new AgentInstanceStopServices(AgentInstanceContext.AgentInstanceContext));
@@ -204,8 +204,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         private object GetGroupKey(EventBean theEvent)
         {
-            eventsPerStream[0] = theEvent;
-            return _groupByViewFactory.CriteriaEval.Evaluate(eventsPerStream, true, AgentInstanceContext);
+            _eventsPerStream[0] = theEvent;
+            return _groupByViewFactory.CriteriaEval.Evaluate(_eventsPerStream, true, AgentInstanceContext);
         }
         
         public void Transfer(AgentInstanceTransferServices services)

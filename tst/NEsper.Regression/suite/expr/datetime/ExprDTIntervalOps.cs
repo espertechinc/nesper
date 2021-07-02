@@ -360,9 +360,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property");
                 TryInvalidCompile(
                     env,
-                    "select a.Get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'a.Get(\"month\").before(a)': Invalid input for date-time method 'before' ");
-
+                    "select a.get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
+                    "Failed to validate select-clause expression 'a.get(\"month\").before(a)': Failed to resolve method 'get': Could not find enumeration method, date-time method, instance method or property named 'get'");
+                
                 // test before/after
                 TryInvalidCompile(
                     env,
@@ -454,7 +454,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           " from SupportTimeStartEndA#lastevent as a, " +
                           "      SupportTimeStartEndB#lastevent as b";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fields, typeof(bool?));
+                SupportEventPropUtil.AssertTypesAllSame(env.Statement("s0").EventType, fields, typeof(bool?));
 
                 env.SendEventBean(SupportTimeStartEndB.Make("B1", "2002-05-30T09:00:00.000", 0));
 

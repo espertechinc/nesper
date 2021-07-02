@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
         void ApplyEnter(
             EventBean[] eventsPerStream,
-            Object optionalGroupKeyPerRow,
+            object optionalGroupKeyPerRow,
             ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
         void ApplyLeave(
             EventBean[] eventsPerStream,
-            Object optionalGroupKeyPerRow,
+            object optionalGroupKeyPerRow,
             ExprEvaluatorContext exprEvaluatorContext);
 
 #if INHERITED

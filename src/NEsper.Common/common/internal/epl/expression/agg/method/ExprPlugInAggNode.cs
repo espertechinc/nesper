@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 parameterTypes,
                 isConstant,
                 constant,
-                base.IsDistinct,
+                IsDistinct,
                 hasDataWindows,
                 expressions,
                 namedParameters);
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             ExprPlugInAggNode other = (ExprPlugInAggNode) node;
-            return other.AggregationFunctionName.Equals(this.AggregationFunctionName);
+            return other.AggregationFunctionName.Equals(AggregationFunctionName);
         }
 
         public override bool IsFilterExpressionAsLastParameter => false;

@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         public ExprEvaluator ExprEvaluator {
             get {
                 return new ProxyExprEvaluator() {
-                    ProcEvaluate = (
+                    procEvaluate = (
                         eventsPerStream,
                         isNewData,
                         context) => {

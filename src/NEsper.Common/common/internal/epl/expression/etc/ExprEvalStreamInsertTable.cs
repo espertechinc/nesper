@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             TableMetaData tableMetadata,
             Type returnType)
         {
-            this._streamNum = streamNum;
-            this._tableMetadata = tableMetadata;
-            this._returnType = returnType;
+            _streamNum = streamNum;
+            _tableMetadata = tableMetadata;
+            _returnType = returnType;
         }
 
         public object Evaluate(
@@ -54,11 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEps = exprSymbol.GetAddEPS(codegenMethodScope);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
+            var refEps = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
             return StaticMethod(
                 typeof(ExprEvalStreamInsertTable),
                 "ConvertToTableEvent",
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                this.GetType(),
+                GetType(),
                 this,
                 "ExprStreamUndSelectClause",
                 requiredType,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean @event = eventsPerStream == null ? null : eventsPerStream[streamNum];
+            var @event = eventsPerStream == null ? null : eventsPerStream[streamNum];
             if (@event != null) {
                 @event = eventToPublic.Convert(@event, eventsPerStream, isNewData, exprEvaluatorContext);
             }
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

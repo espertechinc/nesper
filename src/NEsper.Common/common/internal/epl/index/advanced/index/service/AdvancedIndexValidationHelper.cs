@@ -12,7 +12,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
-using static com.espertech.esper.common.@internal.util.TypeHelper;
+using static com.espertech.esper.common.client.util.TypeHelper;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 {
@@ -89,8 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             ExprNode expr,
             string name)
         {
-            Type receivedType = expr.Forge.EvaluationType.GetBoxedType();
-            if (!IsSubclassOrImplementsInterface(receivedType, expectedReturnType)) {
+            var receivedType = expr.Forge.EvaluationType.GetBoxedType();
+            if (receivedType.IsNullType() || !IsSubclassOrImplementsInterface(receivedType, expectedReturnType)) {
                 throw MakeEx(indexTypeName, false, paramnum, name, expectedReturnType, receivedType);
             }
         }
@@ -124,9 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 " that is providing " +
                 name +
                 "-values expecting type " +
-                expectedType.CleanName() +
+                expectedType.TypeSafeName() +
                 " but received type " +
-                receivedType.CleanName());
+                receivedType.TypeSafeName());
         }
     }
 } // end of namespace

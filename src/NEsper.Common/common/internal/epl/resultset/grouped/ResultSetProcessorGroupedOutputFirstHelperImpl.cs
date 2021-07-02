@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
 using com.espertech.esper.compat.collections;
 
@@ -26,12 +27,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 
         public OutputConditionPolled GetOrAllocate(
             object mk,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledFactory factory)
         {
             var outputStateGroup = outputState.Get(mk);
             if (outputStateGroup == null) {
-                outputStateGroup = factory.MakeNew(agentInstanceContext);
+                outputStateGroup = factory.MakeNew(exprEvaluatorContext);
                 outputState.Put(mk, outputStateGroup);
             }
 

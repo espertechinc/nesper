@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenNamespaceScope namespaceScope)
         {
             IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
-            foreach (StmtClassForgeableFactory additional in _desc.AdditionalForgeables) {
+            foreach (var additional in _desc.AdditionalForgeables) {
                 forgeables.Add(additional.Make(namespaceScope, classPostfix));
             }
 
@@ -75,12 +75,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         {
             var select = Ref("select");
             method.Block
-                .DeclareVar<FAFQueryMethodSelect>(select.Ref, NewInstance(typeof(FAFQueryMethodSelect)))
+                .DeclareVarNewInstance<FAFQueryMethodSelect>(select.Ref)
                 .SetProperty(
                     select,
                     "Annotations",
-                    LocalMethod(
-                        AnnotationUtil.MakeAnnotations(typeof(Attribute[]), _desc.Annotations, method, classScope)))
+                    AnnotationUtil.MakeAnnotations(typeof(Attribute[]), _desc.Annotations, method, classScope))
                 .SetProperty(
                     select,
                     "Processors",
@@ -88,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 .DeclareVar(
                     _classNameResultSetProcessor,
                     "rsp",
-                    NewInstanceInner(_classNameResultSetProcessor, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                    NewInstanceNamed(_classNameResultSetProcessor, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(
                     select,
                     "ResultSetProcessorFactoryProvider",
@@ -125,6 +124,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     Constant(_desc.ContextName))
                 .SetProperty(
                     select,
+                    "ContextModuleName",
+                    Constant(_desc.ContextModuleName))
+                .SetProperty(
+                    select,
                     "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(
                         _desc.TableAccessForges,
@@ -136,10 +139,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     select,
                     "HasTableAccess",
                     Constant(_desc.HasTableAccess))
-                .SetProperty(
-                    select,
-                    "IsDistinct",
-                    Constant(_desc.IsDistinct))
                 .SetProperty(
                     select,
                     "DistinctKeyGetter",

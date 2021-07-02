@@ -12,6 +12,8 @@ using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 {
@@ -24,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
         public void Validate(AggregationFunctionValidationContext validationContext)
         {
             var paramType = validationContext.ParameterTypes[0];
-            if (paramType != typeof(string) && paramType != typeof(SupportBean)) {
+            if (paramType != typeof(string) && paramType.IsType<SupportBean>()) {
                 throw new ExprValidationException("Invalid parameter type '" + paramType.Name + "'");
             }
         }

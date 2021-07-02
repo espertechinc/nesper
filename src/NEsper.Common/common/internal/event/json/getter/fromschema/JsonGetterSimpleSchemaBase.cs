@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             EventType fragmentType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.Field = field;
-            this.UnderlyingClassName = underlyingClassName;
-            this.FragmentType = fragmentType;
-            this.EventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            Field = field;
+            UnderlyingClassName = underlyingClassName;
+            FragmentType = fragmentType;
+            EventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public abstract CodegenExpression EventBeanFragmentCodegen(

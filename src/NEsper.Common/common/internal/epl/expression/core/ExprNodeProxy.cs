@@ -18,15 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeProxy : IInterceptor
     {
-        private static readonly MethodInfo TARGET_GETFORGE;
-        private static readonly MethodInfo TARGET_EQUALSNODE;
-        private static readonly ProxyGenerator generator = new ProxyGenerator();
+        private static readonly MethodInfo TargetGetforge;
+        private static readonly MethodInfo TargetEqualsnode;
+        private static readonly ProxyGenerator Generator = new ProxyGenerator();
 
         static ExprNodeProxy()
         {
-            TARGET_GETFORGE = typeof(ExprNode).GetProperty("Forge")?.GetGetMethod();
-            TARGET_EQUALSNODE = typeof(ExprNode).GetMethod("EqualsNode");
-            if (TARGET_GETFORGE == null || TARGET_EQUALSNODE == null) {
+            TargetGetforge = typeof(ExprNode).GetProperty("Forge")?.GetGetMethod();
+            TargetEqualsnode = typeof(ExprNode).GetMethod("EqualsNode");
+            if (TargetGetforge == null || TargetEqualsnode == null) {
                 throw new EPRuntimeException("Failed to find required methods");
             }
         }
@@ -40,10 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public void Intercept(IInvocation invocation)
         {
-            if (invocation.Method == TARGET_EQUALSNODE) {
+            if (invocation.Method == TargetEqualsnode) {
                 HandleEqualsNode(invocation);
             }
-            else if (invocation.Method == TARGET_GETFORGE) {
+            else if (invocation.Method == TargetGetforge) {
                 HandleGetForge(invocation);
             }
             else {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .Where(t => t != typeof(ExprNode))
                 .ToArray();
 
-            return generator.CreateInterfaceProxyWithTarget(
+            return Generator.CreateInterfaceProxyWithTarget(
                 typeof(ExprNode), interfaces, exprNode, new ExprNodeProxy(exprNode));
         }
 

@@ -50,63 +50,63 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithPartitionSelection(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashPartitionSelection());
             return execs;
         }
 
         public static IList<RegressionExecution> WithScoringUseCase(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashScoringUseCase());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSegmentedBySingleRowFunc(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashSegmentedBySingleRowFunc());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSegmentedMulti(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashSegmentedMulti());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSegmentedManyArg(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashSegmentedManyArg());
             return execs;
         }
 
         public static IList<RegressionExecution> WithNoPreallocate(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashNoPreallocate());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSegmentedFilter(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashSegmentedFilter());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSegmentedBasic(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ContextHashSegmentedBasic());
             return execs;
         }
@@ -946,7 +946,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplStmt =
                     "@Name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
-                    typeof(ContextHashSegmented).Name +
+                    nameof(ContextHashSegmented) +
                     ".MySecondFunc(*, TheString) as c4 from SupportBean";
                 env.CompileDeploy(eplStmt, path);
                 env.AddListener("s0");

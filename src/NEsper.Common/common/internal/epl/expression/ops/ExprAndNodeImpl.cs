@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -78,9 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Sub-nodes must be returning boolean
-            foreach (ExprNode child in ChildNodes) {
-                Type childType = child.Forge.EvaluationType;
-                if (!TypeHelper.IsBoolean(childType)) {
+            foreach (var child in ChildNodes) {
+                var childType = child.Forge.EvaluationType;
+                if (!childType.IsBoolean()) {
                     throw new ExprValidationException(
                         "Incorrect use of AND clause, sub-expressions do not return boolean");
                 }
@@ -101,8 +102,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            string appendStr = "";
-            foreach (ExprNode child in ChildNodes) {
+            var appendStr = "";
+            foreach (var child in ChildNodes) {
                 writer.Write(appendStr);
                 child.ToEPL(writer, Precedence, flags);
                 appendStr = " and ";

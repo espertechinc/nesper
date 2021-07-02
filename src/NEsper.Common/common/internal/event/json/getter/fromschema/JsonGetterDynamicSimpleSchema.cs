@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public JsonGetterDynamicSimpleSchema(string propertyName)
         {
-            this._propertyName = propertyName;
+            _propertyName = propertyName;
         }
 
         public CodegenExpression EventBeanGetCodegen(

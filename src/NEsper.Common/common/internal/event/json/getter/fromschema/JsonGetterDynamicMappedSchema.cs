@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             string propertyName,
             string key)
         {
-            this._propertyName = propertyName;
-            this._key = key;
+            _propertyName = propertyName;
+            _key = key;
         }
 
         public CodegenExpression EventBeanGetCodegen(

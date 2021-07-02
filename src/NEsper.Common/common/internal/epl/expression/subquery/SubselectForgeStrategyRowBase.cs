@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var method = parent.MakeChild(typeof(object[]), GetType(), classScope);
             if (subselect.FilterExpr == null) {
                 method.Block
-                    .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols)
+                    .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                     .AssignArrayElement(
                         REF_EVENTS_SHIFTED,
                         Constant(0),
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     GetType(),
                     classScope);
                 method.Block
-                    .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols)
+                    .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                     .DeclareVar<EventBean>(
                         "subselectResult",
                         StaticMethod(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 "results",
                 NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)));
             for (var i = 0; i < subselect.SelectClause.Length; i++) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope, true);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope);
                 method.Block.AssignArrayElement(
                     "results",
                     Constant(i),
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         "rows",
                         NewArrayByLength(typeof(object[]), ExprDotName(symbols.GetAddMatchingEvents(method), "Count")))
                     .DeclareVar<int>("index", Constant(-1))
-                    .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
+                    .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
                     typeof(EventBean),
                     "@event",
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .AssignArrayElement("rows", Ref("index"), Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
-                        var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope, true);
+                        var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope);
                         foreachEvent.AssignArrayElement(
                             "results",
                             Constant(i),
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 var method = parent.MakeChild(typeof(object[][]), GetType(), classScope);
                 method.Block
                     .DeclareVar<ArrayDeque<object[]>>("rows", NewInstance(typeof(ArrayDeque<object[]>)))
-                    .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
+                    .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
                     typeof(EventBean),
                     "@event",
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 {
                     foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
 
-                    var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
+                    var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope);
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                         foreachEvent,
                         typeof(bool?),
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .ExprDotMethod(Ref("rows"), "Add", Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
-                        var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope, true);
+                        var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope);
                         foreachEvent.AssignArrayElement(
                             "results",
                             Constant(i),

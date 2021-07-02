@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -35,15 +36,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         ExprEvaluator,
         ExprVariableNode
     {
-        private readonly string optSubPropName;
-        private EventPropertyGetterSPI optSubPropGetter;
+        private readonly string _optSubPropName;
+        private EventPropertyGetterSPI _optSubPropGetter;
+        private Type _returnType;
 
         public ExprVariableNodeImpl(
             VariableMetaData variableMeta,
             string optSubPropName)
         {
             VariableMetadata = variableMeta;
-            this.optSubPropName = optSubPropName;
+            _optSubPropName = optSubPropName;
         }
 
         public override ExprForge Forge => this;
@@ -64,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType { get; private set; }
+        public Type EvaluationType => _returnType;
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
@@ -74,30 +76,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var methodNode = parent.MakeChild(EvaluationType, typeof(ExprVariableNodeImpl), classScope);
+            if (_returnType.IsNullType()) {
+                return ConstantNull();
+            }
+            
+            var methodNode = parent.MakeChild(_returnType, typeof(ExprVariableNodeImpl), classScope);
             var readerExpression = GetReaderExpression(VariableMetadata, methodNode, symbols, classScope);
 
             var block = methodNode.Block
                 .DeclareVar<VariableReader>("reader", readerExpression);
             if (VariableMetadata.EventType == null) {
                 block.DeclareVar(
-                        EvaluationType,
+                        _returnType,
                         "value",
-                        Cast(EvaluationType, ExprDotName(Ref("reader"), "Value")))
+                        Cast(_returnType, ExprDotName(Ref("reader"), "Value")))
                     .MethodReturn(Ref("value"));
             }
             else {
                 block.DeclareVar<object>("value", ExprDotName(Ref("reader"), "Value"))
                     .IfRefNullReturnNull("value")
                     .DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), Ref("value")));
-                if (optSubPropName == null) {
-                    block.MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("theEvent"))));
+                if (_optSubPropName == null) {
+                    block.MethodReturn(Cast(_returnType, ExprDotUnderlying(Ref("theEvent"))));
                 }
                 else {
                     block.MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
-                            EvaluationType,
-                            optSubPropGetter.EventBeanGetCodegen(Ref("theEvent"), methodNode, classScope)));
+                            _returnType,
+                            _optSubPropGetter.EventBeanGetCodegen(Ref("theEvent"), methodNode, classScope)));
                 }
             }
 
@@ -148,11 +154,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenExpression readerExpression =
                 classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
             if (VariableMetadata.EventType == null) {
-                return Cast(EvaluationType, ExprDotName(readerExpression, "Value"));
+                return Cast(_returnType, ExprDotName(readerExpression, "Value"));
             }
 
             var unpack = ExprDotUnderlying(Cast(typeof(EventBean), ExprDotName(readerExpression, "Value")));
-            return Cast(EvaluationType, unpack);
+            return Cast(_returnType, unpack);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -186,25 +192,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
 
             variableName = VariableMetadata.VariableName;
-            if (optSubPropName != null) {
+            if (_optSubPropName != null) {
                 if (VariableMetadata.EventType == null) {
                     throw new ExprValidationException(
-                        "Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
+                        "Property '" + _optSubPropName + "' is not valid for variable '" + variableName + "'");
                 }
 
-                optSubPropGetter = ((EventTypeSPI) VariableMetadata.EventType).GetGetterSPI(optSubPropName);
-                if (optSubPropGetter == null) {
+                _optSubPropGetter = ((EventTypeSPI) VariableMetadata.EventType).GetGetterSPI(_optSubPropName);
+                if (_optSubPropGetter == null) {
                     throw new ExprValidationException(
-                        "Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
+                        "Property '" + _optSubPropName + "' is not valid for variable '" + variableName + "'");
                 }
 
-                EvaluationType = VariableMetadata.EventType.GetPropertyType(optSubPropName);
+                _returnType = VariableMetadata.EventType.GetPropertyType(_optSubPropName);
             }
             else {
-                EvaluationType = VariableMetadata.Type;
+                _returnType = VariableMetadata.Type;
             }
 
-            EvaluationType = EvaluationType.GetBoxedType();
+            _returnType = _returnType.GetBoxedType();
             return null;
         }
 
@@ -236,9 +242,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             ExprNodeRenderableFlags flags)
         {
             writer.Write(VariableMetadata.VariableName);
-            if (optSubPropName != null) {
+            if (_optSubPropName != null) {
                 writer.Write(".");
-                writer.Write(optSubPropName);
+                writer.Write(_optSubPropName);
             }
         }
 
@@ -252,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
             var that = (ExprVariableNodeImpl) node;
 
-            if (optSubPropName != null ? !optSubPropName.Equals(that.optSubPropName) : that.optSubPropName != null) {
+            if (_optSubPropName != null ? !_optSubPropName.Equals(that._optSubPropName) : that._optSubPropName != null) {
                 return false;
             }
 
@@ -269,11 +275,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public string VariableNameWithSubProp {
             get {
-                if (optSubPropName == null) {
+                if (_optSubPropName == null) {
                     return VariableMetadata.VariableName;
                 }
 
-                return VariableMetadata.VariableName + "." + optSubPropName;
+                return VariableMetadata.VariableName + "." + _optSubPropName;
             }
         }
     }

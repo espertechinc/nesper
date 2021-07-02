@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DateTimeOffset.format(null)': Failed to validate date-time method 'format', expected any of [System.String, com.espertech.esper.compat.DateFormat, com.espertech.esper.compat.datetime.DateTimeFormat]-type result for expression parameter 0 but received null");
+                "Failed to validate select-clause expression 'DateTimeOffset.format(null)': Failed to validate date-time method 'format', expected a non-null result for expression parameter 0 but received a null-typed expression");
         }
     }
 } // end of namespace

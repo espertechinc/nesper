@@ -21,6 +21,8 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -33,7 +35,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static readonly String NEWLINE = Environment.NewLine;
+        public static readonly string NEWLINE = Environment.NewLine;
 
         public static FilterSpecCompiledDesc MakeFilterSpec(
             EventType eventType,
@@ -166,7 +168,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<ExprNode> validatedNodes = new List<ExprNode>();
             IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
 
-            ExprValidationContext validationContext =
+            var validationContext =
                 new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
                     .WithAllowBindingConsumption(true)
                     .WithIsFilterExpression(true)
@@ -206,7 +208,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, node, validationContext);
                 validatedNodes.Add(validated);
 
-                if (validated.Forge.EvaluationType != typeof(bool?) && validated.Forge.EvaluationType != typeof(bool)) {
+                if (!validated.Forge.EvaluationType.IsBoolean()) {
                     throw new ExprValidationException(
                         "Filter expression not returning a boolean value: '" +
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated) +

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -29,29 +31,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
     /// </summary>
     public class ResultSetProcessorRowForAllForge : ResultSetProcessorFactoryForge
     {
-        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
-
         public ResultSetProcessorRowForAllForge(
             EventType resultEventType,
-            SelectExprProcessorForge selectExprProcessorForge,
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
             bool isHistoricalOnly,
             OutputLimitSpec outputLimitSpec,
             bool hasOrderBy,
-            ResultSetProcessorOutputConditionType? outputConditionType)
+            Supplier<StateMgmtSetting> outputAllHelperSettings)
         {
             ResultEventType = resultEventType;
-            this.selectExprProcessorForge = selectExprProcessorForge;
             OptionalHavingNode = optionalHavingNode;
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
             IsHistoricalOnly = isHistoricalOnly;
             OutputLimitSpec = outputLimitSpec;
             IsSorting = hasOrderBy;
-            this.outputConditionType = outputConditionType;
+            OutputAllHelperSettings = outputAllHelperSettings;
         }
 
         public EventType ResultEventType { get; }
@@ -67,6 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         public bool IsSorting { get; }
 
         public OutputLimitSpec OutputLimitSpec { get; }
+
+        public Supplier<StateMgmtSetting> OutputAllHelperSettings { get; }
 
         public Type InterfaceClass => typeof(ResultSetProcessorRowForAll);
 
@@ -87,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 "ExprEvaluatorContext",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                node => node.GetterBlock.BlockReturn(MEMBER_AGENTINSTANCECONTEXT));
+                node => node.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",

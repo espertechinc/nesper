@@ -23,4 +23,12 @@ namespace com.espertech.esper.common.@internal.view.core
 
         View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext);
     }
+
+    public class ViewFactoryConstants
+    {
+        public static readonly ViewFactory[] EMPTY_ARRAY = new ViewFactory[0];
+        public static readonly ViewFactory[][] SINGLE_ELEMENT_ARRAY = new ViewFactory[][] {
+            EMPTY_ARRAY
+        };  
+    }
 } // end of namespace

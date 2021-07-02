@@ -18,8 +18,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanCopyMethod : EventBeanCopyMethod
     {
-        private readonly EventBeanTypedEventFactory eventAdapterService;
-        private readonly ObjectArrayEventType objectArrayEventType;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
+        private readonly ObjectArrayEventType _objectArrayEventType;
 
         /// <summary>
         ///     Ctor.
@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             ObjectArrayEventType objectArrayEventType,
             EventBeanTypedEventFactory eventAdapterService)
         {
-            this.objectArrayEventType = objectArrayEventType;
-            this.eventAdapterService = eventAdapterService;
+            this._objectArrayEventType = objectArrayEventType;
+            this._eventAdapterService = eventAdapterService;
         }
 
         public EventBean Copy(EventBean theEvent)
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var array = ((ObjectArrayBackedEventBean) theEvent).Properties;
             var copy = new object[array.Length];
             Array.Copy(array, 0, copy, 0, copy.Length);
-            return eventAdapterService.AdapterForTypedObjectArray(copy, objectArrayEventType);
+            return _eventAdapterService.AdapterForTypedObjectArray(copy, _objectArrayEventType);
         }
     }
 } // end of namespace

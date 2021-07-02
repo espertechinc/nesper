@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
     public class EventTableOrganization
     {
         public EventTableOrganization(
-            String indexName,
+            string indexName,
             bool unique,
             bool coercing,
             int streamNum,

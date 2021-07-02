@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
+using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
@@ -24,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenProperty : CodegenPropertyScope
     {
-        protected CodegenProperty(
+        internal CodegenProperty(
             Type returnType,
             string returnTypeName,
             Type generator,
@@ -35,7 +37,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new ArgumentException("Invalid null generator");
             }
 
-            ReturnType = returnType;
+            ReturnType = returnType?.Flexify();
             ReturnTypeName = returnTypeName;
             OptionalSymbolProvider = optionalSymbolProvider;
             Block = new CodegenBlock(); // no return from the property block
@@ -53,7 +55,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenSymbolProvider OptionalSymbolProvider { get; }
 
-        public IList<CodegenMethod> Children { get; } = Collections.GetEmptyList<CodegenMethod>();
+        public IList<CodegenMethod> Children { get; private set; } = Collections.GetEmptyList<CodegenMethod>();
 
         public IList<CodegenExpressionRef> Environment { get; private set; } =
             Collections.GetEmptyList<CodegenExpressionRef>();
@@ -84,7 +86,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenPropertyWGraph AssignedProperty { get; set; }
         
-        public String AssignedProviderClassName { get; set;  }
+        public string AssignedProviderClassName { get; set;  }
 
         public CodegenProperty WithStatic(bool value = true)
         {
@@ -108,7 +110,31 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
         
-        public CodegenProperty MakeChild(
+        public CodegenMethod MakeChildMethod(
+            Type returnType,
+            Type generator,
+            CodegenScope env)
+        {
+            if (returnType == null) {
+                throw new ArgumentException("Invalid null return type");
+            }
+
+            return AddChild(new CodegenMethod(returnType, null, generator, null, env));
+        }
+
+        public CodegenMethod MakeChildMethod(
+            string returnType,
+            Type generator,
+            CodegenScope env)
+        {
+            if (returnType == null) {
+                throw new ArgumentException("Invalid null return type");
+            }
+
+            return AddChild(new CodegenMethod(null, returnType, generator, null, env));
+        }
+        
+        public CodegenProperty MakeChildProperty(
             Type returnType,
             Type generator,
             CodegenScope env)
@@ -120,7 +146,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return AddChild(new CodegenProperty(returnType, null, generator, null, env));
         }
 
-        public CodegenProperty MakeChild(
+        public CodegenProperty MakeChildProperty(
             string returnType,
             Type generator,
             CodegenScope env)
@@ -265,15 +291,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return className + "." + methodName + "():" + lineNumber;
         }
 
-        private CodegenProperty AddChild(CodegenProperty propertyNode)
+        private CodegenMethod AddChild(CodegenMethod methodNode)
         {
-#if false
             if (Children.IsEmpty()) {
                 Children = new List<CodegenMethod>();
             }
 
-            Children.Add(propertyNode);
-#endif
+            Children.Add(methodNode);
+            return methodNode;
+        }
+
+        private CodegenProperty AddChild(CodegenProperty propertyNode)
+        {
             return propertyNode;
         }
     }

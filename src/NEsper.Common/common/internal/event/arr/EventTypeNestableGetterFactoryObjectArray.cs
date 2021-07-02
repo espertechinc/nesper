@@ -164,8 +164,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type nestedReturnType,
-            Type nestedComponentType)
+            Type nestedValueType)
         {
             var index = GetAssertIndex(propertyName);
             return new ObjectArrayPONOEntryPropertyGetter(
@@ -173,8 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 nestedGetter,
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                nestedReturnType,
-                nestedComponentType);
+                nestedValueType);
         }
 
         public EventPropertyGetterSPI GetGetterNestedEventBean(

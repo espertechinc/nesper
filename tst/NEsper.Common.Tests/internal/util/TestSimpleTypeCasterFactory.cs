@@ -9,6 +9,9 @@
 using System;
 using System.Numerics;
 
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.type;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.util
@@ -32,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < tests.Length; i++)
             {
-                var caster = SimpleTypeCasterFactory.GetCaster(null, (Type) tests[i][0]);
+                var caster = SimpleTypeCasterFactory.GetCaster(TypeHelper.NullType, (Type) tests[i][0]);
                 Assert.AreEqual(tests[i][2], caster.Cast(tests[i][1]), "error in row:" + i);
             }
 

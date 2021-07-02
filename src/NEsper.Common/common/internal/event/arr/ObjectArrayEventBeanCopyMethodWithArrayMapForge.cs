@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     /// </summary>
     public class ObjectArrayEventBeanCopyMethodWithArrayMapForge : EventBeanCopyMethodForge
     {
-        private readonly int[] arrayIndexes;
-        private readonly ObjectArrayEventType eventType;
-        private readonly int[] mapIndexes;
+        private readonly int[] _arrayIndexes;
+        private readonly ObjectArrayEventType _eventType;
+        private readonly int[] _mapIndexes;
 
         public ObjectArrayEventBeanCopyMethodWithArrayMapForge(
             ObjectArrayEventType eventType,
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             ISet<string> arrayPropertiesToCopy,
             IDictionary<string, int> propertiesIndexes)
         {
-            this.eventType = eventType;
+            this._eventType = eventType;
 
             ISet<int> mapIndexesToCopy = new HashSet<int>();
             foreach (var prop in mapPropertiesToCopy) {
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 }
             }
 
-            mapIndexes = IntArrayUtil.ToArray(mapIndexesToCopy);
+            _mapIndexes = IntArrayUtil.ToArray(mapIndexesToCopy);
 
             ISet<int> arrayIndexesToCopy = new HashSet<int>();
             foreach (var prop in arrayPropertiesToCopy) {
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 }
             }
 
-            arrayIndexes = IntArrayUtil.ToArray(arrayIndexesToCopy);
+            _arrayIndexes = IntArrayUtil.ToArray(arrayIndexesToCopy);
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
@@ -60,19 +60,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return NewInstance<ObjectArrayEventBeanCopyMethodWithArrayMap>(
                 Cast(
                     typeof(ObjectArrayEventType),
-                    EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)),
+                    EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)),
                 factory,
-                Constant(mapIndexes),
-                Constant(arrayIndexes));
+                Constant(_mapIndexes),
+                Constant(_arrayIndexes));
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             return new ObjectArrayEventBeanCopyMethodWithArrayMap(
-                eventType,
+                _eventType,
                 eventBeanTypedEventFactory,
-                mapIndexes,
-                arrayIndexes);
+                _mapIndexes,
+                _arrayIndexes);
         }
     }
 } // end of namespace

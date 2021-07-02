@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ContainedEventEvalGetter), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(ContainedEventEvalGetter), GetType(), classScope);
 
             var getFragment = new CodegenExpressionLambda(method.Block)
                 .WithParams(new CodegenNamedParam(typeof(EventBean), "@event"));

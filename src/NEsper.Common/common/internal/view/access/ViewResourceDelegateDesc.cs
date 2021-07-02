@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -22,9 +23,13 @@ namespace com.espertech.esper.common.@internal.view.access
     /// </summary>
     public class ViewResourceDelegateDesc
     {
+        public static readonly ViewResourceDelegateDesc[] SINGLE_ELEMENT_ARRAY = new ViewResourceDelegateDesc[] {
+            new ViewResourceDelegateDesc(false, new SortedSet<int>()) // Collections.emptySortedSet()
+        };
+        
         public ViewResourceDelegateDesc(
             bool hasPrevious,
-            SortedSet<int> priorRequests)
+            ISet<int> priorRequests)
         {
             HasPrevious = hasPrevious;
             PriorRequests = priorRequests;
@@ -32,7 +37,7 @@ namespace com.espertech.esper.common.@internal.view.access
 
         public bool HasPrevious { get; }
 
-        public SortedSet<int> PriorRequests { get; }
+        public ISet<int> PriorRequests { get; }
 
         public CodegenExpression ToExpression()
         {
@@ -49,5 +54,18 @@ namespace com.espertech.esper.common.@internal.view.access
 
             return false;
         }
+        
+        public static CodegenExpression ToExpression(ViewResourceDelegateDesc[] descs)
+        {
+            if (descs.Length == 1 && !descs[0].HasPrevious && descs[0].PriorRequests.IsEmpty()) {
+                return PublicConstValue(typeof(ViewResourceDelegateDesc), "SINGLE_ELEMENT_ARRAY");
+            }
+
+            var values = descs
+                .Select(_ => _.ToExpression())
+                .ToArray();
+            return NewArrayWithInit(typeof(ViewResourceDelegateDesc), values);
+        }
+
     }
 } // end of namespace

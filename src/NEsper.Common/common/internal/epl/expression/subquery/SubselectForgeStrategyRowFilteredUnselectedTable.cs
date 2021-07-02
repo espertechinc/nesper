@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
@@ -20,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeStrategyRowFilteredUnselectedTable : SubselectForgeStrategyRowPlain
     {
-        private readonly TableMetaData table;
+        private readonly TableMetaData _table;
 
         public SubselectForgeStrategyRowFilteredUnselectedTable(
             ExprSubselectRowNode subselect,
@@ -28,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             :
             base(subselect)
         {
-            this.table = table;
+            this._table = table;
         }
 
         public override CodegenExpression EvaluateCodegen(
@@ -36,9 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType.IsNullType()) {
+                return ConstantNull();
+            }
+            
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());
-            CodegenMethod method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+                TableDeployTimeResolver.MakeTableEventToPublicField(_table, classScope, GetType());
+            CodegenMethod method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
 
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
@@ -49,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
-                CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
+                CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope);
                 CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                     @foreach,
                     typeof(bool?),

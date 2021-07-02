@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             PropertySortedEventTable index,
             ExprEvaluatorContext context)
         {
-            return index.LookupGreater(base.EvaluateLookup(theEvent, context));
+            return index.LookupGreater(EvaluateLookup(theEvent, context));
         }
 
         public ISet<EventBean> LookupCollectKeys(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context,
             List<object> keys)
         {
-            object point = base.EvaluateLookup(theEvent, context);
+            object point = EvaluateLookup(theEvent, context);
             keys.Add(point);
             return index.LookupGreater(point);
         }
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             PropertySortedEventTable index,
             ExprEvaluatorContext context)
         {
-            return index.LookupGreaterColl(base.EvaluatePerStream(eventsPerStream, context));
+            return index.LookupGreaterColl(EvaluatePerStream(eventsPerStream, context));
         }
 
         public ICollection<EventBean> LookupCollectKeys(
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context,
             List<object> keys)
         {
-            object point = base.EvaluatePerStream(eventsPerStream, context);
+            object point = EvaluatePerStream(eventsPerStream, context);
             keys.Add(point);
             return index.LookupGreaterColl(point);
         }

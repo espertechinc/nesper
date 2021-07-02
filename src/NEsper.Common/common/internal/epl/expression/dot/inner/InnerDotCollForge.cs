@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotCollForge : ExprDotEvalRootChildInnerForge
     {
-        private readonly ExprForge rootForge;
+        private readonly ExprForge _rootForge;
 
         public InnerDotCollForge(ExprForge rootForge)
         {
-            this.rootForge = rootForge;
+            this._rootForge = rootForge;
         }
 
         public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotCollEval(rootForge.ExprEvaluator);
+            get => new InnerDotCollEval(_rootForge.ExprEvaluator);
         }
 
         public CodegenExpression CodegenEvaluate(
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return rootForge.EvaluateCodegen(rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
+            return _rootForge.EvaluateCodegen(_rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
@@ -78,10 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             get => null;
         }
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(
-                typeof(object),
-                typeof(ICollection<object>));
+        public EPChainableType TypeInfo {
+            get => EPChainableTypeHelper.CollectionOfSingleValue(
+                typeof(object));
         }
     }
 } // end of namespace

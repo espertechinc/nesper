@@ -47,42 +47,42 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public static IList<RegressionExecution> WithRecursive(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAnnotationRecursive());
             return execs;
         }
 
         public static IList<RegressionExecution> WithSpecificImport(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAnnotationSpecificImport());
             return execs;
         }
 
         public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAnnotationInvalid());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAppNested(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAnnotationAppNested());
             return execs;
         }
 
         public static IList<RegressionExecution> WithAppSimple(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAnnotationAppSimple());
             return execs;
         }
 
         public static IList<RegressionExecution> WithBuiltin(IList<RegressionExecution> execs = null)
         {
-            execs = execs ?? new List<RegressionExecution>();
+            execs ??= new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAnnotationBuiltin());
             return execs;
         }
@@ -488,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // try fully-qualified
                 epl = "@" +
-                      typeof(NameAttribute).Name +
+                      nameof(NameAttribute) +
                       "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
                       "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
