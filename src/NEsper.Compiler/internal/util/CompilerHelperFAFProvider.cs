@@ -128,7 +128,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var classPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
             EPCompiledManifest manifest;
-            Assembly assembly;
+            Pair<Assembly, byte[]> assemblyWithImage;
 
             FAFQueryMethodForge query;
             if (specCompiled.Raw.InsertIntoDesc != null) {
@@ -172,7 +172,7 @@ namespace com.espertech.esper.compiler.@internal.util
             VerifySubstitutionParams(raw.SubstitutionParameters);
 
             try {
-                manifest = CompileToAssembly(query, classPostfix, args.Options, services, out assembly);
+                manifest = CompileToAssembly(query, classPostfix, args.Options, services, out assemblyWithImage);
             }
             catch (EPCompileException) {
                 throw;
@@ -184,7 +184,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     new EmptyList<EPCompileExceptionItem>());
             }
 
-            return new EPCompiled(new [] { assembly }, manifest);
+            return new EPCompiled(new [] { assemblyWithImage }, manifest);
         }
 
         private static EPCompiledManifest CompileToAssembly(
@@ -192,11 +192,11 @@ namespace com.espertech.esper.compiler.@internal.util
             string classPostfix,
             CompilerOptions compilerOptions,
             ModuleCompileTimeServices compileTimeServices,
-            out Assembly assembly)
+            out Pair<Assembly, byte[]> assemblyWithImage)
         {
             string queryMethodProviderClassName;
             try {
-                queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(query, classPostfix,compileTimeServices, out assembly);
+                queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(query, classPostfix,compileTimeServices, out assemblyWithImage);
             }
             catch (StatementSpecCompileException ex) {
                 EPCompileExceptionItem first;
@@ -216,7 +216,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 queryMethodProviderClassName,
                 classPostfix,
                 compileTimeServices,
-                out assembly);
+                out assemblyWithImage);
 
             // create manifest
             return new EPCompiledManifest(COMPILER_VERSION, null, fafProviderClassName, false);
@@ -226,7 +226,7 @@ namespace com.espertech.esper.compiler.@internal.util
             string queryMethodProviderClassName,
             string classPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Assembly assembly)
+            out Pair<Assembly, byte[]> assemblyWithImage)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);
@@ -316,7 +316,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new List<CodegenClass>() { clazz });
 
-            assembly = compiler.Compile();
+            assemblyWithImage = compiler.Compile();
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                 compileTimeServices.Namespace,

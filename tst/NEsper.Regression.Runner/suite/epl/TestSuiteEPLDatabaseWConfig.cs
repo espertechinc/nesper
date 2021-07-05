@@ -53,14 +53,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
             return configDB;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLDatabaseQueryResultCache()
         {
-            Run(new EPLDatabaseQueryResultCache(false, null, 1d, double.MaxValue, 5000L, 1000, false));
-            Run(new EPLDatabaseQueryResultCache(true, 100, null, null, 2000L, 1000, false));
-            Run(new EPLDatabaseQueryResultCache(true, 100, null, null, 7000L, 25000, false));
-            Run(new EPLDatabaseQueryResultCache(false, null, 2d, 2d, 7000L, 25000, false));
-            Run(new EPLDatabaseQueryResultCache(false, null, 1d, 1d, 7000L, 25000, true));
+            using (new PerformanceContext()) {
+                Run(new EPLDatabaseQueryResultCache(false, null, 1d, double.MaxValue, 5000L, 1000, false));
+                Run(new EPLDatabaseQueryResultCache(true, 100, null, null, 2000L, 1000, false));
+                Run(new EPLDatabaseQueryResultCache(true, 100, null, null, 7000L, 25000, false));
+                Run(new EPLDatabaseQueryResultCache(false, null, 2d, 2d, 7000L, 25000, false));
+                Run(new EPLDatabaseQueryResultCache(false, null, 1d, 1d, 7000L, 25000, true));
+            }
         }
     }
 } // end of namespace

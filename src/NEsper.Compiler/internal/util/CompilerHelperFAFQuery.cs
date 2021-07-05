@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -24,7 +25,7 @@ namespace com.espertech.esper.compiler.@internal.util
             FAFQueryMethodForge query,
             string classPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Assembly assembly)
+            out Pair<Assembly, byte[]> assemblyWithImage)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields),
@@ -50,7 +51,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // assign the assembly (required for completeness)
-            assembly = null;
+            assemblyWithImage = null;
 
             // compile with statement-field first
             classes = classes
@@ -64,7 +65,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(classes);
 
-            assembly = compiler.Compile();
+            assemblyWithImage = compiler.Compile();
 
             return queryMethodProviderClassName;
         }

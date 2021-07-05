@@ -13,6 +13,7 @@ using System.Threading;
 
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -21,18 +22,18 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CompilableItem _compilableItem;
 		private readonly ModuleCompileTimeServices _compileTimeServices;
 		private readonly Semaphore _semaphore;
-		private readonly ICollection<Assembly> _statementAssemblies;
+		private readonly ICollection<Pair<Assembly, byte[]>> _statementAssembliesWithImage;
 
 		CompileCallable(
 			CompilableItem compilableItem,
 			ModuleCompileTimeServices compileTimeServices,
 			Semaphore semaphore,
-			ICollection<Assembly> statementAssemblies)
+			ICollection<Pair<Assembly, byte[]>> statementAssembliesWithImage)
 		{
 			_compilableItem = compilableItem;
 			_compileTimeServices = compileTimeServices;
 			_semaphore = semaphore;
-			_statementAssemblies = statementAssemblies;
+			_statementAssembliesWithImage = statementAssembliesWithImage;
 		}
 
 		public CompilableItemResult Call()
@@ -45,14 +46,14 @@ namespace com.espertech.esper.compiler.@internal.util
 					.WithCodeAuditDirectory(_compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
 					.WithCodegenClasses(_compilableItem.Classes);
 
-				_statementAssemblies.Add(compiler.Compile());
+				_statementAssembliesWithImage.Add(compiler.Compile());
 			}
 			catch (Exception t) {
 				return new CompilableItemResult(t);
 			}
 			finally {
 				_semaphore.Release();
-				_compilableItem.PostCompileLatch.Completed(_statementAssemblies);
+				_compilableItem.PostCompileLatch.Completed(_statementAssembliesWithImage);
 			}
 
 			return new CompilableItemResult();

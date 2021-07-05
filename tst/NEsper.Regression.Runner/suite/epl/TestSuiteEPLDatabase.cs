@@ -8,6 +8,7 @@
 
 using System.Data;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
@@ -16,6 +17,7 @@ using com.espertech.esper.regressionlib.suite.epl.database;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -63,6 +65,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("myvariableIPC", typeof(string), "x10");
             common.AddVariable("myvariableORC", typeof(int), 10);
 
+            common.AddImportNamespace(typeof(HookType));
+            
             var configDBWithRetain = new ConfigurationCommonDBRef();
             configDBWithRetain.SetDatabaseDriver(
                 SupportDatabaseService.DRIVER,
@@ -143,33 +147,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLDatabase2StreamOuterJoin()
-        {
-            RegressionRunner.Run(session, EPLDatabase2StreamOuterJoin.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDatabase3StreamOuterJoin()
-        {
-            RegressionRunner.Run(session, EPLDatabase3StreamOuterJoin.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseDataSourceFactory()
         {
             RegressionRunner.Run(session, new EPLDatabaseDataSourceFactory());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDatabaseHintHook()
-        {
-            RegressionRunner.Run(session, EPLDatabaseHintHook.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDatabaseJoin()
-        {
-            RegressionRunner.Run(session, EPLDatabaseJoin.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -185,12 +165,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLDatabaseJoinOptions()
-        {
-            RegressionRunner.Run(session, EPLDatabaseJoinOptions.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinOptionUppercase()
         {
             RegressionRunner.Run(session, new EPLDatabaseJoinOptionUppercase());
@@ -203,18 +177,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLDatabaseJoinPerfWithCache()
-        {
-            RegressionRunner.Run(session, EPLDatabaseJoinPerfWithCache.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEPLDatabaseNoJoinIterate()
-        {
-            RegressionRunner.Run(session, EPLDatabaseNoJoinIterate.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseNoJoinIteratePerf()
         {
             RegressionRunner.Run(session, new EPLDatabaseNoJoinIteratePerf());
@@ -224,6 +186,233 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLDatabaseOuterJoinWCache()
         {
             RegressionRunner.Run(session, new EPLDatabaseOuterJoinWCache());
+        }
+        
+                /// <summary>
+        /// Auto-test(s): EPLDatabase2StreamOuterJoin
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabase2StreamOuterJoin : AbstractTestBase
+        {
+            public TestEPLDatabase2StreamOuterJoin() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinReversedOnFilter() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinReversedOnFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithRightOuterJoinOnFilter() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithRightOuterJoinOnFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithLeftOuterJoinOnFilter() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithLeftOuterJoinOnFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinLeftS1() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinLeftS1());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinRightS0() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinRightS0());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinFullS1() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinFullS1());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinFullS0() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinFullS0());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinRightS1() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinRightS1());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinLeftS0() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase2StreamOuterJoin.WithOuterJoinLeftS0());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLDatabaseJoin
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabaseJoin : AbstractTestBase
+        {
+            public TestEPLDatabaseJoin() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleJoinRight() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithSimpleJoinRight());
+
+            [Test, RunInApplicationDomain]
+            public void WithRestartStatement() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithRestartStatement());
+
+            [Test, RunInApplicationDomain]
+            public void WithPropertyResolution() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithPropertyResolution());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithPattern() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithWithPattern());
+
+            [Test, RunInApplicationDomain]
+            public void WithStreamNamesAndRename() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithStreamNamesAndRename());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidSubviews() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithInvalidSubviews());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid1Stream() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithInvalid1Stream());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidPropertyHistorical() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithInvalidPropertyHistorical());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidPropertyEvent() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithInvalidPropertyEvent());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidBothHistorical() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithInvalidBothHistorical());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalidSQL() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithInvalidSQL());
+
+            [Test, RunInApplicationDomain]
+            public void WithVariables() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithVariables());
+
+            [Test, RunInApplicationDomain]
+            public void WithTimeBatchCompile() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithTimeBatchCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithTimeBatchOM() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithTimeBatchOM());
+
+            [Test, RunInApplicationDomain]
+            public void WithTimeBatch() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithTimeBatch());
+
+            [Test, RunInApplicationDomain]
+            public void With3Stream() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.With3Stream());
+
+            [Test, RunInApplicationDomain]
+            public void With2HistoricalStarInner() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.With2HistoricalStarInner());
+
+            [Test, RunInApplicationDomain]
+            public void With2HistoricalStar() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.With2HistoricalStar());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleJoinLeft() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoin.WithSimpleJoinLeft());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLDatabaseJoinPerfWithCache
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabaseJoinPerfWithCache : AbstractTestBase
+        {
+            public TestEPLDatabaseJoinPerfWithCache() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInKeywordMultiIndex() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithInKeywordMultiIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithInKeywordSingleIndex() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithInKeywordSingleIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinPlusWhere() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithOuterJoinPlusWhere());
+
+            [Test, RunInApplicationDomain]
+            public void With2StreamOuterJoin() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.With2StreamOuterJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithSelectLargeResultSetCoercion() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithSelectLargeResultSetCoercion());
+
+            [Test, RunInApplicationDomain]
+            public void WithSelectLargeResultSet() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithSelectLargeResultSet());
+
+            [Test, RunInApplicationDomain]
+            public void WithKeyAndRangeIndex() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithKeyAndRangeIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithRangeIndex() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithRangeIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithConstants() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinPerfWithCache.WithConstants());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLDatabase3StreamOuterJoin
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase3StreamOuterJoin.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabase3StreamOuterJoin : AbstractTestBase
+        {
+            public TestEPLDatabase3StreamOuterJoin() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithOuterJoinLeftS0() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase3StreamOuterJoin.WithOuterJoinLeftS0());
+
+            [Test, RunInApplicationDomain]
+            public void WithInnerJoinLeftS0() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabase3StreamOuterJoin.WithInnerJoinLeftS0());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLDatabaseHintHook
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseHintHook.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabaseHintHook : AbstractTestBase
+        {
+            public TestEPLDatabaseHintHook() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithOutputRowConversion() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseHintHook.WithOutputRowConversion());
+
+            [Test, RunInApplicationDomain]
+            public void WithInputParameterConversion() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseHintHook.WithInputParameterConversion());
+
+            [Test, RunInApplicationDomain]
+            public void WithOutputColumnConversion() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseHintHook.WithOutputColumnConversion());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLDatabaseJoinOptions
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinOptions.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabaseJoinOptions : AbstractTestBase
+        {
+            public TestEPLDatabaseJoinOptions() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithPlaceholderWhere() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinOptions.WithPlaceholderWhere());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoMetaLexAnalysisGroup() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinOptions.WithNoMetaLexAnalysisGroup());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoMetaLexAnalysis() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseJoinOptions.WithNoMetaLexAnalysis());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): EPLDatabaseNoJoinIterate
+        /// <code>
+        /// RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseNoJoinIterate.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLDatabaseNoJoinIterate : AbstractTestBase
+        {
+            public TestEPLDatabaseNoJoinIterate() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithVariablesPoll() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseNoJoinIterate.WithVariablesPoll());
+
+            [Test, RunInApplicationDomain]
+            public void WithExpressionPoll() => RegressionRunner.RunPerformanceSensitive(_session, EPLDatabaseNoJoinIterate.WithExpressionPoll());
         }
     }
 } // end of namespace

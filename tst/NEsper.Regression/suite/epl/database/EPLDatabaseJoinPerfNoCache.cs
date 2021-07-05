@@ -32,22 +32,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var startTime = PerformanceObserver.MilliTime;
-            Try100Events(env, dbname);
-            var endTime = PerformanceObserver.MilliTime;
+            var delta = PerformanceObserver.TimeMillis(() => Try100Events(env, dbname));
             // log.info(".test100EventsRetained delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < 5000);
+            Assert.That(delta, Is.LessThan(5000));
         }
 
         private static void RunAssertion100EventsPooled(
             RegressionEnvironment env,
             string dbname)
         {
-            var startTime = PerformanceObserver.MilliTime;
-            Try100Events(env, dbname);
-            var endTime = PerformanceObserver.MilliTime;
+            var delta = PerformanceObserver.TimeMillis(() => Try100Events(env, dbname));
             // log.info(".test100EventsPooled delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < 10000);
+            Assert.That(delta, Is.LessThan(10000));
         }
 
         private static void RunAssertionSelectRStream(

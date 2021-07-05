@@ -9,6 +9,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
 	public class CompilableItemPostCompileLatchDefault : CompilableItemPostCompileLatch
@@ -23,7 +25,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 		}
 
-		public void Completed(ICollection<Assembly> assemblies)
+		public void Completed(IEnumerable<Pair<Assembly, byte[]>> assembliesWithImage)
 		{
 		}
 	}

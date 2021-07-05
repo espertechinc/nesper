@@ -22,20 +22,83 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
-    public class EPLDatabaseJoinPerfWithCache : IndexBackingTableInfo
+        public class EPLDatabaseJoinPerfWithCache : IndexBackingTableInfo
     {
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLDatabaseConstants());
-            execs.Add(new EPLDatabaseRangeIndex());
-            execs.Add(new EPLDatabaseKeyAndRangeIndex());
-            execs.Add(new EPLDatabaseSelectLargeResultSet());
-            execs.Add(new EPLDatabaseSelectLargeResultSetCoercion());
-            execs.Add(new EPLDatabase2StreamOuterJoin());
-            execs.Add(new EPLDatabaseOuterJoinPlusWhere());
-            execs.Add(new EPLDatabaseInKeywordSingleIndex());
+            WithConstants(execs);
+            WithRangeIndex(execs);
+            WithKeyAndRangeIndex(execs);
+            WithSelectLargeResultSet(execs);
+            WithSelectLargeResultSetCoercion(execs);
+            With2StreamOuterJoin(execs);
+            WithOuterJoinPlusWhere(execs);
+            WithInKeywordSingleIndex(execs);
+            WithInKeywordMultiIndex(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInKeywordMultiIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDatabaseInKeywordMultiIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInKeywordSingleIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInKeywordSingleIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinPlusWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOuterJoinPlusWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2StreamOuterJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabase2StreamOuterJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectLargeResultSetCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseSelectLargeResultSetCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectLargeResultSet(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseSelectLargeResultSet());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeyAndRangeIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseKeyAndRangeIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRangeIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseRangeIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConstants(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseConstants());
             return execs;
         }
 
@@ -122,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select * from SupportBeanRange sbr, " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = key and mycol3 between RangeStart and RangeEnd";
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = Key and mycol3 between RangeStart and RangeEnd";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -139,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 // test coercion
                 env.UndeployAll();
                 stmtText = "@Name('s0') select * from SupportBeanRange sbr, " +
-                           " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = key and mycol3 between RangeStartLong and RangeEndLong";
+                           " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = Key and mycol3 between RangeStartLong and RangeEndLong";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R", "11", 10L, 12L));
@@ -310,9 +373,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();
-                Assert.AreEqual(nameof(PollResultIndexingStrategyHashForge), historical.IndexName);
+                Assert.AreEqual(typeof(PollResultIndexingStrategyHashForge).Name, historical.IndexName);
                 Assert.AreEqual(
-                    nameof(HistoricalIndexLookupStrategyInKeywordSingleForge),
+                    typeof(HistoricalIndexLookupStrategyInKeywordSingleForge).Name,
                     historical.StrategyName);
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -342,17 +405,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();
-                Assert.AreEqual(nameof(PollResultIndexingStrategyInKeywordMultiForge), historical.IndexName);
-                Assert.AreEqual(nameof(HistoricalIndexLookupStrategyInKeywordMultiForge), historical.StrategyName);
+                Assert.AreEqual(typeof(PollResultIndexingStrategyInKeywordMultiForge).Name, historical.IndexName);
+                Assert.AreEqual(typeof(HistoricalIndexLookupStrategyInKeywordMultiForge).Name, historical.StrategyName);
 
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 2000; i++) {
-                    env.SendEventBean(new SupportBean_S0(i, "815"));
-                    Assert.AreEqual(815, env.Listener("s0").AssertOneGetNewAndReset().Get("S1.mycol3"));
-                }
-
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
+                var delta = PerformanceObserver.TimeMillis(
+                    () => {
+                        for (var i = 0; i < 2000; i++) {
+                            env.SendEventBean(new SupportBean_S0(i, "815"));
+                            Assert.AreEqual(815, env.Listener("s0").AssertOneGetNewAndReset().Get("S1.mycol3"));
+                        }
+                    });
+                
                 // log.info("delta=" + delta);
                 Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 

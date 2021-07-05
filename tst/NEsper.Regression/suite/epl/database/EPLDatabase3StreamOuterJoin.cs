@@ -20,8 +20,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLDatabaseInnerJoinLeftS0());
+            WithInnerJoinLeftS0(execs);
+            WithOuterJoinLeftS0(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoinLeftS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDatabaseOuterJoinLeftS0());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInnerJoinLeftS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInnerJoinLeftS0());
             return execs;
         }
 
@@ -32,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var stmtText = "@Name('s0') select * from SupportBean#lastevent sb" +
                                " inner join " +
                                " SupportBeanTwo#lastevent sbt" +
-                               " on sb.TheString = sbt.stringTwo " +
+                               " on sb.TheString = sbt.StringTwo " +
                                " inner join " +
                                " sql:MyDBWithRetain ['select myint from mytesttable'] as S1 " +
                                "  on S1.myint = sbt.IntPrimitiveTwo";
@@ -45,14 +59,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBean("T2", -1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T2", "T2", 30});
 
                 env.SendEventBean(new SupportBean("T3", -1));
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T3", "T3", 40});
 
                 env.UndeployAll();
@@ -66,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var stmtText = "@Name('s0') select * from SupportBean#lastevent sb" +
                                " left outer join " +
                                " SupportBeanTwo#lastevent sbt" +
-                               " on sb.TheString = sbt.stringTwo " +
+                               " on sb.TheString = sbt.StringTwo " +
                                " left outer join " +
                                " sql:MyDBWithRetain ['select myint from mytesttable'] as S1 " +
                                "  on S1.myint = sbt.IntPrimitiveTwo";
@@ -76,26 +90,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBean("T1", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T1", "T1", null});
 
                 env.SendEventBean(new SupportBeanTwo("T2", 30));
                 env.SendEventBean(new SupportBean("T2", -2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T2", "T2", 30});
 
                 env.SendEventBean(new SupportBean("T3", -1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T3", null, null});
 
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.stringTwo","S1.myint" },
+                    new[] {"sb.TheString", "sbt.StringTwo", "S1.myint"},
                     new object[] {"T3", "T3", 40});
 
                 env.UndeployAll();

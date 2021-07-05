@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
@@ -13,6 +14,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An SQL stream that polls via SQL for events via join.
     /// </summary>
+    [Serializable]
     public class SQLStream : Stream
     {
         private string databaseName;

@@ -9,11 +9,13 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
     public interface CompilableItemPostCompileLatch
     {
         void AwaitAndRun();
-        void Completed(ICollection<Assembly> assemblies);
+        void Completed(IEnumerable<Pair<Assembly, byte[]>> assembliesWithImage);
     }
 } // end of namespace

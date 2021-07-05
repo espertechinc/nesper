@@ -250,7 +250,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPServicesHA epServicesHA)
         {
             return new VariableManagementServiceImpl(
-                configs.Runtime.Variables.MsecVersionRelease, schedulingService, eventBeanTypedEventFactory, null);
+                _container.RWLockManager(),
+                configs.Runtime.Variables.MsecVersionRelease,
+                schedulingService,
+                eventBeanTypedEventFactory,
+                null);
         }
 
         protected override TableManagementService MakeTableManagementService(

@@ -64,7 +64,7 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions)
         {
-            ICollection<Assembly> assemblies = new HashSet<Assembly>();
+            ICollection<Pair<Assembly, byte[]>> assemblies = new HashSet<Pair<Assembly, byte[]>>();
             
             try {
                 var manifest = CompileToModules(
@@ -73,8 +73,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     optionalModuleName,
                     moduleProperties,
                     compileTimeServices,
-                    compilerOptions,
-                    out var assembly);
+                    compilerOptions);
 
                 return new EPCompiled(assemblies, manifest);
             }
@@ -90,13 +89,12 @@ namespace com.espertech.esper.compiler.@internal.util
         }
 
         private static EPCompiledManifest CompileToModules(
-            ICollection<Assembly> assemblies,
+            ICollection<Pair<Assembly, byte[]>> assemblies,
             IList<Compilable> compilables,
             string optionalModuleName,
             IDictionary<ModuleProperty, object> moduleProperties,
             ModuleCompileTimeServices compileTimeServices,
-            CompilerOptions compilerOptions,
-            out Assembly assembly)
+            CompilerOptions compilerOptions)
         {
             var moduleAssignedName = optionalModuleName ?? Guid.NewGuid().ToString();
             var moduleIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(moduleAssignedName);
@@ -108,6 +106,8 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<EPCompileExceptionItem> exceptions = new List<EPCompileExceptionItem>();
             IList<EPCompileExceptionItem> postLatchExceptions = new List<EPCompileExceptionItem>();
 
+            Pair<Assembly, byte[]> assemblyWithImage;
+            
             foreach (var compilable in compilables) {
                 string className = null;
                 EPCompileExceptionItem exception = null;
@@ -121,9 +121,9 @@ namespace com.espertech.esper.compiler.@internal.util
                         statementNames,
                         compileTimeServices,
                         compilerOptions,
-                        out assembly);
+                        out assemblyWithImage);
 
-                    assemblies.Add(assembly);
+                    assemblies.Add(assemblyWithImage);
                     className = compilableItem.ProviderClassName;
                     compilableItem.PostCompileLatch.Completed(assemblies);
                     
@@ -174,7 +174,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 statementClassNames,
                 moduleIdentPostfix,
                 compileTimeServices,
-                out assembly);
+                out assemblyWithImage);
             
 #if TBD // revisit
             // remove path create-class class-provided byte code
@@ -196,7 +196,7 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<string> statementClassNames,
             string moduleIdentPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Assembly assembly)
+            out Pair<Assembly, byte[]> assemblyWithImage)
         {
             // write code to create an implementation of StatementResource
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
@@ -362,7 +362,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new[] {clazz});
 
-            assembly = compiler.Compile();
+            assemblyWithImage = compiler.Compile();
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                 compileTimeServices.Namespace,

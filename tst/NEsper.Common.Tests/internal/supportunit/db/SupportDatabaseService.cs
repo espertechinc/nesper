@@ -23,9 +23,7 @@ namespace com.espertech.esper.common.@internal.supportunit.db
 {
     public class SupportDatabaseService
 	{
-        private const string ESPER_REGRESSION_CONFIG_FILE = "NEsperRegressionConfig.xml";
-
-        protected internal const string ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
+        private const string ESPER_LOCAL_CONFIG_FILE = "NEsperConfig.xml";
 
         public readonly ConfigurationCommonDBRef DbConfigReferenceNative;
         public readonly ConfigurationCommonDBRef DbConfigReferenceODBC;
@@ -53,7 +51,7 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         {
             _container = container;
 
-            var configurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ESPER_REGRESSION_CONFIG_FILE);
+            var configurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ESPER_LOCAL_CONFIG_FILE);
             var configurationFile = new FileInfo(configurationPath);
             var configuration = new ConfigurationCommon();
             var configurationDocument = new XmlDocument();

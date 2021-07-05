@@ -71,7 +71,7 @@ namespace com.espertech.esper.compiler.@internal.util
             ISet<string> statementNames,
             ModuleCompileTimeServices moduleCompileTimeServices,
             CompilerOptions compilerOptions,
-            out Assembly assembly)
+            out Pair<Assembly, byte[]> assemblyWithImage)
         {
             var compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 
@@ -350,7 +350,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                     .WithCodegenClasses(sorted);
 
-                assembly = compiler.Compile();
+                assemblyWithImage = compiler.Compile();
 
                 string statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                     compileTimeServices.Namespace,

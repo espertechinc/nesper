@@ -15,13 +15,15 @@ namespace com.espertech.esper.compat.threading.locks
         : IReaderWriterLock,
             IReaderWriterLockCommon
     {
-        private readonly Guid _id;
+        private readonly long _id;
         private readonly int _lockTimeout;
 
 #if MONO
         public const string ExceptionText = "ReaderWriterLockSlim is not supported on this platform";
 #else
         private readonly ReaderWriterLockSlim _rwLock;
+        private Thread _wLockWriteOwner;
+        private DateTime _wLockWriteAcquisitionTime;
 #endif
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public SlimReaderWriterLock(int lockTimeout)
         {
-            _id = Guid.NewGuid();
+            _id = DebugId<SlimReaderWriterLock>.NewId();
             _lockTimeout = lockTimeout;
 #if MONO
             throw new NotSupportedException(ExceptionText);
@@ -73,7 +75,7 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
             Console.WriteLine("{0}:AcquireReadLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
-            if (_rwLock.TryEnterReadLock(_lockTimeout)) {
+            if (_rwLock.TryEnterUpgradeableReadLock(_lockTimeout)) {
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireReadLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
@@ -99,6 +101,8 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
+                _wLockWriteOwner = Thread.CurrentThread;
+                _wLockWriteAcquisitionTime = DateTime.Now;
                 return _wDisposable;
             }
 
@@ -121,6 +125,8 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
 #endif
+                _wLockWriteOwner = Thread.CurrentThread;
+                _wLockWriteAcquisitionTime = DateTime.Now;
                 return _wDisposable;
             }
 
@@ -168,7 +174,7 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
             Console.WriteLine("{0}:AcquireReaderLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
-            if (_rwLock.TryEnterReadLock((int) timeout)) {
+            if (_rwLock.TryEnterUpgradeableReadLock((int) timeout)) {
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireReaderLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
@@ -198,6 +204,8 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
                 Console.WriteLine("{0}:AcquireWriterLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
+                _wLockWriteOwner = Thread.CurrentThread;
+                _wLockWriteAcquisitionTime = DateTime.Now;
                 return;
             }
 
@@ -219,7 +227,7 @@ namespace com.espertech.esper.compat.threading.locks
 #if DIAGNOSTICS
             Console.WriteLine("{0}:ReleaseReaderLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif
-            _rwLock.ExitReadLock();
+            _rwLock.ExitUpgradeableReadLock();
 #if DIAGNOSTICS
             Console.WriteLine("{0}:ReleaseReaderLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif
@@ -238,6 +246,7 @@ namespace com.espertech.esper.compat.threading.locks
             Console.WriteLine("{0}:ReleaseWriterLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif
             _rwLock.ExitWriteLock();
+            _wLockWriteOwner = null;
 #if DIAGNOSTICS
             Console.WriteLine("{0}:ReleaseWriterLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif

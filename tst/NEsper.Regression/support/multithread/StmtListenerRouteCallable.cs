@@ -26,10 +26,11 @@ namespace com.espertech.esper.regressionlib.support.multithread
     public class StmtListenerRouteCallable : ICallable<object>
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly RegressionEnvironment env;
-        private readonly int numRepeats;
-        private readonly int numThread;
-        private readonly EPStatement statement;
+        
+        private readonly RegressionEnvironment _env;
+        private readonly int _numRepeats;
+        private readonly int _numThread;
+        private readonly EPStatement _statement;
 
         public StmtListenerRouteCallable(
             int numThread,
@@ -37,20 +38,20 @@ namespace com.espertech.esper.regressionlib.support.multithread
             EPStatement statement,
             int numRepeats)
         {
-            this.numThread = numThread;
-            this.env = env;
-            this.numRepeats = numRepeats;
-            this.statement = statement;
+            this._numThread = numThread;
+            this._env = env;
+            this._numRepeats = numRepeats;
+            this._statement = statement;
         }
 
         public object Call()
         {
             try {
-                for (var loop = 0; loop < numRepeats; loop++) {
-                    var listener = new MyUpdateListener(env, numThread);
-                    statement.AddListener(listener);
-                    env.SendEventBean(new SupportBean(), "SupportBean");
-                    statement.RemoveListener(listener);
+                for (var loop = 0; loop < _numRepeats; loop++) {
+                    var listener = new MyUpdateListener(_env, _numThread);
+                    _statement.AddListener(listener);
+                    _env.SendEventBean(new SupportBean(), "SupportBean");
+                    _statement.RemoveListener(listener);
                     listener.AssertCalled();
                 }
             }
@@ -72,18 +73,18 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
         private class MyUpdateListener : UpdateListener
         {
-            private readonly RegressionEnvironment env;
-            private readonly int numThread;
-            private readonly EPCompiled compiled;
-            private bool isCalled;
+            private readonly RegressionEnvironment _env;
+            private readonly int _numThread;
+            private readonly EPCompiled _compiled;
+            private bool _isCalled;
 
             public MyUpdateListener(
                 RegressionEnvironment env,
                 int numThread)
             {
-                this.env = env;
-                this.numThread = numThread;
-                compiled = env.Compile(
+                this._env = env;
+                this._numThread = numThread;
+                _compiled = env.Compile(
                     "@Name('t" + numThread + "') select * from SupportMarketDataBean where Volume=" + numThread);
             }
 
@@ -91,16 +92,16 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 object sender,
                 UpdateEventArgs eventArgs)
             {
-                isCalled = true;
+                _isCalled = true;
 
                 // create statement for thread - this can be called multiple times as other threads send SupportBean
-                env.Deploy(compiled);
+                _env.Deploy(_compiled);
                 var listener = new SupportMTUpdateListener();
-                env.Statement("t" + numThread).AddListener(listener);
+                _env.Statement("t" + _numThread).AddListener(listener);
 
-                object theEvent = new SupportMarketDataBean("", 0, numThread, null);
-                env.SendEventBean(theEvent, theEvent.GetType().Name);
-                env.UndeployModuleContaining("t" + numThread);
+                object theEvent = new SupportMarketDataBean("", 0, _numThread, null);
+                _env.SendEventBean(theEvent, theEvent.GetType().Name);
+                _env.UndeployModuleContaining("t" + _numThread);
 
                 var eventsReceived = listener.GetNewDataListFlattened();
 
@@ -116,7 +117,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
             public void AssertCalled()
             {
-                Assert.IsTrue(isCalled);
+                Assert.IsTrue(_isCalled);
             }
         }
     }

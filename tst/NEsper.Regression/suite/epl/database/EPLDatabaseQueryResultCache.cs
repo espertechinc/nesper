@@ -62,11 +62,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             int numEvents,
             bool useRandomLookupKey)
         {
-            var startTime = PerformanceObserver.MilliTime;
-            TrySendEvents(env, numEvents, useRandomLookupKey);
-            var endTime = PerformanceObserver.MilliTime;
-            log.Info(".tryCache delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < assertMaximumTime);
+            var delta = PerformanceObserver.TimeMillis(() => TrySendEvents(env, numEvents, useRandomLookupKey));
+            log.Info($".tryCache delta={delta}");
+            Assert.That(delta, Is.LessThan(assertMaximumTime));
+
         }
 
         private static void TrySendEvents(

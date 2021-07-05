@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
@@ -73,29 +74,49 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             runtime.DeploymentService.GetStatement(deployed.DeploymentId, "out").AddListener(listener);
 
             ThreadStart runnableOne = () => {
-                for (var i = 0; i < 33; i++) {
-                    var eventOne = new EventOne("TEST");
-                    runtime.EventService.SendEventBean(eventOne, eventOne.GetType().Name);
-                    var eventTwo = new EventTwo("TEST");
-                    runtime.EventService.SendEventBean(eventTwo, eventTwo.GetType().Name);
+                try {
+                    for (var i = 0; i < 33; i++) {
+                        var eventOne = new EventOne("TEST");
+                        runtime.EventService.SendEventBean(eventOne, eventOne.GetType().Name);
+                        var eventTwo = new EventTwo("TEST");
+                        runtime.EventService.SendEventBean(eventTwo, eventTwo.GetType().Name);
+                    }
+                }
+                catch (Exception e) {
+                    Console.Error.WriteLine("ERROR: Critical exception occurred");
+                    Console.Error.WriteLine(e.Message);
                 }
             };
 
             ThreadStart runnableTwo = () => {
-                for (var i = 0; i < 33; i++) {
-                    var eventTwo = new EventTwo("TEST");
-                    runtime.EventService.SendEventBean(eventTwo, eventTwo.GetType().Name);
-                    var eventOne = new EventOne("TEST");
-                    runtime.EventService.SendEventBean(eventOne, eventOne.GetType().Name);
+                try {
+                    for (var i = 0; i < 33; i++) {
+                        var eventTwo = new EventTwo("TEST");
+                        runtime.EventService.SendEventBean(eventTwo, eventTwo.GetType().Name);
+                        var eventOne = new EventOne("TEST");
+                        runtime.EventService.SendEventBean(eventOne, eventOne.GetType().Name);
+                    }
                 }
+                catch (Exception e) {
+                    Console.Error.WriteLine("ERROR: Critical exception occurred");
+                    Console.Error.WriteLine(e.Message);
+                    Console.Error.WriteLine(e.StackTrace);
+                }
+
             };
 
             ThreadStart runnableThree = () => {
-                for (var i = 0; i < 34; i++) {
-                    var eventTwo = new EventTwo("TEST");
-                    runtime.EventService.SendEventBean(eventTwo, eventTwo.GetType().Name);
-                    var eventOne = new EventOne("TEST");
-                    runtime.EventService.SendEventBean(eventOne, eventOne.GetType().Name);
+                try {
+                    for (var i = 0; i < 34; i++) {
+                        var eventTwo = new EventTwo("TEST");
+                        runtime.EventService.SendEventBean(eventTwo, eventTwo.GetType().Name);
+                        var eventOne = new EventOne("TEST");
+                        runtime.EventService.SendEventBean(eventOne, eventOne.GetType().Name);
+                    }
+                }
+                catch (Exception e) {
+                    Console.Error.WriteLine("ERROR: Critical exception occurred");
+                    Console.Error.WriteLine(e.Message);
                 }
             };
 

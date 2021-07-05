@@ -386,6 +386,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         private static string CreatePreparedStatement(
             IEnumerable<PlaceholderParser.Fragment> parseFragements)
         {
+            var myIndex = 0;
             var buffer = new StringBuilder();
             foreach (var fragment in parseFragements) {
                 if (!fragment.IsParameter) {
@@ -395,8 +396,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     if (fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
                         continue;
                     }
+                    
+                    buffer.Append("${arg");
+                    buffer.Append(myIndex++);
+                    buffer.Append("}");
 
-                    buffer.Append('?');
+                    //buffer.Append('?');
                 }
             }
 

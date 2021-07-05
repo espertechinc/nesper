@@ -119,10 +119,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), GetType(), classScope);
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            CodegenMethod method = parent.MakeChild(typeof(IDictionary<string, DBOutputTypeDesc>), this.GetType(), classScope);
+            method.Block.DeclareVar<IDictionary<string, DBOutputTypeDesc>>(
                 "types",
-                NewInstance(typeof(Dictionary<object, object>)));
+                NewInstance(typeof(Dictionary<string, DBOutputTypeDesc>)));
             foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
                 method.Block.ExprDotMethod(Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
             }

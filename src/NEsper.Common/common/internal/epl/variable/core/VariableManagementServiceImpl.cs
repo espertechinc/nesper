@@ -140,11 +140,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
         /// <param name="eventBeanTypedEventFactory">event adapters</param>
         public VariableManagementServiceImpl(
+            IReaderWriterLockManager readerWriterLockManager,
             long millisecondLifetimeOldVersions,
             TimeProvider timeProvider,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             VariableStateNonConstHandler optionalStateHandler)
-            : this(0, millisecondLifetimeOldVersions, timeProvider, eventBeanTypedEventFactory, optionalStateHandler)
+            : this(readerWriterLockManager, 0, millisecondLifetimeOldVersions, timeProvider, eventBeanTypedEventFactory, optionalStateHandler)
         {
         }
 
@@ -157,6 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
         /// <param name="eventBeanTypedEventFactory">for finding event types</param>
         protected VariableManagementServiceImpl(
+            IReaderWriterLockManager readerWriterLockManager,
             int startVersion,
             long millisecondLifetimeOldVersions,
             TimeProvider timeProvider,
@@ -168,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             OptionalStateHandler = optionalStateHandler;
             DeploymentsWithVariables = new Dictionary<string, VariableDeployment>().WithNullKeySupport();
-            ReadWriteLock = new SlimReaderWriterLock(60000);
+            ReadWriteLock = readerWriterLockManager.CreateLock(GetType());
             variableVersionsPerCP = new List<ConcurrentDictionary<int, VariableReader>>();
             changeCallbacksPerCP = new List<IDictionary<int, ICollection<VariableChangeCallback>>>();
             currentVersionNumber = startVersion;

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
     public class ClassProvidedImportClassLoaderFactory
     {
         public static ClassLoader GetClassLoader(
-            ICollection<Assembly> assemblies,
+            IEnumerable<Assembly> assemblies,
             ClassLoader parentClassLoader,
             PathRegistry<string, ClassProvided> classProvidedPathRegistry)
         {

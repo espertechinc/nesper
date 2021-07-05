@@ -12,9 +12,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+#if NETSTANDARD
+using System.Runtime.Loader;
+#endif
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client.attributes;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.compiler.client.util
 {
@@ -42,16 +47,36 @@ namespace com.espertech.esper.compiler.client.util
 		/// </summary>
 		public const string MANIFEST_TARGETHA = "Esper-TargetHA";
 
+		private static Assembly LoadAssembly(
+			IContainer container,
+			byte[] image)
+		{
+#if NETSTANDARD
+        			container.CheckContainer();
+        			var context = container.Has<AssemblyLoadContext>()
+        				? container.Resolve<AssemblyLoadContext>()
+        				: AssemblyLoadContext.Default;
+        
+        			using var stream = new MemoryStream(image);
+        			return context.LoadFromStream(stream);
+#else
+			return AppDomain.CurrentDomain.Load(image);
+#endif
+		}
+
 		/// <summary>
 		/// Reads the assembly into an <seealso cref="EPCompiled" /> compiled for deployment
 		/// into a runtime.
 		/// </summary>
-		/// <param name="assemblyName">is the assembly name</param>
+		/// <param name="container">The container</param>
+		/// <param name="fileInfo">The file containing the assembly</param>
 		/// <returns>compiled</returns>
 		/// <throws>IOException when the read failed</throws>
-		public static EPCompiled Read(AssemblyName assemblyName)
+		public static EPCompiled Read(IContainer container, FileInfo fileInfo)
 		{
-			var assembly = AppDomain.CurrentDomain.Load(assemblyName);
+			var image = File.ReadAllBytes(fileInfo.FullName);
+			var assembly = LoadAssembly(container, image);
+			var assemblyAndImage = new Pair<Assembly, byte[]>(assembly, image);
 			var attributes = assembly
 				.GetCustomAttributes()
 				.OfType<ManifestPropertyAttribute>()
@@ -68,7 +93,7 @@ namespace com.espertech.esper.compiler.client.util
 				throw new IOException("Manifest is missing both " + MANIFEST_MODULEPROVIDERCLASSNAME + " and " + MANIFEST_QUERYPROVIDERCLASSNAME);
 			}
 
-			var targetHa = false;
+			var targetHA = false;
 			var types = new Dictionary<string, Type>();
 			foreach (var type in assembly.GetExportedTypes()) {
 				var typeName = type.FullName;
@@ -80,48 +105,24 @@ namespace com.espertech.esper.compiler.client.util
 			}
 
 			return new EPCompiled(
-				new [] { assembly },
+				new [] { assemblyAndImage },
 				new EPCompiledManifest(
 					compilerVersion,
 					moduleProvider,
 					queryProvider,
-					targetHa));
+					targetHA));
 		}
 
-#if NOT_SUPPORTED
-        /// <summary>
-        /// Write the compiled to a jar file. Overwrites the existing jar file.
-        /// </summary>
-        /// <param name="compiled">compiled</param>
-        /// <param name="file">the target file</param>
-        /// <throws>IOException when the write failed</throws>
-        public static void Write(EPCompiled compiled, FileInfo file) {
-
-	        Manifest manifest = new Manifest();
-	        manifest.MainAttributes.Put(Attributes.Name.MANIFEST_VERSION, "1.0");
-	        manifest.MainAttributes.Put(new Attributes.Name(MANIFEST_COMPILER_VERSION), compiled.Manifest.CompilerVersion);
-	        manifest.MainAttributes.Put(new Attributes.Name(MANIFEST_MODULEPROVIDERCLASSNAME), compiled.Manifest.ModuleProviderClassName);
-	        manifest.MainAttributes.Put(new Attributes.Name(MANIFEST_QUERYPROVIDERCLASSNAME), compiled.Manifest.QueryProviderClassName);
-
-	        JarOutputStream target = new JarOutputStream(new FileOutputStream(file), manifest);
-
-	        try {
-	            foreach (KeyValuePair<string, byte[]> entry in compiled.Classes) {
-	                Write(entry.Key, entry.Value, target);
-	            }
-	        } finally {
-	            target.Close();
-	        }
-	    }
-
-	    private static void Write(string name, byte[] value, JarOutputStream target) {
-	        name = name.Replace(".", "/") + ".class";
-	        JarEntry entry = new JarEntry(name);
-	        entry.Time = System.CurrentTimeMillis();
-	        target.PutNextEntry(entry);
-	        target.Write(value, 0, value.Length);
-	        target.CloseEntry();
-	    }
-#endif
+		/// <summary>
+		/// Write the compiled to a assembly file. Overwrites the existing assembly file.
+		/// </summary>
+		/// <param name="compiled">compiled</param>
+		/// <param name="file">the target file</param>
+		/// <throws>IOException when the write failed</throws>
+		public static void Write(EPCompiled compiled, FileInfo file)
+		{
+			foreach (var assembly in compiled.AssembliesWithImage) {
+			}
+		}
 	}
 } // end of namespace
