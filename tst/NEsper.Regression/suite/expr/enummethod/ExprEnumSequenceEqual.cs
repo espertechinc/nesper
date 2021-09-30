@@ -25,9 +25,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumSequenceEqualWSelectFrom());
-			execs.Add(new ExprEnumSequenceEqualTwoProperties());
+			WithWSelectFrom(execs);
+			WithTwoProperties(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumSequenceEqualInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTwoProperties(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSequenceEqualTwoProperties());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWSelectFrom(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSequenceEqualWSelectFrom());
 			return execs;
 		}
 

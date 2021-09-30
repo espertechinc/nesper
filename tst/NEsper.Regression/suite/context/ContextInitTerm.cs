@@ -555,7 +555,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(soda, eplContext, path);
 
                 String eplSelect =
-                    "@name('s0') context MyContext select context.starter as starter, context.ender as ender, context.ender.s1 as enderS1, context.ender.s1.Id as enderS1id from SupportBean_S0 output when terminated";
+                    "@name('s0') context MyContext select" +
+                    " context.starter as starter," +
+                    " context.ender as ender," +
+                    " context.ender.s1 as enderS1," +
+                    " context.ender.s1.Id as enderS1id" +
+                    " from SupportBean_S0 output when terminated";
                 env.CompileDeploy(eplSelect, path).AddListener("s0");
 
                 SupportBean_S0 starterOne = new SupportBean_S0(10);
@@ -595,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "context MyContext select context.ender.starter from SupportBean_S0",
-                    "Failed to validate select-clause expression 'context.ender.starter': Context property 'ender.starter' is not a known property, known properties are [name, Id, startTime, endTime, starter, ender]");
+                    "Failed to validate select-clause expression 'context.ender.starter': Context property 'ender.starter' is not a known property, known properties are [\"name\", \"id\", \"startTime\", \"endTime\", \"starter\", \"ender\"]");
 
                 String eplInvalidTagProvidedByFilter = "create context MyContext as start SupportBean_S1(Id=0) as starter " +
                                                        "end pattern [starter=SupportBean_S1(Id=1) or timer:interval(30)] as ender";

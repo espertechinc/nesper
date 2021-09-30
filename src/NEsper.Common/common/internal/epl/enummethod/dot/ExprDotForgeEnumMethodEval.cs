@@ -80,8 +80,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
 
-            methodNode.Block.DebugStack();
-
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
@@ -99,7 +97,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 block.DeclareVar<FlexCollection>("coll", FlexWrap(Ref("param")));
             }
             else if (innerType.IsGenericCollection()) {
-                block.DeclareVar(innerType, "coll", Ref("param"));
+                block.DeclareVar<FlexCollection>("coll", FlexWrap(Ref("param")));
+                //block.DeclareVar(innerType, "coll", Ref("param"));
             }
             else {
                 throw new IllegalStateException("invalid type presented for unwrapping");

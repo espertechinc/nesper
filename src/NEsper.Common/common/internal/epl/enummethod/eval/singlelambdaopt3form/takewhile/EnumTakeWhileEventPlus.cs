@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			innerValue = InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope);
-			EnumTakeWhileHelper.InitBlockSizeOneEventPlus(numParameters, block, innerValue, StreamNumLambda, InnerExpression.EvaluationType);
+			EnumTakeWhileHelper.InitBlockSizeOneEventPlus(NumParameters, block, innerValue, StreamNumLambda, InnerExpression.EvaluationType);
 		}
 
 		public override void ForEachBlock(

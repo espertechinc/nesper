@@ -22,14 +22,41 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumFirstLastOf
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumFirstLastScalar());
-			execs.Add(new ExprEnumFirstLastEventProperty());
-			execs.Add(new ExprEnumFirstLastEvent());
+			WithScalar(execs);
+			WithEventProperty(execs);
+			WithEvent(execs);
+			WithEventWithPredicate(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventWithPredicate(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumFirstLastEventWithPredicate());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvent(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumFirstLastEvent());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventProperty(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumFirstLastEventProperty());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumFirstLastScalar());
 			return execs;
 		}
 

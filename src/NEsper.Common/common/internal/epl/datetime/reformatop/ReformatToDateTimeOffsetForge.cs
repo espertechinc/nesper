@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public ReformatOp Op => this;
 
-        public Type ReturnType => typeof(DateTimeOffset);
+        public Type ReturnType => typeof(DateTimeOffset?);
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,

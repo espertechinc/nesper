@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return enumcoll;
 						}
 
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var evalEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = evalEvent;
 						var props = evalEvent.Properties;
 						props[2] = enumcoll.Count;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			innerValue = InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope);
-			InitBlockSizeOneScalar(numParameters, block, innerValue, InnerExpression.EvaluationType);
+			InitBlockSizeOneScalar(NumParameters, block, innerValue, InnerExpression.EvaluationType);
 			block.DeclareVar(
 				typeof(object[]),
 				"all",
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					Relational(Ref("i"), GE, Constant(0)),
 					DecrementRef("i"))
 				.AssignArrayElement("props", Constant(0), ArrayAtIndex(Ref("all"), Ref("i")));
-			if (numParameters >= 2) {
+			if (NumParameters >= 2) {
 				forEach.IncrementRef("count")
 					.AssignArrayElement("props", Constant(1), Ref("count"));
 			}

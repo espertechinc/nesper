@@ -21,14 +21,41 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumMostLeastFrequent
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumMostLeastFreqEvents());
-			execs.Add(new ExprEnumMostLeastFreqScalarNoParam());
-			execs.Add(new ExprEnumMostLeastFreqScalar());
+			WithEvents(execs);
+			WithScalarNoParam(execs);
+			WithScalar(execs);
+			WithuentInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithuentInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumMostLeastFrequentInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMostLeastFreqScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarNoParam(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMostLeastFreqScalarNoParam());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMostLeastFreqEvents());
 			return execs;
 		}
 

@@ -251,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             SupportEventPropUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 new[] {"val1"},
-                new[] {typeof(ICollection<SupportBean>)});
+                new[] {typeof(ICollection<object>)});
 
             env.SendEventBean(new SupportBean("E1", 2));
             var outArray = env.Listener("s0")
@@ -1262,8 +1262,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     env.Statement("s0").EventType,
                     new[] {"val1", "val2"},
                     new[] {
-                        typeof(ICollection<SupportBean_ST0>),
-                        typeof(ICollection<SupportBean_ST0>)
+                        typeof(ICollection<object>),
+                        typeof(ICollection<object>)
                     });
 
                 var theEvent = SupportBean_ST0_Container.Make3Value("E1,K1,1", "E2,K2,2", "E20,K20,20");

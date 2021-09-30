@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env,
                     path,
                     "create schema T12 as (StartTSOne null, EndTSXXX long) starttimestamp StartTSOne endtimestamp EndTSXXX",
-                    "Declared start timestamp property 'StartTSOne' is expected to return a Date, Calendar or long-typed value but returns 'null'");
+                    "Declared start timestamp property 'StartTSOne' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'null (any type)'");
                 
                 env.UndeployAll();
             }

@@ -94,63 +94,15 @@ namespace com.espertech.esper.regressionrun.suite.expr
         }
 
         [Test, RunInApplicationDomain]
-        public void TestExprEnumAggregate()
-        {
-            RegressionRunner.Run(session, ExprEnumAggregate.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumAllOfAnyOf()
-        {
-            RegressionRunner.Run(session, ExprEnumAllOfAnyOf.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumArrayOf()
-        {
-            RegressionRunner.Run(session, ExprEnumArrayOf.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumAverage()
-        {
-            RegressionRunner.Run(session, ExprEnumAverage.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestExprEnumChained()
         {
             RegressionRunner.Run(session, new ExprEnumChained());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestExprEnumCountOf()
-        {
-            RegressionRunner.Run(session, ExprEnumCountOf.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumFirstLastOf()
-        {
-            RegressionRunner.Run(session, ExprEnumFirstLastOf.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestExprEnumInvalid()
         {
             RegressionRunner.Run(session, new ExprEnumInvalid());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumMinMaxBy()
-        {
-            RegressionRunner.Run(session, ExprEnumMinMaxBy.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumMostLeastFrequent()
-        {
-            RegressionRunner.Run(session, ExprEnumMostLeastFrequent.Executions());
         }
 
         [Test]
@@ -160,51 +112,9 @@ namespace com.espertech.esper.regressionrun.suite.expr
         }
 
         [Test, RunInApplicationDomain]
-        public void TestExprEnumNested()
-        {
-            RegressionRunner.Run(session, ExprEnumNested.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestExprEnumNestedPerformance()
         {
             RegressionRunner.Run(session, new ExprEnumNestedPerformance());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumReverse()
-        {
-            RegressionRunner.Run(session, ExprEnumReverse.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumSelectFrom()
-        {
-            RegressionRunner.Run(session, ExprEnumSelectFrom.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumSequenceEqual()
-        {
-            RegressionRunner.Run(session, ExprEnumSequenceEqual.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumTakeAndTakeLast()
-        {
-            RegressionRunner.Run(session, ExprEnumTakeAndTakeLast.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumTakeWhileAndWhileLast()
-        {
-            RegressionRunner.Run(session, ExprEnumTakeWhileAndWhileLast.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestExprEnumWhere()
-        {
-            RegressionRunner.Run(session, ExprEnumWhere.Executions());
         }
 
         /// <summary>
@@ -522,6 +432,344 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
             [Test, RunInApplicationDomain]
             public void WithMinMaxEvents() => RegressionRunner.Run(_session, ExprEnumMinMax.WithMinMaxEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumAllOfAnyOf
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumAllOfAnyOf.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumAllOfAnyOf : AbstractTestBase
+        {
+            public TestExprEnumAllOfAnyOf() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumAllOfAnyOf.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumAllOfAnyOf.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumAllOfAnyOf.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumArrayOf
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumArrayOf.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumArrayOf : AbstractTestBase
+        {
+            public TestExprEnumArrayOf() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayOfInvalid() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithArrayOfInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumArrayOfScalar() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumArrayOfScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumArrayOfEvents() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumArrayOfEvents());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumArrayOfWSelectFromEvent() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumArrayOfWSelectFromEvent());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumArrayOfWSelectFromScalarWIndex() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumArrayOfWSelectFromScalarWIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumArrayOfWSelectFromScalar() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumArrayOfWSelectFromScalar());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ExprEnumAverage
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumAverage.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumAverage : AbstractTestBase
+        {
+            public TestExprEnumAverage() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumAverage.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarMore() => RegressionRunner.Run(_session, ExprEnumAverage.WithScalarMore());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumAverage.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumAverage.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumCountOf
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumCountOf.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumCountOf : AbstractTestBase
+        {
+            public TestExprEnumCountOf() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumCountOf.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumCountOf.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumAggregate
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumAggregate.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumAggregate : AbstractTestBase
+        {
+            public TestExprEnumAggregate() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumAggregate.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumAggregate.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumAggregate.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumFirstLastOf
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumFirstLastOf.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumFirstLastOf : AbstractTestBase
+        {
+            public TestExprEnumFirstLastOf() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithEventWithPredicate() => RegressionRunner.Run(_session, ExprEnumFirstLastOf.WithEventWithPredicate());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvent() => RegressionRunner.Run(_session, ExprEnumFirstLastOf.WithEvent());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventProperty() => RegressionRunner.Run(_session, ExprEnumFirstLastOf.WithEventProperty());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumFirstLastOf.WithScalar());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumMinMaxBy
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumMinMaxBy.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumMinMaxBy : AbstractTestBase
+        {
+            public TestExprEnumMinMaxBy() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumMinMaxBy.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumMinMaxBy.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumMinMaxBy.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumMostLeastFrequent
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumMostLeastFrequent.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumMostLeastFrequent : AbstractTestBase
+        {
+            public TestExprEnumMostLeastFrequent() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithuentInvalid() => RegressionRunner.Run(_session, ExprEnumMostLeastFrequent.WithuentInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumMostLeastFrequent.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarNoParam() => RegressionRunner.Run(_session, ExprEnumMostLeastFrequent.WithScalarNoParam());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumMostLeastFrequent.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumNested
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumNested.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumNested : AbstractTestBase
+        {
+            public TestExprEnumNested() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithAnyOf() => RegressionRunner.Run(_session, ExprEnumNested.WithAnyOf());
+
+            [Test, RunInApplicationDomain]
+            public void WithCorrelated() => RegressionRunner.Run(_session, ExprEnumNested.WithCorrelated());
+
+            [Test, RunInApplicationDomain]
+            public void WithMinByWhere() => RegressionRunner.Run(_session, ExprEnumNested.WithMinByWhere());
+
+            [Test, RunInApplicationDomain]
+            public void WithEquivalentToMinByUncorrelated() => RegressionRunner.Run(_session, ExprEnumNested.WithEquivalentToMinByUncorrelated());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumReverse
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumReverse.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumReverse : AbstractTestBase
+        {
+            public TestExprEnumReverse() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumReverse.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumReverse.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumSelectFrom
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumSelectFrom.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumSelectFrom : AbstractTestBase
+        {
+            public TestExprEnumSelectFrom() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarWIndexWSize() => RegressionRunner.Run(_session, ExprEnumSelectFrom.WithScalarWIndexWSize());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarPlain() => RegressionRunner.Run(_session, ExprEnumSelectFrom.WithScalarPlain());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventsWithNew() => RegressionRunner.Run(_session, ExprEnumSelectFrom.WithEventsWithNew());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventsWIndexWSize() => RegressionRunner.Run(_session, ExprEnumSelectFrom.WithEventsWIndexWSize());
+
+            [Test, RunInApplicationDomain]
+            public void WithEventsPlain() => RegressionRunner.Run(_session, ExprEnumSelectFrom.WithEventsPlain());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumSequenceEqual
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumSequenceEqual.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumSequenceEqual : AbstractTestBase
+        {
+            public TestExprEnumSequenceEqual() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumSequenceEqual.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithTwoProperties() => RegressionRunner.Run(_session, ExprEnumSequenceEqual.WithTwoProperties());
+
+            [Test, RunInApplicationDomain]
+            public void WithWSelectFrom() => RegressionRunner.Run(_session, ExprEnumSequenceEqual.WithWSelectFrom());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumTakeAndTakeLast
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumTakeAndTakeLast.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumTakeAndTakeLast : AbstractTestBase
+        {
+            public TestExprEnumTakeAndTakeLast() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumTakeAndTakeLast.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumTakeAndTakeLast.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumTakeAndTakeLast.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumTakeWhileAndWhileLast
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumTakeWhileAndWhileLast.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumTakeWhileAndWhileLast : AbstractTestBase
+        {
+            public TestExprEnumTakeWhileAndWhileLast() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumTakeWhileAndWhileLast.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumTakeWhileAndWhileLast.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumTakeWhileAndWhileLast.WithEvents());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): ExprEnumWhere
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprEnumWhere.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestExprEnumWhere : AbstractTestBase
+        {
+            public TestExprEnumWhere() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithScalarBoolean() => RegressionRunner.Run(_session, ExprEnumWhere.WithScalarBoolean());
+
+            [Test, RunInApplicationDomain]
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumWhere.WithScalar());
+
+            [Test, RunInApplicationDomain]
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumWhere.WithEvents());
         }
     }
 } // end of namespace

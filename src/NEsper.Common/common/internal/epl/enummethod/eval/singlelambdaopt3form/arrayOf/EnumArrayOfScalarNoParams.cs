@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -62,7 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 			var arrayType = TypeHelper.GetArrayType(_arrayComponentType);
 			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope.MakeChildWithScope(arrayType, typeof(EnumArrayOfScalarNoParams), scope, codegenClassScope)
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(arrayType, typeof(EnumArrayOfScalarNoParams), scope, codegenClassScope)
 				.AddParam(EnumForgeCodegenNames.PARAMS);
 
 			var block = methodNode.Block

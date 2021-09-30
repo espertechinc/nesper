@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						context) => {
 						IComparable minKey = null;
 
-						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
 						object[] props = resultEvent.Properties;
 						ICollection<object> coll = (ICollection<object>) enumcoll;

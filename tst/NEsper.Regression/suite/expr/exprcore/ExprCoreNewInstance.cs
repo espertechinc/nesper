@@ -112,18 +112,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				String[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean")
-					.WithExpression(fields[0], "new ArrayList<String>()")
-					.WithExpression(fields[1], "new HashMap<String,Integer>()")
-					.WithExpression(fields[2], "new ArrayList<String>(20)")
-					.WithExpression(fields[3], "new ArrayList<String>[5]")
-					.WithExpression(fields[4], "new ArrayList<String>[] {new ArrayList<String>(),new ArrayList<String>()}")
-					.WithExpression(fields[5], "new ArrayList<String[][]>[2][]");
+					.WithExpression(fields[0], "new System.Collections.Generic.List<String>()")
+					.WithExpression(fields[1], "new System.Collections.Generic.Dictionary<String,Integer>()")
+					.WithExpression(fields[2], "new System.Collections.Generic.List<String>(20)")
+					.WithExpression(fields[3], "new System.Collections.Generic.List<String>[5]")
+					.WithExpression(fields[4], "new System.Collections.Generic.List<String>[] {new System.Collections.Generic.List<String>(),new System.Collections.Generic.List<String>()}")
+					.WithExpression(fields[5], "new System.Collections.Generic.List<String[][]>[2][]");
 
 				builder.WithStatementConsumer(
 					stmt => {
 						EventType @out = stmt.EventType;
 						Assert.AreEqual(typeof(List<string>), @out.GetPropertyType("c0"));
-						Assert.AreEqual(typeof(HashMap<string, int>), @out.GetPropertyType("c1"));
+						Assert.AreEqual(typeof(Dictionary<string, int?>), @out.GetPropertyType("c1"));
 						Assert.AreEqual(typeof(List<string>), @out.GetPropertyType("c2"));
 						Assert.AreEqual(typeof(List<string>[]), @out.GetPropertyType("c3"));
 						Assert.AreEqual(typeof(List<string>[]), @out.GetPropertyType("c4"));
@@ -131,9 +131,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					});
 
 				builder.WithAssertion(new SupportBean("E1", 2))
-					.Verify("c0", value => Assert.IsInstanceOf<IList<object>>(value))
-					.Verify("c1", value => Assert.IsInstanceOf<IDictionary<string, object>>(value))
-					.Verify("c2", value => Assert.IsInstanceOf<IList<object>>(value))
+					.Verify("c0", value => Assert.IsInstanceOf<IList<string>>(value))
+					.Verify("c1", value => Assert.IsInstanceOf<IDictionary<string, int?>>(value))
+					.Verify("c2", value => Assert.IsInstanceOf<IList<string>>(value))
 					.Verify(
 						"c3",
 						value => {

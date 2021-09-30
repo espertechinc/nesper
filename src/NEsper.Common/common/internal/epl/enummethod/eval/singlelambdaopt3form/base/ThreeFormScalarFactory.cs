@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ThreeFormScalarFactory : ThreeFormBaseFactory
 	{
-		private readonly ObjectArrayEventType eventType;
-		private readonly int numParams;
-		private readonly ForgeFunction function;
+		private readonly ObjectArrayEventType _eventType;
+		private readonly int _numParams;
+		private readonly ForgeFunction _function;
 
 		public ThreeFormScalarFactory(
 			ThreeFormInitFunction returnType,
@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ForgeFunction function)
 			: base(returnType)
 		{
-			this.eventType = eventType;
-			this.numParams = numParams;
-			this.function = function;
+			this._eventType = eventType;
+			this._numParams = numParams;
+			this._function = function;
 		}
 
 		protected override EnumForge MakeForgeWithParam(
@@ -39,12 +39,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			EPChainableType typeInfo,
 			StatementCompileTimeServices services)
 		{
-			return function.Invoke(lambda, eventType, numParams, typeInfo, services);
+			return _function.Invoke(lambda, _eventType, _numParams, typeInfo, services);
 		}
 
 		public override EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
 		{
-			return new EnumForgeLambdaDesc(new EventType[] {eventType}, new string[] {eventType.Name});
+			return new EnumForgeLambdaDesc(new EventType[] {_eventType}, new string[] {_eventType.Name});
 		}
 
 		public delegate EnumForge ForgeFunction(

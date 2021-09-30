@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var evalEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = evalEvent;
 						var props = evalEvent.Properties;
 						props[2] = enumcoll.Count;

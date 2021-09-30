@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.OBJECTARR, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             string[] names = { "MyInt", "MyIntBoxed", "MyString", "MySupportBean", "MyComplexBean", "MyNullType" };
-            object[] types = { typeof(int?), typeof(int?), typeof(string), typeof(SupportBean), typeof(SupportBeanComplexProps), null };
+            object[] types = { typeof(int?), typeof(int?), typeof(string), typeof(SupportBean), typeof(SupportBeanComplexProps), TypeHelper.NullType };
 
             IDictionary<string, object> namesAndTypes = new LinkedHashMap<string, object>();
             for (var i = 0; i < names.Length; i++)

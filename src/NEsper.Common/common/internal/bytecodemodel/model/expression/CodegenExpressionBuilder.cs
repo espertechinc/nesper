@@ -454,7 +454,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public static CodegenExpression FlexCast(Type expectedType, CodegenExpression expression)
         {
-            return expectedType == typeof(FlexCollection) 
+            return expectedType.IsFlexCollection() 
                 ? FlexWrap(expression)
                 : Cast(expectedType, expression);
         }

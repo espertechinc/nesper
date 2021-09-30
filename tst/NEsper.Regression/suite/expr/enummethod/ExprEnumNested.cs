@@ -23,10 +23,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumEquivalentToMinByUncorrelated());
-            execs.Add(new ExprEnumMinByWhere());
-            execs.Add(new ExprEnumCorrelated());
+            WithEquivalentToMinByUncorrelated(execs);
+            WithMinByWhere(execs);
+            WithCorrelated(execs);
+            WithAnyOf(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAnyOf(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumAnyOf());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinByWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMinByWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEquivalentToMinByUncorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumEquivalentToMinByUncorrelated());
             return execs;
         }
 
@@ -87,7 +115,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Get("val")
                     .UnwrapIntoArray<Sale>();
                 EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] { bean.Sales[0] }, sales);
+                    new object[] {bean.Sales[0]},
+                    sales);
 
                 env.UndeployAll();
             }

@@ -992,7 +992,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 if (entry.Value is Type asType) {
-                    if (asType == typeof(FlexCollection)) {
+                    if (asType.IsFlexCollection()) {
                         asType = typeof(ICollection<object>);
                     }
                     
@@ -1201,7 +1201,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             
             var item = simplePropertyTypes.Get(propertyNameUnescape);
             if (item != null) {
-                return item.PropertyDescriptor.PropertyType;
+                return item.PropertyDescriptor.PropertyTypeRaw;
             }
             
             // see if this is an indexed property hanging off a pseudo-nested property
@@ -1217,7 +1217,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     item = simplePropertyTypes.Get(propertyNameWithoutIndex);
                     // The SimplePropertyType must be an "indexable", so just return the component type.
                     if (item != null) {
-                        return GenericExtensions.GetComponentType(item.PropertyDescriptor.PropertyType);
+                        return GenericExtensions.GetComponentType(item.PropertyDescriptor.PropertyTypeRaw);
                     }
                 }
             }
@@ -1234,7 +1234,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
                 if (property is SimpleProperty) {
                     var propItem = simplePropertyTypes.Get(property.PropertyNameAtomic);
-                    return propItem?.PropertyDescriptor.PropertyType;
+                    return propItem?.PropertyDescriptor.PropertyTypeRaw;
                 }
 
                 if (property is IndexedProperty indexedProp) {

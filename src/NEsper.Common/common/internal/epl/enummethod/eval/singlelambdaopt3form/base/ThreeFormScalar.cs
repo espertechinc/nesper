@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public abstract class ThreeFormScalar : EnumForgeBasePlain
 	{
-		protected readonly ObjectArrayEventType fieldEventType;
-		protected readonly int numParameters;
+		protected readonly ObjectArrayEventType FieldEventType;
+		protected readonly int NumParameters;
 
 		public abstract Type ReturnTypeOfMethod();
 
@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters)
 			: base(lambda)
 		{
-			this.fieldEventType = fieldEventType;
-			this.numParameters = numParameters;
+			this.FieldEventType = fieldEventType;
+			this.NumParameters = numParameters;
 		}
 
 		public override CodegenExpression Codegen(
@@ -68,14 +68,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
 				true,
 				typeof(ObjectArrayEventType),
-				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(fieldEventType, EPStatementInitServicesConstants.REF)));
+				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(FieldEventType, EPStatementInitServicesConstants.REF)));
 
 			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
 			CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(ReturnTypeOfMethod(), GetType(), scope, codegenClassScope)
 				.AddParam(PARAMS);
 			CodegenBlock block = methodNode.Block;
-			bool hasIndex = numParameters >= 2;
-			bool hasSize = numParameters >= 3;
+			bool hasIndex = NumParameters >= 2;
+			bool hasSize = NumParameters >= 3;
 
 			CodegenExpression returnEmpty = ReturnIfEmptyOptional();
 			if (returnEmpty != null) {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			block.DeclareVar(
 					typeof(ObjectArrayEventBean),
 					"resultEvent",
-					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters)), resultTypeMember))
+					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(NumParameters)), resultTypeMember))
 				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public int GetNumParameters()
 		{
-			return numParameters;
+			return NumParameters;
 		}
 	}
 } // end of namespace

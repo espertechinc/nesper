@@ -24,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumAggregateEvents());
-			execs.Add(new ExprEnumAggregateScalar());
+			WithEvents(execs);
+			WithScalar(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumAggregateInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAggregateScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAggregateEvents());
 			return execs;
 		}
 
@@ -41,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
 					epl,
-					"Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'Integer' to string is not allowed");
+					"Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'System.Nullable<System.Int32>' to System.String is not allowed");
 
 				// null-init-value for aggregate
 				epl = "select Contained.aggregate(null, (result, item) => result) from SupportBean_ST0_Container";
@@ -98,7 +119,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
 				builder.WithExpression(fields[0], "Strvals.aggregate('', (result, item) => result || '+' || item)");
 				builder.WithExpression(fields[1], "Strvals.aggregate('', (result, item, i) => result || '+' || item || '_' || Convert.ToString(i))");
-				builder.WithExpression(fields[2], "Strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+				builder.WithExpression(
+					fields[2],
+					"Strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 				builder.WithExpression(fields[3], "Strvals.aggregate('', (result, item, i, s) => null)");
 
 				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));

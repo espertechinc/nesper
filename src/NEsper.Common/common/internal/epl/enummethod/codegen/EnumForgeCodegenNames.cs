@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
 {
     public class EnumForgeCodegenNames
     {
-        public static readonly CodegenExpressionRef REF_ENUMCOLL = Ref("enumcoll");
+        public const string NAME_ENUMCOLL = "enumcoll";
+        
+        public static readonly CodegenExpressionRef REF_ENUMCOLL = Ref(NAME_ENUMCOLL);
         public static readonly CodegenExpressionRef REF_EPS = Ref(NAME_EPS);
 
         public static readonly CodegenNamedParam FP_ENUMCOLL = new CodegenNamedParam(

@@ -24,10 +24,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumAverageEvents());
-			execs.Add(new ExprEnumAverageScalar());
-			execs.Add(new ExprEnumAverageScalarMore());
+			WithEvents(execs);
+			WithScalar(execs);
+			WithScalarMore(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumAverageInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarMore(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAverageScalarMore());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAverageScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAverageEvents());
 			return execs;
 		}
 
@@ -98,7 +126,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Intvals.average()");
 				builder.WithExpression(fields[1], "Bdvals.average()");
 
-				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(double?), typeof(decimal?)}));
+				builder.WithStatementConsumer(
+					stmt => SupportEventPropUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(double?), typeof(decimal?)}));
 
 				builder.WithAssertion(SupportCollection.MakeNumeric("1,2,3")).Expect(fields, 2d, 2m);
 
@@ -171,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"Failed to validate select-clause expression 'Beans.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
 					typeof(SupportBean).CleanName() +
 					"'");
-				
+
 				epl = "select Strvals.average(v => null) from SupportCollection";
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,

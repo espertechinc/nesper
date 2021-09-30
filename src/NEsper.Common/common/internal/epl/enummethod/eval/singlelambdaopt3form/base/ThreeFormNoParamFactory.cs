@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ThreeFormNoParamFactory : EnumForgeDescFactory
 	{
-		private readonly EPChainableType returnType;
-		private readonly ForgeFunction function;
+		private readonly EPChainableType _returnType;
+		private readonly ForgeFunction _function;
 
 		public ThreeFormNoParamFactory(
 			EPChainableType returnType,
 			ForgeFunction function)
 		{
-			this.returnType = returnType;
-			this.function = function;
+			_returnType = returnType;
+			_function = function;
 		}
 
 		public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int streamCountIncoming,
 			StatementCompileTimeServices statementCompileTimeService)
 		{
-			return new EnumForgeDesc(returnType, function.Invoke(streamCountIncoming));
+			return new EnumForgeDesc(_returnType, _function.Invoke(streamCountIncoming));
 		}
 
 		public delegate EnumForge ForgeFunction(int streamCountIncoming);

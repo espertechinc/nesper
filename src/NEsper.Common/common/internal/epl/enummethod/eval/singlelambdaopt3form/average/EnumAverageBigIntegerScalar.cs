@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						context) => {
 						var sum = BigInteger.Zero;
 						var count = 0;
-						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var resultEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
 						var props = resultEvent.Properties;
 						var values = (ICollection<object>) enumcoll;

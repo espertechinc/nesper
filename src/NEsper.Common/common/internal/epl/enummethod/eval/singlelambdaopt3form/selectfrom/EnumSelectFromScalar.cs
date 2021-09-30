@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						}
 
 						var result = new ArrayDeque<object>();
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var evalEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = evalEvent;
 						var evalProps = evalEvent.Properties;
 

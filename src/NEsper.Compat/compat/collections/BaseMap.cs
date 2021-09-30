@@ -148,7 +148,7 @@ namespace com.espertech.esper.compat.collections
 
 		/// <summary>
 		/// Sets the given key in the dictionary.  If the key
-		/// already exists, then it is remapped to thenew value.
+		/// already exists, then it is remapped to the new value.
 		/// </summary>
 
 		public virtual void Put(

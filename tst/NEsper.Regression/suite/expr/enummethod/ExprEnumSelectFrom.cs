@@ -32,11 +32,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumSelectFromEventsPlain());
-			execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
-			execs.Add(new ExprEnumSelectFromEventsWithNew());
-			execs.Add(new ExprEnumSelectFromScalarPlain());
+			WithEventsPlain(execs);
+			WithEventsWIndexWSize(execs);
+			WithEventsWithNew(execs);
+			WithScalarPlain(execs);
+			WithScalarWIndexWSize(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarWIndexWSize(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumSelectFromScalarWIndexWSize());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarPlain(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromScalarPlain());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsWithNew(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsWithNew());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsWIndexWSize(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsPlain(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsPlain());
 			return execs;
 		}
 
@@ -80,7 +115,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Contained.selectFrom( (v, i) => new {v0=v.Id,v1=i})");
 				builder.WithExpression(fields[1], "Contained.selectFrom( (v, i, s) => new {v0=v.Id,v1=i + 100*s})");
 
-				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<IDictionary<string, object>>)));
+				builder.WithStatementConsumer(
+					stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<IDictionary<string, object>>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"))
 					.Verify(
@@ -145,7 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
 				builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = Key0||'y'})");
 
-				builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypes(stmt.EventType, field, typeof(ICollection<IDictionary<string,object>>)));
+				builder.WithStatementConsumer(
+					stmt => SupportEventPropUtil.AssertTypes(stmt.EventType, field, typeof(ICollection<IDictionary<string, object>>)));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"))
 					.Verify(
@@ -201,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 							typeof(ICollection<string>),
 							typeof(ICollection<object>)
 						}));
-				
+
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E3,2"))
 					.Verify(fields[0], value => LambdaAssertionUtil.AssertValuesArrayScalar(value, "E1", "E2", "E3"))
 					.Verify(fields[1], value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
@@ -213,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
 					.Verify(fields[0], value => LambdaAssertionUtil.AssertValuesArrayScalar(value))
 					.Verify(fields[1], value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
-				
+
 				builder.Run(env);
 			}
 		}

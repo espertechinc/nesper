@@ -1062,7 +1062,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 var type = entry.Value;
                 CodegenExpression typeResolver;
                 if (type is Type asType) {
-                    if (asType == typeof(FlexCollection)) {
+                    if (asType.IsFlexCollection()) {
                         asType = typeof(ICollection<object>);
                     }
                     

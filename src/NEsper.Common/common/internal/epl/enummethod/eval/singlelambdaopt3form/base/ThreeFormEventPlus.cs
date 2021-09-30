@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public abstract class ThreeFormEventPlus : EnumForgeBaseWFields
 	{
-		protected readonly int numParameters;
+		protected readonly int NumParameters;
 
 		public abstract Type ReturnTypeOfMethod();
 
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters)
 			: base(lambda, indexEventType)
 		{
-			this.numParameters = numParameters;
+			this.NumParameters = numParameters;
 		}
 
 		public override CodegenExpression Codegen(
@@ -84,11 +84,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			block.DeclareVar(
 					typeof(ObjectArrayEventBean),
 					"indexEvent",
-					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters - 1)), indexTypeMember))
+					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(NumParameters - 1)), indexTypeMember))
 				.AssignArrayElement(REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
 				.DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"));
 			block.DeclareVar<int>("count", Constant(-1));
-			if (numParameters == 3) {
+			if (NumParameters == 3) {
 				block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
 			}
 

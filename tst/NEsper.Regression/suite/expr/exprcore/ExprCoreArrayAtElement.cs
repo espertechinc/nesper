@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				TryInvalidCompile(
 					env,
 					eplNoAnArrayIsString,
-					"Failed to validate select-clause expression 'Lvl1.Lvl2.Lvl3.Id[IndexNumber]': Could not perform array operation on type class System.String");
+					"Failed to validate select-clause expression 'Lvl1.Lvl2.Lvl3.Id[IndexNumber]': Could not perform array operation on type System.String");
 
 				var eplNoAnArrayIsType =
 					"create schema Lvl3 (Id string);\n" +
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				var eplVariableIntArray = "create variable int[primitive] var_intarr = new int[] {1, 2, 3}";
+				var eplVariableIntArray = "create variable int[primitive] var_intarr = new int[] {1,2,3}";
 				env.CompileDeploy(soda, eplVariableIntArray, path);
 				var eplVariableSBArray = "create variable " + typeof(MyHolder).MaskTypeName() + " var_ = null";
 				env.CompileDeploy(soda, eplVariableSBArray, path);
@@ -413,12 +413,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					env,
 					path,
 					"select Lvl1.Lvl2.Intarr[IndexNumber][IndexNumber] from Lvl0",
-					"Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber][Index...(42 chars)': Could not perform array operation on type class System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber][Index...(42 chars)': Could not perform array operation on type System.Nullable<System.Int32>");
 				TryInvalidCompile(
 					env,
 					path,
 					"select me.Lvl1.Lvl2.Intarr[IndexNumber][IndexNumber] from Lvl0 as me",
-					"Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber][In...(45 chars)': Could not perform array operation on type class System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber][In...(45 chars)': Could not perform array operation on type System.Nullable<System.Int32>");
 
 				// wrong index expression type
 				TryInvalidCompile(
@@ -588,12 +588,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					env,
 					path,
 					"select Lvl1.Intarr[IndexNumber][IndexNumber] from Lvl0",
-					"Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type class System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
 				TryInvalidCompile(
 					env,
 					path,
 					"select me.Lvl1.Intarr[IndexNumber][IndexNumber] from Lvl0 as me",
-					"Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type class System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
 
 				// wrong index expression type
 				TryInvalidCompile(
@@ -654,11 +654,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				TryInvalidCompile(
 					env,
 					"select Intarr[IndexNumber][IndexNumber] from SupportBeanWithArray",
-					"Failed to validate select-clause expression 'Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type class System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
 				TryInvalidCompile(
 					env,
 					"select me.Intarr[IndexNumber][IndexNumber] from SupportBeanWithArray as me",
-					"Failed to validate select-clause expression 'me.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type class System.Nullable<System.Int32>");
+					"Failed to validate select-clause expression 'me.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
 
 				// wrong index expression type
 				TryInvalidCompile(

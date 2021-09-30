@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						var sort = new OrderedListDictionary<object, ICollection<object>>();
 						var hasColl = false;
 
-						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var resultEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = resultEvent;
 						var props = resultEvent.Properties;
 						props[2] = enumcoll.Count;

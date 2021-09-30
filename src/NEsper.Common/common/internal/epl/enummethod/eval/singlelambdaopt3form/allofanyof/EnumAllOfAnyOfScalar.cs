@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return all;
 						}
 
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var evalEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = evalEvent;
 						var props = evalEvent.Properties;
 						var count = -1;

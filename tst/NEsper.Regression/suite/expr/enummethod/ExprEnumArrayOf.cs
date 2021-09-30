@@ -30,12 +30,54 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfWSelectFromScalar());
-			execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
-			execs.Add(new ExprEnumArrayOfWSelectFromEvent());
-			execs.Add(new ExprEnumArrayOfEvents());
-			execs.Add(new ExprEnumArrayOfScalar());
+			WithEnumArrayOfWSelectFromScalar(execs);
+			WithEnumArrayOfWSelectFromScalarWIndex(execs);
+			WithEnumArrayOfWSelectFromEvent(execs);
+			WithEnumArrayOfEvents(execs);
+			WithEnumArrayOfScalar(execs);
+			WithArrayOfInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithArrayOfInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprArrayOfInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEnumArrayOfScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEnumArrayOfEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfEvents());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEnumArrayOfWSelectFromEvent(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfWSelectFromEvent());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEnumArrayOfWSelectFromScalarWIndex(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEnumArrayOfWSelectFromScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfWSelectFromScalar());
 			return execs;
 		}
 
@@ -62,12 +104,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 							typeof(string[]),
 							typeof(int[])
 						}));
-				
+
 				builder.WithAssertion(SupportCollection.MakeString("A,B,C"))
-					.Expect(fields, Csv("A,B,C"), Csv("A,B,C"), Csv("A_0,B_1,C_2"), Csv("A_0_3,B_1_3,C_2_3"), new int[] { 0, 1, 2 });
+					.Expect(fields, Csv("A,B,C"), Csv("A,B,C"), Csv("A_0,B_1,C_2"), Csv("A_0_3,B_1_3,C_2_3"), new int[] {0, 1, 2});
 
 				builder.WithAssertion(SupportCollection.MakeString(""))
-					.Expect(fields, Csv(""), Csv(""), Csv(""), Csv(""), new int[] {});
+					.Expect(fields, Csv(""), Csv(""), Csv(""), Csv(""), new int[] { });
 
 				builder.WithAssertion(SupportCollection.MakeString("A"))
 					.Expect(fields, Csv("A"), Csv("A"), Csv("A_0"), Csv("A_0_1"), new int[] {0});
@@ -192,7 +234,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				string epl;
 
 				epl = "select strvals.arrayOf(v => null) from SupportCollection";
-				SupportMessageAssertUtil.TryInvalidCompile(env, epl, "Failed to validate select-clause expression 'strvals.arrayOf()': Null-type is not allowed");
+				SupportMessageAssertUtil.TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'strvals.arrayOf()': Null-type is not allowed");
 			}
 		}
 

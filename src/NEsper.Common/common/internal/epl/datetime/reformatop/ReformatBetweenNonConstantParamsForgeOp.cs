@@ -385,7 +385,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             block
                 .DeclareVar<bool?>(refname, forge.EvaluateCodegen(typeof(bool), codegenMethodScope, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull(refname)
-                .DeclareVar<bool?>(variable, Ref(refname));
+                .DeclareVar<bool>(variable, Unbox<bool?>(Ref(refname)));
         }
 
         private static void CodegenLongCoercion(

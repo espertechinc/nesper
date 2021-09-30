@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 codegenClassScope);
 
             var innerValue = forge.innerForge.CodegenEvaluate(methodNode, exprSymbol, codegenClassScope);
-            if (innerType == typeof(FlexCollection)) {
+            if (innerType.IsFlexCollection()) {
                 innerValue = FlexWrap(innerValue);
             }
             

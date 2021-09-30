@@ -413,7 +413,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						continue;
 					}
 					catch (ExprValidationException) {
-						if (string.Equals(chainElementName, "get", StringComparison.OrdinalIgnoreCase)) {
+						if (!string.Equals(chainElementName, "get", StringComparison.OrdinalIgnoreCase)) {
 							throw;
 						}
 					}
@@ -626,7 +626,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				currentTargetType = optionalResultWrapLambda.TypeInfo.GetCodegenReturnType();
 
 				var wrapped = optionalResultWrapLambda.CodegenConvertNonNull(Ref("inner"), methodNode, codegenClassScope);
-				if (currentTargetType == typeof(FlexCollection)) {
+				if (currentTargetType.IsFlexCollection()) {
 					wrapped = FlexWrap(wrapped);
 				}
 				
@@ -636,7 +636,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
 				block.DeclareVar(currentTargetType, "wrapped", wrapped);
 			}
-			else if (innerType == typeof(FlexCollection)) {
+			else if (innerType.IsFlexCollection()) {
 				block.DeclareVar(innerType, "wrapped", FlexWrap(Ref("inner")));
 				currentTargetType = innerType;
 			}

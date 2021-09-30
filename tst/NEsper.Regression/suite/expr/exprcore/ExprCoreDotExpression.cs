@@ -218,8 +218,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpression(fields[2], "SupportEnumTwo.ENUM_VALUE_3.GetNested().GetValue()")
 					.WithExpression(fields[3], "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'IntPrimitive')")
 					.WithExpression(fields[4], "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'IntPrimitive')")
-					.WithExpression(fields[5], "SupportEnumTwo.ENUM_VALUE_2.getMyStringsAsList()")
-					.WithExpression(fields[6], "SupportEnumTwo.ENUM_VALUE_2.getNested().getMyStringsNestedAsList()");
+					.WithExpression(fields[5], "SupportEnumTwo.ENUM_VALUE_2.GetMyStringsAsList()")
+					.WithExpression(fields[6], "SupportEnumTwo.ENUM_VALUE_2.GetNested().GetMyStringsNestedAsList()");
 
 				builder.WithStatementConsumer(stmt => {
 					Assert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c5"));

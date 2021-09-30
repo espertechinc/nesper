@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return enumcoll;
 						}
 
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+						var evalEvent = new ObjectArrayEventBean(new object[3], FieldEventType);
 						eventsLambda[StreamNumLambda] = evalEvent;
 						var props = evalEvent.Properties;
 						props[2] = enumcoll.Count;
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			innerValue = InnerExpression.EvaluateCodegen(typeof(bool), methodNode, scope, codegenClassScope);
-			EnumTakeWhileHelper.InitBlockSizeOneScalar(numParameters, block, innerValue, InnerExpression.EvaluationType);
+			EnumTakeWhileHelper.InitBlockSizeOneScalar(NumParameters, block, innerValue, InnerExpression.EvaluationType);
 		}
 
 		public override void ForEachBlock(

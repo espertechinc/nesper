@@ -297,8 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 string epl;
 
-                string message =
-                    "Failed to validate select-clause expression 'XXX': Implicit conversion from datatype 'null' to numeric is not allowed for aggregation function '";
+                string message = "Failed to validate select-clause expression 'XXX': Implicit conversion from datatype 'null (any type)' to numeric is not allowed for aggregation function '";
                 epl = "select avg(null) from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(env, epl, message.Replace("XXX", "avg(null)"));
                 epl = "select avg(distinct null) from SupportBean";

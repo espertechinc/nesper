@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 // make sure the termination event does not contain the full match-event data which contains prior state
                 var termEvent = new LinkedHashMap<string, object>();
                 foreach (var tag in pattern.PatternTags) {
-                    if (!matchEvent.TryGetValue(tag, out var value)) {
+                    if (matchEvent.TryGetValue(tag, out var value)) {
                         termEvent[tag] = value;
                     }
                 }

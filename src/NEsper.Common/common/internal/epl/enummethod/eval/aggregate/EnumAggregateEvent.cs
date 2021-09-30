@@ -95,8 +95,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 
 			var innerType = _innerExpression.EvaluationType;
 			var initType = _initialization.EvaluationType;
-			if (initType != innerType && initType.GetBoxedType() == innerType) {
-				initType = innerType;
+			if (initType != innerType) {
+				if (initType.GetBoxedType() == innerType) {
+					initType = innerType;
+				} else if (innerType.IsNullTypeSafe()) {
+					initType = initType.GetBoxedType();
+				}
 			}
 
 			var scope = new ExprForgeCodegenSymbol(false, null);
@@ -131,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 					.AssignArrayElement("props", Constant(1), Ref("count"));
 			}
 
-			var innerCodegen = innerType.IsNullTypeSafe() ? ConstantNull() : _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
+			var innerCodegen = innerType.IsNullTypeSafe() ? DefaultValue() : _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
 
 			forEach
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))

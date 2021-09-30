@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class ThreeFormEventPlusFactory : ThreeFormBaseFactory
 	{
-		private readonly EventType eventType;
-		private readonly string streamName;
-		private readonly ObjectArrayEventType fieldType;
-		private readonly int numParameters;
-		private readonly ForgeFunction function;
+		private readonly EventType _eventType;
+		private readonly string _streamName;
+		private readonly ObjectArrayEventType _fieldType;
+		private readonly int _numParameters;
+		private readonly ForgeFunction _function;
 
 		public ThreeFormEventPlusFactory(
 			ThreeFormInitFunction returnType,
@@ -33,16 +33,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ForgeFunction function)
 			: base(returnType)
 		{
-			this.eventType = eventType;
-			this.streamName = streamName;
-			this.fieldType = fieldType;
-			this.numParameters = numParameters;
-			this.function = function;
+			this._eventType = eventType;
+			this._streamName = streamName;
+			this._fieldType = fieldType;
+			this._numParameters = numParameters;
+			this._function = function;
 		}
 
 		public override EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
 		{
-			return new EnumForgeLambdaDesc(new EventType[] {eventType, fieldType}, new string[] {streamName, fieldType.Name});
+			return new EnumForgeLambdaDesc(new EventType[] {_eventType, _fieldType}, new string[] {_streamName, _fieldType.Name});
 		}
 
 		protected override EnumForge MakeForgeWithParam(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			EPChainableType typeInfo,
 			StatementCompileTimeServices services)
 		{
-			return function.Invoke(lambda, fieldType, numParameters, typeInfo, services);
+			return _function.Invoke(lambda, _fieldType, _numParameters, typeInfo, services);
 		}
 
 		public delegate EnumForge ForgeFunction(
