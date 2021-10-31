@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RIDER_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/net45/ClearScriptV8-32.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/net45/ClearScriptV8-64.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/netcoreapp3.1/ClearScriptV8-32.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/netcoreapp3.1/ClearScriptV8-64.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/v8-base-ia32.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/v8-base-x64.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/v8-ia32.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/v8-x64.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/v8-zlib-ia32.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.clearscript/6.0.2/v8/v8-zlib-x64.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.net.test.sdk/16.7.1/build/netcoreapp2.1" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.testplatform.testhost/16.7.1/build/netcoreapp2.1/x64/testhost.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/microsoft.testplatform.testhost/16.7.1/build/netcoreapp2.1/x64/testhost.exe" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/net35/NUnit3.TestAdapter.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/net35/NUnit3.TestAdapter.pdb" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/net35/nunit.engine.api.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/net35/nunit.engine.core.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/net35/nunit.engine.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/netcoreapp2.1/NUnit3.TestAdapter.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/netcoreapp2.1/NUnit3.TestAdapter.pdb" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/netcoreapp2.1/nunit.engine.api.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/netcoreapp2.1/nunit.engine.core.dll" />
+    <content url="file://$USER_HOME$/.nuget/packages/nunit3testadapter/3.17.0/build/netcoreapp2.1/nunit.engine.dll" />
+    <content url="file://$MODULE_DIR$/../.." />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

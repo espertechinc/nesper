@@ -24,12 +24,14 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             bool unique,
             IList<VirtualDataWindowLookupFieldDesc> hashAccess,
             IList<VirtualDataWindowLookupFieldDesc> btreeAccess,
-            EventTableOrganization organization)
+            EventTableOrganization organization,
+            VirtualDWView virtualDwViewMayNull)
         {
             IsUnique = unique;
             HashAccess = Collections.ReadonlyList(hashAccess);
             BtreeAccess = Collections.ReadonlyList(btreeAccess);
             Organization = organization;
+            VirtualDWViewMayNull = virtualDwViewMayNull;
         }
 
         public IList<VirtualDataWindowLookupFieldDesc> HashAccess { get; }
@@ -78,7 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return VirtualDWViewMayNull != null
+                ? VirtualDWViewMayNull.VirtualDataWindow.GetEnumerator()
+                : GetEnumerator();
         }
 
         public bool IsEmpty => true;
@@ -103,6 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public object Index => null;
 
         public EventTableOrganization Organization { get; }
+        
+        public VirtualDWView VirtualDWViewMayNull { get; }
 
         public Type ProviderClass => typeof(VirtualDWEventTable);
     }

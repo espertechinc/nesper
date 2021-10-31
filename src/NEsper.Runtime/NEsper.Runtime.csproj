@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462;net472;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
@@ -17,8 +17,8 @@
     <NoWarn>CS1591;</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>TRACE;DEBUG;;TRACE;DIAGNOSTICS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
