@@ -87,7 +87,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             Pair<IndexMultiKey, VirtualDWEventTable> tableVW = VirtualDWQueryPlanUtil.GetSubordinateQueryDesc(
                 false,
                 subordTableFactory.IndexHashedProps,
-                subordTableFactory.IndexBtreeProps);
+                subordTableFactory.IndexBtreeProps,
+                this);
             VirtualDWEventTable noopTable = tableVW.Second;
             for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
                 string opRange = subordTableFactory.RangeEvals[i].Type.StringOp();

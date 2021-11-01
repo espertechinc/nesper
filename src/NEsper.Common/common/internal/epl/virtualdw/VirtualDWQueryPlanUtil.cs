@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public static Pair<IndexMultiKey, VirtualDWEventTable> GetSubordinateQueryDesc(
             bool unique,
             IndexedPropDesc[] hashedProps,
-            IndexedPropDesc[] btreeProps)
+            IndexedPropDesc[] btreeProps,
+            VirtualDWView virtualDWView)
         {
             IList<VirtualDataWindowLookupFieldDesc> hashFields = new List<VirtualDataWindowLookupFieldDesc>();
             foreach (var hashprop in hashedProps) {
@@ -42,12 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     new VirtualDataWindowLookupFieldDesc(btreeprop.IndexPropName, null, btreeprop.CoercionType));
             }
 
-            var eventTable = new VirtualDWEventTable(unique, hashFields, btreeFields, TABLE_ORGANIZATION);
+            var eventTable = new VirtualDWEventTable(unique, hashFields, btreeFields, TABLE_ORGANIZATION, virtualDWView);
             var imk = new IndexMultiKey(unique, hashedProps, btreeProps, null);
             return new Pair<IndexMultiKey, VirtualDWEventTable>(imk, eventTable);
         }
 
-        public static EventTable GetJoinIndexTable(QueryPlanIndexItem queryPlanIndexItem)
+        public static EventTable GetJoinIndexTable(QueryPlanIndexItem queryPlanIndexItem, VirtualDWView virtualDWView)
         {
             IList<VirtualDataWindowLookupFieldDesc> hashFields = new List<VirtualDataWindowLookupFieldDesc>();
             var count = 0;
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 }
             }
 
-            return new VirtualDWEventTable(false, hashFields, btreeFields, TABLE_ORGANIZATION);
+            return new VirtualDWEventTable(false, hashFields, btreeFields, TABLE_ORGANIZATION, virtualDWView);
         }
 
         public static Pair<IndexMultiKey, EventTable> GetFireAndForgetDesc(
@@ -99,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 btreeIndexedFields.Add(new IndexedPropDesc(btreeprop, eventType.GetPropertyType(btreeprop)));
             }
 
-            var noopTable = new VirtualDWEventTable(false, hashFields, btreeFields, TABLE_ORGANIZATION);
+            var noopTable = new VirtualDWEventTable(false, hashFields, btreeFields, TABLE_ORGANIZATION, null);
             var imk = new IndexMultiKey(false, hashIndexedFields, btreeIndexedFields, null);
 
             return new Pair<IndexMultiKey, EventTable>(imk, noopTable);

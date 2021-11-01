@@ -19,7 +19,7 @@ namespace com.espertech.esper.compat
 
     public sealed class DefaultResourceManager : IResourceManager
     {
-        private static List<string> _searchPath;
+        private List<string> _searchPath;
 
         /// <summary>
         /// Gets or sets the search path.
