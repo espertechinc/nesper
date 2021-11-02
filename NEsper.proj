@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-    <Framework Condition=" '$(Framework)' == '' ">net462</Framework>
+    <Framework Condition=" '$(Framework)' == '' ">net472</Framework>
 
     <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
     <!-- Distribution version -->
@@ -175,7 +175,6 @@
   </Target>
 
   <Target Name="Copy-Binaries-All">
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net462" Targets="Copy-Binaries-Main"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net472" Targets="Copy-Binaries-Main"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netcoreapp3.1" Targets="Copy-Binaries-Main"/>
   </Target>

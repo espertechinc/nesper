@@ -15,10 +15,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj"/>
+        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NLog" Version="4.7.5"/>
+        <PackageReference Include="NLog" Version="4.7.12" />
     </ItemGroup>
 </Project>

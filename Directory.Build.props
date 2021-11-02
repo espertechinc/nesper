@@ -35,11 +35,6 @@
 		<Optimize>true</Optimize>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net462'">
-		<NetFramework>true</NetFramework>
-		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET462;</DefineConstants>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(TargetFramework)'=='net472'">
 		<NetFramework>true</NetFramework>
 		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET472;</DefineConstants>

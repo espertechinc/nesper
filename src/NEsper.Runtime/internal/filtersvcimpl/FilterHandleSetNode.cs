@@ -210,20 +210,5 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 _indizes = new List<FilterParamIndexBase>();
             }
         }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-#if DEBUG && DIAGNOSTICS
-            return _id.ToString();
-#else
-            return base.ToString();
-#endif
-        }
     }
 }
