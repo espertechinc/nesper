@@ -23,6 +23,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
+using com.espertech.esper.compat.timers;
 
 namespace com.espertech.esper.container
 {
@@ -96,6 +97,9 @@ namespace com.espertech.esper.container
             if (container.DoesNotHave<IResourceManager>())
                 container.Register<IResourceManager>(
                     ic => DefaultResourceManager(), Lifespan.Singleton);
+            if (container.DoesNotHave<ITimerFactory>())
+                container.Register<ITimerFactory>(
+                    ic => new SystemTimerFactory(), Lifespan.Singleton);
             //if (container.DoesNotHave<IConfigurationParser>())
             //    container.Register<IConfigurationParser, ConfigurationParser>(
             //        Lifespan.Transient);

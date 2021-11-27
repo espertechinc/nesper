@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using com.espertech.esper.compat.threading.locks;
@@ -19,21 +20,20 @@ namespace com.espertech.esper.compat.timers
     public class SystemTimerFactory : ITimerFactory
     {
         private readonly LinkedList<InternalTimer> _timerCallbackList = new LinkedList<InternalTimer>();
-        private readonly object _harmonicLock = new object();
-        private ITimer _harmonic;
+        private readonly object _baseTimerLock = new object();
+        private ITimer _baseTimer;
         private long _currGeneration; // current generation
         private long _lastGeneration; // last generation that produced an event
 
         /// <summary>
         /// Disposable timer kept for internal purposes; cascades the timer effect.
         /// </summary>
-
-        internal class InternalTimer : ITimer
+        private class InternalTimer : ITimer
         {
-            internal TimerCallback TimerCallback;
-            internal long NextTime;
-            internal long Interval;
-            internal SlimLock SlimLock;
+            internal TimerCallback timerCallback;
+            private long nextTime;
+            private readonly long interval;
+            private readonly SlimLock slimLock;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="InternalTimer"/> class.
@@ -43,19 +43,19 @@ namespace com.espertech.esper.compat.timers
                 long intervalInMillis, 
                 TimerCallback callback)
             {
-                SlimLock = new SlimLock();
-                TimerCallback = callback;
-                Interval = intervalInMillis * 1000;
-                NextTime = PerformanceObserver.MicroTime + offsetInMillis;
+                slimLock = new SlimLock();
+                timerCallback = callback;
+                interval = intervalInMillis * 1000;
+                nextTime = PerformanceObserver.MicroTime + offsetInMillis;
             }
 
             /// <summary>
             /// Called when [timer callback].
             /// </summary>
             /// <param name="currTime">The curr time.</param>
-            internal void OnTimerCallback( long currTime )
+            internal void OnTimerCallback(long currTime)
             {
-                if (!SlimLock.Enter(0)) {
+                if (!slimLock.Enter(0)) {
                     return;
                 }
 
@@ -64,21 +64,17 @@ namespace com.espertech.esper.compat.timers
                     while (true)
                     {
                         currTime = PerformanceObserver.MicroTime;
-                        if (currTime < NextTime)
+                        if (currTime < nextTime)
                         {
                             break;
                         }
 
-                        NextTime += Interval;
-
-                        var callback = TimerCallback;
-                        if (callback != null) {
-                            callback.Invoke(null);
-                        }
+                        nextTime += interval;
+                        timerCallback?.Invoke(null);
                     }
                 }
                 finally {
-                    SlimLock.Release();
+                    slimLock.Release();
                 }
             }
 
@@ -89,7 +85,7 @@ namespace com.espertech.esper.compat.timers
             /// </summary>
             public void Dispose()
             {
-                TimerCallback = null;
+                timerCallback = null;
             }
 
             #endregion
@@ -100,14 +96,14 @@ namespace com.espertech.esper.compat.timers
         /// </summary>
         private void CreateBaseTimer()
         {
-            lock (_harmonicLock)
+            lock (_baseTimerLock)
             {
-                if (_harmonic == null)
+                if (_baseTimer == null)
                 {
 #if NETCORE
-                    _harmonic = new HarmonicTimer(OnTimerEvent);
+                    _baseTimer = new HarmonicTimer(OnTimerEvent);
 #else
-                    _harmonic = new HighResolutionTimer(OnTimerEvent, null, 0, 10);
+                    _baseTimer = new HighResolutionTimer(OnTimerEvent, null, 0, 10);
 #endif
                 }
             }
@@ -146,8 +142,8 @@ namespace com.espertech.esper.compat.timers
             var node = _timerCallbackList.First;
             while (node != null)
             {
-                InternalTimer timer = node.Value;
-                TimerCallback timerCallback = timer.TimerCallback;
+                var timer = node.Value;
+                var timerCallback = timer.timerCallback;
 
                 if (timerCallback == null)
                 {
@@ -158,7 +154,7 @@ namespace com.espertech.esper.compat.timers
             }
 
             // Prune dead nodes
-            foreach (LinkedListNode<InternalTimer> pnode in deadList)
+            foreach (var pnode in deadList)
             {
                 _timerCallbackList.Remove(pnode);
             }      
@@ -170,9 +166,9 @@ namespace com.espertech.esper.compat.timers
         /// <param name="userData">The user data.</param>
         private void OnTimerEvent(object userData)
         {
-            long curr = Interlocked.Increment(ref _currGeneration);
+            var curr = Interlocked.Increment(ref _currGeneration);
 
-            LinkedListNode<InternalTimer> node = _timerCallbackList.First;
+            var node = _timerCallbackList.First;
             if (node != null)
             {
                 Interlocked.Exchange(ref _lastGeneration, curr);
@@ -194,7 +190,7 @@ namespace com.espertech.esper.compat.timers
             }
             else
             {
-                long last = Interlocked.Read(ref _lastGeneration);
+                var last = Interlocked.Read(ref _lastGeneration);
 
                 // If the timer is running and doing nothing, we consider the
                 // timer to be idling.  Idling only occurs when there are no callbacks,
@@ -202,12 +198,12 @@ namespace com.espertech.esper.compat.timers
                 // timer.
                 if (IsIdling(curr - last))
                 {
-                    lock (_harmonicLock)
+                    lock (_baseTimerLock)
                     {
-                        if ( _harmonic != null )
+                        if ( _baseTimer != null )
                         {
-                            _harmonic.Dispose();
-                            _harmonic = null;
+                            _baseTimer.Dispose();
+                            _baseTimer = null;
                         }
                     }
                 }

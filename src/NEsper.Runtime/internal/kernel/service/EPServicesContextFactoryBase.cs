@@ -224,7 +224,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw new ConfigurationException("Timer resolution configuration not set to a valid value, expecting a non-zero value");
             }
 
-            TimerService timerService = new TimerServiceImpl(epRuntime.URI, msecTimerResolution);
+            TimerService timerService = new TimerServiceImpl(container, epRuntime.URI, msecTimerResolution);
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory = new StatementAgentInstanceLockFactoryImpl(
                 configs.Runtime.Execution.IsFairlock,
                 configs.Runtime.Execution.IsDisableLocking,

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>NEsper</id>
-    <version>8.5.3</version>
+    <version>8.5.4</version>
     <authors>EsperTech</authors>
     <owners>EsperTech</owners>
     <language>en-us</language>
@@ -27,7 +27,7 @@
   </metadata>
 
   <files>
-    <file src="build\NEsper-8.5.3\lib\**" target="lib\{framework name}[{version}]" />
+    <file src="build\NEsper-8.5.4\lib\**" target="lib\{framework name}[{version}]" />
   </files>
 </package>
   

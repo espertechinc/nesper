@@ -27,9 +27,9 @@
     <e p="C:\Users\Aaron\.nuget\packages\nunit3testadapter\3.17.0\build\netcoreapp2.1\NUnit3.TestAdapter.dll" t="Include" />
     <e p="C:\Users\Aaron\.nuget\packages\nunit3testadapter\3.17.0\build\netcoreapp2.1\NUnit3.TestAdapter.pdb" t="Include" />
     <e p="C:\Users\Aaron\AppData\local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\Aaron\AppData\local\JetBrains\Rider2020.3\resharper-host\local\Transient\Rider\v203\SolutionCaches\_NEsper.-1733386518.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Aaron\AppData\local\JetBrains\Rider2020.3\resharper-host\local\Transient\Rider\v203\SolutionCaches\_NEsper.-1604303799.00" t="ExcludeRecursive" />
     <e p="C:\Users\Aaron\AppData\Roaming\JetBrains\Rider2020.3\consoles\ide" t="IncludeRecursive" />
-    <e p="D:\Src\Espertech\NEsper-8.5.3" t="IncludeFlat">
+    <e p="D:\Src\Espertech\NEsper-8.5.4" t="IncludeFlat">
       <e p=".nuget" t="Include">
         <e p="NuGet.Config" t="Include" />
         <e p="NuGet.exe" t="Include" />
@@ -6892,6 +6892,7 @@
               <e p="HighResolutionTimerFactory.cs" t="Include" />
               <e p="ITimer.cs" t="Include" />
               <e p="ITimerFactory.cs" t="Include" />
+              <e p="SimpleTimerFactory.cs" t="Include" />
               <e p="SystemTimerFactory.cs" t="Include" />
               <e p="TimerException.cs" t="Include" />
               <e p="TimerFactory.cs" t="Include" />
