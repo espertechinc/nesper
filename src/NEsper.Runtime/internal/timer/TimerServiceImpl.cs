@@ -12,6 +12,7 @@ using System.Threading;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.timers;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.runtime.@internal.timer
 {
@@ -76,20 +77,26 @@ namespace com.espertech.esper.runtime.@internal.timer
         /// Gets the unique id for the timer.
         /// </summary>
         /// <value>The id.</value>
-        public Guid Id { get; private set; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the runtime URI.
         /// </summary>
         /// <value>The runtime URI.</value>
-        public string RuntimeUri { get; private set; }
+        public string RuntimeUri { get; }
+        
+        /// <summary>
+        /// The container
+        /// </summary>
+        private IContainer Container { get; }
 
         /// <summary> Constructor.</summary>
         /// <param name="msecTimerResolution">is the millisecond resolution or interval the internal timer thread processes schedules</param>
         /// <param name="runtimeURI">runtime URI</param>
-        public TimerServiceImpl(string runtimeURI, long msecTimerResolution)
+        public TimerServiceImpl(IContainer container, string runtimeURI, long msecTimerResolution)
         {
             Id = Guid.NewGuid();
+            Container = container;
             RuntimeUri = runtimeURI;
             MsecTimerResolution = msecTimerResolution;
             _timerTaskCancelled = false;
@@ -102,12 +109,8 @@ namespace com.espertech.esper.runtime.@internal.timer
 
         private void OnTimerElapsed(object state)
         {
-            if (!_timerTaskCancelled)
-            {
-                if (_timerCallback != null)
-                {
-                    _timerCallback.TimerCallback();
-                }
+            if (!_timerTaskCancelled) {
+                _timerCallback?.TimerCallback();
             }
         }
 
@@ -133,9 +136,11 @@ namespace com.espertech.esper.runtime.@internal.timer
                 throw new IllegalStateException("Timer callback not set");
             }
 
+            var timerFactory = Container.Resolve<ITimerFactory>();
+
             _timerTask = new EPLTimerTask(_timerCallback);
             _timerTaskCancelled = false;
-            _timer = TimerFactory.DefaultTimerFactory.CreateTimer(
+            _timer = timerFactory.CreateTimer(
                 OnTimerElapsed, MsecTimerResolution, MsecTimerResolution);
         }
 

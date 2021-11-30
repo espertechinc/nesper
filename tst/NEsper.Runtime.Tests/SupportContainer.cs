@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.timers;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.runtime
@@ -45,6 +46,10 @@ namespace com.espertech.esper.runtime
                     Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "etc")),
                     Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "etc")),
                     Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "..", "etc"))),
+                Lifespan.Singleton);
+
+            container.Register<ITimerFactory>(
+                ic => new SimpleTimerFactory(),
                 Lifespan.Singleton);
 
             container

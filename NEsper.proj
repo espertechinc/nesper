@@ -8,7 +8,7 @@
     <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-    <Version Condition=" '$(Version)' == '' ">8.5.3</Version>
+    <Version Condition=" '$(Version)' == '' ">8.5.4</Version>
 
     <!-- Build Directories -->
     <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
