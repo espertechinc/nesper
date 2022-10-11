@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
+using com.espertech.esper.common.client.assembly;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -23,13 +24,16 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly ModuleCompileTimeServices _compileTimeServices;
 		private readonly Semaphore _semaphore;
 		private readonly ICollection<Pair<Assembly, byte[]>> _statementAssembliesWithImage;
+		private readonly CompilationContext _compilationContext;
 
 		CompileCallable(
+			CompilationContext compilationContext,
 			CompilableItem compilableItem,
 			ModuleCompileTimeServices compileTimeServices,
 			Semaphore semaphore,
 			ICollection<Pair<Assembly, byte[]>> statementAssembliesWithImage)
 		{
+			_compilationContext = compilationContext;
 			_compilableItem = compilableItem;
 			_compileTimeServices = compileTimeServices;
 			_semaphore = semaphore;
@@ -46,7 +50,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					.WithCodeAuditDirectory(_compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
 					.WithCodegenClasses(_compilableItem.Classes);
 
-				_statementAssembliesWithImage.Add(compiler.Compile());
+				_statementAssembliesWithImage.Add(compiler.Compile(_compilationContext));
 			}
 			catch (Exception t) {
 				return new CompilableItemResult(t);

@@ -77,15 +77,17 @@ namespace com.espertech.esper.compiler.@internal.util
             using (arguments.Configuration.Container.EnterContextualReflection()) {
                 try {
                     var module = EPLModuleUtil.ParseInternal(epl, null);
+                    
+                    // determine module name
+                    var moduleName = DetermineModuleName(arguments.Options, module);
+                    var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
+
                     IList<Compilable> compilables = new List<Compilable>();
                     foreach (var item in module.Items.Where(m => !m.IsCommentOnly)) {
                         var stmtEpl = item.Expression;
                         compilables.Add(new CompilableEPL(stmtEpl));
                     }
 
-                    // determine module name
-                    var moduleName = DetermineModuleName(arguments.Options, module);
-                    var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
                     // get compile services
                     var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);

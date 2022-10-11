@@ -42,14 +42,12 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			CompilerHelperSingleResult result;
 			try {
-				if (compilable is CompilableEPL) {
-					var compilableEPL = (CompilableEPL) compilable;
-
+				if (compilable is CompilableEPL compilableEPL) {
 					// parse
 					var parseResult = Parse(compilableEPL.Epl);
 
 					// compile application-provided classes (both create-class as well as just class-keyword)
-					var classesInlined = CompileAddExtensions(parseResult.Classes, compilable, compileTimeServices);
+					var classesInlined = CompileAddExtensions(parseResult.Classes, compilableEPL, compileTimeServices);
 
 					// walk - this may use the new classes already such as for extension-single-row-function
 					var raw = Walk(parseResult, compilableEPL.Epl, compileTimeServices.StatementSpecMapEnv);

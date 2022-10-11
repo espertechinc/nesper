@@ -11,5 +11,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1
     public interface Compilable
     {
         string ToEPL();
+        
+        string ModuleName { get; }
     }
 } // end of namespace

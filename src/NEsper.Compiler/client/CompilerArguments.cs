@@ -60,6 +60,11 @@ namespace com.espertech.esper.compiler.client
         }
 
         /// <summary>
+        /// Returns the module name (if applicable)
+        /// </summary>
+        public string ModuleName { get; set; }
+
+        /// <summary>
         ///     Returns the path.
         /// </summary>
         /// <returns>path</returns>

@@ -51,6 +51,20 @@ namespace NEsper.Avro.IO
             _jsonWriter.WriteValue(value);
         }
 
+        public void WriteBytes(
+            byte[] value,
+            int offset,
+            int length)
+        {
+            var valueLength = value.Length;
+            if (offset + length > valueLength)
+                length = valueLength - offset;
+            
+            var target = new byte[length];
+            Array.Copy(value, offset, target, 0, length);
+            _jsonWriter.WriteValue(target);
+        }
+
         public void WriteString(string value)
         {
             _jsonWriter.WriteValue(value);

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using com.espertech.esper.common.client.assembly;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client
@@ -28,10 +29,12 @@ namespace com.espertech.esper.common.client
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
             ICollection<Pair<Assembly, byte[]>> assembliesWithImage,
-            EPCompiledManifest manifest)
+            EPCompiledManifest manifest,
+            CompilationContext compilationContext)
         {
             AssembliesWithImage = assembliesWithImage;
             Manifest = manifest;
+            CompilationContext = compilationContext;
         }
 
         /// <summary>
@@ -51,5 +54,10 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <returns>manifest</returns>
         public EPCompiledManifest Manifest { get; }
+        
+        /// <summary>
+        /// Returns the compilation context.
+        /// </summary>
+        public CompilationContext CompilationContext { get; }
     }
 } // end of namespace

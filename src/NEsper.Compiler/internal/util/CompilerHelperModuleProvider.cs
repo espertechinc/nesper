@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.assembly;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.module;
@@ -447,6 +448,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 properties,
                 new EmptyList<CodegenInnerClass>());
             
+            var compilationContext = new CompilationContext {
+                ModuleName =  optionalModuleName,
+                Namespace = compileTimeServices.Namespace
+            };
+            
             var container = compileTimeServices.Container;
             var compiler = container
                 .RoslynCompiler()
@@ -454,7 +460,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new[] {clazz});
 
-            assemblyWithImage = compiler.Compile();
+            assemblyWithImage = compiler.Compile(compilationContext);
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                 compileTimeServices.Namespace,

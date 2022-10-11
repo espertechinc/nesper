@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using com.espertech.esper.common.client.assembly;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -58,6 +59,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 .OrderBy(c => c.ClassType.GetSortCode())
                 .ToList();
 
+            // create the compilation context ... module is unknown
+            var compilationContext = new CompilationContext {
+                Namespace = compileTimeServices.Namespace
+            };
+
             var container = compileTimeServices.Container;
             var compiler = container
                 .RoslynCompiler()
@@ -65,7 +71,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(classes);
 
-            assemblyWithImage = compiler.Compile();
+            assemblyWithImage = compiler.Compile(compilationContext);
 
             return queryMethodProviderClassName;
         }

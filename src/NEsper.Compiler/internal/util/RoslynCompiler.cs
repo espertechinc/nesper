@@ -17,8 +17,10 @@ using System.Runtime.Loader;
 #endif
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.assembly;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
@@ -52,21 +54,16 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         public RoslynCompiler(IContainer container)
         {
+            Container = container;
             Sources = new List<Source>();
-#if NETSTANDARD
-            LoadContext = container.LoadContext();
-#endif
             InitializeAssemblyResolution();
         }
 
-#if NETSTANDARD
         /// <summary>
-        /// Gets the assembly load context.
+        /// Gets the container.
         /// </summary>
-
-        public AssemblyLoadContext LoadContext { get; private set; }
-#endif
-
+        public IContainer Container { get; set; }
+        
         /// <summary>
         /// Gets the assembly.
         /// </summary>
@@ -91,39 +88,47 @@ namespace com.espertech.esper.compiler.@internal.util
         /// Gets or sets the codegen class.
         /// </summary>
         public IList<Source> Sources { get; set; }
+        
+#if NETSTANDARD
+        Assembly OnLoadContextOnResolving(
+            AssemblyLoadContext context,
+            AssemblyName name)
+        {
+            Log.Info("AssemblyResolve for {0}", name.Name);
+            if (_assemblyCacheBindings.TryGetValue(name.Name, out var bindingPair)) {
+                Log.Debug("AssemblyResolve: Located {0}", name.Name);
+                return bindingPair.Assembly;
+            }
+
+            Log.Warn("AssemblyResolve: Unable to locate {0}", name.Name);
+            return null;
+        }
+#endif
+
+        private Assembly OnCurrentDomainOnAssemblyResolve(
+            object sender,
+            ResolveEventArgs args)
+        {
+            Log.Info("AssemblyResolve for {0}", args.Name);
+            if (_assemblyCacheBindings.TryGetValue(args.Name, out var bindingPair)) {
+                Log.Debug("AssemblyResolve: Located {0}", args.Name);
+                return bindingPair.Assembly;
+            }
+
+            Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
+            return null;
+        }
 
         /// <summary>
         /// Initializes the assembly resolution mechanism.
         /// </summary>
         private void InitializeAssemblyResolution()
         {
-#if NETSTANDARD
-            LoadContext.Resolving += (
-                context,
-                name) => {
-                Log.Info("AssemblyResolve for {0}", name.Name);
-                if (_assemblyCacheBindings.TryGetValue(name.Name, out var bindingPair)) {
-                    Log.Debug("AssemblyResolve: Located {0}", name.Name);
-                    return bindingPair.Assembly;
-                }
-
-                Log.Warn("AssemblyResolve: Unable to locate {0}", name.Name);
-                return null;
-            };
-#else
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
-                Log.Info("AssemblyResolve for {0}", args.Name);
-                if (_assemblyCacheBindings.TryGetValue(args.Name, out var bindingPair)) {
-                    Log.Debug("AssemblyResolve: Located {0}", args.Name);
-                    return bindingPair.Assembly;
-                }
-
-                Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
-                return null;
-            };
+#if !NETSTANDARD
+            AppDomain.CurrentDomain.AssemblyResolve += OnCurrentDomainOnAssemblyResolve;
 #endif
-        } 
-        
+        }
+
         public RoslynCompiler WithCodeLogging(bool isCodeLogging)
         {
             IsCodeLogging = isCodeLogging;
@@ -148,7 +153,7 @@ namespace com.espertech.esper.compiler.@internal.util
             Sources = sources;
             return this;
         }
-        
+
         internal bool IsGeneratedAssembly(Assembly assembly)
         {
             var generatedAttributesCount = assembly
@@ -161,7 +166,11 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Gets the current metadata references.  Metadata references are specific to the AppDomain.
         /// </summary>
-        internal ICollection<MetadataReference> GetCurrentMetadataReferences()
+#if NETSTANDARD
+        internal ICollection<MetadataReference> GetCurrentMetadataReferences(AssemblyLoadContext loadContext)
+#else
+        internal ICollection<MetadataReference> GetCurrentMetadataReferences(AppDomain currentDomain)
+#endif
         {
             if (_metadataReferences == null) {
                 var metadataReferences = new List<MetadataReference>();
@@ -175,9 +184,9 @@ namespace com.espertech.esper.compiler.@internal.util
 #if NETSTANDARD
                 var assemblies = Enumerable.Concat(
                     AssemblyLoadContext.Default.Assemblies,
-                    LoadContext.Assemblies);
+                    loadContext.Assemblies);
 #else
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                var assemblies = currentDomain.GetAssemblies();
 #endif
 
                 foreach (var assembly in assemblies) {
@@ -210,15 +219,19 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <returns></returns>
         private System.Tuple<string, string, SyntaxTree> Compile(Source source)
         {
-            var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
-            var syntaxTree = CSharpSyntaxTree.ParseText(source.Code, options);
-            var @namespace = GetNamespaceForSyntaxTree(syntaxTree);
-            
-            // Convert the codegen source to syntax tree
-            return new System.Tuple<string, string, SyntaxTree>(
-                @namespace, 
-                source.Name,
-                syntaxTree);
+            try {
+                var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
+                var syntaxTree = CSharpSyntaxTree.ParseText(source.Code, options);
+                var @namespace = GetNamespaceForSyntaxTree(syntaxTree);
+
+                // Convert the codegen source to syntax tree
+                return new System.Tuple<string, string, SyntaxTree>(
+                    @namespace,
+                    source.Name,
+                    syntaxTree);
+            }
+            finally {
+            }
         }
         
         /// <summary>
@@ -267,17 +280,17 @@ namespace com.espertech.esper.compiler.@internal.util
         private static long minMicroTime = long.MaxValue;
         private static long maxMicroTime = 0L;
 #endif
-        
+
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
-        public Pair<Assembly, byte[]> Compile()
+        public Pair<Assembly, byte[]> Compile(CompilationContext compilationContext)
         {
 #if COMPILATION_DIAGNOSTICS
             var startMicro = PerformanceObserver.MicroTime;
             try {
 #endif
-                return CompileInternal();
+                return CompileInternal(compilationContext);
 #if COMPILATION_DIAGNOSTICS
             }
             finally {
@@ -302,60 +315,77 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
-        private Pair<Assembly, byte[]> CompileInternal()
+        private Pair<Assembly, byte[]> CompileInternal(CompilationContext compilationContext)
         {
-            // Convert the codegen class into it's source representation.
-            var syntaxTreePairs = CreateSyntaxTree();
-            var syntaxTrees = syntaxTreePairs.Select(_ => _.Item3).ToList();
-            syntaxTrees.Insert(0, CompileAssemblyBindings());
+#if NETSTANDARD
+            var loadContext = Container.GetLoadContext(compilationContext);
+#else
+            var currentDomain = AppDomain.CurrentDomain;
+#endif
             
-            // Create an in-memory representation of the compiled source.
-            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                .WithOptimizationLevel(OptimizationLevel.Debug)
-                .WithAllowUnsafe(true);
-
-            var metadataReferences = GetCurrentMetadataReferences();
-
-            var assemblyId = Guid.NewGuid().ToString().Replace("-", "");
-            var assemblyName = $"NEsper_{assemblyId}";
-            var compilation = CSharpCompilation
-                .Create(assemblyName, options: options)
-                .AddReferences(metadataReferences)
-                .AddSyntaxTrees(syntaxTrees);
-
-            if (CodeAuditDirectory != null) {
-                WriteCodeAudit(syntaxTreePairs, CodeAuditDirectory);
-            }
-
-#if DIAGNOSTICS
-            Console.WriteLine("EmitToImage: {0}", assemblyName);
-            foreach (var syntaxTreePair in syntaxTreePairs) {
-                Console.WriteLine("\t- {0}", syntaxTreePair.First.ClassName);
-            }
+            try {
+#if NETSTANDARD
+                loadContext.Resolving += OnLoadContextOnResolving;
+#else
+                currentDomain.AssemblyResolve += OnCurrentDomainOnAssemblyResolve;
 #endif
 
-            AssemblyImage = EmitToImage(compilation);
+                // Convert the codegen class into it's source representation.
+                var syntaxTreePairs = CreateSyntaxTree();
+                var syntaxTrees = syntaxTreePairs.Select(_ => _.Item3).ToList();
+                syntaxTrees.Insert(0, CompileAssemblyBindings());
+
+                // Create an in-memory representation of the compiled source.
+                var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                    .WithOptimizationLevel(OptimizationLevel.Debug)
+                    .WithAllowUnsafe(true);
+
+#if NETSTANDARD
+                var metadataReferences = GetCurrentMetadataReferences(loadContext);
+#else
+                var metadataReferences = GetCurrentMetadataReferences(currentDomain);
+#endif
+
+                var assemblyId = Guid.NewGuid().ToString().Replace("-", "");
+                var assemblyName = $"NEsper_{assemblyId}";
+                var compilation = CSharpCompilation
+                    .Create(assemblyName, options: options)
+                    .AddReferences(metadataReferences)
+                    .AddSyntaxTrees(syntaxTrees);
+
+                if (CodeAuditDirectory != null) {
+                    WriteCodeAudit(syntaxTreePairs, CodeAuditDirectory);
+                }
 
 #if DIAGNOSTICS
-            Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
+                Console.WriteLine("EmitToImage: {0}", assemblyName);
+                foreach (var syntaxTreePair in syntaxTreePairs) {
+                    Console.WriteLine("\t- {0}", syntaxTreePair.First.ClassName);
+                }
+#endif
+
+                AssemblyImage = EmitToImage(compilation);
+
+#if DIAGNOSTICS
+                Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
 #endif
 
 #if NETSTANDARD
-            using (var stream = new MemoryStream(AssemblyImage)) {
-                Assembly = LoadContext.LoadFromStream(stream);
-            }
+                using (var stream = new MemoryStream(AssemblyImage)) {
+                    Assembly = loadContext.LoadFromStream(stream);
+                }
 #else
-            Assembly = AppDomain.CurrentDomain.Load(AssemblyImage);
-#endif
-            
-#if DIAGNOSTICS
-            Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
-            Console.WriteLine($"\tFullName:{_assembly.FullName}");
-            Console.WriteLine($"\tName:{_assembly.GetName()}");
+                Assembly = AppDomain.CurrentDomain.Load(AssemblyImage);
 #endif
 
-            lock (_assemblyCacheBindings) {
-                var metadataReference = MetadataReference.CreateFromImage(AssemblyImage);
+#if DIAGNOSTICS
+                Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
+                Console.WriteLine($"\tFullName:{_assembly.FullName}");
+                Console.WriteLine($"\tName:{_assembly.GetName()}");
+#endif
+
+                lock (_assemblyCacheBindings) {
+                    var metadataReference = MetadataReference.CreateFromImage(AssemblyImage);
 
 #if DIAGNOSTICS
                 Console.WriteLine($"MetaDataReference: {DateTime.Now}");
@@ -363,11 +393,19 @@ namespace com.espertech.esper.compiler.@internal.util
                 Console.WriteLine($"\tDisplay: {metadataReference.Display}");
                 Console.WriteLine($"\tProperties: {metadataReference.Properties}");
 #endif
-                _metadataReferences.Add(metadataReference);
-                _assemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
-            }
+                    _metadataReferences.Add(metadataReference);
+                    _assemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
+                }
 
-            return new Pair<Assembly, byte[]>(Assembly, AssemblyImage);
+                return new Pair<Assembly, byte[]>(Assembly, AssemblyImage);
+            }
+            finally {
+#if NETSTANDARD
+                loadContext.Resolving -= OnLoadContextOnResolving;
+#else
+                currentDomain.AssemblyResolve -= OnCurrentDomainOnAssemblyResolve;
+#endif
+            }
         }
 
         private void WriteCodeAudit(IList<System.Tuple<string, string, SyntaxTree>> syntaxTreePairs, string targetDirectory)

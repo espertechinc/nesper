@@ -12,12 +12,15 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class CompilableEPL : Compilable
     {
-        public CompilableEPL(string epl)
+        public CompilableEPL(string epl, string moduleName)
         {
             Epl = epl;
+            ModuleName = moduleName;
         }
 
         public string Epl { get; }
+
+        public string ModuleName { get; }
 
         public string ToEPL()
         {

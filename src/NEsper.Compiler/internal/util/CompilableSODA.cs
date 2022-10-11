@@ -19,12 +19,15 @@ namespace com.espertech.esper.compiler.@internal.util
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public CompilableSODA(EPStatementObjectModel soda)
+        public CompilableSODA(EPStatementObjectModel soda, string moduleName)
         {
             Soda = soda;
+            ModuleName = moduleName;
         }
 
         public EPStatementObjectModel Soda { get; }
+
+        public string ModuleName { get; }
 
         public string ToEPL()
         {

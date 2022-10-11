@@ -17,12 +17,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj"/>
-        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj"/>
-        <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj"/>
+        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+        <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0"/>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     </ItemGroup>
 </Project>

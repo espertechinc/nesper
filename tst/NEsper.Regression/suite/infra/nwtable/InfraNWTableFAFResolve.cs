@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 				CompilerArguments args = new CompilerArguments();
 				args.Options.ModuleUses = (_) => new HashSet<string>() { moduleName };
 				args.Path.Add(env.Runtime.RuntimePath);
-				return env.Compiler.CompileQuery(query, args);
+				return env.Compiler.CompileQuery(query, moduleName, args);
 		}
 
 		private static void SetupInfra(

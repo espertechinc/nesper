@@ -9,6 +9,7 @@
 using System;
 using System.Linq;
 
+using com.espertech.esper.common.client.assembly;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -93,6 +94,10 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public CompileResponse Compile(CompileRequest request)
         {
+            var compilationContext = new CompilationContext {
+                Namespace = request.ModuleCompileTimeServices.Namespace
+            };
+            
             var configuration = request.ModuleCompileTimeServices.Configuration;
             var container = request.ModuleCompileTimeServices.Container;
             var compiler = container
@@ -106,7 +111,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             return new CompileResponse(
                 request,
-                compiler.Compile());
+                compiler.Compile(compilationContext));
         }
     }
 } // end of namespace
