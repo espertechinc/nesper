@@ -17,7 +17,7 @@
 
     <ItemGroup>
         <PackageReference Include="Apache.Avro" Version="1.11.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
     </ItemGroup>
 
     <ItemGroup>
