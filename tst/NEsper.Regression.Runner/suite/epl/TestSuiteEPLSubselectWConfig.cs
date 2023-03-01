@@ -9,22 +9,22 @@
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.subselect;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLSubselectWConfig
+    public class TestSuiteEPLSubselectWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEPLSubselectCorrelatedAggregationPerformance()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Runtime.Expression.IsSelfSubselectPreeval = false;
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new EPLSubselectOrderOfEvalNoPreeval());
-            session.Dispose();
         }
     }
 } // end of namespace

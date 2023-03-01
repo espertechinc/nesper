@@ -48,7 +48,8 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddImportNamespace(typeof(FileSourceCSV));
             configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp));
 
-            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", configuration);
+            var runtimeProvider = new EPRuntimeProvider();
+            _runtime = runtimeProvider.GetRuntime("testExistingTypeNoOptions", configuration);
             _runtime.Initialize();
 
             var stmt = CompileUtil.CompileDeploy(_runtime, "select * from ExampleMarketDataBeanReadWrite#length(100)").Statements[0];

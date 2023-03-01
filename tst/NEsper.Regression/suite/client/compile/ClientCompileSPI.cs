@@ -50,15 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             string expression,
             EPCompilerSPIExpression expressionCompiler)
         {
-            object result = null;
-            try {
-                result = expressionCompiler.CompileValidate(expression).Forge.ExprEvaluator.Evaluate(null, true, null);
-            }
-            catch (EPCompileException e) {
-                Assert.Fail(e.Message);
-            }
-
-            return result;
+            return expressionCompiler.CompileValidate(expression).Forge.ExprEvaluator.Evaluate(null, true, null);
         }
 
         private class ClientCompileSPIExpression : RegressionExecution
@@ -67,13 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var compiler = (EPCompilerSPI) env.Compiler;
 
-                EPCompilerSPIExpression expressionCompiler = null;
-                try {
-                    expressionCompiler = compiler.ExpressionCompiler(new Configuration());
-                }
-                catch (EPCompileException e) {
-                    Assert.Fail(e.Message);
-                }
+                var expressionCompiler = compiler.ExpressionCompiler(new Configuration());
 
                 CompileEvaluate("1*1", 1, expressionCompiler);
                 CompileEvaluate("'a' || 'y'", "ay", expressionCompiler);
@@ -85,13 +71,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 CompileEvaluate($"{arrays}.AsList({{'a', 'b'}}).firstOf()", "a", expressionCompiler);
 
-                try {
-                    var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");
-                    Assert.AreEqual(5d, timePeriod.EvaluateAsSeconds(null, true, null), 0.0001);
-                }
-                catch (EPCompileException e) {
-                    Assert.Fail(e.Message);
-                }
+                var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");
+                Assert.AreEqual(5d, timePeriod.EvaluateAsSeconds(null, true, null), 0.0001);
             }
         }
     }

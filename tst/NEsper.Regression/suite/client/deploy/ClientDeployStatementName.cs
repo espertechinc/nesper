@@ -35,12 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 var options = new DeploymentOptions();
                 options.StatementNameRuntime = new MyStatementNameRuntimeResolver().GetStatementName;
 
-                try {
-                    env.Deployment.Deploy(compiled, options);
-                }
-                catch (EPDeployException e) {
-                    Assert.Fail(e.Message);
-                }
+                env.Deployment.Deploy(compiled, options);
 
                 var ctx = MyStatementNameRuntimeResolver.Contexts[0];
                 Assert.AreEqual("s0", ctx.StatementName);

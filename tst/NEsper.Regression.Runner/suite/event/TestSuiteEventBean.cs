@@ -13,9 +13,11 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.@event.bean;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -24,25 +26,9 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventBean
+    public class TestSuiteEventBean : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             var myLegacyNestedEvent = new ConfigurationCommonEventTypeBean();
             myLegacyNestedEvent.AccessorStyle = AccessorStyle.EXPLICIT;
@@ -276,60 +262,60 @@ namespace com.espertech.esper.regressionrun.suite.@event
         [Test, RunInApplicationDomain]
         public void TestEventBeanEventPropertyDynamicPerformance()
         {
-            RegressionRunner.Run(session, new EventBeanEventPropertyDynamicPerformance());
+            RegressionRunner.Run(_session, new EventBeanEventPropertyDynamicPerformance());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanFinalClass()
         {
-            RegressionRunner.Run(session, new EventBeanFinalClass());
+            RegressionRunner.Run(_session, new EventBeanFinalClass());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanInheritAndInterface()
         {
-            RegressionRunner.Run(session, EventBeanInheritAndInterface.Executions());
+            RegressionRunner.Run(_session, EventBeanInheritAndInterface.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanNativeAccessor()
         {
-            RegressionRunner.Run(session, new EventBeanNativeAccessor());
+            RegressionRunner.Run(_session, new EventBeanNativeAccessor());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanMappedIndexedPropertyExpression()
         {
-            RegressionRunner.Run(session, new EventBeanMappedIndexedPropertyExpression());
+            RegressionRunner.Run(_session, new EventBeanMappedIndexedPropertyExpression());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanPrivateClass()
         {
-            RegressionRunner.Run(session, new EventBeanPrivateClass());
+            RegressionRunner.Run(_session, new EventBeanPrivateClass());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyIterableMapList()
         {
-            RegressionRunner.Run(session, new EventBeanPropertyIterableMapList());
+            RegressionRunner.Run(_session, new EventBeanPropertyIterableMapList());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionFragment()
         {
-            RegressionRunner.Run(session, EventBeanPropertyResolutionFragment.Executions());
+            RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.Executions());
         }
         
         [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyAccessPerformance() {
-            RegressionRunner.Run(session, new EventBeanPropertyAccessPerformance());
+            RegressionRunner.Run(_session, new EventBeanPropertyAccessPerformance());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionWDefaults()
         {
-            RegressionRunner.Run(session, EventBeanPropertyResolutionWDefaults.Executions());
+            RegressionRunner.Run(_session, EventBeanPropertyResolutionWDefaults.Executions());
         }
     }
 } // end of namespace

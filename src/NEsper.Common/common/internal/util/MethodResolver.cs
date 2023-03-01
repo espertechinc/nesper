@@ -572,12 +572,7 @@ namespace com.espertech.esper.common.@internal.util
             catch (Exception ex) {
                 string parametersPretty = GetParametersPretty(parameters);
                 throw new EPException(
-                    string.Format(
-                        "Failed to resolve static method {0}.{1}({2}): {3}",
-                        declaringClass.Name,
-                        methodName,
-                        parametersPretty,
-                        ex.Message),
+                    $"Failed to resolve static method {declaringClass.Name}.{methodName}({parametersPretty}): {ex.Message}",
                     ex);
             }
         }

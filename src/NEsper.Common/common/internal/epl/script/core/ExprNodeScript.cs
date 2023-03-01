@@ -178,11 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         {
             if (Script.ParameterNames.Length != Parameters.Count) {
                 throw new ExprValidationException(
-                    string.Format(
-                        "Invalid number of parameters for script '{0}', expected {1} parameters but received {2} parameters",
-                        Script.Name,
-                        Script.ParameterNames.Length,
-                        Parameters.Count));
+                    $"Invalid number of parameters for script '{Script.Name}', expected {Script.ParameterNames.Length} parameters but received {Parameters.Count} parameters");
             }
 
             if (!validationContext.StatementCompileTimeService.Configuration.Compiler.Scripts.IsEnabled) {
@@ -297,7 +293,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             return new ExpressionScriptCompiledImpl(
                 scriptingCompiler.Compile(
                     Script.OptionalDialect ?? _defaultDialect,
-                    Script));
+                    Script,
+                    importService));
         }
 
         public override void Accept(ExprNodeVisitor visitor)
@@ -355,7 +352,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             var returnType = TypeHelper.GetTypeForSimpleName(
                 returnTypeName,
-                validationContext.ImportService.ClassForNameProvider);
+                validationContext.ImportService.TypeResolver);
             if (returnType != null) {
                 return returnType;
             }
@@ -365,7 +362,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
 
             try {
-                return validationContext.ImportService.ResolveClass(
+                return validationContext.ImportService.ResolveType(
                     returnTypeName,
                     false,
                     ExtensionClassEmpty.INSTANCE);

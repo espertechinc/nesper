@@ -24,10 +24,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumAverageEvents());
-			execs.Add(new ExprEnumAverageScalar());
-			execs.Add(new ExprEnumAverageScalarMore());
+			WithAverageEvents(execs);
+			WithAverageScalar(execs);
+			WithAverageScalarMore(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithAverageScalarMore(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAverageScalarMore());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithAverageScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAverageScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithAverageEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAverageEvents());
 			return execs;
 		}
 
@@ -96,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithExpression(fields[0], "Intvals.average()");
 				builder.WithExpression(fields[1], "Bdvals.average()");
 
-				builder.WithStatementConsumer(stmt => AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(double?), typeof(decimal?)}));
+				builder.WithStatementConsumer(stmt => AssertTypes(env.Statement("s0").EventType, fields, new[] { typeof(double?), typeof(decimal?) }));
 
 				builder.WithAssertion(SupportCollection.MakeNumeric("1,2,3")).Expect(fields, 2d, 2m);
 
@@ -125,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					stmt => AssertTypes(
 						stmt.EventType,
 						fields,
-						new[] {typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?)}));
+						new[] { typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?), typeof(double?), typeof(decimal?) }));
 
 				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
 					.Expect(

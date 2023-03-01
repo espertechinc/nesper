@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     "Virtual data window forge class " +
                     clazz.Name +
                     " does not implement the interface " +
-                    typeof(VirtualDataWindowForge).Name);
+                    nameof(VirtualDataWindowForge));
             }
 
             _forge = TypeHelper.Instantiate<VirtualDataWindowForge>(clazz);

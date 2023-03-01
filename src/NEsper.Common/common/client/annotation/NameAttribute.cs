@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.client.annotation
 
         public override string ToString()
         {
-            return string.Format("@Name(\"{0}\")", Value);
+            return $"@Name(\"{Value}\")";
         }
 
         public override int GetHashCode()

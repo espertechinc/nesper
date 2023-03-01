@@ -25,25 +25,9 @@ namespace com.espertech.esper.regressionrun.suite.infra
 {
     // see INFRA suite for additional Table tests
     [TestFixture]
-    public class TestSuiteInfraTable
+    public class TestSuiteInfraTable : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -104,136 +88,136 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [Test, RunInApplicationDomain]
         public void TestInfraTableFilters()
         {
-            RegressionRunner.Run(session, new InfraTableFilters());
+            RegressionRunner.Run(_session, new InfraTableFilters());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableIterate()
         {
-            RegressionRunner.Run(session, new InfraTableIterate());
+            RegressionRunner.Run(_session, new InfraTableIterate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTAccessReadMergeWriteInsertDeleteRowVisible()
         {
-            RegressionRunner.Run(session, new InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible());
+            RegressionRunner.Run(_session, new InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency());
+            RegressionRunner.Run(_session, new InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation()
         {
-            RegressionRunner.Run(session, new InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation());
+            RegressionRunner.Run(_session, new InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedFAFReadFAFWriteChain()
         {
             RegressionRunner.RunPerformanceSensitive(
-                session, new InfraTableMTGroupedFAFReadFAFWriteChain());
+                _session, new InfraTableMTGroupedFAFReadFAFWriteChain());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd()
         {
             RegressionRunner.RunPerformanceSensitive(
-                session, new InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd());
+                _session, new InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr()
         {
             RegressionRunner.RunPerformanceSensitive(
-                session, new InfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr());
+                _session, new InfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd());
+            RegressionRunner.RunPerformanceSensitive(_session, new InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedWContextIntoTableWriteAsContextTable()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new InfraTableMTGroupedWContextIntoTableWriteAsContextTable());
+            RegressionRunner.RunPerformanceSensitive(_session, new InfraTableMTGroupedWContextIntoTableWriteAsContextTable());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedWContextIntoTableWriteAsSharedTable()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new InfraTableMTGroupedWContextIntoTableWriteAsSharedTable());
+            RegressionRunner.RunPerformanceSensitive(_session, new InfraTableMTGroupedWContextIntoTableWriteAsSharedTable());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedAccessReadInotTableWriteIterate()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedAccessReadInotTableWriteIterate());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedAccessReadInotTableWriteIterate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedAccessReadIntoTableWriteFilterUse()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedAccessReadMergeWrite()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedAccessReadMergeWrite());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedAccessReadMergeWrite());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedAccessWithinRowFAFConsistency()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedAccessWithinRowFAFConsistency());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedAccessWithinRowFAFConsistency());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedIntoTableWriteMultiWriterAgg()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedIntoTableWriteMultiWriterAgg());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedIntoTableWriteMultiWriterAgg());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedJoinColumnConsistency()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedJoinColumnConsistency());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedJoinColumnConsistency());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd()
         {
-            RegressionRunner.Run(session, new InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd());
+            RegressionRunner.Run(_session, new InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableNonAccessDotSubqueryAndJoin()
         {
-            RegressionRunner.Run(session, new InfraTableNonAccessDotSubqueryAndJoin());
+            RegressionRunner.Run(_session, new InfraTableNonAccessDotSubqueryAndJoin());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableOnSelect()
         {
-            RegressionRunner.Run(session, new InfraTableOnSelect());
+            RegressionRunner.Run(_session, new InfraTableOnSelect());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableOutputRateLimiting()
         {
-            RegressionRunner.Run(session, new InfraTableOutputRateLimiting());
+            RegressionRunner.Run(_session, new InfraTableOutputRateLimiting());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraTableWNamedWindow()
         {
-            RegressionRunner.Run(session, new InfraTableWNamedWindow());
+            RegressionRunner.Run(_session, new InfraTableWNamedWindow());
         }
 
         /// <summary>

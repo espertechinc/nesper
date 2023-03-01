@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var i = 0; i < numGroups; i++) {
                 var group = i;
                 var t = new Thread(() => env.SendEventBean(new SupportBean("S0_" + group, 1))) {
-                    Name = typeof(MultithreadUpdateIStreamSubselect).Name
+                    Name = nameof(MultithreadUpdateIStreamSubselect)
                 };
                 threads.Add(t);
                 t.Start();

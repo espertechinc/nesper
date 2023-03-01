@@ -63,9 +63,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // start
             var t1 = new Thread(writeRunnable.Run);
-            t1.Name = typeof(InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation).Name + "-write";
+            t1.Name = nameof(InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation) + "-write";
             var t2 = new Thread(readRunnable.Run);
-            t2.Name = typeof(InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation).Name + "-read";
+            t2.Name = nameof(InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation) + "-read";
             t1.Start();
             t2.Start();
 

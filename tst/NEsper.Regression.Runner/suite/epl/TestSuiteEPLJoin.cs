@@ -33,82 +33,66 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLJoin
+    public class TestSuiteEPLJoin : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
         [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamSimple()
         {
-            RegressionRunner.Run(session, new EPLJoin2StreamSimple());
+            RegressionRunner.Run(_session, new EPLJoin2StreamSimple());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoinSelectClause()
         {
-            RegressionRunner.Run(session, new EPLJoinSelectClause());
+            RegressionRunner.Run(_session, new EPLJoinSelectClause());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoin5StreamPerformance()
         {
-            RegressionRunner.Run(session, new EPLJoin5StreamPerformance());
+            RegressionRunner.Run(_session, new EPLJoin5StreamPerformance());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamExprPerformance()
         {
-            RegressionRunner.Run(session, new EPLJoin2StreamExprPerformance());
+            RegressionRunner.Run(_session, new EPLJoin2StreamExprPerformance());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoinDerivedValueViews()
         {
-            RegressionRunner.Run(session, new EPLJoinDerivedValueViews());
+            RegressionRunner.Run(_session, new EPLJoinDerivedValueViews());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoinNoTableName()
         {
-            RegressionRunner.Run(session, new EPLJoinNoTableName());
+            RegressionRunner.Run(_session, new EPLJoinNoTableName());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoinInheritAndInterface()
         {
-            RegressionRunner.Run(session, new EPLJoinInheritAndInterface());
+            RegressionRunner.Run(_session, new EPLJoinInheritAndInterface());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLJoinUniqueIndex()
+        public void TestEPLJoinUniqueIndex([Values] EPLJoinUniqueIndex.CaseEnum caseEnum)
         {
-            RegressionRunner.Run(session, new EPLJoinUniqueIndex());
+            RegressionRunner.Run(_session, new EPLJoinUniqueIndex(caseEnum));
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoin20Stream()
         {
-            RegressionRunner.Run(session, new EPLJoin20Stream());
+            RegressionRunner.Run(_session, new EPLJoin20Stream());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamInKeywordPerformance()
         {
-            RegressionRunner.Run(session, new EPLJoin3StreamInKeywordPerformance());
+            RegressionRunner.Run(_session, new EPLJoin3StreamInKeywordPerformance());
         }
 
         /// <summary>
@@ -1308,7 +1292,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 EPLJoinPropertyAccess.WithRegularJoin());
         }
 
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] {
                 typeof(SupportBean),

@@ -30,11 +30,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumSelectFromEventsPlain());
-			execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
-			execs.Add(new ExprEnumSelectFromEventsWithNew());
-			execs.Add(new ExprEnumSelectFromScalarPlain());
+			WithEventsPlain(execs);
+			WithEventsWIndexWSize(execs);
+			WithEventsWithNew(execs);
+			WithScalarPlain(execs);
+			WithScalarWIndexWSize(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarWIndexWSize(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumSelectFromScalarWIndexWSize());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarPlain(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromScalarPlain());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsWithNew(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsWithNew());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsWIndexWSize(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEventsPlain(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsPlain());
 			return execs;
 		}
 
@@ -86,18 +121,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 						value => AssertRows(
 							value,
 							new object[][] {
-								new object[] {"E1", 0},
-								new object[] {"E2", 1},
-								new object[] {"E3", 2}
+								new object[] { "E1", 0 },
+								new object[] { "E2", 1 },
+								new object[] { "E3", 2 }
 							}))
 					.Verify(
 						fields[1],
 						value => AssertRows(
 							value,
 							new object[][] {
-								new object[] {"E1", 300},
-								new object[] {"E2", 301},
-								new object[] {"E3", 302}
+								new object[] { "E1", 300 },
+								new object[] { "E2", 301 },
+								new object[] { "E3", 302 }
 							}));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E4,0,1"))
@@ -106,14 +141,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 						value => AssertRows(
 							value,
 							new object[][] {
-								new object[] {"E4", 0}
+								new object[] { "E4", 0 }
 							}))
 					.Verify(
 						fields[1],
 						value => AssertRows(
 							value,
 							new object[][] {
-								new object[] {"E4", 100}
+								new object[] { "E4", 100 }
 							}));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3ValueNull())
@@ -151,9 +186,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 						value => AssertRows(
 							value,
 							new object[][] {
-								new object[] {"E1x", "12y"},
-								new object[] {"E2x", "11y"},
-								new object[] {"E3x", "2y"}
+								new object[] { "E1x", "12y" },
+								new object[] { "E2x", "11y" },
+								new object[] { "E3x", "2y" }
 							}));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E4,0,1"))
@@ -162,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 						value => AssertRows(
 							value,
 							new object[][] {
-								new object[] {"E4x", "0y"}
+								new object[] { "E4x", "0y" }
 							}));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make3ValueNull())

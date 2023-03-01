@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		            .Add(Expressions.BinaryXor().Add("LongPrimitive").Add("LongBoxed"), "myFourthProperty")
 		            .Add(Expressions.BinaryAnd().Add("BoolPrimitive").Add("BoolBoxed"), "myFifthProperty");
 
-	            model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+	            model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 	            model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 	            Assert.AreEqual(EPL, model.ToEPL());
 

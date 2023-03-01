@@ -25,25 +25,9 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.resultset
 {
     [TestFixture]
-    public class TestSuiteResultSetAggregate
+    public class TestSuiteResultSetAggregate : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -78,49 +62,49 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFiltered()
         {
-            RegressionRunner.Run(session, ResultSetAggregateFiltered.Executions());
+            RegressionRunner.Run(_session, ResultSetAggregateFiltered.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFirstEverLastEver()
         {
-            RegressionRunner.Run(session, ResultSetAggregateFirstEverLastEver.Executions());
+            RegressionRunner.Run(_session, ResultSetAggregateFirstEverLastEver.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateLeaving()
         {
-            RegressionRunner.Run(session, new ResultSetAggregateLeaving());
+            RegressionRunner.Run(_session, new ResultSetAggregateLeaving());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateMaxMinGroupBy()
         {
-            RegressionRunner.Run(session, ResultSetAggregateMaxMinGroupBy.Executions());
+            RegressionRunner.Run(_session, ResultSetAggregateMaxMinGroupBy.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateMedianAndDeviation()
         {
-            RegressionRunner.Run(session, ResultSetAggregateMedianAndDeviation.Executions());
+            RegressionRunner.Run(_session, ResultSetAggregateMedianAndDeviation.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateMinMax()
         {
-            RegressionRunner.Run(session, ResultSetAggregateMinMax.Executions());
+            RegressionRunner.Run(_session, ResultSetAggregateMinMax.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateNTh()
         {
-            RegressionRunner.Run(session, new ResultSetAggregateNTh());
+            RegressionRunner.Run(_session, new ResultSetAggregateNTh());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateRate()
         {
-            RegressionRunner.Run(session, ResultSetAggregateRate.Executions());
+            RegressionRunner.Run(_session, ResultSetAggregateRate.Executions());
         }
 
         /// <summary>

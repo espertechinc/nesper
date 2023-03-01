@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 
 namespace com.espertech.esper.compiler.@internal.util
@@ -19,15 +20,12 @@ namespace com.espertech.esper.compiler.@internal.util
             string providerClassName,
             IList<CodegenClass> classes,
             CompilableItemPostCompileLatch postCompileLatch,
-            ICollection<Type> classesProvided)
+            ICollection<Artifact> artifactsProvided)
         {
             ProviderClassName = providerClassName;
             Classes = classes;
             PostCompileLatch = postCompileLatch;
-            ClassesProvided = new Dictionary<string, Type>();
-            foreach (var classProvided in classesProvided) {
-                ClassesProvided[classProvided.FullName] = classProvided;
-            }
+            ArtifactsProvided = artifactsProvided;
         }
 
         public string ProviderClassName { get; }
@@ -36,6 +34,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public CompilableItemPostCompileLatch PostCompileLatch { get; }
 
-        public IDictionary<string, Type> ClassesProvided { get; }
+        public ICollection<Artifact> ArtifactsProvided { get; }
     }
 } // end of namespace

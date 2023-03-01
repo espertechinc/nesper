@@ -19,25 +19,9 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionrun.suite.infra
 {
     [TestFixture]
-    public class TestSuiteInfraNWTablePerf
+    public class TestSuiteInfraNWTablePerf : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] {typeof(SupportBean)}) {
                 configuration.Common.AddEventType(clazz);

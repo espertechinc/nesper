@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@Hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as S0 where S1.P10 = P00) from SupportBean_S1 as S1",
                     path);
                 var subq = SupportQueryPlanIndexHook.GetAndResetSubqueries()[0];
-                Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subq.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordFullTableScanLookupStrategyFactoryForge), subq.TableLookupStrategy);
 
                 // test named window
                 env.CompileDeploy("create window S0Window#keepall as SupportBean_S0", path);
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@Hint('exclude_plan(true)') on SupportBean_S1 as S1 select * from S0Window as S0 where S1.P10 = S0.P00",
                     path);
                 var onExpr = SupportQueryPlanIndexHook.GetAndResetOnExpr();
-                Assert.AreEqual(typeof(SubordWMatchExprLookupStrategyAllFilteredForge).Name, onExpr.StrategyName);
+                Assert.AreEqual(nameof(SubordWMatchExprLookupStrategyAllFilteredForge), onExpr.StrategyName);
 
                 env.UndeployAll();
             }

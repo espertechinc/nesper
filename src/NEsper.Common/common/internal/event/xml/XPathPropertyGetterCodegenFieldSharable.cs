@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     "Failed to obtain xpath property getter for property '" +
                     propertyName +
                     "', expected " +
-                    typeof(XPathPropertyGetter).Name +
+                    nameof(XPathPropertyGetter) +
                     " but received " +
                     getter);
             }

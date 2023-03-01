@@ -7,24 +7,28 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.core
 {
-	public class ClassProvidedImportClassLoader : ClassLoader
+	public class ClassProvidedImportTypeResolver : ArtifactTypeResolver
 	{
-		private readonly ClassLoader _parent;
 		private readonly PathRegistry<string, ClassProvided> _pathRegistry;
 		private NameAndModule[] _imported;
 
-		public ClassProvidedImportClassLoader(
-			ClassLoader parent,
+		public ClassProvidedImportTypeResolver(
+			IArtifactRepository artifactRepository,
+			TypeResolver parent,
 			PathRegistry<string, ClassProvided> pathRegistry)
+			: base(artifactRepository, parent)
 		{
-			_parent = parent;
 			_pathRegistry = pathRegistry;
 		}
 
@@ -33,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 			set => _imported = value;
 		}
 
-		public Type GetClass(string typeName)
+		public override Type ResolveType(
+			string typeName,
+			bool resolve)
 		{
 			if (typeName == null) {
 				throw new ArgumentNullException(nameof(typeName));
@@ -50,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 				}
 			}
 
-			return _parent.GetClass(typeName);
+			return base.ResolveType(typeName, resolve);
 		}
 	}
 } // end of namespace

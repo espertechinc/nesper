@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 							"IntBoxed",
 							"ShortBoxed"),
 						"result");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name).AddView("length", Expressions.Constant(1000)));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(1000)));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 				Assert.AreEqual(epl, model.ToEPL());
 

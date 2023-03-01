@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.serde;
@@ -94,7 +95,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // imports
             var importServiceCompileTime = MakeImportService(configuration);
-            var classLoaderParent = new ParentClassLoader(importServiceCompileTime.ClassLoader);
+            var classLoaderParent = new ParentTypeResolver(importServiceCompileTime.TypeResolver);
             var container = importServiceCompileTime.Container;
 
             // resolve pre-configured bean event types, make bean-stem service
@@ -214,7 +215,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     container,
                     moduleTypes,
                     beanEventTypeFactoryPrivate,
-                    provider.ClassLoader,
+                    provider.TypeResolver,
                     EventTypeFactoryImpl.GetInstance(container),
                     beanEventTypeStemService,
                     eventTypeResolver,
@@ -314,8 +315,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 // initialize inlined classes
                 var moduleClassProvideds = new Dictionary<string, ClassProvided>();
                 var classProvidedCollector = new ClassProvidedCollectorCompileTime(moduleClassProvideds, classLoaderParent);
+                var artifactFactory = container
+                    .ArtifactRepositoryManager()
+                    .DefaultRepository;
                 try {
-                    provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollector));
+                    provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollector, artifactFactory));
                 } catch (Exception e) {
                     throw new EPException(e);
                 }
@@ -493,7 +497,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var targetHA = configuration.GetType().Name.EndsWith("ConfigurationHA");
             var serdeEventTypeRegistry = new SerdeEventTypeCompileTimeRegistryImpl(targetHA);
             SerdeCompileTimeResolver serdeResolver = targetHA
-                ? MakeSerdeResolver(configuration.Compiler.Serde, configuration.Common.TransientConfiguration)
+                ? MakeSerdeResolver(container, configuration.Compiler.Serde, configuration.Common.TransientConfiguration)
                 : SerdeCompileTimeResolverNonHA.INSTANCE;
 
             return new ModuleCompileTimeServices(
@@ -603,6 +607,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 
         private static SerdeCompileTimeResolver MakeSerdeResolver(
+            IContainer container,
             ConfigurationCompilerSerde config,
             IDictionary<string, object> transientConfiguration)
         {
@@ -614,7 +619,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     try {
                         var instance = TypeHelper.Instantiate<SerdeProviderFactory>(
                             factory,
-                            TransientConfigurationResolver.ResolveClassForNameProvider(transientConfiguration));
+                            TransientConfigurationResolver.ResolveTypeResolver(container, transientConfiguration));
                         var provider = instance.GetProvider(context);
                         if (provider == null) {
                             throw new ConfigurationException("Binding provider factory '" + factory + "' returned a null value");

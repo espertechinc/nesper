@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // test local class and auto-import
                 stmtTextOne = "@Name('s0') insert into " +
-                              typeof(EPLInsertIntoPopulateUnderlying).Name +
+                              nameof(EPLInsertIntoPopulateUnderlying) +
                               "$MyLocalTarget select 1 as Value from SupportBean_N";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
                 env.SendEventBean(n1);
@@ -546,7 +546,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    typeof(SupportBeanCtorOne).Name +
+                    nameof(SupportBeanCtorOne) +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanCtorOne).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.Int32'");
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    typeof(SupportBeanReadOnly).Name +
+                    nameof(SupportBeanReadOnly) +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly select 'a' as geom from SupportBean]");
@@ -616,7 +616,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    typeof(SupportBeanReadOnly).Name +
+                    nameof(SupportBeanReadOnly) +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]");

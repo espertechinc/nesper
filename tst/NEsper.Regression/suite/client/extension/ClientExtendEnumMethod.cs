@@ -30,17 +30,94 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ClientExtendEnumScalarNoParamMedian());
-            execs.Add(new ClientExtendEnumEventLambdaMedian());
-            execs.Add(new ClientExtendEnumScalarLambdaMedian());
-            execs.Add(new ClientExtendEnumScalarNoLambdaWithParams());
-            execs.Add(new ClientExtendEnumScalarEarlyExit());
-            execs.Add(new ClientExtendEnumPredicateReturnEvents());
-            execs.Add(new ClientExtendEnumPredicateReturnSingleEvent());
-            execs.Add(new ClientExtendEnumTwoLambdaParameters());
-            execs.Add(new ClientExtendEnumLambdaEventInputValueAndIndex());
-            execs.Add(new ClientExtendEnumLambdaScalarInputValueAndIndex());
+            WithScalarNoParamMedian(execs);
+            WithEventLambdaMedian(execs);
+            WithScalarLambdaMedian(execs);
+            WithScalarNoLambdaWithParams(execs);
+            WithScalarEarlyExit(execs);
+            WithPredicateReturnEvents(execs);
+            WithPredicateReturnSingleEvent(execs);
+            WithTwoLambdaParameters(execs);
+            WithLambdaEventInputValueAndIndex(execs);
+            WithLambdaScalarInputValueAndIndex(execs);
+            WithLambdaScalarStateAndValue(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLambdaScalarStateAndValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientExtendEnumLambdaScalarStateAndValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLambdaScalarInputValueAndIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumLambdaScalarInputValueAndIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLambdaEventInputValueAndIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumLambdaEventInputValueAndIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoLambdaParameters(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumTwoLambdaParameters());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPredicateReturnSingleEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumPredicateReturnSingleEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPredicateReturnEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumPredicateReturnEvents());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarEarlyExit(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumScalarEarlyExit());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarNoLambdaWithParams(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumScalarNoLambdaWithParams());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarLambdaMedian(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumScalarLambdaMedian());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventLambdaMedian(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumEventLambdaMedian());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarNoParamMedian(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendEnumScalarNoParamMedian());
             return execs;
         }
 
@@ -65,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeString(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] {expected});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] { expected });
             }
         }
 
@@ -93,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] {expected});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] { expected });
             }
         }
 
@@ -247,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "Intvals.enumPlugInEarlyExit() as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
+                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(int?) });
 
                 SendAssert(env, fields, 12, "12,1,1");
                 SendAssert(env, fields, 10, "5,5,5");
@@ -262,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {expected});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
             }
         }
 
@@ -275,7 +352,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "Intvals.enumPlugInOne(10, 20) as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(int?)});
+                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(int?) });
 
                 SendAssert(env, fields, 11, "1,2,11,3");
                 SendAssert(env, fields, 0, "");
@@ -291,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {expected});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
             }
         }
 
@@ -306,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "Strvals.enumPlugInMedian((v, i, s) => extractNum(v) + i*10+s*100) as c2 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?), typeof(double?), typeof(double?)});
+                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(double?), typeof(double?), typeof(double?) });
 
                 SendAssert(env, fields, 3d, 18d, 418d, "E2,E1,E5,E4");
                 SendAssert(env, fields, null, null, null, "E1");
@@ -325,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeString(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {c0, c1, c2});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { c0, c1, c2 });
             }
         }
 
@@ -339,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                           "from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
+                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(double?) });
 
                 SendAssert(env, fields, 11d, "E1,12", "E2,11", "E3,2");
                 SendAssert(env, fields, null, null);
@@ -356,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 params string[] values)
             {
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value(values));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {expected});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
             }
         }
 
@@ -368,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 var eplFragment = "@Name('s0') select Intvals.enumPlugInMedian() as val0 from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});
+                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(double?) });
 
                 SendAssert(env, fields, 2d, "1,2,2,4");
                 SendAssert(env, fields, 2d, "1,2,2,10");
@@ -392,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string intcsv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(intcsv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {expected});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
             }
         }
 
@@ -449,8 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             private List<int> list = new List<int>();
 
-            public object State
-            {
+            public object State {
                 get {
                     list.Sort();
                     // get count of scores
@@ -463,10 +539,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     if (totalElements % 2 == 0) {
                         var sumOfMiddleElements = list[totalElements / 2] + list[totalElements / 2 - 1];
                         // calculate average of middle elements
-                        return ((double) sumOfMiddleElements) / 2;
+                        return ((double)sumOfMiddleElements) / 2;
                     }
 
-                    return (double) list[totalElements / 2];
+                    return (double)list[totalElements / 2];
                 }
             }
 
@@ -474,7 +550,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             {
                 list.Add(value);
             }
-            
+
             public void SetParameter(
                 int parameterNumber,
                 object value)
@@ -561,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             }
 
             public object State => sum;
-            
+
             public bool IsCompleted => false;
         }
 
@@ -601,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public bool IsCompleted => sum >= 10;
 
             public object State => sum;
-            
+
             public void SetParameter(
                 int parameterNumber,
                 object value)
@@ -705,7 +781,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             }
 
             public bool IsCompleted => _event != null;
-            
+
             public void SetParameter(
                 int parameterNumber,
                 object value)
@@ -749,7 +825,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 object v1,
                 object v2)
             {
-                state.Add((int?) v1, (int?) v2);
+                state.Add((int?)v1, (int?)v2);
             }
 
             void Add(
@@ -828,7 +904,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             int count;
 
-            public void Increment() {
+            public void Increment()
+            {
                 count++;
             }
 
@@ -884,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 int parameterNumber,
                 object value)
             {
-                this._result = (string) value;
+                this._result = (string)value;
             }
 
             public string Result => _result;
@@ -898,7 +975,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             }
 
             public object State => _result;
-            
+
             public bool IsCompleted => false;
         }
     }

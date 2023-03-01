@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 try {
                     _functionResolver = TypeHelper.Instantiate<IXPathFunctionResolver>(
                         configurationEventTypeXMLDOM.XPathFunctionResolver,
-                        ClassForNameProviderDefault.INSTANCE);
+                        TypeResolverDefault.INSTANCE);
                 }
                 catch (ClassInstantiationException ex) {
                     throw new ConfigurationException(
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 try {
                     _variableResolver = TypeHelper.Instantiate<IXPathVariableResolver>(
                         configurationEventTypeXMLDOM.XPathVariableResolver,
-                        ClassForNameProviderDefault.INSTANCE);
+                        TypeResolverDefault.INSTANCE);
                 }
                 catch (ClassInstantiationException ex) {
                     throw new ConfigurationException(

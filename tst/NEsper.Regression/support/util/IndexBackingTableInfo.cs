@@ -23,13 +23,13 @@ namespace com.espertech.esper.regressionlib.support.util
             SupportQueryPlanIndexHook.ResetGetClassName() +
             "')";
 
-        public static readonly string BACKING_UNINDEXED = typeof(UnindexedEventTable).Name;
+        public static readonly string BACKING_UNINDEXED = nameof(UnindexedEventTable);
 
-        public static readonly string BACKING_SINGLE_UNIQUE = typeof(PropertyHashedEventTableUnique).Name;
-        public static readonly string BACKING_SINGLE_DUPS = typeof(PropertyHashedEventTable).Name;
-        public static readonly string BACKING_MULTI_UNIQUE = typeof(PropertyHashedEventTableUnique).Name;
-        public static readonly string BACKING_MULTI_DUPS = typeof(PropertyHashedEventTable).Name;
-        public static readonly string BACKING_SORTED = typeof(PropertySortedEventTable).Name;
-        public static readonly string BACKING_COMPOSITE = typeof(PropertyCompositeEventTable).Name;
+        public static readonly string BACKING_SINGLE_UNIQUE = nameof(PropertyHashedEventTableUnique);
+        public static readonly string BACKING_SINGLE_DUPS = nameof(PropertyHashedEventTable);
+        public static readonly string BACKING_MULTI_UNIQUE = nameof(PropertyHashedEventTableUnique);
+        public static readonly string BACKING_MULTI_DUPS = nameof(PropertyHashedEventTable);
+        public static readonly string BACKING_SORTED = nameof(PropertySortedEventTable);
+        public static readonly string BACKING_COMPOSITE = nameof(PropertyCompositeEventTable);
     }
 } // end of namespace

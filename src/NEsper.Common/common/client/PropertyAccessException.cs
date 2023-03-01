@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.client
         public static PropertyAccessException NotAValidProperty(string propertyExpression)
         {
             return new PropertyAccessException(
-                string.Format("Property named '{0}' is not a valid property name for this type", propertyExpression));
+                $"Property named '{propertyExpression}' is not a valid property name for this type");
         }
 
         /// <summary>

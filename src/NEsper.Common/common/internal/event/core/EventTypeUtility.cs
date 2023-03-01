@@ -692,7 +692,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 throw new ExprValidationException("Type '" + typeName + "' is not a primitive type");
             }
 
-            var plain = TypeHelper.GetTypeForSimpleName(typeName, importService.ClassForNameProvider, true);
+            var plain = TypeHelper.GetTypeForSimpleName(typeName, importService.TypeResolver, true);
             if (plain != null) {
                 return TypeHelper.GetArrayType(plain, classIdent.ArrayDimensions);
             }
@@ -700,7 +700,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             // try imports first
             Type resolved = null;
             try {
-                resolved = importService.ResolveClass(typeName, false, ExtensionClassEmpty.INSTANCE);
+                resolved = importService.ResolveType(typeName, false, ExtensionClassEmpty.INSTANCE);
             }
             catch (ImportException) {
                 // expected
@@ -709,7 +709,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             // resolve from classpath when not found
             if (resolved == null) {
                 try {
-                    resolved = TypeHelper.GetClassForName(typeName, importService.ClassForNameProvider);
+                    resolved = TypeHelper.GetClassForName(typeName, importService.TypeResolver);
                 }
                 catch (TypeLoadException) {
                     // expected
@@ -2361,7 +2361,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
             } else if (spec.AssignedType == AssignedType.XML) {
                 if (!spec.Columns.IsEmpty()) {
-                    throw new ExprValidationException("Create-XML-Schema does not allow specifying columns, use @" + typeof(XMLSchemaFieldAttribute).Name + " instead");
+                    throw new ExprValidationException("Create-XML-Schema does not allow specifying columns, use @" + nameof(XMLSchemaFieldAttribute) + " instead");
                 }
                 if (!spec.CopyFrom.IsEmpty()) {
                     throw new ExprValidationException("Create-XML-Schema does not allow copy-from");

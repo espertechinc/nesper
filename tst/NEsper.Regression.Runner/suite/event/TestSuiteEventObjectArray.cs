@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.objectarray;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -26,55 +27,43 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventObjectArray
+    public class TestSuiteEventObjectArray : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
+        public TestSuiteEventObjectArray() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayCore()
         {
-            RegressionRunner.Run(session, EventObjectArrayCore.Executions());
+            RegressionRunner.Run(_session, EventObjectArrayCore.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayNestedMap()
         {
-            RegressionRunner.Run(session, new EventObjectArrayNestedMap());
+            RegressionRunner.Run(_session, new EventObjectArrayNestedMap());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayInheritanceConfigInit()
         {
-            RegressionRunner.Run(session, new EventObjectArrayInheritanceConfigInit());
+            RegressionRunner.Run(_session, new EventObjectArrayInheritanceConfigInit());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayEventNestedPono()
         {
-            RegressionRunner.Run(session, new EventObjectArrayEventNestedPono());
+            RegressionRunner.Run(_session, new EventObjectArrayEventNestedPono());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayEventNested()
         {
-            RegressionRunner.Run(session, EventObjectArrayEventNested.Executions());
+            RegressionRunner.Run(_session, EventObjectArrayEventNested.Executions());
         }
 
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] { typeof(SupportBean) })
             {

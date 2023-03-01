@@ -18,33 +18,33 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.@event.map;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
+using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventMapWConfig
+    public class TestSuiteEventMapWConfig : AbstractTestBase
     {
         [Test, RunInApplicationDomain]
         public void TestEventMapNestedConfigRuntime()
         {
-            RegressionSession session = RegressionRunner.Session();
-            RegressionRunner.Run(session, new EventMapNestedConfigRuntime());
-            session.Dispose();
+            RegressionRunner.Run(_session, new EventMapNestedConfigRuntime());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapInheritanceRuntime()
         {
-            RegressionSession session = RegressionRunner.Session();
-            RegressionRunner.Run(session, new EventMapInheritanceRuntime());
-            session.Dispose();
+            RegressionRunner.Run(_session, new EventMapInheritanceRuntime());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
+            var runtimeProvider = new EPRuntimeProvider();
+            
             // supertype not found
             TryInvalidConfigure(
                 config => {
@@ -84,7 +84,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
             string expected)
         {
             SupportMessageAssertUtil.TryInvalidConfigurationCompileAndRuntime(
-                SupportConfigFactory.GetConfiguration(),
+                new EPRuntimeProvider(),
+                SupportConfigFactory.GetConfiguration(_session.Container),
                 configurer,
                 expected);
         }

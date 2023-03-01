@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtMgmt : RegressionExecution
     {
-        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
+        private static readonly string EVENT_NAME = nameof(SupportMarketDataBean);
 
         private static readonly string[] EPL = {
             "select * from " + EVENT_NAME + " where Symbol = 'IBM'",

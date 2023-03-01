@@ -26,10 +26,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void SetUp()
         {
             lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                container.RWLockManager());
+                Container.RWLockManager());
 
             eventType = SupportEventTypeFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateBeanType(typeof(SupportBean));
             parameters = new ArrayDeque<FilterValueSetParam>();
 

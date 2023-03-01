@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(typeof(ExprEvalStreamNumEvent).Name);
+            writer.Write(nameof(ExprEvalStreamNumEvent));
         }
     }
 } // end of namespace

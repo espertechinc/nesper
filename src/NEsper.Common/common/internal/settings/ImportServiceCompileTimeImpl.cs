@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.settings
 
 			Type clazz;
 			try {
-				clazz = ClassForNameProvider.ClassForName(pair.ClassName);
+				clazz = TypeResolver.ResolveType(pair.ClassName);
 			}
 			catch (TypeLoadException ex) {
 				throw new ImportException("Could not load single-row function class by name '" + pair.ClassName + "'", ex);
@@ -448,7 +448,7 @@ namespace com.espertech.esper.common.@internal.settings
 
 				className = desc.ForgeClassName;
 				try {
-					forgeClass = ClassForNameProvider.ClassForName(className);
+					forgeClass = TypeResolver.ResolveType(className);
 				}
 				catch (TypeLoadException ex) {
 					throw new ImportException("Could not load aggregation factory class by name '" + className + "'", ex);
@@ -471,7 +471,7 @@ namespace com.espertech.esper.common.@internal.settings
 			}
 
 			if (!(@object is AggregationFunctionForge)) {
-				throw new ImportException("Class by name '" + className + "' does not implement the " + typeof(AggregationFunctionForge).Name + " interface");
+				throw new ImportException("Class by name '" + className + "' does not implement the " + nameof(AggregationFunctionForge) + " interface");
 			}
 
 			return (AggregationFunctionForge) @object;
@@ -536,7 +536,7 @@ namespace com.espertech.esper.common.@internal.settings
 
 			Type clazz;
 			try {
-				clazz = ClassForNameProvider.ClassForName(dtm.ForgeClassName);
+				clazz = TypeResolver.ResolveType(dtm.ForgeClassName);
 			}
 			catch (TypeLoadException ex) {
 				throw new ImportException("Could not load date-time-method forge class by name '" + dtm.ForgeClassName + "'", ex);
@@ -558,7 +558,7 @@ namespace com.espertech.esper.common.@internal.settings
 
 			Type clazz;
 			try {
-				clazz = ClassForNameProvider.ClassForName(enumMethod.ForgeClassName);
+				clazz = TypeResolver.ResolveType(enumMethod.ForgeClassName);
 			}
 			catch (TypeLoadException ex) {
 				throw new ImportException("Could not load enum-method forge class by name '" + enumMethod.ForgeClassName + "'", ex);

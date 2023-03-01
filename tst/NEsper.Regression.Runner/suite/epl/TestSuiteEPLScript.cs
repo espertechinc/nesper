@@ -21,23 +21,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLScript
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),

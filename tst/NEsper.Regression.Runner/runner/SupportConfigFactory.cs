@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.support.util;
 
 using NEsper.Scripting.ClearScript;
@@ -24,10 +25,8 @@ namespace com.espertech.esper.regressionrun.runner
         private const string TEST_CONFIG_FACTORY_CLASS = "CONFIGFACTORY_CLASS";
         private const string SYSTEM_PROPERTY_LOG_CODE = "esper_logcode";
 
-        public static Configuration GetConfiguration()
+        public static Configuration GetConfiguration(IContainer container)
         {
-            var container = SupportContainer.Reset();
-
             Configuration config;
             string configFactoryClass = Environment.GetEnvironmentVariable(TEST_CONFIG_FACTORY_CLASS);
             if (configFactoryClass != null)
@@ -50,7 +49,7 @@ namespace com.espertech.esper.regressionrun.runner
             {
                 config = new Configuration(container);
 
-                config.Compiler.Logging.AuditDirectory = @"E:\Logs\NEsper\NEsper.Regression.Review\generated";
+                //config.Compiler.Logging.AuditDirectory = @"E:\Logs\NEsper\NEsper.Regression.Review\generated";
 
 #if NETFRAMEWORK
                 config.Common.Scripting.AddEngine(typeof(ScriptingEngineJScript));
@@ -64,20 +63,6 @@ namespace com.espertech.esper.regressionrun.runner
                 
                 // Compiler
                 config.Compiler.ByteCode.AttachEPL = true;
-
-                if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
-                    if (Directory.Exists(config.Compiler.Logging.AuditDirectory)) {
-                        foreach (var subDirectory in Directory.GetDirectories(config.Compiler.Logging.AuditDirectory)) {
-                            var subDirectoryName = Path.GetFileName(subDirectory);
-                            if (subDirectoryName.StartsWith("generation")) {
-                                Directory.Delete(subDirectory, true);
-                            }
-                        }
-                    }
-                    else {
-                        Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
-                    }
-                }
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
                 {

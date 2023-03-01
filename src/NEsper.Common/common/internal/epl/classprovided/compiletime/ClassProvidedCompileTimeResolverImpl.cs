@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.hook.singlerowfunc;
@@ -132,17 +133,15 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			return _path.IsEmpty() && _locals.Classes.IsEmpty();
 		}
 
-		public void AddTo(ICollection<Type> types)
+		public void AddTo(ICollection<Artifact> artifacts)
 		{
-			_path.Traverse(cp => types.AddAll(cp.Types));
+			_path.Traverse(cp => artifacts.Add(cp.Artifact));
 		}
 
-		public void RemoveFrom(ICollection<Type> types)
+		public void RemoveFrom(ICollection<Artifact> artifacts)
 		{
 			Consumer<ClassProvided> classProvidedByteCodeRemover = item => {
-				foreach (var itemType in item.Types) {
-					types.Remove(itemType);
-				}
+				artifacts.Remove(item.Artifact);
 			};
 			_path.Traverse(classProvidedByteCodeRemover);
 		}

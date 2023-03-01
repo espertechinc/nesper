@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Runtime.VariableService.SetVariableValue(null, "var_output_limit", 3L);
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create().Add(Expressions.CountStar(), "cnt");
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model.OutputLimitClause = OutputLimitClause.Create(OutputLimitSelector.LAST, "var_output_limit");
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 

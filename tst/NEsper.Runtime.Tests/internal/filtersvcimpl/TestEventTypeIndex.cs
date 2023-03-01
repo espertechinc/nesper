@@ -36,7 +36,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             SupportBean testBean = new SupportBean();
             testEventBean = SupportEventBeanFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateObject(testBean);
             testEventType = testEventBean.EventType;
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             handleSetNode.Add(filterCallback);
 
             testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant(
-                container.RWLockManager()));
+                Container.RWLockManager()));
             testIndex.Add(testEventType, handleSetNode);
         }
 

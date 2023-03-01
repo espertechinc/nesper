@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.client.annotation
         /// </returns>
         public override string ToString()
         {
-            return string.Format("@Tag(Name=\"{0}\", Value=\"{1}\")", Name, Value);
+            return $"@Tag(Name=\"{Name}\", Value=\"{Value}\")";
         }
     }
 } // end of namespace

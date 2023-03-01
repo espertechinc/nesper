@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.settings;
@@ -26,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
 	    bool IsEmpty();
 
-	    void AddTo(ICollection<Type> types);
+	    void AddTo(ICollection<Artifact> artifacts);
 
-	    void RemoveFrom(ICollection<Type> types);
+	    void RemoveFrom(ICollection<Artifact> artifacts);
 	}
 } // end of namespace

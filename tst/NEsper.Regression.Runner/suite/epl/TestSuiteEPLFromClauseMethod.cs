@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.suite.epl.fromclausemethod;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -24,43 +25,31 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLFromClauseMethod
+    public class TestSuiteEPLFromClauseMethod : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
+        public TestSuiteEPLFromClauseMethod() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethod()
         {
-            RegressionRunner.Run(session, EPLFromClauseMethod.Executions());
+            RegressionRunner.Run(_session, EPLFromClauseMethod.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodNStream()
         {
-            RegressionRunner.Run(session, EPLFromClauseMethodNStream.Executions());
+            RegressionRunner.Run(_session, EPLFromClauseMethodNStream.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodOuterNStream()
         {
-            RegressionRunner.Run(session, EPLFromClauseMethodOuterNStream.Executions());
+            RegressionRunner.Run(_session, EPLFromClauseMethodOuterNStream.Executions());
         }
 
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{
                 typeof(SupportBean),

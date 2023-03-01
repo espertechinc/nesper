@@ -230,7 +230,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     var rootNode = new ElementPathNode(null, complexActualName);
 
                     if (Log.IsDebugEnabled) {
-                        Log.Debug(string.Format("Processing component {0}", complexActualName));
+                        Log.Debug($"Processing component {complexActualName}");
                     }
 
                     var complexElement = Process(

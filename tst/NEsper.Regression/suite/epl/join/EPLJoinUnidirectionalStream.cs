@@ -888,8 +888,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol", "Volume", "TheString", "IntPrimitive");
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name).Unidirectional(true));
-                model.FromClause.Add(FilterStream.Create(typeof(SupportBean).Name).AddView("keepall"));
+                    FilterStream.Create(nameof(SupportMarketDataBean)).Unidirectional(true));
+                model.FromClause.Add(FilterStream.Create(nameof(SupportBean)).AddView("keepall"));
                 model.FromClause.Add(OuterJoinQualifier.Create("TheString", OuterJoinType.FULL, "Symbol"));
 
                 var stmtText = "select Symbol, Volume, TheString, IntPrimitive " +

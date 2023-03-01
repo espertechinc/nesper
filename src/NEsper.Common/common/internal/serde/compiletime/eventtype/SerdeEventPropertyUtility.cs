@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 				var functions = new Func<DataInputOutputSerdeForgeParameterizedVars, CodegenExpression>[2];
 				functions[0] = vars => Constant(keys);
 				functions[1] = vars => DataInputOutputSerdeForgeExtensions.CodegenArray(serdes, vars.Method, vars.Scope, vars.OptionalEventTypeResolver);
-				forge = new DataInputOutputSerdeForgeParameterized(typeof(DIOMapPropertySerde).Name, functions);
+				forge = new DataInputOutputSerdeForgeParameterized(nameof(DIOMapPropertySerde), functions);
 				return new SerdeEventPropertyDesc(forge, nestedTypes);
 			}
 			else {

@@ -6,12 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
     public interface EPModuleClassProvidedInitServices
     {
+        Artifact ResolveArtifact(string artifactName);
+        
         ClassProvidedCollector ClassProvidedCollector { get; }
     }
 } // end of namespace

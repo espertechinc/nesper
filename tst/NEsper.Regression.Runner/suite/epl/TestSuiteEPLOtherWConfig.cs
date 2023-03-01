@@ -13,48 +13,49 @@ using com.espertech.esper.regressionlib.suite.epl.other;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLOtherWConfig
+    public class TestSuiteEPLOtherWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEPLOtherIStreamRStreamConfigSelectorIRStream()
         {
-            var session = RegressionRunner.Session();
-            session.Configuration.Compiler.StreamSelection.DefaultStreamSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
-            session.Configuration.Common.AddEventType(typeof(SupportBean));
-            RegressionRunner.Run(session, new EPLOtherIStreamRStreamConfigSelectorIRStream());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                session.Configuration.Compiler.StreamSelection.DefaultStreamSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
+                session.Configuration.Common.AddEventType(typeof(SupportBean));
+                RegressionRunner.Run(session, new EPLOtherIStreamRStreamConfigSelectorIRStream());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLOtherIStreamRStreamConfigSelectorRStream()
         {
-            var session = RegressionRunner.Session();
-            session.Configuration.Compiler.StreamSelection.DefaultStreamSelector = StreamSelector.RSTREAM_ONLY;
-            session.Configuration.Common.AddEventType(typeof(SupportBean));
-            RegressionRunner.Run(session, new EPLOtherIStreamRStreamConfigSelectorRStream());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                session.Configuration.Compiler.StreamSelection.DefaultStreamSelector = StreamSelector.RSTREAM_ONLY;
+                session.Configuration.Common.AddEventType(typeof(SupportBean));
+                RegressionRunner.Run(session, new EPLOtherIStreamRStreamConfigSelectorRStream());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLOtherStaticFunctionsNoUDFCache()
         {
-            var session = RegressionRunner.Session();
-            session.Configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
-            session.Configuration.Compiler.AddPlugInSingleRowFunction(
-                "sleepme",
-                typeof(SupportStaticMethodLib),
-                "Sleep",
-                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.ENABLED);
-            session.Configuration.Compiler.Expression.UdfCache = false;
-            session.Configuration.Common.AddEventType(typeof(SupportTemperatureBean));
-            RegressionRunner.Run(session, new EPLOtherStaticFunctionsNoUDFCache());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                session.Configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
+                session.Configuration.Compiler.AddPlugInSingleRowFunction(
+                    "sleepme",
+                    typeof(SupportStaticMethodLib),
+                    "Sleep",
+                    ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.ENABLED);
+                session.Configuration.Compiler.Expression.UdfCache = false;
+                session.Configuration.Common.AddEventType(typeof(SupportTemperatureBean));
+                RegressionRunner.Run(session, new EPLOtherStaticFunctionsNoUDFCache());
+            }
         }
     }
 } // end of namespace

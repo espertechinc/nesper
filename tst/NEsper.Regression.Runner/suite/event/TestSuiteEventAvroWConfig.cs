@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.@event.avro;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Extensions;
 
@@ -25,12 +26,12 @@ using static NEsper.Avro.Extensions.TypeBuilder;
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventAvroWConfig
+    public class TestSuiteEventAvroWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEventAvroHook()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
 
             foreach (Type clazz in new Type[] {
                 typeof(SupportBean),
@@ -68,8 +69,6 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.AddEventTypeAvro("MyEventWSchema", new ConfigurationCommonEventTypeAvro(schemaMyEventWSchema));
 
             RegressionRunner.Run(session, EventAvroHook.Executions());
-
-            session.Dispose();
         }
     }
 } // end of namespace

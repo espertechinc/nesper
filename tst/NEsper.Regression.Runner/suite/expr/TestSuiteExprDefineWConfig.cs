@@ -10,19 +10,20 @@ using com.espertech.esper.regressionlib.suite.expr.define;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.expr
 {
     [TestFixture]
-    public class TestSuiteExprDefineWConfig
+    public class TestSuiteExprDefineWConfig : AbstractTestContainer
     {
-        private static void Run(
+        private void Run(
             int? configuredCacheSize,
             ExprDefineConfigurations exec)
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
 
             var configuration = session.Configuration;
             if (configuredCacheSize != null) {
@@ -36,7 +37,6 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Compiler.AddPlugInSingleRowFunction("alwaysTrue", typeof(SupportStaticMethodLib), "AlwaysTrue");
 
             RegressionRunner.Run(session, exec);
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

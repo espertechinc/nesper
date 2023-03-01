@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "{IntPrimitive, IntPrimitive * 2, IntPrimitive * 3} as DynCalcArr," +
 				          "{LongBoxed, DoubleBoxed * 2, TheString || 'a'} as DynCalcArrNulls" +
 				          " from " +
-				          typeof(SupportBean).Name;
+				          nameof(SupportBean);
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var bean = new SupportBean("a", 10);
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "{1} as OneEleArray, " +
 				          "{1,2,3} as IntArray " +
 				          "from " +
-				          typeof(SupportBean).Name;
+				          nameof(SupportBean);
 				var model = new EPStatementObjectModel();
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 				model.SelectClause = SelectClause.Create()
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.Add(Expressions.Array().Add(Expressions.Constant(1)), "OneEleArray")
 					.Add(Expressions.Array().Add(Expressions.Constant(1)).Add(2).Add(3), "IntArray");
 
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 				Assert.AreEqual(epl, model.ToEPL());
 				env.CompileDeploy(model).AddListener("s0");
 

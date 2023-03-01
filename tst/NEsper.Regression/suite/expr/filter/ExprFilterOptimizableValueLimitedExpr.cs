@@ -514,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             string typeName,
             string filters)
         {
-            string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+            string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
             string epl = hook + "select * from " + typeName + "(" + filters + ") as me";
             SupportFilterPlanHook.Reset();
             env.Compile(epl, path);

@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [Test, RunInApplicationDomain]
         public void TestFilterService()
         {
-            var rwLockManager = container.RWLockManager();
+            var rwLockManager = Container.RWLockManager();
             RunAssertionAddRemoveFilter(new FilterServiceLockCoarse(rwLockManager, -1));
             RunAssertionAddRemoveFilter(new FilterServiceLockFine(rwLockManager, -1));
         }

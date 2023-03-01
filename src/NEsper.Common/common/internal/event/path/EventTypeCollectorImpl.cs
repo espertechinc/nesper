@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly IContainer _container;
         private readonly IDictionary<string, EventType> _moduleEventTypes;
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
-        private readonly ClassLoader _classLoader;
+        private readonly TypeResolver typeResolver;
         private readonly BeanEventTypeStemService _beanEventTypeStemService;
         private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
         private readonly EventTypeAvroHandler _eventTypeAvroHandler;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.path
             IContainer container,
             IDictionary<string, EventType> moduleEventTypes,
             BeanEventTypeFactory beanEventTypeFactory,
-            ClassLoader classLoader,
+            TypeResolver typeResolver,
             EventTypeFactory eventTypeFactory,
             BeanEventTypeStemService beanEventTypeStemService,
             EventTypeNameResolver eventTypeNameResolver,
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.path
             _container = container;
             _moduleEventTypes = moduleEventTypes;
             _beanEventTypeFactory = beanEventTypeFactory;
-            _classLoader = classLoader;
+            this.typeResolver = typeResolver;
             _eventTypeFactory = eventTypeFactory;
             _beanEventTypeStemService = beanEventTypeStemService;
             _eventTypeNameResolver = eventTypeNameResolver;
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.path
                 _beanEventTypeFactory,
                 _eventTypeNameResolver,
                 detail);
-            eventType.Initialize(_classLoader);
+            eventType.Initialize(typeResolver);
             HandleRegister(eventType);
         }
 

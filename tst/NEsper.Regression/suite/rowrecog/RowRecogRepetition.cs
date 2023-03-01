@@ -783,15 +783,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.UndeployAll();
 
             var spec = SupportStatementCompileHook.GetSpecs()[0];
-            RowRecogExprNode expanded = null;
-            try {
-                expanded = RowRecogPatternExpandUtil.Expand(
-                    spec.Raw.MatchRecognizeSpec.Pattern,
-                    null);
-            }
-            catch (ExprValidationException e) {
-                Assert.Fail(e.Message);
-            }
+            RowRecogExprNode expanded = RowRecogPatternExpandUtil.Expand(
+                spec.Raw.MatchRecognizeSpec.Pattern, null);
 
             var writer = new StringWriter();
             expanded.ToEPL(writer, RowRecogExprNodePrecedenceEnum.MINIMUM);

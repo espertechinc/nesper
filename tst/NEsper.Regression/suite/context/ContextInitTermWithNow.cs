@@ -21,9 +21,30 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextStartStopWNow());
-            execs.Add(new ContextInitTermWithPattern());
+            WithStartStopWNow(execs);
+            WithInitTermWithPattern(execs);
+            WithInitTermWNowInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermWNowInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextInitTermWNowInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermWithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartStopWNow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartStopWNow());
             return execs;
         }
 
@@ -37,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                   "as start @now end after 10 seconds";
                 env.CompileDeploy(contextExpr, path);
 
-                string[] fields = {"cnt"};
+                string[] fields = { "cnt" };
                 var streamExpr = "@Name('s0') context MyContext " +
                                  "select count(*) as cnt from SupportBean output last when terminated";
                 env.CompileDeploy(streamExpr, path).AddListener("s0");
@@ -56,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {3L});
+                    new object[] { 3L });
 
                 env.Milestone(2);
 
@@ -67,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {1L});
+                    new object[] { 1L });
 
                 env.Milestone(3);
 
@@ -75,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {0L});
+                    new object[] { 0L });
 
                 env.EplToModelCompileDeploy(streamExpr, path);
 
@@ -96,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                   "initiated by @Now and pattern [every timer:interval(10)] terminated after 10 sec";
                 env.CompileDeploy(contextExpr, path);
 
-                string[] fields = {"cnt"};
+                string[] fields = { "cnt" };
                 var streamExpr = "@Name('s0') context MyContext " +
                                  "select count(*) as cnt from SupportBean output last when terminated";
                 env.CompileDeploy(streamExpr, path).AddListener("s0");
@@ -117,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {3L});
+                    new object[] { 3L });
 
                 env.Milestone(2);
 
@@ -134,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {2L});
+                    new object[] { 2L });
 
                 env.Milestone(4);
 
@@ -142,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {0L});
+                    new object[] { 0L });
 
                 env.Milestone(5);
 
@@ -152,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {1L});
+                    new object[] { 1L });
 
                 env.EplToModelCompileDeploy(streamExpr, path);
 

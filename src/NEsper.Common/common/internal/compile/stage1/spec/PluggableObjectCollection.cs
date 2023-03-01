@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             Type clazz;
             try {
-                clazz = importService.ClassForNameProvider.ClassForName(factoryClassName);
+                clazz = importService.TypeResolver.ResolveType(factoryClassName, false);
             }
             catch (TypeLoadException) {
                 throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded");

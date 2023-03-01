@@ -26,22 +26,6 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventRender
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
         /// <summary>
         /// Auto-test(s): EventRenderJSON
         /// <code>
@@ -114,7 +98,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             public void WithRenderSimple() => RegressionRunner.Run(_session, EventRenderXML.WithRenderSimple());
         }
         
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{typeof(SupportBean), typeof(EventRender.MyRendererEvent),
                 typeof(SupportBeanRendererOne), typeof(SupportBeanRendererThree),

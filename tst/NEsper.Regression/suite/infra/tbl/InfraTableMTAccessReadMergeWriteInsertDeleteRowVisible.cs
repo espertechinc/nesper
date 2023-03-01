@@ -78,10 +78,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var readRunnable = new ReadRunnable(env, env.Listener("s0"));
 
             // start
-            var t1 = new Thread(writeRunnable.Run);
-            t1.Name = typeof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible).Name + "-write";
-            var t2 = new Thread(readRunnable.Run);
-            t2.Name = typeof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible).Name + "Read";
+            var t1 = new Thread(writeRunnable.Run) { Name = nameof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible) + "::Write" };
+            var t2 = new Thread(readRunnable.Run) { Name = nameof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible) + "::Read" };
+
             t1.Start();
             t2.Start();
 
@@ -89,13 +88,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             Thread.Sleep(numSeconds * 1000);
 
             // shutdown
+            Console.WriteLine("WriteRunnable.Shutdown: true");
             writeRunnable.Shutdown = true;
+            Console.WriteLine("ReadRunnable.Shutdown: true");
             readRunnable.Shutdown = true;
 
             // join
             log.Info("Waiting for completion");
-            t1.Join();
-            t2.Join();
+            t1.Join(TimeSpan.FromSeconds(30));
+            t2.Join(TimeSpan.FromSeconds(30));
 
             Assert.IsNull(writeRunnable.Exception);
             Assert.IsTrue(writeRunnable.numEvents > 100);

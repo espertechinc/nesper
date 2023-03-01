@@ -483,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 model.SelectClause = SelectClause.Create(fields);
                 var fromClause = FromClause.Create(
                     SQLStream.Create("MyDBWithRetain", sql, "s0"),
-                    FilterStream.Create(typeof(SupportBean).Name, "s1")
+                    FilterStream.Create(nameof(SupportBean), "s1")
                         .AddView(
                             View.Create("time_batch", Expressions.Constant(10))
                         ));

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (targetClass == null) {
                 try {
                     targetClass = validationContext.ImportService
-                        .ResolveClass(_classIdent, false, validationContext.ClassProvidedExtension);
+                        .ResolveType(_classIdent, false, validationContext.ClassProvidedExtension);
                 }
                 catch (ImportException) {
                     throw new ExprValidationException("Failed to resolve new-operator class name '" + _classIdent + "'");

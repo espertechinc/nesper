@@ -33,7 +33,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void SetUp()
         {
             lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                container.RWLockManager());
+                Container.RWLockManager());
 
             var testBean = new SupportBean();
             testBean.IntPrimitive = 50;
@@ -43,7 +43,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             testBean.ShortPrimitive = (short) 20;
 
             eventBean = SupportEventBeanFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateObject(testBean);
             eventType = eventBean.EventType;
 

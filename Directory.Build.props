@@ -1,6 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<Language>en-US</Language>
+		<LangVersion>8.0</LangVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>NEsper Esper ESP CEP</PackageTags>
 		<PackageCopyright>Copyright (C) 2014-2019 Espertech. All rights reserved.</PackageCopyright>
@@ -42,21 +43,21 @@
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
 		<NetCore>true</NetCore>
-		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
 		<NetCore>true</NetCore>
-		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
 		<NetCore>true</NetCore>
-		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
 		<NetCore>true</NetCore>
-		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>
 </Project>

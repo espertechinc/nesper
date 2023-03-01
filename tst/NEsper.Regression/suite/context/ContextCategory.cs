@@ -28,15 +28,71 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextCategorySceneOne());
-            execs.Add(new ContextCategorySceneTwo());
-            execs.Add(new ContextCategoryWContextProps());
-            execs.Add(new ContextCategoryBooleanExprFilter());
-            execs.Add(new ContextCategoryContextPartitionSelection());
-            execs.Add(new ContextCategorySingleCategorySODAPrior());
-            execs.Add(new ContextCategoryInvalid());
+            WithSceneOne(execs);
+            WithSceneTwo(execs);
+            WithWContextProps(execs);
+            WithBooleanExprFilter(execs);
+            WithContextPartitionSelection(execs);
+            WithSingleCategorySODAPrior(execs);
+            WithInvalid(execs);
+            WithDeclaredExpr(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDeclaredExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextCategoryDeclaredExpr(true));
             execs.Add(new ContextCategoryDeclaredExpr(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategoryInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleCategorySODAPrior(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategorySingleCategorySODAPrior());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContextPartitionSelection(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategoryContextPartitionSelection());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBooleanExprFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategoryBooleanExprFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWContextProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategoryWContextProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategorySceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextCategorySceneOne());
             return execs;
         }
 
@@ -45,12 +101,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             string ctx,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1", "c2" };
+            var fields = new[] { "c0", "c1", "c2" };
             env.SendEventBean(new SupportBean("E1", 5));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {ctx, "cat1", null});
+                new object[] { ctx, "cat1", null });
 
             env.MilestoneInc(milestone);
 
@@ -63,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {ctx, "cat1", 5});
+                new object[] { ctx, "cat1", 5 });
 
             Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
             env.UndeployAll();
@@ -76,17 +132,17 @@ namespace com.espertech.esper.regressionlib.suite.context
             string groupExpected,
             long countExpected)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] { "c0", "c1" };
             env.SendEventBean(new SupportBean(theString, 1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {groupExpected, countExpected});
+                new object[] { groupExpected, countExpected });
         }
 
         public class ContextCategorySceneOne : RegressionExecution
         {
-            private static readonly string[] FIELDS = new [] { "c0", "c1" };
+            private static readonly string[] FIELDS = new[] { "c0", "c1" };
 
             public void Run(RegressionEnvironment env)
             {
@@ -102,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Runtime.ContextPartitionService.GetContextStatementNames(
                         deploymentIdContext,
                         "CategoryContext");
-                EPAssertionUtil.AssertEqualsExactOrder(statementNames, new [] { "s0" });
+                EPAssertionUtil.AssertEqualsExactOrder(statementNames, new[] { "s0" });
                 Assert.AreEqual(
                     1,
                     env.Runtime.ContextPartitionService.GetContextNestingLevel(deploymentIdContext, "CategoryContext"));
@@ -110,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     deploymentIdContext,
                     "CategoryContext",
                     new ContextPartitionSelectorAll());
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {0, 1}, ids.ToArray());
+                EPAssertionUtil.AssertEqualsExactOrder(new[] { 0, 1 }, ids.ToArray());
 
                 SendAssert(env, "A", 1, "cat1", 1L);
                 SendAssert(env, "C", 2, null, null);
@@ -144,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
                         FIELDS,
-                        new object[] {expected, categoryName});
+                        new object[] { expected, categoryName });
                 }
             }
         }
@@ -153,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c1","c2","c3","c4","c5" };
+                var fields = new[] { "c1", "c2", "c3", "c4", "c5" };
                 var epl = "@Name('CTX') create context CtxCategory " +
                           "group by IntPrimitive > 0 as cat1," +
                           "group by IntPrimitive < 0 as cat2 from SupportBean;\n" +
@@ -169,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 1, "cat1", "CtxCategory", 0});
+                    new object[] { "G1", 1, "cat1", "CtxCategory", 0 });
                 AssertPartitionInfo(env);
 
                 env.Milestone(1);
@@ -178,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", -2, "cat2", "CtxCategory", 1});
+                    new object[] { "G2", -2, "cat2", "CtxCategory", 1 });
 
                 env.Milestone(2);
 
@@ -186,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 4, "cat1", "CtxCategory", 0});
+                    new object[] { "G3", 4, "cat1", "CtxCategory", 0 });
 
                 env.Milestone(3);
 
@@ -194,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G4", -6, "cat2", "CtxCategory", 1});
+                    new object[] { "G4", -6, "cat2", "CtxCategory", 1 });
 
                 env.Milestone(4);
 
@@ -202,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G5", 9, "cat1", "CtxCategory", 0});
+                    new object[] { "G5", 9, "cat1", "CtxCategory", 0 });
 
                 env.UndeployAll();
             }
@@ -218,24 +274,24 @@ namespace com.espertech.esper.regressionlib.suite.context
                     ContextPartitionSelectorAll.INSTANCE);
                 Assert.AreEqual(2, partitions.Identifiers.Count);
                 var descs = partitions.Identifiers.Values.ToArray();
-                var first = (ContextPartitionIdentifierCategory) descs[0];
-                var second = (ContextPartitionIdentifierCategory) descs[1];
+                var first = (ContextPartitionIdentifierCategory)descs[0];
+                var second = (ContextPartitionIdentifierCategory)descs[1];
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    new [] { "cat1","cat2" },
-                    new object[] {first.Label, second.Label});
+                    new[] { "cat1", "cat2" },
+                    new object[] { first.Label, second.Label });
 
                 var desc = partitionAdmin.GetIdentifier(depIdCtx, "CtxCategory", 0);
-                Assert.AreEqual("cat1", ((ContextPartitionIdentifierCategory) desc).Label);
+                Assert.AreEqual("cat1", ((ContextPartitionIdentifierCategory)desc).Label);
 
                 SupportContextPropUtil.AssertContextProps(
                     env,
                     "CTX",
                     "CtxCategory",
-                    new[] {0, 1},
+                    new[] { 0, 1 },
                     "label",
                     new[] {
-                        new object[] {"cat1"},
-                        new object[] {"cat2"}
+                        new object[] { "cat1" },
+                        new object[] { "cat2" }
                     });
             }
         }
@@ -273,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] { "c0", "c1", "c2", "c3" };
                 var milestone = new AtomicLong();
                 var path = new RegressionPath();
 
@@ -298,21 +354,21 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
                     new[] {
-                        new object[] {0, "grp1", "E3", -108},
-                        new object[] {1, "grp2", "E1", 3},
-                        new object[] {1, "grp2", "E2", -5},
-                        new object[] {2, "grp3", "E1", 60}
+                        new object[] { 0, "grp1", "E3", -108 },
+                        new object[] { 1, "grp2", "E1", 3 },
+                        new object[] { 1, "grp2", "E2", -5 },
+                        new object[] { 2, "grp3", "E1", 60 }
                     });
                 SupportContextPropUtil.AssertContextProps(
                     env,
                     "ctx",
                     "MyCtx",
-                    new[] {0, 1, 2},
+                    new[] { 0, 1, 2 },
                     "label",
                     new[] {
-                        new object[] {"grp1"},
-                        new object[] {"grp2"},
-                        new object[] {"grp3"}
+                        new object[] { "grp1" },
+                        new object[] { "grp2" },
+                        new object[] { "grp3" }
                     });
 
                 env.MilestoneInc(milestone);
@@ -324,8 +380,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(selectorById),
                     fields,
                     new[] {
-                        new object[] {1, "grp2", "E1", 3},
-                        new object[] {1, "grp2", "E2", -5}
+                        new object[] { 1, "grp2", "E1", 3 },
+                        new object[] { 1, "grp2", "E2", -5 }
                     });
 
                 // test iterator targeted for a given category
@@ -336,8 +392,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(selector),
                     fields,
                     new[] {
-                        new object[] {0, "grp1", "E3", -108},
-                        new object[] {2, "grp3", "E1", 60}
+                        new object[] { 0, "grp1", "E3", -108 },
+                        new object[] { 2, "grp3", "E1", 60 }
                     });
 
                 // test iterator targeted for a given filtered category
@@ -347,13 +403,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(filtered),
                     fields,
                     new[] {
-                        new object[] {0, "grp1", "E3", -108}
+                        new object[] { 0, "grp1", "E3", -108 }
                     });
                 Assert.IsFalse(
                     env.Statement("s0")
                         .GetEnumerator(
                             new SupportSelectorCategory(
-                                (ISet<string>) null))
+                                (ISet<string>)null))
                         .MoveNext());
                 Assert.IsFalse(
                     env.Statement("s0")
@@ -367,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test always-false filter - compare context partition info
                 filtered = new MySelectorFilteredCategory(null);
                 Assert.IsFalse(env.Statement("s0").GetEnumerator(filtered).MoveNext());
-                EPAssertionUtil.AssertEqualsAnyOrder(new object[] {"grp1", "grp2", "grp3"}, filtered.Categories);
+                EPAssertionUtil.AssertEqualsAnyOrder(new object[] { "grp1", "grp2", "grp3" }, filtered.Categories);
 
                 try {
                     env.Statement("s0")
@@ -428,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var milestone = new AtomicLong();
                 var ctx = "CategorizedContext";
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] { "c0", "c1", "c2" };
 
                 var epl = "@Name('context') create context " +
                           ctx +
@@ -450,15 +506,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, "cat1", 5});
+                    new object[] { ctx, "cat1", 5 });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
                     new[] {
-                        new object[] {ctx, "cat1", 5},
-                        new object[] {ctx, "cat2", null},
-                        new object[] {ctx, "cat3", null}
+                        new object[] { ctx, "cat1", 5 },
+                        new object[] { ctx, "cat2", null },
+                        new object[] { ctx, "cat3", null }
                     });
 
                 env.MilestoneInc(milestone);
@@ -467,13 +523,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, "cat1", 9});
+                    new object[] { ctx, "cat1", 9 });
 
                 env.SendEventBean(new SupportBean("E3", 11));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, "cat2", 11});
+                    new object[] { ctx, "cat2", 11 });
 
                 env.MilestoneInc(milestone);
 
@@ -481,13 +537,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, "cat3", 25});
+                    new object[] { ctx, "cat3", 25 });
 
                 env.SendEventBean(new SupportBean("E5", 25));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, "cat3", 50});
+                    new object[] { ctx, "cat3", 50 });
 
                 env.MilestoneInc(milestone);
 
@@ -495,16 +551,16 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, "cat1", 12});
+                    new object[] { ctx, "cat1", 12 });
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
                     new[] {
-                        new object[] {ctx, "cat1", 12},
-                        new object[] {ctx, "cat2", 11},
-                        new object[] {ctx, "cat3", 50}
+                        new object[] { ctx, "cat1", 12 },
+                        new object[] { ctx, "cat2", 11 },
+                        new object[] { ctx, "cat3", 50 }
                     });
 
                 Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
@@ -589,12 +645,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(1);
 
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] { "c0", "c1", "c2" };
                 env.SendEventBean(new SupportBean("E1", -2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"n", "xnx", "n"});
+                    new object[] { "n", "xnx", "n" });
 
                 env.Milestone(2);
 
@@ -602,7 +658,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"p", "xpx", "p"});
+                    new object[] { "p", "xpx", "p" });
 
                 env.UndeployAll();
             }
@@ -623,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier)
             {
-                var id = (ContextPartitionIdentifierCategory) contextPartitionIdentifier;
+                var id = (ContextPartitionIdentifierCategory)contextPartitionIdentifier;
                 if (matchCategory == null && cpids.Contains(id.ContextPartitionId)) {
                     throw new EPException("Already exists context Id: " + id.ContextPartitionId);
                 }

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.settings
 
             Type clazz;
             try {
-                clazz = importService.ResolveClass(className, isAnnotation, extensionClass);
+                clazz = importService.ResolveType(className, isAnnotation, extensionClass);
             }
             catch (ImportException) {
                 return null;

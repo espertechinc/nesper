@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                         "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                         typeof(SupportBean_S0).FullName +
                         "' cannot be assigned a value of type '" +
-                        typeof(SupportBean_S1).Name +
+                        nameof(SupportBean_S1) +
                         "'",
                         ex.Message);
                 }
@@ -64,16 +64,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "Failed to validate assignment expression 'vars1_A=arrival': Variable 'vars1_A' of declared event type '" +
                     typeof(SupportBean_S1).FullName +
                     "' underlying type '" +
-                    typeof(SupportBean_S1).Name +
+                    nameof(SupportBean_S1) +
                     "' cannot be assigned a value of type '" +
-                    typeof(SupportBean_S0).Name +
+                    nameof(SupportBean_S0) +
                     "'");
 
                 TryInvalidCompile(
                     env,
                     "on SupportBean_S0 arrival set vars0_A = 1",
                     "Failed to validate assignment expression 'vars0_A=1': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
-                    typeof(SupportBean_S0).Name +
+                    nameof(SupportBean_S0) +
                     "' cannot be assigned a value of type 'Int32'");
             }
         }
@@ -84,10 +84,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             {
                 var path = new RegressionPath();
                 var vars = "@Name('vars') create variable " +
-                           typeof(SupportBean).Name +
+                           nameof(SupportBean) +
                            " varbeannull;\n" +
                            "create variable " +
-                           typeof(SupportBean).Name +
+                           nameof(SupportBean) +
                            " varbean;\n" +
                            "create variable SupportBean_S0 vars0;\n" +
                            "create variable long varobj;\n" +

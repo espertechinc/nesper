@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
@@ -39,13 +40,16 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         void Initialize(
             IContainer container,
             ConfigurationCommonScripting scriptingConfiguration);
-        
+
         /// <summary>
         /// Compiles the code.
         /// </summary>
         /// <param name="expressionScript">The expression script.</param>
+        /// <param name="importService"></param>
         /// <returns></returns>
-        Func<ScriptArgs, object> Compile(ExpressionScriptProvided expressionScript);
+        Func<ScriptArgs, object> Compile(
+            ExpressionScriptProvided expressionScript,
+            ImportService importService);
 
         /// <summary>
         /// Verifies the specified script.

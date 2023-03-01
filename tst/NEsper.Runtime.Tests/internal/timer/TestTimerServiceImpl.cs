@@ -22,7 +22,7 @@ namespace com.espertech.esper.runtime.@internal.timer
         public void SetUp()
         {
             callback = new SupportTimerCallback();
-            service = new TimerServiceImpl(SupportContainer.Instance, null, 100);
+            service = new TimerServiceImpl(base.Container, null, 100);
             service.Callback = callback;
         }
 

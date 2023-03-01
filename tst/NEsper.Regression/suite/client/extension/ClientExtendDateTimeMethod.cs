@@ -28,9 +28,30 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ClientExtendDateTimeMethodTransform());
-			execs.Add(new ClientExtendDateTimeMethodReformat());
+			WithTransform(execs);
+			WithReformat(execs);
+			WithInvalid(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ClientExtendDateTimeMethodInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithReformat(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendDateTimeMethodReformat());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTransform(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendDateTimeMethodTransform());
 			return execs;
 		}
 
@@ -42,7 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				TryInvalidCompile(
 					env,
 					"select DateTimeEx.someDTMInvalidNoOp() from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeEx.someDTMInvalidNoOp()': Plug-in datetime method provider " + typeof(DTMPluginForgeFactory).CleanName());
+					"Failed to validate select-clause expression 'DateTimeEx.someDTMInvalidNoOp()': Plug-in datetime method provider " +
+					typeof(DTMPluginForgeFactory).CleanName());
 
 				// validate pre-made argument test
 				TryInvalidCompile(
@@ -60,7 +82,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				TryInvalidCompile(
 					env,
 					"select DateTimeEx.dtmInvalidNotProvided() from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidNotProvided()': Plugin datetime method does not provide a forge for input type " + typeof(DateTimeEx).FullName + "");
+					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidNotProvided()': Plugin datetime method does not provide a forge for input type " +
+					typeof(DateTimeEx).FullName +
+					"");
 			}
 		}
 
@@ -159,6 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				switch (fieldName) {
 					case "date":
 						return flagValue ? dateTime.AddDays(1) : dateTime.AddDays(-1);
+
 					default:
 						throw new EPException("Invalid field name '" + fieldName + "'");
 				}

@@ -10,7 +10,7 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.client.option
 {
-	public delegate ClassLoader DeploymentClassLoaderOption(DeploymentClassLoaderContext context);
+	public delegate TypeResolver DeploymentClassLoaderOption(DeploymentClassLoaderContext context);
 	
 	#if false
 	/// <summary>

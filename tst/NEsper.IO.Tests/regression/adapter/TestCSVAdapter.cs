@@ -28,6 +28,7 @@ namespace com.espertech.esperio.regression.adapter
         private SupportUpdateListener _listener;
         private String _eventTypeName;
         private EPRuntime _runtime;
+        private EPRuntimeProvider _runtimeProvider;
         private long _currentTime;
         private InputAdapter _adapter;
         private String[] _propertyOrderTimestamps;
@@ -51,7 +52,8 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddEventType(_eventTypeName, _propertyTypes);
             configuration.Common.AddEventType("myNonMapEvent", typeof(Type).FullName);
 
-            _runtime = EPRuntimeProvider.GetRuntime("CSVProvider", configuration);
+            _runtimeProvider = new EPRuntimeProvider();
+            _runtime = _runtimeProvider.GetRuntime("CSVProvider", configuration);
             _runtime.Initialize();
 
             var statementText = "select * from mapEvent#length(5)";

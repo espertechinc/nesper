@@ -13,15 +13,15 @@ namespace com.espertech.esper.common.client.util
     /// <summary>
     /// Default class loader provider returns the current thread context classloader.
     /// </summary>
-    public class ClassLoaderProviderDefault : ClassLoaderProvider
+    public class TypeResolverProviderDefault : TypeResolverProvider
     {
         public const string NAME = "ClassLoaderProvider";
 
-        private readonly ClassLoader _classLoader;
+        private readonly TypeResolver typeResolver;
 
-        public ClassLoaderProviderDefault(ClassLoader classLoader)
+        public TypeResolverProviderDefault(TypeResolver typeResolver)
         {
-            _classLoader = classLoader;
+            this.typeResolver = typeResolver;
         }
 
 #if FALSE
@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.client.util
         }
 #endif
 
-        public ClassLoader GetClassLoader()
+        public TypeResolver GetTypeResolver()
         {
-            return _classLoader;
+            return typeResolver;
         }
     }
 } // end of namespace

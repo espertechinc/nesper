@@ -77,10 +77,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // start
             var threadWrite = new Thread(writeRunnable.Run) {
-                Name = typeof(InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd).Name + "-write"
+                Name = nameof(InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd) + "-write"
             };
             var threadRead = new Thread(readRunnable.Run) {
-                Name = typeof(InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd).Name + "-read"
+                Name = nameof(InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd) + "-read"
             };
             threadWrite.Start();
             threadRead.Start();

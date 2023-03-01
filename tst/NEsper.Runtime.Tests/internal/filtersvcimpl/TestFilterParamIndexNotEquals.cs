@@ -33,12 +33,12 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [SetUp]
         public void SetUp()
         {
-            lockFactory = new FilterServiceGranularLockFactoryReentrant(container.RWLockManager());
+            lockFactory = new FilterServiceGranularLockFactoryReentrant(Container.RWLockManager());
 
             testEvaluator = new SupportEventEvaluator();
             testBean = new SupportBean();
             testEventBean = SupportEventBeanFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateObject(testBean);
             testEventType = testEventBean.EventType;
             matchesList = new List<FilterHandle>();

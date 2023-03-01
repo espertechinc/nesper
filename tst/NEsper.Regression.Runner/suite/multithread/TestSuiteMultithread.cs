@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionlib.support.wordexample;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -26,25 +27,10 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.multithread
 {
     [TestFixture]
-    public class TestSuiteMultithread
+    [Parallelizable(ParallelScope.None)]
+    public class TestSuiteMultithread : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -88,7 +74,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         private void PerformanceRun(RegressionExecution execution)
         {
             using (new PerformanceContext()) {
-                RegressionRunner.Run(session, execution);
+                RegressionRunner.Run(_session, execution);
             }
         }
 

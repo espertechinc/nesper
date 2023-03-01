@@ -169,11 +169,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public IDictionary<string, object> ConfigurationTransient => _configLastProvided.Common.TransientConfiguration;
 
+        /// <summary>
+        /// Event that occurs before the runtime has been destroyed.
+        /// </summary>
+        public event EventHandler Destroying;
+        
+        /// <summary>
+        /// Event that occurs after the runtime has been destroyed.
+        /// </summary>
+        public event EventHandler Destroyed;
+        
         public void Destroy()
         {
             lock (this) {
                 if (_runtimeEnvironment != null) {
                     Log.Info("Destroying runtime URI '" + URI + "'");
+
+                    Destroying?.Invoke(this, EventArgs.Empty);
 
                     // first invoke listeners
                     foreach (var listener in _serviceListeners) {
@@ -222,9 +234,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     runtimeToDestroy.Runtime.Destroy();
                     runtimeToDestroy.DeploymentService.Destroy();
                     runtimeToDestroy.Services.Destroy();
+
                     _runtimes.Remove(URI);
+                    Destroyed?.Invoke(this, EventArgs.Empty);
 
                     runtimeToDestroy.Services.Initialize();
+                    
                 }
             }
         }
@@ -483,8 +498,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             else {
                 Type clazz;
                 try {
-                    clazz = TransientConfigurationResolver.ResolveClassForNameProvider(_configLastProvided.Common.TransientConfiguration)
-                        .ClassForName(epServicesContextFactoryClassName);
+                    clazz = TransientConfigurationResolver
+                        .ResolveTypeResolver(Container, _configLastProvided.Common.TransientConfiguration)
+                        .ResolveType(epServicesContextFactoryClassName);
                 }
                 catch (TypeLoadException) {
                     throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
@@ -722,7 +738,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 var className = config.ClassName;
                 Type pluginLoaderClass;
                 try {
-                    pluginLoaderClass = services.ClassForNameProvider.ClassForName(className);
+                    pluginLoaderClass = services.TypeResolver.ResolveType(className);
                 }
                 catch (TypeLoadException ex) {
                     throw new ConfigurationException("Failed to load adapter loader class '" + className + "'", ex);
@@ -737,7 +753,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 if (!(pluginLoaderObj is PluginLoader)) {
-                    throw new ConfigurationException("Failed to cast adapter loader class '" + className + "' to " + typeof(PluginLoader).Name);
+                    throw new ConfigurationException("Failed to cast adapter loader class '" + className + "' to " + nameof(PluginLoader));
                 }
 
                 var pluginLoader = (PluginLoader) pluginLoaderObj;

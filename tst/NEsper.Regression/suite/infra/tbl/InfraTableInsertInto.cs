@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             EPCompiled schemaCompiled;
             if (bean) {
                 schemaCompiled = env.Compile(
-                    "create schema MySchema as " + typeof(MyP0P1Event).Name,
+                    "create schema MySchema as " + nameof(MyP0P1Event),
                     options => {
                         options.BusModifierEventType = ctx => EventTypeBusModifier.BUS;
                         options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client
@@ -24,27 +25,34 @@ namespace com.espertech.esper.common.client
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="assembliesWithImage">assemblies containing classes</param>
+        /// <param name="artifacts">assemblies containing classes</param>
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
-            ICollection<Pair<Assembly, byte[]>> assembliesWithImage,
+            IArtifactRepository artifactRepository,
+            ICollection<Artifact> artifacts,
             EPCompiledManifest manifest)
         {
-            AssembliesWithImage = assembliesWithImage;
+            ArtifactRepository = artifactRepository;
+            Artifacts = artifacts;
             Manifest = manifest;
         }
+
+        /// <summary>
+        /// Returns the artifact repository.
+        /// </summary>
+        public IArtifactRepository ArtifactRepository { get; set; }
 
         /// <summary>
         ///     Returns a set of assemblies.
         /// </summary>
         public IEnumerable<Assembly> Assemblies {
-            get => AssembliesWithImage.Select(_ => _.First);
+            get => Artifacts.Select(_ => _.Assembly);
         }
 
         /// <summary>
-        ///     Returns a set of assemblies with images.
+        ///     Returns a set of compiled artifacts.
         /// </summary>
-        public ICollection<Pair<Assembly, byte[]>> AssembliesWithImage { get; }
+        public ICollection<Artifact> Artifacts { get; }
 
         /// <summary>
         ///     Returns a manifest object

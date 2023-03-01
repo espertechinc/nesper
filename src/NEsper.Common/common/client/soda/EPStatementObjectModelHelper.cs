@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.soda
             }
             else if (constant is long)
             {
-                return string.Format("{0}L", constant);
+                return $"{constant}L";
             }
             else if (constant is double)
             {
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.client.soda
                 double scrubbed = Math.Floor(dvalue);
                 if (dvalue == scrubbed)
                 {
-                    return string.Format("{0:F1}d", dvalue);
+                    return $"{dvalue:F1}d";
                 }
                 else
                 {
-                    return string.Format("{0}", dvalue);
+                    return $"{dvalue}";
                 }
             }
             else if (constant is float)
@@ -51,11 +51,11 @@ namespace com.espertech.esper.common.client.soda
                 double scrubbed = Math.Floor(dvalue);
                 if (dvalue == scrubbed)
                 {
-                    return string.Format("{0:F1}f", dvalue);
+                    return $"{dvalue:F1}f";
                 }
                 else
                 {
-                    return string.Format("{0}f", dvalue);
+                    return $"{dvalue}f";
                 }
             }
             else if (constant is decimal)
@@ -64,11 +64,11 @@ namespace com.espertech.esper.common.client.soda
                 decimal scrubbed = Math.Floor(dvalue);
                 if (dvalue == scrubbed)
                 {
-                    return string.Format("{0:F1}m", dvalue);
+                    return $"{dvalue:F1}m";
                 }
                 else
                 {
-                    return string.Format("{0}m", dvalue);
+                    return $"{dvalue}m";
                 }
             }
             else if (constant is bool)

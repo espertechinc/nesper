@@ -21,23 +21,11 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.infra
 {
     [TestFixture]
-    public class TestSuiteInfraNWTable
+    public class TestSuiteInfraNWTable : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
+        public TestSuiteInfraNWTable() : base(Configure)
         {
-            _session = RegressionRunner.Session();
-            Configure(_session.Configuration);
         }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _session.Dispose();
-            _session = null;
-        }
-
-        private RegressionSession _session;
 
         internal static void Configure(Configuration configuration)
         {

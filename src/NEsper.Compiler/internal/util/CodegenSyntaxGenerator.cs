@@ -27,8 +27,6 @@ namespace com.espertech.esper.compiler.@internal.util
     {
         private static readonly CodegenIndent INDENT = new CodegenIndent(true);
 
-        private static List<AssemblyIndex> AssemblyIndices = new List<AssemblyIndex>();
-
         private class AssemblyIndex
         {
             public Assembly Assembly;
@@ -65,7 +63,7 @@ namespace com.espertech.esper.compiler.@internal.util
             if (import.IsNamespaceImport)
             {
                 var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
-                return assemblyIndices.Any(assemblyIndex => assemblyIndex.CheckType(importName));
+                return assemblyIndices != null && assemblyIndices.Any(assemblyIndex => assemblyIndex.CheckType(importName));
             }
 
             return import.TypeName == type.Name;
@@ -99,10 +97,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
             }
 
-            if (AssemblyIndices.Count == 0) {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                AssemblyIndices.AddRange(assemblies.Select(assembly => new AssemblyIndex(assembly)));
-            }
+            var assemblyIndices = new List<AssemblyIndex>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            assemblyIndices.AddRange(assemblies.Select(assembly => new AssemblyIndex(assembly)));
 
             // Ensure that all types can be imported without any ambiguity.
 
@@ -110,7 +107,7 @@ namespace com.espertech.esper.compiler.@internal.util
 #if false
                 if (IsAmbiguous(type, imports, assemblies))
 #else
-                if (IsAmbiguous(type, imports, AssemblyIndices))
+                if (IsAmbiguous(type, imports, assemblyIndices))
 #endif
                 {
                     if (type.Namespace != null) {

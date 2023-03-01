@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     // determining if the set operation is atomic
                     runtime.EventService.SendEventBean(
                         new SupportBean_A(Convert.ToString(threadNum)),
-                        typeof(SupportBean_A).Name);
+                        nameof(SupportBean_A));
                     var received = selectListener.AssertOneGetNewAndReset();
                     Assert.AreEqual(received.Get("var1"), received.Get("var2"));
                 }

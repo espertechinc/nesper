@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
@@ -33,6 +34,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1
             string classNameSimple,
             ModuleCompileTimeServices services);
 
-        CompileResponse Compile(CompileRequest request);
+        Artifact Compile(CompileRequest request);
     }
 } // end of namespace

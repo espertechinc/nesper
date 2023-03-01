@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				model.SelectClause = SelectClause.Create()
 					.Add(Expressions.InstanceOf("TheString", "string"), "t0")
 					.Add(Expressions.InstanceOf(Expressions.Property("TheString"), "float", "string", "int"), "t1");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 				Assert.AreEqual(stmtText, model.ToEPL());
 

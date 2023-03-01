@@ -177,7 +177,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         [Test]
 	    public void TestValidCases() {
-	        string className = typeof(SupportBean).Name;
+	        string className = nameof(SupportBean);
 
 	        // Base vocabulary
 	        AssertIsValid(className);

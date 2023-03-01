@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 throw new ConfigurationException("A null value has been provided for the type");
             }
 
-            var clazz = TypeHelper.GetTypeForSimpleName(type, importService.ClassForNameProvider);
+            var clazz = TypeHelper.GetTypeForSimpleName(type, importService.TypeResolver);
             if (clazz == null) {
                 throw new ConfigurationException("The type '" + type + "' is not a recognized type");
             }

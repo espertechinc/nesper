@@ -28,7 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             //
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             configuration.Common.AddEventType(typeof(TestEvent));
-            var runtime = EPRuntimeProvider.GetRuntime(GetType().Name, configuration);
+
+            var runtimeProvider = new EPRuntimeProvider();
+            var runtime = runtimeProvider.GetRuntime(GetType().Name, configuration);
             runtime.Initialize();
 
             var path = new RegressionPath();

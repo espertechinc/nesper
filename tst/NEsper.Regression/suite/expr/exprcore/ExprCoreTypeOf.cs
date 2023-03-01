@@ -128,9 +128,9 @@ public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecu
 				var builder = new SupportEvalBuilder("ISupportA", "A")
 					.WithExpressions(fields, "typeof(A)");
 
-				builder.WithAssertion(new ISupportAImpl(null, null)).Expect(fields, typeof(ISupportAImpl).Name);
+				builder.WithAssertion(new ISupportAImpl(null, null)).Expect(fields, nameof(ISupportAImpl));
 
-				builder.WithAssertion(new ISupportABCImpl(null, null, null, null)).Expect(fields, typeof(ISupportABCImpl).Name);
+				builder.WithAssertion(new ISupportABCImpl(null, null, null, null)).Expect(fields, nameof(ISupportABCImpl));
 
 				builder.Run(env);
 				env.UndeployAll();

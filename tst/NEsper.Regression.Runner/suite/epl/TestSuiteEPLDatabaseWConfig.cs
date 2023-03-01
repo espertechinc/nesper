@@ -12,6 +12,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.suite.epl.database;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -20,11 +21,11 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     [Category("DatabaseTest")]
     [Category("IntegrationTest")]
-    public class TestSuiteEPLDatabaseWConfig
+    public class TestSuiteEPLDatabaseWConfig : AbstractTestContainer
     {
         private void Run(EPLDatabaseQueryResultCache exec)
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             var configDB = GetDefaultConfig(session.Container);
             if (exec.IsLru) {
                 configDB.SetLRUCache(exec.LruSize.Value);
@@ -39,8 +40,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddEventType(typeof(SupportBean_S0));
 
             RegressionRunner.RunPerformanceSensitive(session, exec);
-
-            session.Dispose();
         }
 
         private ConfigurationCommonDBRef GetDefaultConfig(IContainer container)

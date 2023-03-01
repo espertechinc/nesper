@@ -41,7 +41,7 @@ namespace com.espertech.esper.client.annotation
 
         public override string ToString()
         {
-            return string.Format("@SQLQueryTimeout(\"{0}\")", Value);
+            return $"@SQLQueryTimeout(\"{Value}\")";
         }
     }
 }

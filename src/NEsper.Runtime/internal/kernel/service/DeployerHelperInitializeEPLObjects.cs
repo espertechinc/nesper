@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.compile;
@@ -60,7 +61,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				services.Container,
 				moduleEventTypes,
 				beanEventTypeFactory,
-				provider.ClassLoader,
+				provider.TypeResolver,
 				services.EventTypeFactory,
 				services.BeanEventTypeStemService,
 				eventTypeResolver,
@@ -76,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				throw new EPException(e);
 			}
 
-			JsonEventTypeUtility.AddJsonUnderlyingClass(moduleEventTypes, services.ClassLoaderParent, deploymentId);
+			JsonEventTypeUtility.AddJsonUnderlyingClass(moduleEventTypes, services.TypeResolverParent, deploymentId);
 
 			// initialize module named windows
 			IDictionary<string, NamedWindowMetaData> moduleNamedWindows = new Dictionary<string, NamedWindowMetaData>();
@@ -151,15 +152,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// initialize module class-provided create-class
 			IDictionary<string, ClassProvided> moduleClasses = new Dictionary<string, ClassProvided>();
 			var classProvidedCollectorRuntime = new ClassProvidedCollectorRuntime(moduleClasses);
+			var artifactRepositoryManager = services.Container.ArtifactRepositoryManager();
+			var artifactRepository = artifactRepositoryManager.DefaultRepository;
 			try {
-				provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollectorRuntime));
+				provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollectorRuntime, artifactRepository));
 			}
 			catch (Exception e) {
 				throw new EPException(e);
 			}
 
 			foreach (var moduleClass in moduleClasses) {
-				moduleClass.Value.LoadClasses(provider.ClassLoader);
+				moduleClass.Value.LoadClasses(provider.TypeResolver);
 			}
 
 			return new DeployerModuleEPLObjects(

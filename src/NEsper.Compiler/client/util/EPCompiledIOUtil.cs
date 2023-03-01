@@ -12,11 +12,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-#if NETSTANDARD
+#if NETCORE
 using System.Runtime.Loader;
 #endif
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client.attributes;
 using com.espertech.esper.container;
@@ -47,18 +48,16 @@ namespace com.espertech.esper.compiler.client.util
 		/// </summary>
 		public const string MANIFEST_TARGETHA = "Esper-TargetHA";
 
-		private static Assembly LoadAssembly(
-			IContainer container,
-			byte[] image)
+		private static Assembly LoadAssembly(byte[] image)
 		{
-#if NETSTANDARD
-			container.CheckContainer();
-			var context = container.Has<AssemblyLoadContext>()
-				? container.Resolve<AssemblyLoadContext>()
-				: AssemblyLoadContext.Default;
+#if NETCORE
+			var assemblyLoadContext = AssemblyLoadContext.CurrentContextualReflectionContext;
+			if (assemblyLoadContext == null) {
+				assemblyLoadContext = AssemblyLoadContext.Default;
+			}
 
 			using var stream = new MemoryStream(image);
-			return context.LoadFromStream(stream);
+			return assemblyLoadContext.LoadFromStream(stream);
 #else
 			return AppDomain.CurrentDomain.Load(image);
 #endif
@@ -75,8 +74,13 @@ namespace com.espertech.esper.compiler.client.util
 		public static EPCompiled Read(IContainer container, FileInfo fileInfo)
 		{
 			var image = File.ReadAllBytes(fileInfo.FullName);
-			var assembly = LoadAssembly(container, image);
-			var assemblyAndImage = new Pair<Assembly, byte[]>(assembly, image);
+			var unit = new EPCompilationUnit() {
+				Image = image,
+				TypeNames = new EmptySet<string>()
+			};
+			var repository = container.ArtifactRepositoryManager().DefaultRepository;
+			var artifact = repository.Register(unit);
+			var assembly = artifact.Assembly;
 			var attributes = assembly
 				.GetCustomAttributes()
 				.OfType<ManifestPropertyAttribute>()
@@ -105,7 +109,8 @@ namespace com.espertech.esper.compiler.client.util
 			}
 
 			return new EPCompiled(
-				new [] { assemblyAndImage },
+				repository,
+				new [] { artifact },
 				new EPCompiledManifest(
 					compilerVersion,
 					moduleProvider,
@@ -121,7 +126,7 @@ namespace com.espertech.esper.compiler.client.util
         /// <throws>IOException when the write failed</throws>
         public static void Write(EPCompiled compiled, FileInfo file)
         {
-	        foreach (var assembly in compiled.AssembliesWithImage) {
+	        foreach (var assembly in compiled.Artifacts) {
 	        }
         }
 	}

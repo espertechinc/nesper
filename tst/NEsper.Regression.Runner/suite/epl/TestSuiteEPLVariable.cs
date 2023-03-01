@@ -23,62 +23,52 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLVariable
+    public class TestSuiteEPLVariable : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
+        public TestSuiteEPLVariable() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesUse()
         {
-            RegressionRunner.Run(session, EPLVariablesUse.Executions());
+            RegressionRunner.Run(_session, EPLVariablesUse.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesCreate()
         {
-            RegressionRunner.Run(session, EPLVariablesCreate.Executions());
+            RegressionRunner.Run(_session, EPLVariablesCreate.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesDestroy()
         {
-            RegressionRunner.Run(session, EPLVariablesDestroy.Executions());
+            RegressionRunner.Run(_session, EPLVariablesDestroy.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesEventTyped()
         {
-            RegressionRunner.Run(session, EPLVariablesEventTyped.Executions());
+            RegressionRunner.Run(_session, EPLVariablesEventTyped.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesPerf()
         {
-            RegressionRunner.Run(session, new EPLVariablesPerf(), true);
+            RegressionRunner.Run(_session, new EPLVariablesPerf(), true);
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesOutputRate()
         {
-            RegressionRunner.Run(session, EPLVariablesOutputRate.Executions());
+            RegressionRunner.Run(_session, EPLVariablesOutputRate.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLVariablesInlinedClass()
         {
-            RegressionRunner.Run(session, EPLVariablesInlinedClass.Executions());
+            RegressionRunner.Run(_session, EPLVariablesInlinedClass.Executions());
         }
 
         /// <summary>
@@ -146,10 +136,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithSimple() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSimple());
         }
 
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new[] {
                 typeof(SupportBean),

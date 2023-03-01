@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.rowrecog;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -23,163 +24,147 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.rowrecog
 {
     [TestFixture]
-    public class TestSuiteRowRecog
+    public class TestSuiteRowRecog : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
         [Test, RunInApplicationDomain]
         public void TestRowRecogOps()
         {
-            RegressionRunner.Run(session, RowRecogOps.Executions());
+            RegressionRunner.Run(_session, RowRecogOps.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogAfter()
         {
-            RegressionRunner.Run(session, RowRecogAfter.Executions());
+            RegressionRunner.Run(_session, RowRecogAfter.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogInvalid()
         {
-            RegressionRunner.Run(session, new RowRecogInvalid());
+            RegressionRunner.Run(_session, new RowRecogInvalid());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogClausePresence()
         {
-            RegressionRunner.Run(session, new RowRecogClausePresence());
+            RegressionRunner.Run(_session, new RowRecogClausePresence());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogGreedyness()
         {
-            RegressionRunner.Run(session, RowRecogGreedyness.Executions());
+            RegressionRunner.Run(_session, RowRecogGreedyness.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogEmptyPartition()
         {
-            RegressionRunner.Run(session, new RowRecogEmptyPartition());
+            RegressionRunner.Run(_session, new RowRecogEmptyPartition());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogEnumMethod()
         {
-            RegressionRunner.Run(session, new RowRecogEnumMethod());
+            RegressionRunner.Run(_session, new RowRecogEnumMethod());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogIntervalResolution()
         {
-            RegressionRunner.Run(session, new RowRecogIntervalResolution(10000));
+            RegressionRunner.Run(_session, new RowRecogIntervalResolution(10000));
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogIterateOnly()
         {
-            RegressionRunner.Run(session, RowRecogIterateOnly.Executions());
+            RegressionRunner.Run(_session, RowRecogIterateOnly.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogPerf()
         {
-            RegressionRunner.Run(session, new RowRecogPerf());
+            RegressionRunner.Run(_session, new RowRecogPerf());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogPermute()
         {
-            RegressionRunner.Run(session, new RowRecogPermute());
+            RegressionRunner.Run(_session, new RowRecogPermute());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogRegex()
         {
-            RegressionRunner.Run(session, new RowRecogRegex());
+            RegressionRunner.Run(_session, new RowRecogRegex());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogPrev()
         {
-            RegressionRunner.Run(session, RowRecogPrev.Executions());
+            RegressionRunner.Run(_session, RowRecogPrev.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogDataWin()
         {
-            RegressionRunner.Run(session, RowRecogDataWin.Executions());
+            RegressionRunner.Run(_session, RowRecogDataWin.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogDelete()
         {
-            RegressionRunner.Run(session, RowRecogDelete.Executions());
+            RegressionRunner.Run(_session, RowRecogDelete.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogRepetition()
         {
-            RegressionRunner.Run(session, new RowRecogRepetition());
+            RegressionRunner.Run(_session, new RowRecogRepetition());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogAggregation()
         {
-            RegressionRunner.Run(session, RowRecogAggregation.Executions());
+            RegressionRunner.Run(_session, RowRecogAggregation.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogInterval()
         {
-            RegressionRunner.Run(session, RowRecogInterval.Executions());
+            RegressionRunner.Run(_session, RowRecogInterval.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogIntervalOrTerminated()
         {
-            RegressionRunner.Run(session, new RowRecogIntervalOrTerminated());
+            RegressionRunner.Run(_session, new RowRecogIntervalOrTerminated());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogVariantStream()
         {
-            RegressionRunner.Run(session, new RowRecogVariantStream());
+            RegressionRunner.Run(_session, new RowRecogVariantStream());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogArrayAccess()
         {
-            RegressionRunner.Run(session, RowRecogArrayAccess.Executions());
+            RegressionRunner.Run(_session, RowRecogArrayAccess.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogDataSet()
         {
-            RegressionRunner.Run(session, RowRecogDataSet.Executions());
+            RegressionRunner.Run(_session, RowRecogDataSet.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogMultikeyWArray()
         {
-            RegressionRunner.Run(session, RowRecogMultikeyWArray.Executions());
+            RegressionRunner.Run(_session, RowRecogMultikeyWArray.Executions());
         }
         
-        private void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{
                 typeof(SupportBean),

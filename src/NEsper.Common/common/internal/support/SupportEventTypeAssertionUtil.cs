@@ -487,14 +487,15 @@ namespace com.espertech.esper.common.@internal.support
                     var assertion = assertions[i];
                     var expected = expectedArr[i];
                     var value = assertion.GetExtractor().Invoke(prop, eventType);
-                    if (expected == typeof(object[])) {
-                        var valueAsType = (Type) value;
-                        if ((valueAsType != null) && 
-                            (valueAsType.IsArray) &&
-                            !valueAsType.GetElementType().IsPrimitive) {
-                            continue;
+                    if (expected is Type expectedType) {
+                        if (expectedType == typeof(object[])) {
+                            var valueAsType = (Type)value;
+                            if (valueAsType is { IsArray: true } && !valueAsType.GetElementType()!.IsPrimitive) {
+                                continue;
+                            }
                         }
                     }
+
                     ScopeTestHelper.AssertEquals(
                         message + " at assertion " + assertion, expected, value);
                 }

@@ -68,10 +68,10 @@ namespace com.espertech.esper.container
             return container.Resolve<IResourceManager>();
         }
 
-        public static ClassLoaderProvider ClassLoaderProvider(this IContainer container)
+        public static TypeResolverProvider ClassLoaderProvider(this IContainer container)
         {
             container.CheckContainer();
-            return container.Resolve<ClassLoaderProvider>();
+            return container.Resolve<TypeResolverProvider>();
         }
 
         private static bool TryCreateInstance<T>(this IContainer container, ConstructorInfo constructor, out T instanceValue)
@@ -126,13 +126,15 @@ namespace com.espertech.esper.container
         {
             container.CheckContainer();
 
-            if (container.Has<T>()) {
-                return container.Resolve<T>();
-            }
+            lock (container) {
+                if (container.Has<T>()) {
+                    return container.Resolve<T>();
+                }
 
-            var instance = instanceSupplier.Invoke();
-            container.Register<T>(instance, Lifespan.Singleton, null);
-            return instance;
+                var instance = instanceSupplier.Invoke();
+                container.Register<T>(instance, Lifespan.Singleton, null);
+                return instance;
+            }
         }
     }
 }

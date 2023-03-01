@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.support.util
             string tableName,
             string indexBackingClass)
         {
-            Assert.IsTrue(SUBQUERIES.Count == 1);
+            Assert.That(SUBQUERIES.Count, Is.EqualTo(1));
             var subquery = SUBQUERIES[0];
             AssertSubquery(subquery, subqueryNum, tableName, indexBackingClass);
             Reset();
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public static QueryPlanIndexDescSubquery AssertSubqueryAndReset()
         {
-            Assert.IsTrue(SUBQUERIES.Count == 1);
+            Assert.That(SUBQUERIES.Count, Is.EqualTo(1));
             var subquery = SUBQUERIES[0];
             Reset();
             return subquery;
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.support.util
             string indexName,
             string indexDescription)
         {
-            Assert.IsTrue(ONEXPRS.Count == 1);
+            Assert.That(ONEXPRS.Count, Is.EqualTo(1));
             var onexp = ONEXPRS[0];
             if (indexDescription != null) {
                 Assert.AreEqual(indexDescription, onexp.Tables[0].IndexDesc);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public static QueryPlanIndexDescOnExpr AssertOnExprAndReset()
         {
-            Assert.IsTrue(ONEXPRS.Count == 1);
+            Assert.That(ONEXPRS.Count, Is.EqualTo(1));
             var onexp = ONEXPRS[0];
             Reset();
             return onexp;
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.support.util
             string tableName,
             string indexBackingClassStartsWith)
         {
-            Assert.IsTrue(FAFSNAPSHOTS.Count == 1);
+            Assert.That(FAFSNAPSHOTS.Count, Is.EqualTo(1));
             var fafdesc = FAFSNAPSHOTS[0];
             Assert.AreEqual(tableName, fafdesc.Tables[0].IndexName);
             var name = fafdesc.Tables[0].IndexDesc;
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public static void AssertJoinOneStreamAndReset(bool unique)
         {
-            Assert.IsTrue(JOINS.Count == 1);
+            Assert.That(JOINS.Count, Is.EqualTo(1));
             var join = JOINS[0];
             var first = join.IndexSpecs[1];
             var firstName = first.Items.Keys.First();
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public static QueryPlanForge AssertJoinAndReset()
         {
-            Assert.IsTrue(JOINS.Count == 1);
+            Assert.That(JOINS.Count, Is.EqualTo(1));
             var join = JOINS[0];
             Reset();
             return join;
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public static void AssertJoinAllStreamsAndReset(bool unique)
         {
-            Assert.IsTrue(JOINS.Count == 1);
+            Assert.That(JOINS.Count, Is.EqualTo(1));
             var join = JOINS[0];
             foreach (var index in join.IndexSpecs) {
                 var firstName = index.Items.Keys.First();

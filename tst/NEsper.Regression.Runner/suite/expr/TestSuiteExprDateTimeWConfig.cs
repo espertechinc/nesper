@@ -14,6 +14,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.expr.datetime;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
+using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
 
@@ -22,15 +24,18 @@ using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUti
 namespace com.espertech.esper.regressionrun.suite.expr
 {
     [TestFixture]
-    public class TestSuiteExprDateTimeWConfig
+    public class TestSuiteExprDateTimeWConfig : AbstractTestContainer
     {
+        private readonly EPRuntimeProvider runtimeProvider = new EPRuntimeProvider();
+        
         private void TryInvalidConfig(
             Type beanEventClass,
             ConfigurationCommonEventTypeBean configBean,
             string expected)
         {
             TryInvalidConfigurationCompileAndRuntime(
-                SupportConfigFactory.GetConfiguration(),
+                runtimeProvider,
+                SupportConfigFactory.GetConfiguration(Container),
                 config => config.Common.AddEventType(beanEventClass.Name, beanEventClass.FullName, configBean),
                 expected);
         }
@@ -38,12 +43,11 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test, RunInApplicationDomain]
         public void TestExprDTMicrosecondResolution()
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Common.AddEventType(typeof(SupportDateTime));
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             TestSuiteExprDateTime.AddIdStsEtsEvent(session.Configuration);
             RegressionRunner.Run(session, ExprDTResolution.Executions(true));
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

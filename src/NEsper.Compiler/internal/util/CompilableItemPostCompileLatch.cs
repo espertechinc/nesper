@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.compiler.@internal.util
@@ -16,6 +17,6 @@ namespace com.espertech.esper.compiler.@internal.util
     public interface CompilableItemPostCompileLatch
     {
         void AwaitAndRun();
-        void Completed(IEnumerable<Pair<Assembly, byte[]>> assembliesWithImage);
+        void Completed(IEnumerable<Artifact> artifacts);
     }
 } // end of namespace

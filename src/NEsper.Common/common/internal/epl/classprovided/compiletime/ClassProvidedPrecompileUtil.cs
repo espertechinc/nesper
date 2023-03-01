@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.compile;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -34,8 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             }
 
             var index = -1;
-            var existingTypes = new List<Type>(optionalPrior?.Classes ?? EmptyList<Type>.Instance);
-            var existingTypesSet = new HashSet<string>(existingTypes.Select(_ => _.FullName));
+            var optionalPriorClasses = (optionalPrior?.Classes ?? EmptyList<Type>.Instance);
+            var existingTypes = new Dictionary<String, Type>();
+            existingTypes.PutAll(optionalPriorClasses.Select(_ => new KeyValuePair<string, Type>(_.FullName, _)));
+            //var existingTypesSet = new HashSet<string>(existingTypes.Select(_ => _.FullName));
 
             // In .NET our classes must be part of an assembly.  This is different from Java, where each class 
             // can be compiled into its own .class file.  Technically, we can create netmodules, but even then
@@ -51,24 +55,30 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                 compilables.Add(new CompilableClass(classText, className));
             }
 
-            CompileResponse response;
+            Artifact artifact;
             try {
-                response = compileTimeServices.CompilerServices.Compile(
+                artifact = compileTimeServices.CompilerServices.Compile(
                     new CompileRequest(compilables, compileTimeServices.Services));
             } 
             catch(CompilerServicesCompileException ex) {
                 throw HandleException(ex, "Failed to compile class");
             }
 
-            foreach (var exportedType in response.Assembly.ExportedTypes) {
-                if (existingTypesSet.Contains(exportedType.FullName)) {
-                    throw new ExprValidationException("Duplicate class by name '" + exportedType.FullName + "'");
+            foreach (var exportedTypeName in artifact.TypeNames) {
+                if (existingTypes.ContainsKey(exportedTypeName)) {
+                    throw new ExprValidationException("Duplicate class by name '" + exportedTypeName + "'");
                 }
+            }
+            
+            // it's not entirely clear to me why we are loading the classes into the
+            // current context as this is a compile time context.  These classes will
+            // be materialized in the default load context
 
-                existingTypes.Add(exportedType);
+            foreach (var exportedType in artifact.Assembly.ExportedTypes) {
+                existingTypes.Add(exportedType.FullName, exportedType);
             }
 
-            return new ClassProvidedPrecompileResult(response.Assembly, existingTypes);
+            return new ClassProvidedPrecompileResult(artifact, existingTypes.Values.ToList());
         }
 
         private static ExprValidationException HandleException(

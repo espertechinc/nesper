@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol");
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name).AddView("length", Expressions.Constant(5)));
+                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(5)));
                 model.OutputLimitClause = OutputLimitClause.Create(6);
                 model.OrderByClause = OrderByClause.Create().Add("Price", true);
                 model = env.CopyMayFail(model);

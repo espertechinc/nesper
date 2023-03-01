@@ -13,32 +13,31 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.resultset.aggregate;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.resultset
 {
     [TestFixture]
-    public class TestSuiteResultSetAggregateWConfig
+    public class TestSuiteResultSetAggregateWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFilteredWMathContext()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
             session.Configuration.Compiler.Expression.MathContext = new MathContext(MidpointRounding.AwayFromZero, 2);
             session.Configuration.Common.AddEventType(typeof(SupportBeanNumeric));
             RegressionRunner.Run(session, new ResultSetAggregateFilteredWMathContext());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetAggregateExtInvalid()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
             session.Configuration.Compiler.Expression.ExtendedAggregation = false;
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             RegressionRunner.Run(session, new ResultSetAggregateExtInvalid());
-            session.Dispose();
         }
     }
 } // end of namespace

@@ -27,8 +27,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public void Run(Configuration configuration)
         {
-            TrySend(4, 10000, true, Locking.SUSPEND, configuration);
-            TrySend(4, 10000, true, Locking.SPIN, configuration);
+            var runtimeProvider = new EPRuntimeProvider();
+            TrySend(runtimeProvider, 4, 10000, true, Locking.SUSPEND, configuration);
+            TrySend(runtimeProvider, 4, 10000, true, Locking.SPIN, configuration);
         }
 
         public void ManualTestOrderedDeliveryFail()
@@ -38,6 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         }
 
         private static void TrySend(
+            EPRuntimeProvider runtimeProvider,
             int numThreads,
             int numEvents,
             bool isPreserveOrder,
@@ -48,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Runtime.Threading.ListenerDispatchLocking = locking;
             configuration.Common.AddEventType(typeof(SupportBean));
 
-            var runtime = EPRuntimeProvider.GetRuntime(typeof(MultithreadDeterminismListener).Name, configuration);
+            var runtime = runtimeProvider.GetRuntime(nameof(MultithreadDeterminismListener), configuration);
             runtime.Initialize();
 
             // setup statements

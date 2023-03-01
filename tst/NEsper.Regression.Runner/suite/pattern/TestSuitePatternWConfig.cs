@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.suite.pattern;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -23,70 +24,72 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.pattern
 {
     [TestFixture]
-    public class TestSuitePatternWConfig
+    public class TestSuitePatternWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestMax2Noprevent()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container)) {
             Configure(2, false, session.Configuration);
             RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Noprevent());
-            session.Dispose();
+            };
         }
 
         [Test, RunInApplicationDomain]
         public void TestMax2Prevent()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container)) {
             Configure(2, true, session.Configuration);
             RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Prevent());
-            session.Dispose();
+            };
         }
 
         [Test, RunInApplicationDomain]
         public void TestMax4Prevent()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container)) {
             Configure(4, true, session.Configuration);
             RegressionRunner.Run(session, new PatternOperatorFollowedByMax4Prevent());
-            session.Dispose();
+            };
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternMicrosecondResolution()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container)) {
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new PatternMicrosecondResolution(true));
-            session.Dispose();
+            };
         }
 
         [Test]
         public void TestPatternMicrosecondResolutionCrontab()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container)) {
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new PatternMicrosecondResolutionCrontab());
-            session.Dispose();
+            };
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternObserverTimerScheduleTimeZoneEST()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container)) {
             session.Configuration.Runtime.Expression.TimeZone = TimeZoneHelper.GetTimeZoneInfo("GMT-4:00");
             RegressionRunner.Run(session, new PatternObserverTimerScheduleTimeZoneEST());
-            session.Dispose();
+            };
         }
 
-        private void Configure(long max, bool preventStart, Configuration configuration)
+        private void Configure(
+            long max,
+            bool preventStart,
+            Configuration configuration)
         {
             configuration.Runtime.ConditionHandling.AddClass(typeof(SupportConditionHandlerFactory));
             configuration.Runtime.Patterns.MaxSubexpressions = max;
             configuration.Runtime.Patterns.IsMaxSubexpressionPreventStart = preventStart;
 
-            foreach (Type clazz in new Type[] { typeof(SupportBean_A), typeof(SupportBean_B), typeof(SupportBean) })
-            {
+            foreach (Type clazz in new Type[] { typeof(SupportBean_A), typeof(SupportBean_B), typeof(SupportBean) }) {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
         }

@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createclass
 {
     public class StmtForgeMethodCreateClass : StmtForgeMethodCreateSimpleBase
     {
-        private readonly string className;
+        private readonly string _className;
 
-        private readonly ClassProvidedPrecompileResult classProvidedPrecompileResult;
+        private readonly ClassProvidedPrecompileResult _classProvidedPrecompileResult;
 
         public StmtForgeMethodCreateClass(
             StatementBaseInfo @base,
@@ -28,23 +28,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createclass
             string className)
             : base(@base)
         {
-            this.classProvidedPrecompileResult = classProvidedPrecompileResult;
-            this.className = className;
+            _classProvidedPrecompileResult = classProvidedPrecompileResult;
+            _className = className;
         }
 
         protected override string Register(StatementCompileTimeServices services)
         {
-            if (services.ClassProvidedCompileTimeResolver.ResolveClass(className) != null) {
-                throw new ExprValidationException("Class '" + className + "' has already been declared");
+            if (services.ClassProvidedCompileTimeResolver.ResolveClass(_className) != null) {
+                throw new ExprValidationException("Class '" + _className + "' has already been declared");
             }
 
-            var classProvided = new ClassProvided(classProvidedPrecompileResult.Assembly, className);
-            var visibility = services.ModuleVisibilityRules.GetAccessModifierExpression(Base, className);
+            var classProvided = new ClassProvided(_classProvidedPrecompileResult.Artifact, _className);
+            var visibility = services.ModuleVisibilityRules.GetAccessModifierExpression(Base, _className);
             classProvided.ModuleName = Base.ModuleName;
             classProvided.Visibility = visibility;
-            classProvided.LoadClasses(services.ParentClassLoader);
+            classProvided.LoadClasses(services.ParentTypeResolver);
             services.ClassProvidedCompileTimeRegistry.NewClass(classProvided);
-            return className;
+            return _className;
         }
 
         protected override StmtClassForgeable AiFactoryForgable(

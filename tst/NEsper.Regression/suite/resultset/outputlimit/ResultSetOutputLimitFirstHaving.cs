@@ -22,9 +22,30 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetHavingNoAvgOutputFirstEvents());
-            execs.Add(new ResultSetHavingNoAvgOutputFirstMinutes());
+            WithNoAvgOutputFirstEvents(execs);
+            WithNoAvgOutputFirstMinutes(execs);
+            WithAvgOutputFirstEveryTwoMinutes(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAvgOutputFirstEveryTwoMinutes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetHavingAvgOutputFirstEveryTwoMinutes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoAvgOutputFirstMinutes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetHavingNoAvgOutputFirstMinutes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoAvgOutputFirstEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetHavingNoAvgOutputFirstEvents());
             return execs;
         }
 
@@ -98,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 env.AdvanceTime(0);
 
-                var fields = new [] { "val0" };
+                var fields = new[] { "val0" };
                 var query =
                     "@Name('s0') select sum(DoublePrimitive) as val0 from SupportBean#length(5) having sum(DoublePrimitive) > 100 output first every 2 seconds";
                 env.CompileDeploy(query).AddListener("s0");
@@ -112,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {101d});
+                    new object[] { 101d });
 
                 SendBeanEvent(env, 1);
 
@@ -128,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {114d});
+                    new object[] { 114d });
 
                 env.AdvanceTime(4999);
                 SendBeanEvent(env, 0);
@@ -139,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {102d});
+                    new object[] { 102d });
 
                 env.UndeployAll();
             }

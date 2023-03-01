@@ -35,25 +35,13 @@ using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.Su
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
-    public class TestSuiteClientRuntime
+    public class TestSuiteClientRuntime : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
+        public TestSuiteClientRuntime() : base(Configure)
         {
-            _session = RegressionRunner.Session();
-            Configure(_session.Configuration);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _session.Dispose();
-            _session = null;
-        }
-
-        private RegressionSession _session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -191,7 +179,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
 
             [Test, RunInApplicationDomain]
-            public void Withg() => RegressionRunner.Run(_session, ClientRuntimeExceptionHandler.Withg());
+            public void Withg() => RegressionRunner.Run(_session, ClientRuntimeExceptionHandler.WithRuntimeExHandlerInvalidAgg());
         }
 
         /// <summary>

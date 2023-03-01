@@ -61,7 +61,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Add an indexOne
             EventType eventType = SupportEventTypeFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateBeanType(typeof(SupportBean));
             SupportExprEventEvaluator eval = new SupportExprEventEvaluator(eventType.GetGetter("IntPrimitive"));
             ExprFilterSpecLookupable lookupable = new ExprFilterSpecLookupable(
@@ -92,7 +92,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             var eventObject = new SupportBeanSimple("DepositEvent_1", 1);
             var eventBean = SupportEventBeanFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateObject(eventObject);
 
             FilterHandle expr = new SupportFilterHandle();

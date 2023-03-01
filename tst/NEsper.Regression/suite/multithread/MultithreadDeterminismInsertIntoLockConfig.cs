@@ -32,7 +32,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadDeterminismInsertIntoLockConfig
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
 
         public void Run(Configuration configuration)
         {
@@ -40,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             TrySendCountFollowedBy(4, 100, Locking.SPIN, configuration);
         }
 
-        private static void TrySendCountFollowedBy(
+        private void TrySendCountFollowedBy(
             int numThreads,
             int numEvents,
             Locking locking,
@@ -52,8 +54,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // This should fail all test in this class
             // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
-            var runtime = EPRuntimeProvider.GetRuntime(
-                typeof(MultithreadDeterminismInsertIntoLockConfig).Name,
+            var runtime = _runtimeProvider.GetRuntime(
+                nameof(MultithreadDeterminismInsertIntoLockConfig),
                 configuration);
             runtime.Initialize();
 
@@ -66,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             deployedInsert.Statements[0].Events += (
                 sender,
                 updateEventArgs) => {
-                log.Debug(".update cnt=" + updateEventArgs.NewEvents[0].Get("cnt"));
+                Log.Debug(".update cnt=" + updateEventArgs.NewEvents[0].Get("cnt"));
             };
 
             var listeners = new SupportUpdateListener[numEvents];

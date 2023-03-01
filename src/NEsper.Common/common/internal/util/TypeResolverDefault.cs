@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -6,24 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.client.util
+namespace com.espertech.esper.common.@internal.util
 {
-    /// <summary>
-    /// Provider of a classloader.
-    /// </summary>
-    public interface ClassLoaderProvider
+    public class TypeResolverDefault : TypeResolver
     {
-        /// <summary>
-        /// Returns the classloader.
-        /// </summary>
-        /// <returns>classloader</returns>
-        ClassLoader GetClassLoader();
-    }
+        public static readonly TypeResolver INSTANCE = new TypeResolverDefault();
 
-    public class ClassLoaderProviderConstants
-    {
-        public const string NAME = "ClassLoaderProvider";
+        public Type ResolveType(
+            string typeName,
+            bool resolve)
+        {
+            return TypeHelper.ResolveType(typeName, resolve);
+        }
     }
-} // end of namespace
+}

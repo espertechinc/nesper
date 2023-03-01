@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                      "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplNamedWindow, path).AddListener("s0");
                 var onExprNamedWindow = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                Assert.AreEqual(typeof(SubordInKeywordMultiTableLookupStrategyFactoryForge).Name, onExprNamedWindow.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordInKeywordMultiTableLookupStrategyFactoryForge), onExprNamedWindow.TableLookupStrategy);
                 TryAssertionMultiIdx(env);
                 // assert table
                 path.Clear();
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplTable, path).AddListener("s0");
                 var onExprTable = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                Assert.AreEqual(typeof(SubordInKeywordMultiTableLookupStrategyFactoryForge).Name, onExprTable.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordInKeywordMultiTableLookupStrategyFactoryForge), onExprTable.TableLookupStrategy);
                 TryAssertionMultiIdx(env);
                 env.UndeployAll();
             }
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "from SupportBean_S0 as S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                Assert.AreEqual(typeof(SubordInKeywordMultiTableLookupStrategyFactoryForge).Name, subquery.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordInKeywordMultiTableLookupStrategyFactoryForge), subquery.TableLookupStrategy);
                 // single row tests
                 env.SendEventBean(new SupportBean_S1(101, "a", "b", "c", "d"));
                 env.SendEventBean(new SupportBean_S0(1, "a", "x"));
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                   "(select * from SupportBean_S0#keepall as S0 where sb.LongPrimitive in (Id)) from SupportBean as sb";
                 env.CompileDeploy(eplCoercion);
                 var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subqueryCoercion.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordFullTableScanLookupStrategyFactoryForge), subqueryCoercion.TableLookupStrategy);
                 env.UndeployAll();
             }
         }
@@ -408,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                      "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplNamedWindow, path).AddListener("s0");
                 var onExprNamedWindow = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                Assert.AreEqual(typeof(SubordInKeywordSingleTableLookupStrategyFactoryForge).Name, onExprNamedWindow.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordInKeywordSingleTableLookupStrategyFactoryForge), onExprNamedWindow.TableLookupStrategy);
                 TryAssertionSingleIdx(env);
                 // assert table
                 path.Clear();
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplTable, path).AddListener("s0");
                 var onExprTable = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                Assert.AreEqual(typeof(SubordInKeywordSingleTableLookupStrategyFactoryForge).Name, onExprTable.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordInKeywordSingleTableLookupStrategyFactoryForge), onExprTable.TableLookupStrategy);
                 TryAssertionSingleIdx(env);
                 env.UndeployAll();
             }
@@ -444,7 +444,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           " from SupportBean_S1 as S1";
                 env.CompileDeploy(epl).AddListener("s0");
                 var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                Assert.AreEqual(typeof(SubordInKeywordSingleTableLookupStrategyFactoryForge).Name, subquery.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordInKeywordSingleTableLookupStrategyFactoryForge), subquery.TableLookupStrategy);
                 // single row tests
                 env.SendEventBean(new SupportBean_S0(100, "a", "c"));
                 env.SendEventBean(new SupportBean_S1(1, "a1", "b", "c", "d"));
@@ -488,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                   "(select * from SupportBean#keepall as sb where sb.LongPrimitive in (S0.Id)) from SupportBean_S0 as S0";
                 env.CompileDeploy(eplCoercion);
                 var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subqueryCoercion.TableLookupStrategy);
+                Assert.AreEqual(nameof(SubordFullTableScanLookupStrategyFactoryForge), subqueryCoercion.TableLookupStrategy);
                 env.UndeployAll();
             }
         }

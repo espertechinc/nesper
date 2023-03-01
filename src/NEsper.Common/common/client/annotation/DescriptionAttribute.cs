@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.client.annotation
         /// </returns>
         public override string ToString()
         {
-            return string.Format("@Description(\"{0}\")", Value);
+            return $"@Description(\"{Value}\")";
         }
     }
 } // end of namespace

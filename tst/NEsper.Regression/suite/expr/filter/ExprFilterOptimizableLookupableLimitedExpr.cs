@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
                 env.Compile(objects, path);
 
-                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
 
                 AssertDisqualified(
                     env,

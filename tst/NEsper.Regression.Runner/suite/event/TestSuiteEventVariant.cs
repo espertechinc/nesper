@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.variant;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -23,25 +24,9 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventVariant
+    public class TestSuiteEventVariant : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -118,7 +103,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         [Test, RunInApplicationDomain]
         public void TestEventVariantStream()
         {
-            RegressionRunner.Run(session, EventVariantStream.Executions());
+            RegressionRunner.Run(_session, EventVariantStream.Executions());
         }
     }
 } // end of namespace

@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             long endTime)
         {
             var theEvent = new SupportCallEvent(callId, source, destination, startTime, endTime);
-            runtime.SendEventBean(theEvent, typeof(SupportCallEvent).Name);
+            runtime.SendEventBean(theEvent, nameof(SupportCallEvent));
             return theEvent;
         }
 

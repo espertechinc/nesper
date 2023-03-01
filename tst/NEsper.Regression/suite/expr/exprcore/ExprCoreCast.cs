@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				var model = new EPStatementObjectModel();
 				model.SelectClause = SelectClause.Create().Add(Expressions.Cast("Item?", "double"), "t0");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBeanDynRoot).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBeanDynRoot)));
 				model = SerializableObjectCopier.CopyMayFail(env.Container, model);
 				Assert.AreEqual(epl, model.ToEPL());
 

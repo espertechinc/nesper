@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // With 0-sleep or 1-sleep the counts start to drop because the event is chasing the context partition.
             var t = new Thread(
                 new MyTimeAdvancingRunnable(env, latch, 10, -1).Run);
-            t.Name = typeof(MultithreadContextInitiatedTerminatedWithNowParallel).Name;
+            t.Name = nameof(MultithreadContextInitiatedTerminatedWithNowParallel);
             t.Start();
 
             var numEvents = 10000;

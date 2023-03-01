@@ -11,6 +11,8 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.compat;
@@ -23,15 +25,17 @@ namespace com.espertech.esper.compiler.@internal.util
 	{
 		private readonly CountDownLatch _latch = new CountDownLatch(1);
 		private readonly ICollection<EventType> _eventTypes;
-		private readonly ClassLoader _parentClassLoader;
-		private IEnumerable<Pair<Assembly, byte[]>> _assembliesWithImage;
+		private readonly TypeResolver parentTypeResolver;
+		private IArtifactRepository _artifactRepository;
 
 		public CompilableItemPostCompileLatchJson(
 			ICollection<EventType> eventTypes,
-			ClassLoader parentClassLoader)
+			TypeResolver parentTypeResolver,
+			IArtifactRepository artifactRepository)
 		{
 			_eventTypes = eventTypes;
-			_parentClassLoader = parentClassLoader;
+			this.parentTypeResolver = parentTypeResolver;
+			_artifactRepository = artifactRepository;
 		}
 
 		public void AwaitAndRun()
@@ -40,14 +44,13 @@ namespace com.espertech.esper.compiler.@internal.util
 
 			// load underlying class of Json types
 			foreach (var jsonEventType in _eventTypes.OfType<JsonEventType>()) {
-				var classLoader = new PriorityClassLoader(_parentClassLoader, _assembliesWithImage.Select(_ => _.First));
+				var classLoader = new ArtifactTypeResolver(_artifactRepository, parentTypeResolver);
 				jsonEventType.Initialize(classLoader);
 			}
 		}
 
-		public void Completed(IEnumerable<Pair<Assembly, byte[]>> assembliesWithImage)
+		public void Completed(IEnumerable<Artifact> artifacts)
 		{
-			_assembliesWithImage = assembliesWithImage;
 			_latch.CountDown();
 		}
 	}

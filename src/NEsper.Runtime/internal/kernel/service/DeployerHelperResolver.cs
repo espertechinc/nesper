@@ -25,23 +25,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerHelperResolver
 	{
-		public static ClassLoader GetClassLoader(
+		public static TypeResolver GetClassLoader(
 			int rolloutItemNumber,
 			DeploymentClassLoaderOption deploymentClassLoaderOption,
 			EPServicesContext servicesContext)
 		{
-			ClassLoader deploymentClassLoader = servicesContext.ClassLoaderParent;
+			TypeResolver deploymentTypeResolver = servicesContext.TypeResolverParent;
 			if (deploymentClassLoaderOption != null) {
-				deploymentClassLoader = deploymentClassLoaderOption(
+				deploymentTypeResolver = deploymentClassLoaderOption(
 					new DeploymentClassLoaderContext(
-						servicesContext.ClassLoaderParent,
+						servicesContext.TypeResolverParent,
 						servicesContext.ConfigSnapshot));
-				if (deploymentClassLoader == null) {
+				if (deploymentTypeResolver == null) {
 					throw new EPDeployException("Deployment classloader option returned a null value for the classloader", rolloutItemNumber);
 				}
 			}
 
-			return deploymentClassLoader;
+			return deploymentTypeResolver;
 		}
 
 		public static string DetermineDeploymentIdCheckExists(

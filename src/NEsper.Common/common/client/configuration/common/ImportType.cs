@@ -10,6 +10,7 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -55,17 +56,17 @@ namespace com.espertech.esper.common.client.configuration.common
 
         public override Type Resolve(
             string providedTypeName,
-            ClassForNameProvider classForNameProvider)
+            TypeResolver typeResolver)
         {
             try {
                 if (Namespace == null) {
                     if (providedTypeName == TypeName) {
-                        return classForNameProvider.ClassForName(providedTypeName);
+                        return typeResolver.ResolveType(providedTypeName, false);
                     }
                 }
                 else {
                     if (providedTypeName == TypeNameBase) {
-                        return classForNameProvider.ClassForName(TypeName);
+                        return typeResolver.ResolveType(TypeName, false);
                     }
                 }
             }

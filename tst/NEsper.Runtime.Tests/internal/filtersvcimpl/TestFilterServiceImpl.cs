@@ -31,9 +31,9 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [SetUp]
         public void SetUp()
         {
-            supportEventBeanFactory = SupportEventBeanFactory.GetInstance(container);
+            supportEventBeanFactory = SupportEventBeanFactory.GetInstance(Container);
 
-            filterService = new FilterServiceLockCoarse(container.RWLockManager(), -1);
+            filterService = new FilterServiceLockCoarse(Container.RWLockManager(), -1);
 
             eventTypeOne = supportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             eventTypeTwo = supportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));

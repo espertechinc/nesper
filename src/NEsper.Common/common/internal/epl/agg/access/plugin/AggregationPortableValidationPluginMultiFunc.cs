@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         } else {
             forge = TypeHelper.Instantiate<AggregationMultiFunctionForge>(
                 configPair.First.MultiFunctionForgeClassName,
-                validationContext.ImportService.ClassForNameProvider);
+                validationContext.ImportService.TypeResolver);
         }
 
         ValidateParamsUnless(validationContext, parameters);

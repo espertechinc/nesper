@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
@@ -54,8 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         private void InitializeScriptingEngines()
         {
+            var classLoader = _container.ClassLoaderProvider().GetTypeResolver();
             foreach (var engineTypeName in _configuration.Engines) {
-                var engineType = TypeHelper.ResolveType(engineTypeName);
+                var engineType = classLoader.ResolveType(engineTypeName, false);
                 if (engineType != null) {
                     AddScriptingEngine((ScriptingEngine) Activator.CreateInstance(engineType));
                 }
@@ -91,10 +94,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         /// <param name="dialect">The language prefix.</param>
         /// <param name="script">The script.</param>
+        /// <param name="importService"></param>
         /// <returns></returns>
         public Func<ScriptArgs, object> Compile(
             string dialect,
-            ExpressionScriptProvided script)
+            ExpressionScriptProvided script,
+            ImportService importService)
         {
             var scriptingEngine = _scriptingEngines.Get(dialect);
             if (scriptingEngine == null) {
@@ -102,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     "Failed to obtain script engine for dialect '" + dialect + "' for script '" + script.Name + "'");
             }
 
-            return scriptingEngine.Compile(script);
+            return scriptingEngine.Compile(script, importService);
         }
 
         public void VerifyScript(

@@ -131,7 +131,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             Assert.AreEqual(1, contexts.Count);
             var context = contexts[0];
-            Assert.AreEqual("default", context.RuntimeURI);
+            Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+            //Assert.AreEqual("default", context.RuntimeURI);
             Assert.AreEqual(env.Statement("s0").DeploymentId, context.DeploymentId);
             Assert.AreEqual("s0", context.StatementName);
             var condition = (ConditionPatternSubexpressionMax) context.EngineCondition;
@@ -241,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(0);
                 var context = SupportConditionHandlerFactory.FactoryContexts[0];
-                Assert.AreEqual("default", context.RuntimeURI);
+                Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
                 var handler = SupportConditionHandlerFactory.LastHandler;
                 handler.GetAndResetContexts();
 

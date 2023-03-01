@@ -20,11 +20,11 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
-using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperInitStatement; //initializeStatements
-using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperInitializeEPLObjects; //initializeEPLObjects,validateStagedEPLObjects
-using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperResolver; //resolveDependencies
-using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperStatement; //deployStatements
-using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperUpdatePath; //updatePath
+using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperInitStatement;
+using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperInitializeEPLObjects;
+using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperResolver;
+using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperStatement;
+using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperUpdatePath;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
@@ -121,9 +121,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			var services = epRuntime.ServicesContext;
 			var deploymentClassLoader = DeployerHelperResolver.GetClassLoader(-1, deploymentClassLoaderOption, services);
-			var moduleProvider = ModuleProviderUtil.Analyze(compiled, deploymentClassLoader, services.ClassProvidedPathRegistry);
-			if (moduleProvider.ClassLoader is ClassProvidedImportClassLoader) {
-				((ClassProvidedImportClassLoader) moduleProvider.ClassLoader).Imported = moduleProvider.ModuleProvider.ModuleDependencies.PathClasses;
+			var moduleProvider = ModuleProviderUtil.Analyze(
+				compiled,
+				deploymentClassLoader,
+				services.ClassProvidedPathRegistry);
+			if (moduleProvider.TypeResolver is ClassProvidedImportTypeResolver classProvidedImportClassLoader) {
+				classProvidedImportClassLoader.Imported = moduleProvider.ModuleProvider.ModuleDependencies.PathClasses;
 			}
 
 			var moduleName = moduleProvider.ModuleProvider.ModuleName;

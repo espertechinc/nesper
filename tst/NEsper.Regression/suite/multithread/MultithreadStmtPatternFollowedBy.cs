@@ -28,6 +28,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
+        
         public void Run(Configuration configuration)
         {
             RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, configuration);
@@ -44,13 +46,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, configuration);
         }
 
-        private static void RunAssertionPatternFollowedBy(
+        private void RunAssertionPatternFollowedBy(
             FilterServiceProfile profile,
             Configuration config)
         {
             config.Common.AddEventType("S0", typeof(SupportBean_S0));
-            var runtimeURI = typeof(MultithreadStmtPatternFollowedBy).Name + "_" + profile;
-            var runtime = EPRuntimeProvider.GetRuntime(runtimeURI, config);
+            var runtimeURI = nameof(MultithreadStmtPatternFollowedBy) + "_" + profile;
+            var runtime = _runtimeProvider.GetRuntime(runtimeURI, config);
             runtime.Initialize();
 
             string[] epls = {
@@ -79,10 +81,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 int[] threadTwoValues = {1, 3, 5, 7, 9};
 
                 var threadOne = new Thread(new SenderRunnable(runtime.EventService, threadOneValues).Run);
-                threadOne.Name = typeof(MultithreadStmtPatternFollowedBy).Name + "-one";
+                threadOne.Name = nameof(MultithreadStmtPatternFollowedBy) + "-one";
 
                 var threadTwo = new Thread(new SenderRunnable(runtime.EventService, threadTwoValues).Run);
-                threadTwo.Name = typeof(MultithreadStmtPatternFollowedBy).Name + "-two";
+                threadTwo.Name = nameof(MultithreadStmtPatternFollowedBy) + "-two";
 
                 threadOne.Start();
                 threadTwo.Start();

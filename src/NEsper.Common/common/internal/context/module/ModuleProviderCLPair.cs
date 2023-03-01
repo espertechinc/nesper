@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.context.module
     public class ModuleProviderCLPair
     {
         public ModuleProviderCLPair(
-            ClassLoader classLoader,
+            TypeResolver typeResolver,
             ModuleProvider moduleProvider)
         {
-            ClassLoader = classLoader;
+            TypeResolver = typeResolver;
             ModuleProvider = moduleProvider;
         }
 
-        public ClassLoader ClassLoader { get; }
+        public TypeResolver TypeResolver { get; }
 
         public ModuleProvider ModuleProvider { get; }
     }

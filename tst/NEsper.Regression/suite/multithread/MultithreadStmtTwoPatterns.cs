@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var runnable = new TwoPatternRunnable(env);
             var t = new Thread(runnable.Run);
-            t.Name = typeof(MultithreadStmtTwoPatterns).Name;
+            t.Name = nameof(MultithreadStmtTwoPatterns);
             t.Start();
             SupportCompileDeployUtil.ThreadSleep(100);
 

@@ -495,8 +495,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create(new[] {"S0.Id", " S0.P00", " S0.P01", " S1.Id", " S1.P10", " S1.P11"});
                 var fromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportBean_S0).Name, "S0").AddView("keepall"),
-                    FilterStream.Create(typeof(SupportBean_S1).Name, "S1").AddView("keepall"));
+                    FilterStream.Create(nameof(SupportBean_S0), "S0").AddView("keepall"),
+                    FilterStream.Create(nameof(SupportBean_S1), "S1").AddView("keepall"));
                 fromClause.Add(OuterJoinQualifier.Create("S0.P00", OuterJoinType.LEFT, "S1.P10").Add("S1.P11", "S0.P01"));
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);

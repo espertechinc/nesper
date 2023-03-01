@@ -8,6 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+
+#if NETCORE
+using System.Runtime.Loader;
+#endif
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
@@ -26,6 +31,7 @@ using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 using com.espertech.esper.runtime.@internal.kernel.statement;
@@ -36,6 +42,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerHelperInitStatement
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public static DeployerModuleStatementLightweights InitializeStatements(
 			int rolloutItemNumber,
 			bool recovery,
@@ -53,6 +61,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// get module statements
 			IList<StatementProvider> statementResources;
 			try {
+#if NETCORE
+				if (Log.IsDebugEnabled) {
+					var assemblyLoadContext = AssemblyLoadContext.GetLoadContext(moduleProvider.ModuleProvider.GetType().Assembly);
+					Log.Debug("AssemblyLoadContext: {0}", assemblyLoadContext);
+				}
+#endif
+				
 				statementResources = moduleProvider.ModuleProvider.Statements;
 			}
 			catch (Exception e) {
@@ -77,7 +92,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						moduleIncidentals,
 						statementNameResolverRuntime,
 						userObjectResolverRuntime,
-						moduleProvider.ClassLoader,
+						moduleProvider.TypeResolver,
 						services);
 					lightweights.Add(lightweight);
 					statementId++;
@@ -113,7 +128,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			ModuleIncidentals moduleIncidentals,
 			StatementNameRuntimeOption statementNameResolverRuntime,
 			StatementUserObjectRuntimeOption userObjectResolverRuntime,
-			ClassLoader moduleClassLoader,
+			TypeResolver moduleTypeResolver,
 			EPServicesContext services)
 		{
 			var informationals = statementProvider.Informationals;

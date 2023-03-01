@@ -1,11 +1,13 @@
 ﻿using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
@@ -13,16 +15,20 @@ namespace com.espertech.esper.common.@internal.context.module
     {
         public static ModuleProviderCLPair Analyze(
             EPCompiled compiled,
-            ClassLoader classLoaderParent,
-            PathRegistry<String, ClassProvided> classProvidedPathRegistry)
+            TypeResolver typeResolverParent,
+            PathRegistry<string, ClassProvided> classProvidedPathRegistry)
         {
-            var classLoader = new PriorityClassLoader(classLoaderParent, compiled.Assemblies);
+            var classLoader = ClassProvidedImportClassLoaderFactory.GetClassLoader(
+                compiled.ArtifactRepository,
+                typeResolverParent,
+                classProvidedPathRegistry);
+
             var resourceClassName = compiled.Manifest.ModuleProviderClassName;
 
             // load module resource class
             Type clazz;
             try {
-                clazz = classLoader.GetClass(resourceClassName);
+                clazz = classLoader.ResolveType(resourceClassName, false);
             }
             catch (Exception e) {
                 throw new EPException(e);
@@ -31,7 +37,7 @@ namespace com.espertech.esper.common.@internal.context.module
             // instantiate
             ModuleProvider moduleResource;
             try {
-                moduleResource = (ModuleProvider) TypeHelper.Instantiate(clazz);
+                moduleResource = (ModuleProvider)TypeHelper.Instantiate(clazz);
             }
             catch (EPException) {
                 throw;

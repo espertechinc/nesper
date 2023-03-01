@@ -15,132 +15,130 @@ using com.espertech.esper.regressionlib.suite.client.instrument;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
-    public class TestSuiteClientInstrument
+    public class TestSuiteClientInstrument : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestClientInstrumentInstrumentation()
         {
-            RegressionSession session = RegressionRunner.Session();
-            foreach (Type clazz in new Type[] { typeof(SupportBean) })
-            {
-                session.Configuration.Common.AddEventType(clazz);
+            using (var session = RegressionRunner.Session(Container)) {
+                foreach (Type clazz in new Type[] { typeof(SupportBean) }) {
+                    session.Configuration.Common.AddEventType(clazz);
+                }
+
+                RegressionRunner.Run(session, new ClientInstrumentInstrumentation());
             }
-            RegressionRunner.Run(session, new ClientInstrumentInstrumentation());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientInstrumentAudit()
         {
-            RegressionSession session = RegressionRunner.Session();
-            foreach (Type clazz in new Type[] { typeof(SupportBean), typeof(SupportBean_ST0), typeof(SupportBean_ST1) })
-            {
-                session.Configuration.Common.AddEventType(clazz);
+            using (var session = RegressionRunner.Session(Container)) {
+                foreach (Type clazz in new Type[] { typeof(SupportBean), typeof(SupportBean_ST0), typeof(SupportBean_ST1) }) {
+                    session.Configuration.Common.AddEventType(clazz);
+                }
+
+                session.Configuration.Runtime.Logging.AuditPattern = "[%u] [%d] [%s] [%i] [%c] %m";
+                RegressionRunner.Run(session, ClientInstrumentAudit.Executions());
             }
-            session.Configuration.Runtime.Logging.AuditPattern = "[%u] [%d] [%s] [%i] [%c] %m";
-            RegressionRunner.Run(session, ClientInstrumentAudit.Executions());
-            session.Dispose();
         }
 
         [Test]
         public void TestClientInstrumentMetricsReportingStmtMetrics()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using (var session = RegressionRunner.Session(Container, true)) {
+                ApplyMetricsConfig(session.Configuration, -1, -1);
 
-            ApplyMetricsConfig(session.Configuration, -1, -1);
+                ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                configOne.Interval = 10000;
+                configOne.AddIncludeLike("%cpuStmt%");
+                configOne.AddIncludeLike("%wallStmt%");
+                session.Configuration.Runtime.MetricsReporting.AddStmtGroup("nonmetrics", configOne);
 
-            ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
-            configOne.Interval = 10000;
-            configOne.AddIncludeLike("%cpuStmt%");
-            configOne.AddIncludeLike("%wallStmt%");
-            session.Configuration.Runtime.MetricsReporting.AddStmtGroup("nonmetrics", configOne);
+                // exclude metrics themselves from reporting
+                ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configTwo = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                configTwo.Interval = -1;
+                configOne.AddExcludeLike("%metrics%");
+                session.Configuration.Runtime.MetricsReporting.AddStmtGroup("metrics", configTwo);
 
-            // exclude metrics themselves from reporting
-            ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configTwo = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
-            configTwo.Interval = -1;
-            configOne.AddExcludeLike("%metrics%");
-            session.Configuration.Runtime.MetricsReporting.AddStmtGroup("metrics", configTwo);
-
-            RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtMetrics());
-
-            session.Dispose();
+                RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtMetrics());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingStmtGroups()
         {
-            RegressionSession session = RegressionRunner.Session();
-            session.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+            using (var session = RegressionRunner.Session(Container)) {
+                session.Configuration.Compiler.ByteCode.AllowSubscriber = true;
 
-            ApplyMetricsConfig(session.Configuration, -1, 7000);
+                ApplyMetricsConfig(session.Configuration, -1, 7000);
 
-            ConfigurationRuntimeMetricsReporting.StmtGroupMetrics groupOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
-            groupOne.Interval = 8000;
-            groupOne.AddIncludeLike("%GroupOne%");
-            groupOne.IsReportInactive = true;
-            session.Configuration.Runtime.MetricsReporting.AddStmtGroup("GroupOneStatements", groupOne);
+                ConfigurationRuntimeMetricsReporting.StmtGroupMetrics groupOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                groupOne.Interval = 8000;
+                groupOne.AddIncludeLike("%GroupOne%");
+                groupOne.IsReportInactive = true;
+                session.Configuration.Runtime.MetricsReporting.AddStmtGroup("GroupOneStatements", groupOne);
 
-            ConfigurationRuntimeMetricsReporting.StmtGroupMetrics groupTwo = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
-            groupTwo.Interval = 6000;
-            groupTwo.IsDefaultInclude = true;
-            groupTwo.AddExcludeLike("%Default%");
-            groupTwo.AddExcludeLike("%Metrics%");
-            session.Configuration.Runtime.MetricsReporting.AddStmtGroup("GroupTwoNonDefaultStatements", groupTwo);
+                ConfigurationRuntimeMetricsReporting.StmtGroupMetrics groupTwo = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                groupTwo.Interval = 6000;
+                groupTwo.IsDefaultInclude = true;
+                groupTwo.AddExcludeLike("%Default%");
+                groupTwo.AddExcludeLike("%Metrics%");
+                session.Configuration.Runtime.MetricsReporting.AddStmtGroup("GroupTwoNonDefaultStatements", groupTwo);
 
-            ConfigurationRuntimeMetricsReporting.StmtGroupMetrics groupThree = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
-            groupThree.Interval = -1;
-            groupThree.AddIncludeLike("%Metrics%");
-            session.Configuration.Runtime.MetricsReporting.AddStmtGroup("MetricsStatements", groupThree);
+                ConfigurationRuntimeMetricsReporting.StmtGroupMetrics groupThree = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                groupThree.Interval = -1;
+                groupThree.AddIncludeLike("%Metrics%");
+                session.Configuration.Runtime.MetricsReporting.AddStmtGroup("MetricsStatements", groupThree);
 
-            RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtGroups());
-
-            session.Dispose();
+                RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtGroups());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingNW()
         {
-            RegressionSession session = RegressionRunner.Session();
-            ApplyMetricsConfig(session.Configuration, -1, 1000);
-            RegressionRunner.Run(session, new ClientInstrumentMetricsReportingNW());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                ApplyMetricsConfig(session.Configuration, -1, 1000);
+                RegressionRunner.Run(session, new ClientInstrumentMetricsReportingNW());
+            }
         }
 
         [Test]
         public void TestClientInstrumentMetricsReportingRuntimeMetrics()
         {
-            RegressionSession session = RegressionRunner.Session();
-            ApplyMetricsConfig(session.Configuration, 10000, -1);
-            RegressionRunner.Run(session, new ClientInstrumentMetricsReportingRuntimeMetrics());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                ApplyMetricsConfig(session.Configuration, 10000, -1);
+                RegressionRunner.Run(session, new ClientInstrumentMetricsReportingRuntimeMetrics());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingDisableStatement()
         {
-            RegressionSession session = RegressionRunner.Session();
-            ApplyMetricsConfig(session.Configuration, -1, 10000);
-            ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
-            configOne.Interval = -1;
-            configOne.AddIncludeLike("%@METRIC%");
-            session.Configuration.Runtime.MetricsReporting.AddStmtGroup("metrics", configOne);
-            RegressionRunner.Run(session, new ClientInstrumentMetricsReportingDisableStatement());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                ApplyMetricsConfig(session.Configuration, -1, 10000);
+                ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                configOne.Interval = -1;
+                configOne.AddIncludeLike("%@METRIC%");
+                session.Configuration.Runtime.MetricsReporting.AddStmtGroup("metrics", configOne);
+                RegressionRunner.Run(session, new ClientInstrumentMetricsReportingDisableStatement());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingDisableRuntime()
         {
-            RegressionSession session = RegressionRunner.Session();
-            ApplyMetricsConfig(session.Configuration, 10000, 10000);
-            RegressionRunner.Run(session, new ClientInstrumentMetricsReportingDisableRuntime());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                ApplyMetricsConfig(session.Configuration, 10000, 10000);
+                RegressionRunner.Run(session, new ClientInstrumentMetricsReportingDisableRuntime());
+            }
         }
 
         private static void ApplyMetricsConfig(Configuration configuration, long runtimeMetricInterval, long stmtMetricInterval)

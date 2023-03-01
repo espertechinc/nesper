@@ -60,7 +60,7 @@ namespace NEsper.Avro.Core
 
             if (avroSchemaObj != null && !(avroSchemaObj is Schema)) {
                 throw new ArgumentException(
-                    "Schema expected of type " + typeof(Schema).Name + " but received " + avroSchemaObj.GetType().Name);
+                    "Schema expected of type " + nameof(Schema) + " but received " + avroSchemaObj.GetType().Name);
             }
 
             Schema schema;
@@ -299,13 +299,13 @@ namespace NEsper.Avro.Core
             if (avroSettings.TypeRepresentationMapperClass != null) {
                 _optionalTypeMapper = TypeHelper.Instantiate<TypeRepresentationMapper>(
                     avroSettings.TypeRepresentationMapperClass,
-                    importService.ClassForNameProvider);
+                    importService.TypeResolver);
             }
 
             if (avroSettings.ObjectValueTypeWidenerFactoryClass != null) {
                 _optionalWidenerFactory = TypeHelper.Instantiate<ObjectValueTypeWidenerFactory>(
                     avroSettings.ObjectValueTypeWidenerFactoryClass,
-                    importService.ClassForNameProvider);
+                    importService.TypeResolver);
             }
         }
 

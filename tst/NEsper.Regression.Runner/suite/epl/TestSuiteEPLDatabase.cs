@@ -29,25 +29,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     [Category("DatabaseTest")]
     [Category("IntegrationTest")]
-    public class TestSuiteEPLDatabase
+    public class TestSuiteEPLDatabase : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
+        public TestSuiteEPLDatabase() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -149,43 +137,43 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseDataSourceFactory()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseDataSourceFactory());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseDataSourceFactory());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinInsertInto()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseJoinInsertInto());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseJoinInsertInto());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinOptionLowercase()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseJoinOptionLowercase());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseJoinOptionLowercase());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinOptionUppercase()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseJoinOptionUppercase());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseJoinOptionUppercase());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinPerfNoCache()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseJoinPerfNoCache());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseJoinPerfNoCache());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseNoJoinIteratePerf()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseNoJoinIteratePerf());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseNoJoinIteratePerf());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDatabaseOuterJoinWCache()
         {
-            RegressionRunner.RunPerformanceSensitive(session, new EPLDatabaseOuterJoinWCache());
+            RegressionRunner.RunPerformanceSensitive(_session, new EPLDatabaseOuterJoinWCache());
         }
         
         /// <summary>

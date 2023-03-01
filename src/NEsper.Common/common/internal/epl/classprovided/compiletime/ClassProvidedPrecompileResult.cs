@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.common.@internal.compile;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
@@ -21,14 +23,14 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             EmptyList<Type>.Instance);
 
         public ClassProvidedPrecompileResult(
-            Assembly assembly,
+            Artifact artifact,
             IList<Type> classes)
         {
-            Assembly = assembly;
+            Artifact = artifact;
             Classes = classes;
         }
 
-        public Assembly Assembly { get; }
+        public Artifact Artifact { get; }
         public IList<Type> Classes { get; }
     }
 } // end of namespace

@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				var model = new EPStatementObjectModel();
 				model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.IntBoxed"), "t0");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).Name));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarkerInterface)));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 				Assert.AreEqual(stmtText, model.ToEPL());
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));

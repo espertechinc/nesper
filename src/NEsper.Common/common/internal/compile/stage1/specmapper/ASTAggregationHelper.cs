@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                             configPair.Second);
                     } else {
                         factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
-                            configPair.First.MultiFunctionForgeClassName, importService.ClassForNameProvider);
+                            configPair.First.MultiFunctionForgeClassName, importService.TypeResolver);
                     }
                     plugInAggregations.Map[multiKey] = factory;
                 }

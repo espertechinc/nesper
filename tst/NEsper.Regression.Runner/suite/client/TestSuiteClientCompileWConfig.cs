@@ -12,6 +12,8 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
@@ -19,6 +21,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -27,7 +30,7 @@ using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUti
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
-    public class TestSuiteClientCompileWConfig
+    public class TestSuiteClientCompileWConfig : AbstractTestContainer
     {
         private void TryInvalidCompileConfigureAggFunc(
             string funcName,
@@ -37,7 +40,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             Consumer<Configuration> configurer = config => {
                 config.Compiler.AddPlugInAggregationFunctionForge(funcName, className);
             };
-            TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(), configurer, message);
+            TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(Container), configurer, message);
         }
 
         private void TryInvalidPlugInSingleRow(
@@ -49,14 +52,16 @@ namespace com.espertech.esper.regressionrun.suite.client
             Consumer<Configuration> configurer = config => {
                 config.Compiler.AddPlugInSingleRowFunction(funcName, className, methodName);
             };
-            TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(), configurer, expected);
+            TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(Container), configurer, expected);
         }
 
-        private class MyClassForNameProvider : ClassForNameProvider
+        private class MyTypeResolver : TypeResolver
         {
-            public Type ClassForName(string className)
+            public Type ResolveType(
+                string typeName,
+                bool resolve = false)
             {
-                return ClassForNameProviderDefault.INSTANCE.ClassForName(className);
+                return TypeResolverDefault.INSTANCE.ResolveType(typeName);
             }
         }
 
@@ -77,9 +82,9 @@ namespace com.espertech.esper.regressionrun.suite.client
         [Test, RunInApplicationDomain]
         public void TestClientCompileClassForNameProvider()
         {
-            var config = SupportConfigFactory.GetConfiguration();
+            var config = SupportConfigFactory.GetConfiguration(Container);
             config.Common.AddEventType(typeof(SupportBean));
-            config.Common.TransientConfiguration.Put(ClassForNameProviderConstants.NAME, new MyClassForNameProvider());
+            config.Common.TransientConfiguration.Put(TypeResolverConstants.NAME, new MyTypeResolver());
 
             var epl = "select System.Environment.Exit(-1) from SupportBean";
             TryInvalidCompileWConfig(
@@ -88,8 +93,8 @@ namespace com.espertech.esper.regressionrun.suite.client
                 "Failed to validate select-clause expression 'System.Environment.Exit(-1)': Failed to resolve 'System.Environment.Exit' to");
 
             config.Common.TransientConfiguration.Put(
-                ClassForNameProviderConstants.NAME,
-                ClassForNameProviderDefault.INSTANCE);
+                TypeResolverConstants.NAME,
+                TypeResolverDefault.INSTANCE);
         }
 
         [Test, RunInApplicationDomain]
@@ -113,7 +118,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                     typeof(SupportConcatWCodegenAggregationFunctionForge));
             };
             TryInvalidConfigurationCompiler(
-                SupportConfigFactory.GetConfiguration(),
+                SupportConfigFactory.GetConfiguration(Container),
                 configurer,
                 "Failed compiler startup: Error configuring compiler: Aggregation function by name 'abc' is already defined");
         }
@@ -133,7 +138,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 config.Compiler.AddPlugInAggregationMultiFunction(func);
             };
             TryInvalidConfigurationCompiler(
-                SupportConfigFactory.GetConfiguration(),
+                SupportConfigFactory.GetConfiguration(Container),
                 configurer,
                 "Failed compiler startup: Error configuring compiler: Aggregation function by name 'abc' is already defined");
 
@@ -148,7 +153,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 config.Compiler.AddPlugInAggregationMultiFunction(funcTwo);
             };
             TryInvalidConfigurationCompiler(
-                SupportConfigFactory.GetConfiguration(),
+                SupportConfigFactory.GetConfiguration(Container),
                 configurer,
                 "Failed compiler startup: Error configuring compiler: Aggregation multi-function by name 'def' is already defined");
 
@@ -158,7 +163,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 config.Compiler.AddPlugInAggregationMultiFunction(configTwo);
             };
             TryInvalidConfigurationCompiler(
-                SupportConfigFactory.GetConfiguration(),
+                SupportConfigFactory.GetConfiguration(Container),
                 configurer,
                 "Failed compiler startup: Error configuring compiler: Invalid class name for aggregation multi-function factory 'x y z'");
         }
@@ -187,7 +192,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                     typeof(SupportConcatWCodegenAggregationFunctionForge));
             };
             TryInvalidConfigurationCompiler(
-                SupportConfigFactory.GetConfiguration(),
+                SupportConfigFactory.GetConfiguration(Container),
                 configurer,
                 "Failed compiler startup: Error configuring compiler: Aggregation function by name 'concatstring' is already defined");
 
@@ -198,7 +203,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 config.Compiler.AddPlugInSingleRowFunction("teststring", typeof(SupportSingleRowFunction), "xyz");
             };
             TryInvalidConfigurationCompiler(
-                SupportConfigFactory.GetConfiguration(),
+                SupportConfigFactory.GetConfiguration(Container),
                 configurer,
                 "Failed compiler startup: Error configuring compiler: Aggregation function by name 'teststring' is already defined");
         }

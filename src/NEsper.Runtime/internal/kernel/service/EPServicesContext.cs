@@ -58,6 +58,7 @@ using com.espertech.esper.common.@internal.statement.multimatch;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
@@ -78,8 +79,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    private readonly AggregationServiceFactoryService _aggregationServiceFactoryService;
 	    private readonly BeanEventTypeFactoryPrivate _beanEventTypeFactoryPrivate;
 	    private readonly BeanEventTypeStemService _beanEventTypeStemService;
-	    private readonly ClassForNameProvider _classForNameProvider;
-	    private readonly ParentClassLoader _classLoaderParent;
+	    private readonly TypeResolver _typeResolver;
+	    private readonly ParentTypeResolver _typeResolverParent;
 	    private readonly PathRegistry<string, ClassProvided> _classProvidedPathRegistry;
 	    private readonly Configuration _configSnapshot;
 	    private readonly ContextManagementService _contextManagementService;
@@ -161,8 +162,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    AggregationServiceFactoryService aggregationServiceFactoryService,
 		    BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
 		    BeanEventTypeStemService beanEventTypeStemService,
-		    ClassForNameProvider classForNameProvider,
-		    ParentClassLoader classLoaderParent,
+		    TypeResolver typeResolver,
+		    ParentTypeResolver typeResolverParent,
 		    PathRegistry<string, ClassProvided> classProvidedPathRegistry,
 		    Configuration configSnapshot,
 		    ContextManagementService contextManagementService,
@@ -239,8 +240,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	        _aggregationServiceFactoryService = aggregationServiceFactoryService;
 	        _beanEventTypeFactoryPrivate = beanEventTypeFactoryPrivate;
 	        _beanEventTypeStemService = beanEventTypeStemService;
-	        _classForNameProvider = classForNameProvider;
-	        _classLoaderParent = classLoaderParent;
+	        _typeResolver = typeResolver;
+	        _typeResolverParent = typeResolverParent;
 	        _classProvidedPathRegistry = classProvidedPathRegistry;
 	        _configSnapshot = configSnapshot;
 	        _contextManagementService = contextManagementService;
@@ -412,9 +413,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
 	    public BeanEventTypeStemService BeanEventTypeStemService => _beanEventTypeStemService;
 
-	    public ClassForNameProvider ClassForNameProvider => _classForNameProvider;
+	    public TypeResolver TypeResolver => _typeResolver;
 
-	    public ParentClassLoader ClassLoaderParent => _classLoaderParent;
+	    public ParentTypeResolver TypeResolverParent => _typeResolverParent;
 
 	    public PathRegistry<string, ClassProvided> ClassProvidedPathRegistry => _classProvidedPathRegistry;
 

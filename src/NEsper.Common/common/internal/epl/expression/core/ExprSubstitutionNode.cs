@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 try {
                     clazz = TypeHelper.GetClassForName(
                         OptionalType.ClassIdentifier,
-                        validationContext.ImportService.ClassForNameProvider);
+                        validationContext.ImportService.TypeResolver);
                 }
                 catch (TypeLoadException) {
                 }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 if (clazz == null) {
                     clazz = TypeHelper.GetTypeForSimpleName(
                         OptionalType.ClassIdentifier,
-                        validationContext.ImportService.ClassForNameProvider);
+                        validationContext.ImportService.TypeResolver);
                 }
 
                 if (clazz != null) {
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 else {
                     try {
-                        ResolvedType = validationContext.ImportService.ResolveClass(
+                        ResolvedType = validationContext.ImportService.ResolveType(
                             OptionalType.ClassIdentifier,
                             false,
                             validationContext.ClassProvidedExtension);

@@ -34,40 +34,24 @@ using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.Support
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLInsertInto
+    public class TestSuiteEPLInsertInto : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
         [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoIRStreamFunc()
         {
-            RegressionRunner.Run(session, new EPLInsertIntoIRStreamFunc());
+            RegressionRunner.Run(_session, new EPLInsertIntoIRStreamFunc());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateCreateStream()
         {
-            RegressionRunner.Run(session, new EPLInsertIntoPopulateCreateStream());
+            RegressionRunner.Run(_session, new EPLInsertIntoPopulateCreateStream());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateSingleColByMethodCall()
         {
-            RegressionRunner.Run(session, new EPLInsertIntoPopulateSingleColByMethodCall());
+            RegressionRunner.Run(_session, new EPLInsertIntoPopulateSingleColByMethodCall());
         }
 
         /// <summary>
@@ -431,7 +415,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithhisAsColumn() => RegressionRunner.Run(_session, EPLInsertIntoTransposePattern.WithhisAsColumn());
         }
         
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new[] {
                 typeof(SupportBean),

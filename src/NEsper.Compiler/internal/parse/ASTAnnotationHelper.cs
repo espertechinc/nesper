@@ -125,7 +125,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 try
                 {
                     var name = enumValueText.Substring(0, enumValueText.Length - 6);
-                    enumValue = importService.ResolveClass(name, true, ExtensionClassEmpty.INSTANCE);
+                    enumValue = importService.ResolveType(name, true, ExtensionClassEmpty.INSTANCE);
                 }
                 catch (ImportException)
                 {

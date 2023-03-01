@@ -23,8 +23,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextMultiStmtStartEnd
     {
+        private EPRuntimeProvider _runtimeProvider;
+        
         public void Run(Configuration configuration)
         {
+            _runtimeProvider = new EPRuntimeProvider();
+            
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             RunAssertion(FilterServiceProfile.READMOSTLY, configuration);
             RunAssertion(FilterServiceProfile.READWRITE, configuration);
@@ -38,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Common.AddEventType(typeof(MyEvent));
 
             var runtimeURI = GetType().Name + "_" + profile;
-            var runtime = EPRuntimeProvider.GetRuntime(runtimeURI, configuration);
+            var runtime = _runtimeProvider.GetRuntime(runtimeURI, configuration);
 
             var path = new RegressionPath();
             var eplContext = "create context MyContext start @now end after 100 milliseconds;\n";

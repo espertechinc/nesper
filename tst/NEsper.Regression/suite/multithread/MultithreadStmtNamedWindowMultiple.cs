@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var i = 0; i < numThreads; i++) {
                 runnables[i] = new RunnableOrderSim(env.Runtime, i, numUsers, numOrders);
                 threads[i] = new Thread(runnables[i].Run) {
-                    Name = typeof(MultithreadStmtNamedWindowMultiple).Name
+                    Name = nameof(MultithreadStmtNamedWindowMultiple)
                 };
             }
 

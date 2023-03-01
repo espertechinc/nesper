@@ -46,16 +46,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 var compiled = env.Compile("@Name('a') select * from SupportBean;\n");
 
-                try {
-                    env.Deployment.Deploy(compiled);
+                env.Deployment.Deploy(compiled);
 
-                    env.Milestone(0);
+                env.Milestone(0);
 
-                    env.Deployment.Deploy(compiled);
-                }
-                catch (EPDeployException ex) {
-                    Assert.Fail(ex.Message);
-                }
+                env.Deployment.Deploy(compiled);
 
                 env.UndeployAll();
             }

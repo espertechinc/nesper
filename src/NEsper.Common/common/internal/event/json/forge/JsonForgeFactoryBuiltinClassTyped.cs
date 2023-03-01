@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
 		{
 			Type clazz;
 			try {
-				clazz = services.ImportServiceCompileTime.ResolveClass(fieldAnnotation.Adapter, true, ExtensionClassEmpty.INSTANCE);
+				clazz = services.ImportServiceCompileTime.ResolveType(fieldAnnotation.Adapter, true, ExtensionClassEmpty.INSTANCE);
 			}
 			catch (ImportException e) {
 				throw new ExprValidationException($"Failed to resolve Json schema field adapter class: {e.Message}", e);

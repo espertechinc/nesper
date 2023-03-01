@@ -407,7 +407,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		{
 			if (jsonSchema != null && !string.IsNullOrWhiteSpace(jsonSchema.ClassName)) {
 				try {
-					return services.ImportServiceCompileTime.ResolveClass(jsonSchema.ClassName, true, ExtensionClassEmpty.INSTANCE);
+					return services.ImportServiceCompileTime.ResolveType(jsonSchema.ClassName, true, ExtensionClassEmpty.INSTANCE);
 				}
 				catch (ImportException e) {
 					throw new ExprValidationException("Failed to resolve JSON event class '" + jsonSchema.ClassName + "': " + e.Message, e);
@@ -630,24 +630,24 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 		public static void AddJsonUnderlyingClass(
 			IDictionary<string, EventType> moduleTypes,
-			ParentClassLoader classLoader,
+			ParentTypeResolver typeResolver,
 			string optionalDeploymentId)
 		{
 			foreach (var eventType in moduleTypes) {
-				AddJsonUnderlyingClassInternal(eventType.Value, classLoader, optionalDeploymentId);
+				AddJsonUnderlyingClassInternal(eventType.Value, typeResolver, optionalDeploymentId);
 			}
 		}
 
 		public static void AddJsonUnderlyingClass(
 			PathRegistry<string, EventType> pathEventTypes,
-			ParentClassLoader classLoader)
+			ParentTypeResolver typeResolver)
 		{
-			pathEventTypes.Traverse(type => AddJsonUnderlyingClassInternal(type, classLoader, null));
+			pathEventTypes.Traverse(type => AddJsonUnderlyingClassInternal(type, typeResolver, null));
 		}
 
 		private static void AddJsonUnderlyingClassInternal(
 			EventType eventType,
-			ParentClassLoader classLoader,
+			ParentTypeResolver typeResolver,
 			string optionalDeploymentId)
 		{
 			if (!(eventType is JsonEventType jsonEventType)) {
@@ -657,19 +657,19 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// for named-window the same underlying is used and we ignore duplicate add
 			var allowDuplicate = eventType.Metadata.TypeClass == EventTypeTypeClass.NAMED_WINDOW;
 			if (jsonEventType.Detail.OptionalUnderlyingProvided == null) {
-				classLoader.Add(jsonEventType.Detail.UnderlyingClassName, jsonEventType.UnderlyingType, optionalDeploymentId, allowDuplicate);
+				typeResolver.Add(jsonEventType.Detail.UnderlyingClassName, jsonEventType.UnderlyingType, optionalDeploymentId, allowDuplicate);
 			}
 			else {
 				allowDuplicate = true;
 			}
 
-			classLoader.Add(
+			typeResolver.Add(
 				jsonEventType.Detail.DeserializerClassName,
 				jsonEventType.DeserializerType,
 				optionalDeploymentId,
 				allowDuplicate);
 
-			classLoader.Add(
+			typeResolver.Add(
 				jsonEventType.Detail.SerializerClassName,
 				jsonEventType.SerializerType,
 				optionalDeploymentId,

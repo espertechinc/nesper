@@ -24,8 +24,8 @@ namespace com.espertech.esper.regressionlib.suite.view
 {
     public class ViewInvalid : RegressionExecution
     {
-        private static readonly string EVENT_NUM = typeof(SupportBean_N).Name;
-        private static readonly string EVENT_ALLTYPES = typeof(SupportBean).Name;
+        private static readonly string EVENT_NUM = nameof(SupportBean_N);
+        private static readonly string EVENT_ALLTYPES = nameof(SupportBean);
 
         public void Run(RegressionEnvironment env)
         {

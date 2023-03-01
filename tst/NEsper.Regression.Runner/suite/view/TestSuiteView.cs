@@ -23,25 +23,9 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.view
 {
     [TestFixture]
-    public class TestSuiteView
+    public class TestSuiteView : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportMarketDataBean),
@@ -84,7 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.view
         [Test, RunInApplicationDomain]
         public void TestViewInvalid()
         {
-            RegressionRunner.Run(session, new ViewInvalid());
+            RegressionRunner.Run(_session, new ViewInvalid());
         }
 
         /// <summary>

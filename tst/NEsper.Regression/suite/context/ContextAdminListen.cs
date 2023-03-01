@@ -26,13 +26,62 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextAdminListenInitTerm());
-            execs.Add(new ContextAdminListenHash());
-            execs.Add(new ContextAdminListenCategory());
-            execs.Add(new ContextAdminListenNested());
-            execs.Add(new ContextAddRemoveListener());
-            execs.Add(new ContextAdminPartitionAddRemoveListener());
+            WithMinListenInitTerm(execs);
+            WithMinListenHash(execs);
+            WithMinListenCategory(execs);
+            WithMinListenNested(execs);
+            WithAddRemoveListener(execs);
+            WithMinPartitionAddRemoveListener(execs);
+            WithMinListenMultipleStatements(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinListenMultipleStatements(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextAdminListenMultipleStatements());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinPartitionAddRemoveListener(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextAdminPartitionAddRemoveListener());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAddRemoveListener(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextAddRemoveListener());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinListenNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextAdminListenNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinListenCategory(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextAdminListenCategory());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinListenHash(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextAdminListenHash());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinListenInitTerm(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextAdminListenInitTerm());
             return execs;
         }
 
@@ -221,10 +270,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E1", 1));
                 var allocated = listener.GetAllocatedEvents();
                 Assert.AreEqual(1, allocated.Count);
-                var nested = (ContextPartitionIdentifierNested) allocated[0].Identifier;
+                var nested = (ContextPartitionIdentifierNested)allocated[0].Identifier;
                 EPAssertionUtil.AssertEqualsExactOrder(
-                    new [] { "E1" },
-                    ((ContextPartitionIdentifierPartitioned) nested.Identifiers[1]).Keys);
+                    new[] { "E1" },
+                    ((ContextPartitionIdentifierPartitioned)nested.Identifiers[1]).Keys);
                 Assert.AreEqual(1, listener.GetAndReset().Count);
 
                 env.UndeployModuleContaining("s0");
@@ -260,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var allocated = listener.GetAllocatedEvents();
                 Assert.AreEqual(2, allocated.Count);
-                Assert.AreEqual("neg", ((ContextPartitionIdentifierCategory) allocated[1].Identifier).Label);
+                Assert.AreEqual("neg", ((ContextPartitionIdentifierCategory)allocated[1].Identifier).Label);
                 listener.GetAndReset();
 
                 env.UndeployModuleContaining("s0");
@@ -284,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var allocated = listener.GetAllocatedEvents();
                 Assert.AreEqual(2, allocated.Count);
-                Assert.AreEqual(1, ((ContextPartitionIdentifierHash) allocated[1].Identifier).Hash);
+                Assert.AreEqual(1, ((ContextPartitionIdentifierHash)allocated[1].Identifier).Hash);
                 listener.GetAndReset();
 
                 env.UndeployAll();

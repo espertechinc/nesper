@@ -586,12 +586,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 Type forgeClass = null;
                 try {
                     var forgeClassName = operatorCaseName + "Forge";
-                    forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false, services.ClassProvidedExtension);
+                    forgeClass = services.ImportServiceCompileTime.ResolveType(forgeClassName, false, services.ClassProvidedExtension);
                 }
                 catch (ImportException e) {
                     try {
                         var forgeClassName = operatorCaseName;
-                        forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false, services.ClassProvidedExtension);
+                        forgeClass = services.ImportServiceCompileTime.ResolveType(forgeClassName, false, services.ClassProvidedExtension);
                     }
                     catch (ImportException) {
                         // expected
@@ -607,7 +607,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // if the factory implements the interface use that
                 if (!TypeHelper.IsImplementsInterface(forgeClass, typeof(DataFlowOperatorForge))) {
                     throw new ExprValidationException(
-                        $"Forge class for operator '{operatorName}' does not implement interface '{typeof(DataFlowOperatorForge).Name}' (class '{forgeClass.Name}')");
+                        $"Forge class for operator '{operatorName}' does not implement interface '{nameof(DataFlowOperatorForge)}' (class '{forgeClass.Name}')");
                 }
 
                 var descriptor = new OperatorMetadataDescriptor(
@@ -870,7 +870,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             if (propertyHolderFields.Count > 1) {
                 throw new ArgumentException(
                     "May apply " +
-                    typeof(DataFlowOpPropertyHolderAttribute).Name +
+                    nameof(DataFlowOpPropertyHolderAttribute) +
                     " annotation only to a single field");
             }
 
@@ -948,10 +948,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                         string typeName = outputType.TypeName;
                         clazz = TypeHelper.GetTypeForSimpleName(
                             typeName,
-                            services.ImportServiceCompileTime.ClassForNameProvider);
+                            services.ImportServiceCompileTime.TypeResolver);
                         if (clazz == null) {
                             try {
-                                clazz = services.ImportServiceCompileTime.ResolveClass(typeName, false, services.ClassProvidedExtension);
+                                clazz = services.ImportServiceCompileTime.ResolveType(typeName, false, services.ClassProvidedExtension);
                             }
                             catch (ImportException) {
                                 throw new EPRuntimeException("Failed to resolve type '" + typeName + "'");

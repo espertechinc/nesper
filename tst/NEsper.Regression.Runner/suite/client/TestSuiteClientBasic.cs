@@ -6,31 +6,26 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.client.basic;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
-    public class TestSuiteClientBasic
+    public class TestSuiteClientBasic : AbstractTestBase
     {
-        private RegressionSession _session;
-
-        [SetUp]
-        public void SetUp()
+        public TestSuiteClientBasic() : base(Configure)
         {
-            _session = RegressionRunner.Session();
-            _session.Configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
         }
 
-        [TearDown]
-        public void TearDown()
+        public static void Configure(Configuration configuration)
         {
-            _session.Dispose();
-            _session = null;
+            configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
         }
 
         [Test, RunInApplicationDomain]
