@@ -51,7 +51,7 @@
 		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
 		<NetCore>true</NetCore>
 		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>

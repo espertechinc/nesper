@@ -21,7 +21,7 @@
         }
       ],
       "properties": {
-        "TargetFramework": "netcoreapp3.1"
+        "TargetFramework": "net6.0"
       },
       "filter": "filter.yml",
       "dest": "api",
