@@ -137,7 +137,6 @@ namespace com.espertech.esper.compat.collections.btree
             for (int round = 0; round < rounds; round++) {
                 for (int intValue = round; intValue < numKeys; intValue += rounds) {
                     var strValue = intValue.ToString("000000");
-                    Console.WriteLine("Erase: {0}", strValue);
                     Assert.That(btree.ContainsKey(strValue), Is.True);
                     Assert.That(btree.TryEraseUnique(strValue, out var existingValue), Is.True);
                     Assert.That(existingValue, Is.EqualTo(strValue));

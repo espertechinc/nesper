@@ -25,6 +25,8 @@ namespace com.espertech.esper.regressionrun.suite.client
         {
         }
 
+        protected override bool UseDefaultRuntime => true;
+
         [Test, RunInApplicationDomain]
         public void TestClientDeployUndeploy()
         {

@@ -297,9 +297,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             CheckClosed();
+#if DEBUG && STACKTRACE
             IncludeMinStack(stackFrame => 
                 stackFrame.HasMethod() && 
                 stackFrame.GetMethod().Name != "DeclareVar");
+#endif
             _statements.Add(new CodegenStatementDeclareVar(clazz, var, initializer));
             return this;
         }
@@ -318,6 +320,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+#if DEBUG && STACKTRACE
         private CodegenBlock IncludeMinStack(Predicate<StackFrame> stackFramePredicate)
         {
             var stackTrace = new StackTrace(true);
@@ -339,18 +342,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 _statements.Add(new CodegenStatementCommentFullLine(comment));
             }
 
-            return this;
-        }
-
-#if false
-        public CodegenBlock DeclareVar(
-            Type clazz,
-            Type optionalTypeVariable,
-            string var,
-            CodegenExpression initializer)
-        {
-            CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(clazz, optionalTypeVariable, var, initializer));
             return this;
         }
 #endif
@@ -857,6 +848,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenBlock DebugStack()
         {
+#if DEBUG && STACKTRACE
             var stackTrace = new StackTrace(true);
             CheckClosed();
             var stackFrames = stackTrace.GetFrames();
@@ -870,6 +862,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                     ii);
                 _statements.Add(new CodegenStatementCommentFullLine(comment));
             }
+#endif
 
             return this;
         }

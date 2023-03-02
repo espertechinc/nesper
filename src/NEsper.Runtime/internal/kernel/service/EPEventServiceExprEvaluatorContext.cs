@@ -73,5 +73,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public ExceptionHandlingService ExceptionHandlingService { get; }
 
         public object FilterReboolConstant { get; set; }
+
+        public TypeResolver TypeResolver => throw new UnsupportedOperationException();
     }
 } // end of namespace

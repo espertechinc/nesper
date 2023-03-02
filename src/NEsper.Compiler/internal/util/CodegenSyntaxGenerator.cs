@@ -27,21 +27,44 @@ namespace com.espertech.esper.compiler.@internal.util
     {
         private static readonly CodegenIndent INDENT = new CodegenIndent(true);
 
-        private class AssemblyIndex
+        private class AssemblyIndexCache
         {
-            public Assembly Assembly;
-            public ISet<string> Index;
+            private readonly Assembly[] indices;
 
-            public bool CheckType(string typeName)
+            public AssemblyIndexCache(Assembly[] assemblies)
             {
-                return Index.Contains(typeName);
+                indices = assemblies;
             }
 
-            public AssemblyIndex(Assembly assembly)
+            private bool DoesImportResolveType(
+                Type type,
+                ImportDecl import)
             {
-                Assembly = assembly;
-                Index = new HashSet<string>(
-                    assembly.GetTypes().Select(t => t.FullName));
+                if (import.IsNamespaceImport)
+                {
+                    var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
+                    return indices.Any(assembly => assembly.GetType(importName, false) != null);
+                }
+
+                return import.TypeName == type.Name;
+            }
+            
+            public bool IsAmbiguous(
+                Type type,
+                ISet<ImportDecl> imports)
+            {
+                var count = 0;
+             
+                foreach (var import in imports) {
+                    if (DoesImportResolveType(type, import)) {
+                        if (++count > 1) {
+                            return true; // it is ambiguous
+                        }
+                    }
+                }
+
+                return false;
+                //return imports.Count(import => DoesImportResolveType(type, import)) > 1;
             }
         }
 
@@ -53,29 +76,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // generate code
             return GenerateCode(imports, clazz);
-        }
-
-        private static bool DoesImportResolveType(
-            Type type,
-            ImportDecl import,
-            IList<AssemblyIndex> assemblyIndices)
-        {
-            if (import.IsNamespaceImport)
-            {
-                var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
-                return assemblyIndices != null && assemblyIndices.Any(assemblyIndex => assemblyIndex.CheckType(importName));
-            }
-
-            return import.TypeName == type.Name;
-        }
-
-        private static bool IsAmbiguous(
-            Type type,
-            ISet<ImportDecl> imports,
-            IList<AssemblyIndex> assemblyIndices)
-        {
-            int resolutionPaths = imports.Count(import => DoesImportResolveType(type, import, assemblyIndices));
-            return resolutionPaths > 1;
         }
 
         private static ICollection<ImportDecl> CompileImports(IEnumerable<Type> types)
@@ -90,26 +90,20 @@ namespace com.espertech.esper.compiler.@internal.util
             imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace, null));
             imports.Add(new ImportDecl(typeof(Enumerable).Namespace, null));
 
-            for (var ii = 0; ii < typeList.Count; ii++) {
+            var typeListSize = typeList.Count;
+            for (var ii = 0; ii < typeListSize; ii++) {
                 var type = typeList[ii];
                 if (type.Namespace != null) {
                     imports.Add(new ImportDecl(type.Namespace, null));
                 }
             }
 
-            var assemblyIndices = new List<AssemblyIndex>();
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            assemblyIndices.AddRange(assemblies.Select(assembly => new AssemblyIndex(assembly)));
+            var assemblyIndices = new AssemblyIndexCache(AppDomain.CurrentDomain.GetAssemblies());
 
             // Ensure that all types can be imported without any ambiguity.
 
             foreach (var type in typeList) {
-#if false
-                if (IsAmbiguous(type, imports, assemblies))
-#else
-                if (IsAmbiguous(type, imports, assemblyIndices))
-#endif
-                {
+                if (assemblyIndices.IsAmbiguous(type, imports)) {
                     if (type.Namespace != null) {
                         imports.Add(
                             new ImportDecl(

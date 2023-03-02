@@ -426,20 +426,26 @@ namespace com.espertech.esper.compiler.@internal.util
         public class ExportVisitor : CSharpSyntaxWalker
         {
             private string _namespace = null;
+            private string _prefix = "";
 
             public readonly ISet<string> TypeNames = new HashSet<string>();
             
             public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
             {
                 _namespace = node.Name.ToFullString().Trim();
+                _prefix += _namespace + ".";
                 base.VisitNamespaceDeclaration(node);
             }
 
             public override void VisitClassDeclaration(ClassDeclarationSyntax node)
             {
-                var typeName = _namespace != null ? _namespace + "." + node.Identifier.ToFullString().Trim() : node.Identifier.ToFullString().Trim();
-                TypeNames.Add(typeName);
+                var save = _prefix;
+                var name = node.Identifier.ToFullString().Trim();
+                var fqtn = _prefix + name;
+                TypeNames.Add(fqtn);
+                _prefix = fqtn + '+';
                 base.VisitClassDeclaration(node);
+                _prefix = save;
             }
         }
         

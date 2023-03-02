@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.util
         {
             lock (this) {
                 if (typeResolver == null) {
-                    var parentClassLoader = new TypeResolverDefault();
+                    var parentClassLoader = TypeResolverDefault.INSTANCE;
                     var defaultArtifactRepository = _container.ArtifactRepositoryManager().DefaultRepository;
                     typeResolver = new ArtifactTypeResolver(defaultArtifactRepository, parentClassLoader);
                 }

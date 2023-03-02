@@ -32,6 +32,8 @@ namespace com.espertech.esper.common.client.util
             string typeName,
             bool resolve)
         {
+            typeName = typeName.Replace('$', '+');
+            
             // First pass is to see if the class exists in the materialized space
             var materializedType = _artifactRepository.Artifacts
                 .Where(_ => _.HasMaterializedAssembly)

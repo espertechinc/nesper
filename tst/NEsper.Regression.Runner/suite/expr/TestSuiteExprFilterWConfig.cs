@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             typeof(SupportFilterPlanHook).FullName +
             "'" +
             ")";
-
+        
         private static void RunAssertionFilter<T>(
             RegressionSession session,
             ConfigurationCompilerExecution.FilterIndexPlanningEnum config,
@@ -62,8 +62,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             ICollection<T> executions)
             where T : RegressionExecution
         {
-            using var session = RegressionRunner.Session(Container);
-            Console.WriteLine("RunAssertionFilter: " + session.Id);
+            using var session = RegressionRunner.Session(Container, true);
             RunAssertionFilter<T>(session, config, executions);
         }
 
@@ -268,14 +267,13 @@ namespace com.espertech.esper.regressionrun.suite.expr
         public void TestExprFilterOptimizable(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
         {
             RunAssertionFilter(filterIndexPlanning, ExprFilterOptimizable.Executions());
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizable.Executions());
-            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizable.Executions());
         }
 
         [Test, RunInApplicationDomain]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Children)]
         public void TestExprFilterOptimizableLookupableLimitedExpr(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
         {
             RunAssertionFilter(filterIndexPlanning, ExprFilterOptimizableLookupableLimitedExpr.Executions());
@@ -285,6 +283,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Children)]
         public void TestExprFilterPlanInRangeAndBetween(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
         {
             RunAssertionFilter(filterIndexPlanning, ExprFilterPlanInRangeAndBetween.Executions());
@@ -294,6 +293,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.Children)]
         public void TestExprFilterPlanNoFilter(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -831,6 +831,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Children)]
         public class TestExprFilterOptimizableValueLimitedExpr : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -941,6 +942,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Children)]
         public class TestExprFilterOptimizableOrRewrite : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;

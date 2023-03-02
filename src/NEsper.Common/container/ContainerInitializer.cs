@@ -105,9 +105,6 @@ namespace com.espertech.esper.container
             //if (container.DoesNotHave<IConfigurationParser>())
             //    container.Register<IConfigurationParser, ConfigurationParser>(
             //        Lifespan.Transient);
-            if (container.DoesNotHave<TypeResolver>())
-                container.Register<TypeResolver, TypeResolverDefault>(
-                    Lifespan.Singleton);
             if (container.DoesNotHave<TypeResolverProvider>())
                 container.Register<TypeResolverProvider>(
                     ic => new ArtifactTypeResolverProvider(ic),

@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -70,5 +71,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public InstrumentationCommon InstrumentationProvider => context.InstrumentationProvider;
 
         public ExceptionHandlingService ExceptionHandlingService => context.ExceptionHandlingService;
+
+        public TypeResolver TypeResolver => context.TypeResolver;
     }
 } // end of namespace

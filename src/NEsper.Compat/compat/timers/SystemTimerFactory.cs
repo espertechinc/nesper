@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat.timers

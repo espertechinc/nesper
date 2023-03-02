@@ -112,9 +112,9 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementInformationals.Annotations,
                 statementContextRuntimeServices.VariableManagementService,
                 statementContextRuntimeServices.TableExprEvaluatorContext);
-            this.FilterService = filterService;
-            this.SchedulingService = schedulingService;
-            this.InternalEventRouteDest = internalEventRouteDest;
+            FilterService = filterService;
+            SchedulingService = schedulingService;
+            InternalEventRouteDest = internalEventRouteDest;
         }
 
         public IContainer Container { get; set; }
@@ -220,7 +220,9 @@ namespace com.espertech.esper.common.@internal.context.util
         public PatternSubexpressionPoolStmtSvc PatternSubexpressionPoolSvc { get; }
 
         public StatementInformationalsRuntime StatementInformationals { get; }
-        
+
+        public TypeResolver TypeResolver => ImportServiceRuntime.TypeResolver;
+
         public virtual object FilterReboolConstant
         {
             get => null;

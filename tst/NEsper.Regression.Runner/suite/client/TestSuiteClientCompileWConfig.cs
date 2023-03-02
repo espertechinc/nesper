@@ -61,6 +61,9 @@ namespace com.espertech.esper.regressionrun.suite.client
                 string typeName,
                 bool resolve = false)
             {
+                if (typeName == "System.Environment") {
+                    throw new UnsupportedOperationException("Access to class '" + typeName + " is not permitted");
+                }
                 return TypeResolverDefault.INSTANCE.ResolveType(typeName);
             }
         }

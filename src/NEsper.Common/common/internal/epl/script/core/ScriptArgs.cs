@@ -8,6 +8,8 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
@@ -19,6 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         /// <value>The bindings.</value>
         public IDictionary<string, object> Bindings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the evaluation context
+        /// </summary>
+        public ExprEvaluatorContext Context { get; set; }
 
         /// <summary>
         /// Gets the parameter.

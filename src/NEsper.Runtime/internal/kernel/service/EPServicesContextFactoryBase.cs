@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.runtime;
@@ -97,6 +98,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             Configuration configs)
         {
             var container = epRuntime.Container;
+
+            var artifactRepositoryManager = container.ArtifactRepositoryManager();
+            var artifactRepositoryDefault = artifactRepositoryManager.DefaultRepository;
+            
             var runtimeEnvContext = new RuntimeEnvContext();
             var eventProcessingRWLock = epRuntime.Container.RWLockManager().CreateLock("EventProcLock");
             var deploymentLifecycleService = new DeploymentLifecycleServiceImpl(-1);
@@ -113,7 +118,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 configs.Common.EventTypeAutoNameNamespaces, timeZone,
                 configs.Common.MethodInvocationReferences,
                 configs.Common.Imports,
-                configs.Common.AnnotationImports);
+                configs.Common.AnnotationImports,
+                artifactRepositoryDefault);
 
             var epServicesHA = InitHA(epRuntime.URI, configs, runtimeEnvContext, eventProcessingRWLock, runtimeSettingsService);
 

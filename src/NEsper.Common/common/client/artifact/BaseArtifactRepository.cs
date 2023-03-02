@@ -100,10 +100,7 @@ namespace com.espertech.esper.common.client.artifact
         /// <summary>
         /// Creates a classLoader.
         /// </summary>
-        /// <returns></returns>
-        public TypeResolver CreateClassLoader()
-        {
-            return null;
-        }
+        /// <value></value>
+        public virtual TypeResolver TypeResolver => null;
     }
 }

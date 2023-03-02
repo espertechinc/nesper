@@ -21,6 +21,7 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.infra
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Children)]
     public class TestSuiteInfraNWTable : AbstractTestBase
     {
         public TestSuiteInfraNWTable() : base(Configure)

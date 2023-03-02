@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.core
 {
+    [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class AbstractTestContainer
     {
         // Unique identifier for the "test container"
@@ -16,11 +17,7 @@ namespace com.espertech.esper.regressionrun.suite.core
         public IContainer Container {
             get {
                 lock (this) {
-                    if (_container == null) {
-                        _container = SupportContainer.CreateContainer();
-                    }
-
-                    return _container;
+                    return _container ??= SupportContainer.CreateContainer();
                 }
             }
         }

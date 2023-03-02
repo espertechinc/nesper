@@ -45,6 +45,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Type clazz,
             ConfigurationCommonEventTypeBean optionalConfiguration)
         {
+            if (clazz == null) {
+                throw new ArgumentNullException(nameof(clazz));
+            }
+            
             var stem = _stems.Get(clazz);
             if (stem != null) {
                 return stem;

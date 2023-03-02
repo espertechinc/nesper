@@ -16,6 +16,10 @@ namespace com.espertech.esper.common.@internal.util
     {
         public static readonly TypeResolver INSTANCE = new TypeResolverDefault();
 
+        private TypeResolverDefault()
+        {
+        }
+        
         public Type ResolveType(
             string typeName,
             bool resolve)

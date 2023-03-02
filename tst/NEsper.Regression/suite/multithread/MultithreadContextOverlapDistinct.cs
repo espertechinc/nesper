@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Console.Out.WriteLine("count=" + count + "  sum=" + sum);
+            Console.Out.WriteLine($"count={count}  sum={sum}");
             Assert.AreEqual(numEvents, count);
             Assert.AreEqual(0, sum);
 

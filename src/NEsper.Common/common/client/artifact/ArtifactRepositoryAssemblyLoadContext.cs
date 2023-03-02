@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -20,6 +22,7 @@ namespace com.espertech.esper.common.client.artifact
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private AssemblyLoadContext _assemblyLoadContext;
+        private TypeResolver _typeResolver;
 
         /// <summary>
         /// Returns the assembly load context
@@ -35,6 +38,7 @@ namespace com.espertech.esper.common.client.artifact
                 this,
                 "default-artifact-repository-assembly-load-context",
                 true);
+            _typeResolver = new ArtifactTypeResolver(this, TypeResolverDefault.INSTANCE);
         }
 
         /// <summary>
@@ -47,6 +51,7 @@ namespace com.espertech.esper.common.client.artifact
                 this,
                 "artifact-repository-assembly-load-context-" + deploymentId,
                 true);
+            _typeResolver = new ArtifactTypeResolver(this, TypeResolverDefault.INSTANCE);
         }
 
         /// <summary>
@@ -97,6 +102,12 @@ namespace com.espertech.esper.common.client.artifact
             
             return assemblyLoadContext;
         }
+
+        /// <summary>
+        /// Creates a classLoader.
+        /// </summary>
+        /// <value></value>
+        public override TypeResolver TypeResolver => _typeResolver;
     }
 #endif
 }

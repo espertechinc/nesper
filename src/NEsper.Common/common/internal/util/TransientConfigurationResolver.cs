@@ -47,10 +47,21 @@ namespace com.espertech.esper.common.@internal.util
         
         public static TypeResolver ResolveTypeResolver(
             IContainer container,
-            IDictionary<string, object> transientConfiguration)
+            IDictionary<string, object> transientConfiguration,
+            TypeResolver typeResolverDefault = null)
         {
-            return ResolveTypeResolverProvider(container, transientConfiguration)
-                .GetTypeResolver();
+            if (typeResolverDefault == null) {
+                if (container.Has<TypeResolver>()) {
+                    typeResolverDefault = container.Resolve<TypeResolver>();
+                }
+            }
+            
+            var typeResolver = Resolve(
+                transientConfiguration,
+                typeResolverDefault,
+                TypeResolverConstants.NAME,
+                typeof(TypeResolver));
+            return typeResolver ?? ResolveTypeResolverProvider(container, transientConfiguration).GetTypeResolver();
         }
 
         private static T Resolve<T>(
@@ -63,8 +74,7 @@ namespace com.espertech.esper.common.@internal.util
                 return defaultProvider;
             }
 
-            var value = transientConfiguration.Get(name);
-            if (value == null) {
+            if (!transientConfiguration.TryGetValue(name, out var value)) {
                 return defaultProvider;
             }
 

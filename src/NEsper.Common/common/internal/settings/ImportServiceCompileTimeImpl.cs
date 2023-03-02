@@ -448,7 +448,10 @@ namespace com.espertech.esper.common.@internal.settings
 
 				className = desc.ForgeClassName;
 				try {
-					forgeClass = TypeResolver.ResolveType(className);
+					forgeClass = TypeResolver.ResolveType(className, true);
+					if (forgeClass == null) {
+						throw new ImportException("Could not load aggregation factory class by name '" + className + "'");
+					}
 				}
 				catch (TypeLoadException ex) {
 					throw new ImportException("Could not load aggregation factory class by name '" + className + "'", ex);

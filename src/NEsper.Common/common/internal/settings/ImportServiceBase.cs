@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IList<Import> _annotationImports = new List<Import>();
         private readonly IList<Import> _imports = new List<Import>();
 
-        private readonly IDictionary<string, object> _transientConfiguration;
+        private protected readonly IDictionary<string, object> _transientConfiguration;
 
         protected ImportServiceBase(
             IContainer container,
@@ -64,16 +64,21 @@ namespace com.espertech.esper.common.@internal.settings
             return clazz;
         }
 
-        public TypeResolverProvider TypeResolverProvider => TransientConfigurationResolver
+        public virtual TypeResolverProvider TypeResolverProvider => TransientConfigurationResolver
             .ResolveTypeResolverProvider(Container, _transientConfiguration);
 
-        public TypeResolver TypeResolver => TransientConfigurationResolver
+        public virtual TypeResolver TypeResolver => TransientConfigurationResolver
             .ResolveTypeResolver(Container, _transientConfiguration);
 
         public Type ResolveClassForBeanEventType(string fullyQualClassName)
         {
             try {
-                return TypeResolver.ResolveType(fullyQualClassName);
+                var clazz = TypeResolver.ResolveType(fullyQualClassName, true);
+                if (clazz != null) {
+                    return clazz;
+                }
+
+                return TypeHelper.ResolveType(fullyQualClassName, true);
             }
             catch (TypeLoadException ex) {
                 // Attempt to resolve from auto-name packages

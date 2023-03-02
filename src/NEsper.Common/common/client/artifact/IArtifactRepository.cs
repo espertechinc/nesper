@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.artifact
         /// <summary>
         /// Creates a classLoader.
         /// </summary>
-        /// <returns></returns>
-        TypeResolver CreateClassLoader();
+        /// <value></value>
+        TypeResolver TypeResolver { get; }
     }
 }

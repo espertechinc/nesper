@@ -75,8 +75,7 @@ namespace NEsper.Scripting.ClearScript
             ExpressionScriptProvided expressionScript,
             ImportService importService)
         {
-            var classLoader = importService.TypeResolver;
-            return args => ExecuteWithScriptArgs(expressionScript, classLoader, args);
+            return args => ExecuteWithScriptArgs(expressionScript, args);
         }
 
         private bool IsPrimitive(object value)
@@ -103,7 +102,6 @@ namespace NEsper.Scripting.ClearScript
 
         private object ExecuteWithScriptArgs(
             ExpressionScriptProvided expressionScript,
-            TypeResolver typeResolver,
             ScriptArgs args)
         {
             using (var engine = new V8ScriptEngine()) {
@@ -125,7 +123,7 @@ namespace NEsper.Scripting.ClearScript
                 ExposeTypesToEngine(engine);
 
                 engine.AddHostObject("__variables", primitives);
-                engine.AddHostObject("host", new XHostFunctions(typeResolver));
+                engine.AddHostObject("host", new XHostFunctions(args.Context.TypeResolver));
                 engine.AddHostObject("debug", new DebugFunctions(this));
 
                 var writer = new StringWriter();
