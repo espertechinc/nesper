@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
@@ -16,6 +17,8 @@ using com.espertech.esper.regressionlib.suite.@event.infra;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
+
+using JetBrains.dotMemoryUnit;
 
 using NEsper.Avro.Extensions;
 
@@ -1034,6 +1037,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
         public void TestEventInfraContainedNestedArray()
         {
             RegressionRunner.Run(_session, new EventInfraContainedNestedArray());
+            // memory leak checking
+#if FALSE
+            dotMemory.Check(
+                memory => {
+                    Assert.That(memory.GetObjects(where => where.Type.Is<ArtifactRepositoryAssemblyLoadContext>()).ObjectsCount, Is.Zero);
+                });
+#endif
         }
 
         [Test]

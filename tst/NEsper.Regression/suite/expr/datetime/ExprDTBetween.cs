@@ -22,11 +22,32 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTBetweenIncludeEndpoints());
-            executions.Add(new ExprDTBetweenExcludeEndpoints());
-            executions.Add(new ExprDTBetweenTypes());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithIncludeEndpoints(execs);
+            WithExcludeEndpoints(execs);
+            WithTypes(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTBetweenTypes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExcludeEndpoints(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTBetweenExcludeEndpoints());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIncludeEndpoints(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTBetweenIncludeEndpoints());
+            return execs;
         }
 
         private static void TryAssertionExcludeEndpoints(
@@ -35,16 +56,32 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             string fields,
             AtomicLong milestone)
         {
-            var fieldsCurrentTs = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
+            var fieldsCurrentTs = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6", "val7" };
             var eplCurrentTS = "@Name('s0') select " +
-                               "current_timestamp.between(" + fields + ", true, true) as val0, " +
-                               "current_timestamp.between(" + fields + ", true, false) as val1, " +
-                               "current_timestamp.between(" + fields + ", false, true) as val2, " + 
-                               "current_timestamp.between(" + fields + ", false, false) as val3, " +
-                               "current_timestamp.between(" + fields + ", VAR_TRUE, VAR_TRUE) as val4, " +
-                               "current_timestamp.between(" + fields + ", VAR_TRUE, VAR_FALSE) as val5, " +
-                               "current_timestamp.between(" + fields + ", VAR_FALSE, VAR_TRUE) as val6, " +
-                               "current_timestamp.between(" + fields + ", VAR_FALSE, VAR_FALSE) as val7 " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", true, true) as val0, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", true, false) as val1, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", false, true) as val2, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", false, false) as val3, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", VAR_TRUE, VAR_TRUE) as val4, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", VAR_TRUE, VAR_FALSE) as val5, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", VAR_FALSE, VAR_TRUE) as val6, " +
+                               "current_timestamp.between(" +
+                               fields +
+                               ", VAR_FALSE, VAR_FALSE) as val7 " +
                                "from SupportTimeStartEndA";
             env.CompileDeploy(eplCurrentTS, path).AddListener("s0");
             LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fieldsCurrentTs, typeof(bool?));
@@ -59,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsCurrentTs,
-                new object[] {true, false, true, false, true, false, true, false});
+                new object[] { true, false, true, false, true, false, true, false });
 
             env.MilestoneInc(milestone);
 
@@ -73,12 +110,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsCurrentTs,
-                new object[] {true, true, false, false, true, true, false, false});
+                new object[] { true, true, false, false, true, true, false, false });
 
             env.UndeployModuleContaining("s0");
 
             // test calendar field and constants
-            var fieldsConstants = new [] { "val0","val1","val2","val3" };
+            var fieldsConstants = new[] { "val0", "val1", "val2", "val3" };
             var eplConstants = "@Name('s0') select " +
                                "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), true, true) as val0, " +
                                "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), true, false) as val1, " +
@@ -92,19 +129,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsConstants,
-                new object[] {false, false, false, false});
+                new object[] { false, false, false, false });
 
             env.SendEventBean(SupportTimeStartEndA.Make("E2", "2002-05-30T09:00:00.000", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsConstants,
-                new object[] {true, true, false, false});
+                new object[] { true, true, false, false });
 
             env.SendEventBean(SupportTimeStartEndA.Make("E2", "2002-05-30T09:00:05.000", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsConstants,
-                new object[] {true, true, true, true});
+                new object[] { true, true, true, true });
 
             env.MilestoneInc(milestone);
 
@@ -112,19 +149,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsConstants,
-                new object[] {true, true, true, true});
+                new object[] { true, true, true, true });
 
             env.SendEventBean(SupportTimeStartEndA.Make("E2", "2002-05-30T09:01:00.000", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsConstants,
-                new object[] {true, false, true, false});
+                new object[] { true, false, true, false });
 
             env.SendEventBean(SupportTimeStartEndA.Make("E2", "2002-05-30T09:01:00.001", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsConstants,
-                new object[] {false, false, false, false});
+                new object[] { false, false, false, false });
 
             env.UndeployModuleContaining("s0");
         }
@@ -133,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] { "c0", "c1", "c2", "c3" };
                 var eplCurrentTS = "@Name('s0') select " +
                                    "LongDate.between(LongPrimitive, LongBoxed) as c0, " +
                                    "DateTimeOffset.between(LongPrimitive, LongBoxed) as c1, " +
@@ -151,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, false});
+                    new object[] { false, false, false, false });
 
                 bean = new SupportBean();
                 bean.LongPrimitive = 0;
@@ -162,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, true, true});
+                    new object[] { true, true, true, true });
 
                 env.UndeployAll();
             }
@@ -175,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                var fieldsCurrentTs = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
+                var fieldsCurrentTs = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6", "val7" };
                 var eplCurrentTS = "@Name('s0') select " +
                                    "current_timestamp.after(LongdateStart) as val0, " +
                                    "current_timestamp.between(LongdateStart, LongdateEnd) as val1, " +
@@ -194,14 +231,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsCurrentTs,
                     new object[] {
-                        true,  // LongdateStart (val0)
+                        true, // LongdateStart (val0)
                         false, // LongdateStart - LongdateEnd
                         false, // DateTimeStart - DateTimeExEnd
                         false, // DateTimeExStart - DateTimeEnd
                         false, // DateTimeStart - DateTimeEnd
                         false, // DateTimeExStart - DateTimeExEnd
                         false, // DateTimeExEnd - DateTimeExStart
-                        false  // DateTimeOffsetStart - DateTimeOffsetEnd
+                        false // DateTimeOffsetStart - DateTimeOffsetEnd
                     });
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 1));
@@ -216,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         true, // DateTimeStart - DateTimeEnd
                         true, // DateTimeExStart - DateTimeExEnd
                         true, // DateTimeExEnd - DateTimeExStart
-                        true  // DateTimeOffsetStart - DateTimeOffsetEnd
+                        true // DateTimeOffsetStart - DateTimeOffsetEnd
                     });
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 100));
@@ -231,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         true, // DateTimeStart - DateTimeEnd
                         true, // DateTimeExStart - DateTimeExEnd
                         true, // DateTimeExEnd - DateTimeExStart
-                        true  // DateTimeOffsetStart - DateTimeOffsetEnd
+                        true // DateTimeOffsetStart - DateTimeOffsetEnd
                     });
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 0));
@@ -246,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         true, // DateTimeStart - DateTimeEnd
                         true, // DateTimeExStart - DateTimeExEnd
                         true, // DateTimeExEnd - DateTimeExStart
-                        true  // DateTimeOffsetStart - DateTimeOffsetEnd
+                        true // DateTimeOffsetStart - DateTimeOffsetEnd
                     });
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 100));
@@ -261,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         true, // DateTimeStart - DateTimeEnd
                         true, // DateTimeExStart - DateTimeExEnd
                         true, // DateTimeExEnd - DateTimeExStart
-                        true  // DateTimeOffsetStart - DateTimeOffsetEnd
+                        true // DateTimeOffsetStart - DateTimeOffsetEnd
                     });
 
                 env.SendEventBean(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.001", 100));
@@ -276,12 +313,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         false, // DateTimeStart - DateTimeEnd
                         false, // DateTimeExStart - DateTimeExEnd
                         false, // DateTimeExEnd - DateTimeExStart
-                        false  // DateTimeOffsetStart - DateTimeOffsetEnd
+                        false // DateTimeOffsetStart - DateTimeOffsetEnd
                     });
                 env.UndeployAll();
 
                 // test calendar field and constants
-                var fieldsConstants = new [] { "val0","val1","val2","val3","val4" };
+                var fieldsConstants = new[] { "val0", "val1", "val2", "val3", "val4" };
                 var eplConstants = "@Name('s0') select " +
                                    "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val0, " +
                                    "DateTimeStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val1, " +

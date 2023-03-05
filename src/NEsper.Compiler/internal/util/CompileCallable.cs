@@ -23,13 +23,13 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CompilableItem _compilableItem;
 		private readonly ModuleCompileTimeServices _compileTimeServices;
 		private readonly Semaphore _semaphore;
-		private readonly ICollection<Artifact> _statementArtifacts;
+		private readonly ICollection<IArtifact> _statementArtifacts;
 
 		CompileCallable(
 			CompilableItem compilableItem,
 			ModuleCompileTimeServices compileTimeServices,
 			Semaphore semaphore,
-			ICollection<Artifact> statementArtifacts)
+			ICollection<IArtifact> statementArtifacts)
 		{
 			_compilableItem = compilableItem;
 			_compileTimeServices = compileTimeServices;

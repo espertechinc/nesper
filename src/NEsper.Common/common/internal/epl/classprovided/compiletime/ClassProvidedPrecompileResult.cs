@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             EmptyList<Type>.Instance);
 
         public ClassProvidedPrecompileResult(
-            Artifact artifact,
+            IRuntimeArtifact artifact,
             IList<Type> classes)
         {
             Artifact = artifact;
             Classes = classes;
         }
 
-        public Artifact Artifact { get; }
+        public IRuntimeArtifact Artifact { get; }
         public IList<Type> Classes { get; }
     }
 } // end of namespace

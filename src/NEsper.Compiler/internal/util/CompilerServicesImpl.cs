@@ -93,7 +93,7 @@ namespace com.espertech.esper.compiler.@internal.util
             return capsuleClass.TargetType;
         }
 
-        public Artifact Compile(CompileRequest request)
+        public ICompileArtifact Compile(CompileRequest request)
         {
             var configuration = request.ModuleCompileTimeServices.Configuration;
             var container = request.ModuleCompileTimeServices.Container;

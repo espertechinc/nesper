@@ -330,45 +330,9 @@ namespace com.espertech.esper.compiler.@internal.util
 
 #if DIAGNOSTICS
             Console.WriteLine("EmitToImage: {0}", assemblyName);
-            foreach (var syntaxTreePair in syntaxTreePairs) {
-                Console.WriteLine("\t- {0}", syntaxTreePair.First.ClassName);
-            }
 #endif
 
             var assemblyImage = EmitToImage(compilation);
-
-#if DIAGNOSTICS
-            Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
-#endif
-
-#if DEPRECATED
-#if NETCORE
-            using (var stream = new MemoryStream(AssemblyImage)) {
-                Assembly = LoadContext.LoadFromStream(stream);
-            }
-#else
-            Assembly = AppDomain.CurrentDomain.Load(AssemblyImage);
-#endif
-            
-#if DIAGNOSTICS
-            Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
-            Console.WriteLine($"\tFullName:{_assembly.FullName}");
-            Console.WriteLine($"\tName:{_assembly.GetName()}");
-#endif
-
-            lock (_assemblyCacheBindings) {
-                var metadataReference = MetadataReference.CreateFromImage(AssemblyImage);
-
-#if DIAGNOSTICS
-                Console.WriteLine($"MetaDataReference: {DateTime.Now}");
-                Console.WriteLine($"\tFullType: {metadataReference.GetType().FullName}");
-                Console.WriteLine($"\tDisplay: {metadataReference.Display}");
-                Console.WriteLine($"\tProperties: {metadataReference.Properties}");
-#endif
-                _metadataReferences.Add(metadataReference);
-                _assemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
-            }
-#endif
 
             return new EPCompilationUnit() {
                 Name = assemblyName,
@@ -433,7 +397,7 @@ namespace com.espertech.esper.compiler.@internal.util
             public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
             {
                 _namespace = node.Name.ToFullString().Trim();
-                _prefix += _namespace + ".";
+                _prefix = _namespace + ".";
                 base.VisitNamespaceDeclaration(node);
             }
 

@@ -18,20 +18,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
-        <PackageReference Include="Npgsql" Version="4.0.8"/>
-        <PackageReference Include="NUnit" Version="3.12.0"/>
+        <PackageReference Include="JetBrains.dotMemoryUnit" Version="3.2.20220510" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="Npgsql" Version="4.0.8" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NEsper.Avro\NEsper.Avro.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Compat\NEsper.Compat.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Compiler\NEsper.Compiler.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Log.NLog\NEsper.Log.NLog.csproj"/>
-        <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj"/>
+        <ProjectReference Include="..\..\src\NEsper.Avro\NEsper.Avro.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Compat\NEsper.Compat.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Compiler\NEsper.Compiler.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj" />
     </ItemGroup>
 
     <!--

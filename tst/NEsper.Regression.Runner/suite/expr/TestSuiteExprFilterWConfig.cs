@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             typeof(SupportFilterPlanHook).FullName +
             "'" +
             ")";
-        
+
         private static void RunAssertionFilter<T>(
             RegressionSession session,
             ConfigurationCompilerExecution.FilterIndexPlanningEnum config,
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         private Configuration MakeConfig(ConfigurationCompilerExecution.FilterIndexPlanningEnum setting)
         {
             var configuration = SupportConfigFactory.GetConfiguration(Container);
-            foreach (var bean in new[] {typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1)}) {
+            foreach (var bean in new[] { typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1) }) {
                 configuration.Common.AddEventType(bean);
             }
 
@@ -109,25 +109,25 @@ namespace com.espertech.esper.regressionrun.suite.expr
         protected static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
-                typeof(SupportBean),
-                typeof(SupportBeanArrayCollMap),
-                typeof(SupportTradeEvent),
-                typeof(SupportInstanceMethodBean),
-                typeof(SupportRuntimeExBean),
-                typeof(SupportBeanWithEnum),
-                typeof(SupportBeanComplexProps),
-                typeof(SupportMarketDataBean),
-                typeof(SupportBeanNumeric),
-                typeof(SupportBean_S0),
-                typeof(SupportInKeywordBean),
-                typeof(SupportOverrideBase),
-                typeof(SupportOverrideOne),
-                typeof(SupportBean_IntAlphabetic),
-                typeof(SupportBean_StringAlphabetic),
-                typeof(SupportBean_S1),
-                typeof(SupportBean_S2),
-                typeof(SupportBeanSimpleNumber)
-            }) {
+                         typeof(SupportBean),
+                         typeof(SupportBeanArrayCollMap),
+                         typeof(SupportTradeEvent),
+                         typeof(SupportInstanceMethodBean),
+                         typeof(SupportRuntimeExBean),
+                         typeof(SupportBeanWithEnum),
+                         typeof(SupportBeanComplexProps),
+                         typeof(SupportMarketDataBean),
+                         typeof(SupportBeanNumeric),
+                         typeof(SupportBean_S0),
+                         typeof(SupportInKeywordBean),
+                         typeof(SupportOverrideBase),
+                         typeof(SupportOverrideOne),
+                         typeof(SupportBean_IntAlphabetic),
+                         typeof(SupportBean_StringAlphabetic),
+                         typeof(SupportBean_S1),
+                         typeof(SupportBean_S2),
+                         typeof(SupportBeanSimpleNumber)
+                     }) {
                 configuration.Common.AddEventType(clazz);
             }
 
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Common.AddVariable("var_optimizable_relop", typeof(int), 10, true);
             configuration.Common.AddVariable("var_optimizable_start", typeof(int), 10, true);
             configuration.Common.AddVariable("var_optimizable_end", typeof(int), 11, true);
-            configuration.Common.AddVariable("var_optimizable_array", "int[]", new int?[] {10, 11}, true);
+            configuration.Common.AddVariable("var_optimizable_array", "int[]", new int?[] { 10, 11 }, true);
             configuration.Common.AddVariable("var_optimizable_start_string", typeof(string), "c", true);
             configuration.Common.AddVariable("var_optimizable_end_string", typeof(string), "d", true);
 
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             var eplCondition = HOOK + "context MyContext select * from SupportBean(TheString = 'a' or context.s0.P00 = 'x');\n";
             RunAssertionBooleanExpression(none, eplContext + eplCondition, FilterOperator.BOOLEAN_EXPRESSION);
             Assert.AreEqual(2, CompileGetPlan(basic, eplContext + eplCondition).Paths.Length);
-            
+
             var planBasicWithHint = CompileGetPlan(basic, eplContext + hintCondition + eplCondition);
             Assert.AreEqual(1, planBasicWithHint.Paths.Length);
             Assert.IsNotNull(planBasicWithHint.FilterConfirm);
@@ -237,16 +237,6 @@ namespace com.espertech.esper.regressionrun.suite.expr
             var planAdvanced = CompileGetPlan(advanced, eplContext + eplCondition);
             Assert.AreEqual(1, planAdvanced.Paths.Length);
             Assert.IsNotNull(planAdvanced.FilterConfirm);
-        }
-
-        [Test]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.Self)]
-        public void TestExprFilterExpressions(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
-        {
-            RunAssertionFilter(filterIndexPlanning, ExprFilterExpressions.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -264,26 +254,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        public void TestExprFilterOptimizable(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
-        {
-            RunAssertionFilter(filterIndexPlanning, ExprFilterOptimizable.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.Children)]
-        public void TestExprFilterOptimizableLookupableLimitedExpr(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
-        {
-            RunAssertionFilter(filterIndexPlanning, ExprFilterOptimizableLookupableLimitedExpr.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
-        [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.Children)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanInRangeAndBetween(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
         {
             RunAssertionFilter(filterIndexPlanning, ExprFilterPlanInRangeAndBetween.Executions());
@@ -293,7 +264,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
-        [Parallelizable(ParallelScope.Children)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanNoFilter(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -305,6 +276,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanOneFilterNestedFourLvl(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -316,6 +288,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanOneFilterNestedThreeLvl(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -327,6 +300,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanOneFilterNestedTwoLvl(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -338,6 +312,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanOneFilterNonNested(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -349,6 +324,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanOneFilterTwoPathNested(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -360,6 +336,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanOneFilterTwoPathNonNested(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -371,6 +348,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanThreeFilterIndexReuse(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -382,6 +360,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanTwoFilterDifferent(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -404,6 +383,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanTwoFilterIndexWFilterForValueReuse(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -415,6 +395,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanTwoFilterNestedTwoDiff(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -426,6 +407,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanTwoFilterNestedTwoSame(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -437,6 +419,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanTwoFilterSame(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -448,6 +431,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, false)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, true)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, false)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterPlanTwoFilterTwoPathNestedSame(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning,
             bool withStats)
@@ -459,6 +443,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestCase(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.All)]
         public void TestExprFilterWhereClause(ConfigurationCompilerExecution.FilterIndexPlanningEnum filterIndexPlanning)
         {
             RunAssertionFilter(filterIndexPlanning, ExprFilterWhereClause.Executions());
@@ -738,6 +723,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.All)]
         public class TestExprFilterOptimizableBooleanLimitedExpr : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -831,7 +817,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.Children)]
+        [Parallelizable(ParallelScope.All)]
         public class TestExprFilterOptimizableValueLimitedExpr : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -911,7 +897,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public void WithEqualsFromPatternConstant() => RunAssertionFilter(
                 _session,
                 _indexPlanning,
-                    ExprFilterOptimizableValueLimitedExpr.WithEqualsFromPatternConstant());
+                ExprFilterOptimizableValueLimitedExpr.WithEqualsFromPatternConstant());
 
             [Test, RunInApplicationDomain]
             public void WithEqualsFromPatternMulti() => RunAssertionFilter(
@@ -942,7 +928,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.Children)]
+        [Parallelizable(ParallelScope.All)]
         public class TestExprFilterOptimizableOrRewrite : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -1072,7 +1058,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 _indexPlanning,
                 ExprFilterOptimizableOrRewrite.WithTwoOr());
         }
-        
+
         /// <summary>
         /// Auto-test(s): ExprFilterInAndBetween
         /// <code>
@@ -1083,6 +1069,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.All)]
         public class TestExprFilterInAndBetween : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -1095,47 +1082,389 @@ namespace com.espertech.esper.regressionrun.suite.expr
             [Test, RunInApplicationDomain]
             public void WithInMultipleWithBool() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithInMultipleWithBool());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithInMultipleWithBool());
 
             [Test, RunInApplicationDomain]
             public void WithInMultipleNonMatchingFirst() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithInMultipleNonMatchingFirst());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithInMultipleNonMatchingFirst());
 
             [Test, RunInApplicationDomain]
             public void WithReuseNot() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithReuseNot());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithReuseNot());
 
             [Test, RunInApplicationDomain]
             public void WithReuse() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithReuse());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithReuse());
 
             [Test, RunInApplicationDomain]
             public void WithInInvalid() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithInInvalid());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithInInvalid());
 
             [Test, RunInApplicationDomain]
             public void WithNotIn() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithNotIn());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithNotIn());
 
             [Test, RunInApplicationDomain]
             public void WithInExpr() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithInExpr());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithInExpr());
 
             [Test, RunInApplicationDomain]
             public void WithSimpleIntAndEnumWrite() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithSimpleIntAndEnumWrite());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithSimpleIntAndEnumWrite());
 
             [Test, RunInApplicationDomain]
             public void WithInDynamic() => RunAssertionFilter(
                 _session,
-                _indexPlanning,ExprFilterInAndBetween.WithInDynamic());
+                _indexPlanning,
+                ExprFilterInAndBetween.WithInDynamic());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ExprFilterExpressions
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprFilterExpressions.Executions());
+        /// </code>
+        /// </summary>
+
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Self)]
+        public class TestExprFilterExpressions : AbstractTestBase
+        {
+            private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
+
+            public TestExprFilterExpressions(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning)
+            {
+                _indexPlanning = indexPlanning;
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithInstanceMethodWWildcard() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithInstanceMethodWWildcard());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithEqualsSemanticExpr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithEqualsSemanticExpr());
+
+            [Test, RunInApplicationDomain]
+            public void WithCombinationEqualsOp() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithCombinationEqualsOp());
+
+            [Test, RunInApplicationDomain]
+            public void WithNotEqualsOp() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithNotEqualsOp());
+
+            [Test, RunInApplicationDomain]
+            public void WithRewriteWhere() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithRewriteWhere());
+
+            [Test, RunInApplicationDomain]
+            public void WithExprReversed() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithExprReversed());
+
+            [Test, RunInApplicationDomain]
+            public void WithPatternWithExpr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithPatternWithExpr());
+
+            [Test, RunInApplicationDomain]
+            public void WithEqualsSemanticFilter() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithEqualsSemanticFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithEqualsSameCompare() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithWithEqualsSameCompare());
+
+            [Test, RunInApplicationDomain]
+            public void WithStaticFunc() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithStaticFunc());
+
+            [Test, RunInApplicationDomain]
+            public void WithPatternFunc() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithPatternFunc());
+
+            [Test, RunInApplicationDomain]
+            [Category("Debugging")]
+            public void WithPatternFunc3Stream() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithPatternFunc3Stream());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumSyntaxTwo() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithEnumSyntaxTwo());
+
+            [Test, RunInApplicationDomain]
+            public void WithEnumSyntaxOne() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithEnumSyntaxOne());
+
+            [Test, RunInApplicationDomain]
+            public void WithNullBooleanExpr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithNullBooleanExpr());
+
+            [Test, RunInApplicationDomain]
+            public void WithRelationalOpConstantFirst() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithRelationalOpConstantFirst());
+
+            [Test, RunInApplicationDomain]
+            public void WithShortCircuitEvalAndOverspecified() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithShortCircuitEvalAndOverspecified());
+
+            [Test, RunInApplicationDomain]
+            public void WithPromoteIndexToSetNotIn() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithPromoteIndexToSetNotIn());
+
+            [Test, RunInApplicationDomain]
+            public void WithNotEqualsConsolidate() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithNotEqualsConsolidate());
+
+            [Test, RunInApplicationDomain]
+            public void WithOverInClause() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithOverInClause());
+
+            [Test, RunInApplicationDomain]
+            public void WithInSet() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithInSet());
+
+            [Test, RunInApplicationDomain]
+            public void WithNotEqualsNull() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithNotEqualsNull());
+
+            [Test, RunInApplicationDomain]
+            public void WithIn3ValuesAndNull() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithIn3ValuesAndNull());
+
+            [Test, RunInApplicationDomain]
+            public void WithBooleanExpr() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithBooleanExpr());
+
+            [Test, RunInApplicationDomain]
+            public void WithMathExpression() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithMathExpression());
+
+            [Test, RunInApplicationDomain]
+            public void WithRelationalOpRange() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithRelationalOpRange());
+
+            [Test, RunInApplicationDomain]
+            public void WithConstant() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterExpressions.WithConstant());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ExprFilterOptimizable
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprFilterOptimizable.Executions());
+        /// </code>
+        /// </summary>
+
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Self)]
+        public class TestExprFilterOptimizable : AbstractTestBase
+        {
+            private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
+
+            public TestExprFilterOptimizable(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning) : base(_ => { })
+            {
+                _indexPlanning = indexPlanning;
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithDeployTimeConstant() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithDeployTimeConstant());
+
+            [Test, RunInApplicationDomain]
+            public void WithPatternUDFFilterOptimizable() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithPatternUDFFilterOptimizable());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrContext() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithOrContext());
+
+            [Test, RunInApplicationDomain]
+            public void WithOrToInRewrite() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithOrToInRewrite());
+
+            [Test, RunInApplicationDomain]
+            public void WithOptimizableInspectFilter() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithOptimizableInspectFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithOptimizableVariableAndSeparateThread() => RegressionRunner.Run(
+                _session,
+                ExprFilterOptimizable.WithOptimizableVariableAndSeparateThread());
+
+            [Test, RunInApplicationDomain]
+            public void WithOptimizableTypeOf() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithOptimizableTypeOf());
+
+            [Test, RunInApplicationDomain]
+            public void WithOptimizableMethodInvocationContext() => RegressionRunner.Run(
+                _session,
+                ExprFilterOptimizable.WithOptimizableMethodInvocationContext());
+
+            [Test, RunInApplicationDomain]
+            public void WithInAndNotInKeywordMultivalue() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizable.WithInAndNotInKeywordMultivalue());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ExprFilterOptimizableLookupableLimitedExpr
+        /// <code>
+        /// RegressionRunner.Run(_session, ExprFilterOptimizableLookupableLimitedExpr.Executions());
+        /// </code>
+        /// </summary>
+
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
+        [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.Self)]
+        public class TestExprFilterOptimizableLookupableLimitedExpr : AbstractTestBase
+        {
+            private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
+
+            public TestExprFilterOptimizableLookupableLimitedExpr(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning)
+                : base(_ => { })
+            {
+                _indexPlanning = indexPlanning;
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithCurrentTimestamp() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithCurrentTimestamp());
+
+            [Test, RunInApplicationDomain]
+            public void WithDisqualify() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithDisqualify());
+
+            [Test, RunInApplicationDomain]
+            public void WithInRangeWCoercion() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithInRangeWCoercion());
+
+            [Test, RunInApplicationDomain]
+            public void WithInSetOfValue() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithInSetOfValue());
+
+            [Test, RunInApplicationDomain]
+            public void WithEqualsCoercion() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithEqualsCoercion());
+
+            [Test, RunInApplicationDomain]
+            public void WithEqualsMultiStmtSharingIndex() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithEqualsMultiStmtSharingIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithEqualsOneStmtWPatternSharingIndex() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithEqualsOneStmtWPatternSharingIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithEqualsOneStmt() => RunAssertionFilter(
+                _session,
+                _indexPlanning,
+                ExprFilterOptimizableLookupableLimitedExpr.WithEqualsOneStmt());
         }
     }
 } // end of namespace

@@ -68,7 +68,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .ArtifactRepositoryManager()
                 .DefaultRepository;
 
-            ICollection<Artifact> artifacts = new HashSet<Artifact>();
+            ICollection<ICompileArtifact> artifacts = new HashSet<ICompileArtifact>();
             
             try {
                 EPCompiledManifest manifest = CompileToModules(
@@ -94,7 +94,7 @@ namespace com.espertech.esper.compiler.@internal.util
         }
 
         private static EPCompiledManifest CompileToModules(
-            ICollection<Artifact> artifacts,
+            ICollection<ICompileArtifact> artifacts,
             IList<Compilable> compilables,
             string optionalModuleName,
             IDictionary<ModuleProperty, object> moduleProperties,
@@ -112,7 +112,7 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<EPCompileExceptionItem> exceptions = new List<EPCompileExceptionItem>();
             IList<EPCompileExceptionItem> postLatchExceptions = new List<EPCompileExceptionItem>();
 
-            Artifact artifact;
+            ICompileArtifact artifact;
 
             foreach (var compilable in compilables) {
                 string className = null;
@@ -205,7 +205,7 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<string> statementClassNames,
             string moduleIdentPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Artifact artifact)
+            out ICompileArtifact artifact)
         {
             // write code to create an implementation of StatementResource
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(

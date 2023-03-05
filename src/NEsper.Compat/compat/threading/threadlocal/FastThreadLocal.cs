@@ -84,7 +84,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
         /// that normal IThreadLocal activity is not placed in the crossfire
         /// of this structure.
         /// </summary>
-        private static readonly LinkedList<WeakReference<StaticData>> ThreadDataList;
+        private static readonly LinkedList<System.WeakReference<StaticData>> ThreadDataList;
 
         /// <summary>
         /// Lock for the _threadDataList
@@ -96,7 +96,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
         /// </summary>
         static FastThreadLocal()
         {
-            ThreadDataList = new LinkedList<WeakReference<StaticData>>();
+            ThreadDataList = new LinkedList<System.WeakReference<StaticData>>();
             ThreadDataListLock = new SlimReaderWriterLock(60000);
         }
 
@@ -120,7 +120,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
             _threadData = lThreadData = new StaticData();
             using (ThreadDataListLock.AcquireWriteLock())
             {
-                ThreadDataList.AddLast(new WeakReference<StaticData>(_threadData));
+                ThreadDataList.AddLast(new System.WeakReference<StaticData>(_threadData));
             }
 
             return lThreadData; //_table;
@@ -134,7 +134,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
                 _threadData = lThreadData = new StaticData();
                 using (ThreadDataListLock.AcquireWriteLock())
                 {
-                    ThreadDataList.AddLast(new WeakReference<StaticData>(_threadData));
+                    ThreadDataList.AddLast(new System.WeakReference<StaticData>(_threadData));
                 }
             }
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
             StaticData lThreadData = _threadData = new StaticData();
             using (ThreadDataListLock.AcquireWriteLock())
             {
-                ThreadDataList.AddLast(new WeakReference<StaticData>(_threadData));
+                ThreadDataList.AddLast(new System.WeakReference<StaticData>(_threadData));
             }
 
             //T[] lTable = lThreadData.Table;
@@ -257,22 +257,17 @@ namespace com.espertech.esper.compat.threading.threadlocal
 
             using (ThreadDataListLock.AcquireReadLock())
             {
-                LinkedList<WeakReference<StaticData>>.Enumerator threadDataEnum =
-                    ThreadDataList.GetEnumerator();
+                using LinkedList<System.WeakReference<StaticData>>.Enumerator threadDataEnum = ThreadDataList.GetEnumerator();
                 while (threadDataEnum.MoveNext())
                 {
-                    WeakReference<StaticData> threadDataRef = threadDataEnum.Current;
-                    if (threadDataRef.IsAlive)
-                    {
-                        StaticData threadData = threadDataRef.Target;
-                        if (threadData != null)
+                    var threadDataRef = threadDataEnum.Current;
+                    if (threadDataRef == null)
+                        continue;
+                    if (threadDataRef.TryGetTarget(out var threadData)) {
+                        //StaticData threadData = threadDataRef.Target;
+                        if (threadData.Count > lInstance)
                         {
-                            if (threadData.Count > lInstance)
-                            {
-                                threadData.Table[lInstance] = default(T);
-                            }
-
-                            continue;
+                            threadData.Table[lInstance] = default(T);
                         }
                     }
 
@@ -361,14 +356,6 @@ namespace com.espertech.esper.compat.threading.threadlocal
             _instanceId = AllocateIndex();
             _dataFactory = factory;
         }
-
-#if false
-        public FastThreadLocal(SerializationInfo information, StreamingContext context)
-        {
-            m_instanceId = AllocateIndex();
-            m_dataFactory = (Func<T>) information.GetValue("m_dataFactory", typeof (Func<T>));
-        }
-#endif
     }
 
     /// <summary>

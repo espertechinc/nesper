@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.context.module
             ArtifactRepository = artifactRepository;
         }
 
-        public Artifact ResolveArtifact(string artifactName)
+        public IRuntimeArtifact ResolveArtifact(string artifactName)
         {
             return ArtifactRepository.Resolve(artifactName);
         }

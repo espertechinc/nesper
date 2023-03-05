@@ -126,6 +126,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			ExceptionHandlingService exceptionHandlingService,
 			SchedulingService schedulingService)
 		{
+			//return new SystemThreadLocal<EPEventServiceThreadLocalEntry>(
 			return new FastThreadLocal<EPEventServiceThreadLocalEntry>(
 				() => {
 					DualWorkQueue<object> dualWorkQueue = new DualWorkQueue<object>();

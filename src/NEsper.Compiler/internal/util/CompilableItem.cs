@@ -20,7 +20,7 @@ namespace com.espertech.esper.compiler.@internal.util
             string providerClassName,
             IList<CodegenClass> classes,
             CompilableItemPostCompileLatch postCompileLatch,
-            ICollection<Artifact> artifactsProvided)
+            ICollection<IArtifact> artifactsProvided)
         {
             ProviderClassName = providerClassName;
             Classes = classes;
@@ -34,6 +34,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public CompilableItemPostCompileLatch PostCompileLatch { get; }
 
-        public ICollection<Artifact> ArtifactsProvided { get; }
+        public ICollection<IArtifact> ArtifactsProvided { get; }
     }
 } // end of namespace

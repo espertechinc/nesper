@@ -26,7 +26,7 @@ namespace com.espertech.esper.compiler.@internal.util
             FAFQueryMethodForge query,
             string classPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Artifact artifact)
+            out ICompileArtifact artifact)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields),

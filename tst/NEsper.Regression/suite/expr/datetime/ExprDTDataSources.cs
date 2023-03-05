@@ -28,12 +28,40 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTDataSourcesStartEndTS());
-            executions.Add(new ExprDTDataSourcesFieldWValue());
-            executions.Add(new ExprDTDataSourcesAllCombinations());
-            executions.Add(new ExprDTDataSourcesMinMax());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithStartEndTS(execs);
+            WithFieldWValue(execs);
+            WithAllCombinations(execs);
+            WithMinMax(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinMax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTDataSourcesMinMax());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAllCombinations(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTDataSourcesAllCombinations());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFieldWValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTDataSourcesFieldWValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndTS(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTDataSourcesStartEndTS());
+            return execs;
         }
 
         private static void RunAssertionAllCombinations(
@@ -42,17 +70,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             AtomicLong milestone)
         {
             var methods = Collections.List(
-                "getMinuteOfHour",    // c0
-                "getMonthOfYear",     // c1
-                "getDayOfMonth",      // c2
-                "getDayOfWeek",       // c3
-                "getDayOfYear",       // c4
-                "getHourOfDay",       // c5
-                "getMillisOfSecond",  // c6
-                "getSecondOfMinute",  // c7
-                "getWeekyear",        // c8
-                "getYear"             // c9
-                );
+                "getMinuteOfHour", // c0
+                "getMonthOfYear", // c1
+                "getDayOfMonth", // c2
+                "getDayOfWeek", // c3
+                "getDayOfYear", // c4
+                "getHourOfDay", // c5
+                "getMillisOfSecond", // c6
+                "getSecondOfMinute", // c7
+                "getWeekyear", // c8
+                "getYear" // c9
+            );
             var epl = new StringBuilder();
             epl.Append("@Name('s0') select ");
             var count = 0;
@@ -78,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "c0","c1","c2","c3","c4","c5","c6","c7","c8","c9" },
+                new[] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" },
                 new object[] {
                     1, 5, 30, 4, 150, 9, 3, 2, 22, 2002
                 });
@@ -106,19 +134,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           "min(LongPrimitive, LongBoxed).before(20000L, 1 second) as c1" +
                           " from SupportBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] { "c0", "c1" };
 
                 SendBean(env, 20000, 20000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false});
+                    new object[] { false, false });
 
                 SendBean(env, 19000, 20000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true});
+                    new object[] { true, true });
 
                 env.UndeployAll();
             }
@@ -128,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "LongDate","DateTime","DateTimeOffset", "DateTimeEx" };
+                var fields = new[] { "LongDate", "DateTime", "DateTimeOffset", "DateTimeEx" };
                 var milestone = new AtomicLong();
 
                 foreach (var field in fields) {
@@ -187,20 +215,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
-                        1,    // valmoh
-                        5,    // valmoy
-                        30,   // valdom
-                        4,    // valdow
-                        150,  // valdoy
-                        9,    // valhod
-                        3,    // valmos
-                        2,    // valsom
-                        22,   // valwye
+                        1, // valmoh
+                        5, // valmoy
+                        30, // valdom
+                        4, // valdow
+                        150, // valdoy
+                        9, // valhod
+                        3, // valmos
+                        2, // valsom
+                        22, // valwye
                         2002, // valyea
-                        9,    // val0
-                        9,    // val1
-                        9,    // val2    
-                        9     // val3
+                        9, // val0
+                        9, // val1
+                        9, // val2    
+                        9 // val3
                     });
 
                 env.UndeployAll();

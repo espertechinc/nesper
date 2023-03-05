@@ -593,11 +593,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroupRollup.WithOutputSnapshotOrderWLimit());
 
             [Test, RunInApplicationDomain]
-            public void With6OutputLimitSnapshot()
-            {
-                Console.WriteLine("With6OutputLimitSnapshot");
-                RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroupRollup.With6OutputLimitSnapshot());
-            }
+            public void With6OutputLimitSnapshot() => RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroupRollup.With6OutputLimitSnapshot());
 
             [Test, RunInApplicationDomain]
             public void With5OutputLimitFirst() => RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroupRollup.With5OutputLimitFirst());

@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionrun.runner
         public EPRuntimeProvider RuntimeProvider { get; }
 
         public Configuration Configuration { get; }
-
+        
         public bool UseDefaultRuntime { get; }
         
         public EPRuntime Runtime { get; set; }

@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             return DateTimeFormat.ISO_DATE_TIME;
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             string epl;
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env,
                 epl,
                 "Failed to validate select-clause expression 'DateTimeOffset.between(DateTime,Dat...(48 chars)': Failed to validate date-time method 'between', expected a boolean-type result for expression parameter 2 but received System.Int32");
-            
-            #if NOT_APPLICABLE // use case exercises code that examines DateFormatters on legacy date types - not applicable
+
+#if NOT_APPLICABLE // use case exercises code that examines DateFormatters on legacy date types - not applicable
             // mismatch parameter to input
             var formatProvider = GetType().FullName;
             epl = $"select DateTimeOffset.format({formatProvider}.GetInvalidFormat()) from SupportDateTime";
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env,
                 epl,
                 $"Failed to validate select-clause expression 'DateTimeEx.format({simpleDateFormat}.g...(48 chars)': Date-time enumeration method 'format' invalid format, expected string-format or DateTimeFormatter but received java.text.DateFormat");
-            #endif
+#endif
 
             // invalid date format null
             epl = "select DateTimeOffset.format(null) from SupportDateTime";

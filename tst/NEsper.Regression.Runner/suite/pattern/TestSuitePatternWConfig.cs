@@ -30,54 +30,54 @@ namespace com.espertech.esper.regressionrun.suite.pattern
         public void TestMax2Noprevent()
         {
             using (var session = RegressionRunner.Session(Container)) {
-            Configure(2, false, session.Configuration);
-            RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Noprevent());
-            };
+                Configure(2, false, session.Configuration);
+                RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Noprevent());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestMax2Prevent()
         {
             using (var session = RegressionRunner.Session(Container)) {
-            Configure(2, true, session.Configuration);
-            RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Prevent());
-            };
+                Configure(2, true, session.Configuration);
+                RegressionRunner.Run(session, new PatternOperatorFollowedByMax2Prevent());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestMax4Prevent()
         {
-            using (var session = RegressionRunner.Session(Container)) {
-            Configure(4, true, session.Configuration);
-            RegressionRunner.Run(session, new PatternOperatorFollowedByMax4Prevent());
-            };
+            using (var session = RegressionRunner.Session(Container, true)) {
+                Configure(4, true, session.Configuration);
+                RegressionRunner.Run(session, new PatternOperatorFollowedByMax4Prevent());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternMicrosecondResolution()
         {
             using (var session = RegressionRunner.Session(Container)) {
-            session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
-            RegressionRunner.Run(session, new PatternMicrosecondResolution(true));
-            };
+                session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
+                RegressionRunner.Run(session, new PatternMicrosecondResolution(true));
+            }
         }
 
         [Test]
         public void TestPatternMicrosecondResolutionCrontab()
         {
             using (var session = RegressionRunner.Session(Container)) {
-            session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
-            RegressionRunner.Run(session, new PatternMicrosecondResolutionCrontab());
-            };
+                session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
+                RegressionRunner.Run(session, new PatternMicrosecondResolutionCrontab());
+            }
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternObserverTimerScheduleTimeZoneEST()
         {
             using (var session = RegressionRunner.Session(Container)) {
-            session.Configuration.Runtime.Expression.TimeZone = TimeZoneHelper.GetTimeZoneInfo("GMT-4:00");
-            RegressionRunner.Run(session, new PatternObserverTimerScheduleTimeZoneEST());
-            };
+                session.Configuration.Runtime.Expression.TimeZone = TimeZoneHelper.GetTimeZoneInfo("GMT-4:00");
+                RegressionRunner.Run(session, new PatternObserverTimerScheduleTimeZoneEST());
+            }
         }
 
         private void Configure(

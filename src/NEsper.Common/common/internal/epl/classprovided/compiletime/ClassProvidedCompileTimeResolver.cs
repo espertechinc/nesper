@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
 	    bool IsEmpty();
 
-	    void AddTo(ICollection<Artifact> artifacts);
+	    void AddTo(ICollection<IArtifact> artifacts);
 
-	    void RemoveFrom(ICollection<Artifact> artifacts);
+	    void RemoveFrom(ICollection<IArtifact> artifacts);
 	}
 } // end of namespace

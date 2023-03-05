@@ -50,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             return true;
         }
 
-        public void AddTo(ICollection<Artifact> artifacts)
+        public void AddTo(ICollection<IArtifact> artifacts)
         {
         }
 
-        public void RemoveFrom(ICollection<Artifact> artifacts)
+        public void RemoveFrom(ICollection<IArtifact> artifacts)
         {
         }
     }

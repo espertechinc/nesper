@@ -557,6 +557,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return _parentWBlock.Parent;
         }
 
+        public CodegenBlock TypeReference(Type type)
+        {
+            CheckClosed();
+            _statements.Add(new CodegenStatementTypeReference(type));
+            return this;
+        }
+
+        public CodegenBlock TypeReference<T>()
+        {
+            return TypeReference(typeof(T));
+        }
+
         public CodegenStatementTryCatch TryReturn(CodegenExpression expression)
         {
             if (_parentWBlock == null) {

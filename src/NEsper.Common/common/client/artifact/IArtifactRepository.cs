@@ -18,21 +18,32 @@ namespace com.espertech.esper.common.client.artifact
         /// <summary>
         /// Returns an enumerable of all artifacts
         /// </summary>
-        IEnumerable<Artifact> Artifacts { get; }
+        IEnumerable<IArtifact> Artifacts { get; }
+
+        IEnumerable<ICompileArtifact> CompileArtifacts { get; }
+
+        IEnumerable<IRuntimeArtifact> RuntimeArtifacts { get; } 
         
         /// <summary>
         /// Registers a byte image with the repository and returns a unique id for that artifact.
         /// </summary>
         /// <returns>Returns a registered artifact</returns>
-        Artifact Register(EPCompilationUnit compilationUnit);
+        ICompileArtifact Register(EPCompilationUnit compilationUnit);
 
         /// <summary>
         /// Resolves an artifact from the repository.
         /// </summary>
         /// <param name="artifactId"></param>
         /// <returns></returns>
-        Artifact Resolve(string artifactId);
+        IRuntimeArtifact Resolve(string artifactId);
 
+        /// <summary>
+        /// Takes a compile artifact and deploys it.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        ICompileArtifact Deploy(ICompileArtifact source);
+        
         /// <summary>
         /// Returns an enumeration of all metadata references.
         /// </summary>

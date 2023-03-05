@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.client.artifact
         /// Returns a named repository (based on deployment)
         /// </summary>
         /// <param name="deploymentId"></param>
-        IArtifactRepository GetArtifactRepository(string deploymentId);
+        /// <param name="createIfMissing">create the repository if it is missing</param>
+        IArtifactRepository GetArtifactRepository(string deploymentId, bool createIfMissing = false);
 
         /// <summary>
         /// Deletes (and unloads) the named repository.

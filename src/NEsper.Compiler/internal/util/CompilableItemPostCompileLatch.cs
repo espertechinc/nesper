@@ -17,6 +17,6 @@ namespace com.espertech.esper.compiler.@internal.util
     public interface CompilableItemPostCompileLatch
     {
         void AwaitAndRun();
-        void Completed(IEnumerable<Artifact> artifacts);
+        void Completed(IEnumerable<IArtifact> artifacts);
     }
 } // end of namespace

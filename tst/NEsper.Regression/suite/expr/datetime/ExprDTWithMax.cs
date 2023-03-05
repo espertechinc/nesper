@@ -21,17 +21,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTWithMaxInput());
-            executions.Add(new ExprDTWithMaxFields());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithInput(execs);
+            WithFields(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTWithMaxFields());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInput(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTWithMaxInput());
+            return execs;
         }
 
         internal class ExprDTWithMaxInput : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2", "val3" };
+                var fields = new[] { "val0", "val1", "val2", "val3" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTime.withMax('month') as val0," +
                                   "DateTimeOffset.withMax('month') as val1," +
@@ -66,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
+                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.withMax('msec') as val0," +
                                   "DateTimeOffset.withMax('sec') as val1," +
@@ -87,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         typeof(DateTimeOffset?), // val3
                         typeof(DateTimeOffset?), // val4
                         typeof(DateTimeOffset?), // val5
-                        typeof(DateTimeOffset?)  // val6
+                        typeof(DateTimeOffset?) // val6
                     });
 
                 string[] expected = {
@@ -97,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "2002-05-30T23:00:00.000", // val3
                     "2002-05-31T09:00:00.000", // val4
                     "2002-12-30T09:00:00.000", // val5
-                    "9999-05-30T09:00:00.000"  // val6
+                    "9999-05-30T09:00:00.000" // val6
                 };
                 var startTime = "2002-05-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));

@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(0);
                 var context = SupportConditionHandlerFactory.FactoryContexts[0];
-                Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+                Assert.AreEqual("default", context.RuntimeURI);
                 var handler = SupportConditionHandlerFactory.LastHandler;
                 handler.GetAndResetContexts();
 
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var context = SupportConditionHandlerFactory.FactoryContexts[0];
-                Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+                Assert.AreEqual("default", context.RuntimeURI);
                 var handler = SupportConditionHandlerFactory.LastHandler;
 
                 var expression =

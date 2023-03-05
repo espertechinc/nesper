@@ -914,13 +914,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (wrapper != null) {
                 var array = Arrays.CreateInstanceChecked(underlyingType, wrapper.Length);
                 for (var i = 0; i < wrapper.Length; i++) {
-                    try {
-                        array.SetValue(wrapper[i].Underlying, i);
-                    }
-                    catch (InvalidCastException e) {
-                        Console.WriteLine("Exception: {0}", e);
-                        throw;
-                    }
+                    array.SetValue(wrapper[i].Underlying, i);
                 }
 
                 return array;

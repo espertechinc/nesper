@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 #if NETCORE
@@ -76,18 +77,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 		}
 
-#if NETCORE
-		public AssemblyLoadContext GetDeploymentLoadContext(string deploymentId)
-		{
-			var artifactRepository = _artifactRepositoryManager.GetArtifactRepository(deploymentId);
-			if (artifactRepository is ArtifactRepositoryAssemblyLoadContext artifactRepositoryWithAssemblyLoadContext) {
-				return artifactRepositoryWithAssemblyLoadContext.AssemblyLoadContext;
-			}
-
-			throw new IllegalStateException("invalid artifact repository selected for .NET core");
-		}
-#endif		
-
 		public EPDeploymentRollout Rollout(
 			ICollection<EPDeploymentRolloutCompiled> items,
 			RolloutOptions options)
@@ -115,10 +104,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						new DeployerRolloutArgs {
 							CurrentStatementId = currentStatementId.Value,
 							ItemsProvided = items,
-							Runtime = _runtime,
-#if NETCORE
-							GetDeploymentLoadContext = GetDeploymentLoadContext
-#endif
+							Runtime = _runtime
 						}
 					);
 				statementIdRecovery.CurrentStatementId = currentStatementId + rolloutResult.NumStatements;
@@ -168,10 +154,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					options,
 					_runtime.ServicesContext.DeploymentLifecycleService);
 
+				var artifactRepository = _artifactRepositoryManager
+					.GetArtifactRepository(deploymentId, true);
+				var recompiled = new EPCompiled(
+					artifactRepository,
+					compiled.Artifacts.Select(source => artifactRepository.Deploy(source)).ToList(),
+					compiled.Manifest);
+				
 				deployerResult = Deployer.DeployFresh(
 					deploymentId,
 					currentStatementId.Value,
-					compiled,
+					recompiled,
 					options.StatementNameRuntime,
 					options.StatementUserObjectRuntime,
 					options.StatementSubstitutionParameter,
@@ -380,6 +373,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				_services.EpServicesHA.DeploymentRecoveryService.Remove(deploymentId);
 				_services.DeploymentLifecycleService.RemoveDeployment(deploymentId);
 
+				//Console.WriteLine($"UndeployRemoveInternal: RemoveArtifactRepository {deploymentId}");
 				_artifactRepositoryManager.RemoveArtifactRepository(deploymentId);
 				
 				DispatchOnUndeploymentEvent(deployment, -1);
@@ -454,7 +448,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				deployed.ModuleProvider.ModuleName,
 				stmts,
 				rolloutItemNumber);
-			foreach (DeploymentStateListener listener in listeners) {
+			foreach (var listener in listeners) {
 				try {
 					listener.OnDeployment(@event);
 				}

@@ -56,5 +56,6 @@ namespace com.espertech.esper.compat
         {
             return _hashCode;
         }
-	}
+ 	}
 }
+

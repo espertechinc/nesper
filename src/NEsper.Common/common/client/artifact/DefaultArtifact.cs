@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.client.artifact
     /// <summary>
     /// The artifact produced by a compilation.
     /// </summary>
-    public class DefaultArtifact : Artifact
+    public class DefaultArtifact : ICompileArtifact, IRuntimeArtifact
     {
         private ISet<String> _typeNames;
         private Assembly _assembly;
@@ -31,6 +31,12 @@ namespace com.espertech.esper.common.client.artifact
         /// The byte array of the image for the assembly
         /// </summary>
         public byte[] Image { get; set; }
+
+        /// <summary>
+        /// Deploy the artifact within the repository it was created in.
+        /// </summary>
+        /// <value></value>
+        public IRuntimeArtifact Runtime => this;
 
         /// <summary>
         /// Returns true if the artifact has materialized the assembly.

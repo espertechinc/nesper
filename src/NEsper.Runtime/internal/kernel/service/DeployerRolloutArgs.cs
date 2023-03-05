@@ -14,9 +14,5 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public int CurrentStatementId;
         public ICollection<EPDeploymentRolloutCompiled> ItemsProvided;
         public EPRuntimeSPI Runtime;
-        
-#if NETCORE
-        public Func<string, AssemblyLoadContext> GetDeploymentLoadContext;
-#endif
     }
 }

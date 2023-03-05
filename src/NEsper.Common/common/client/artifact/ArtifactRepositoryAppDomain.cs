@@ -2,6 +2,7 @@
 using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.client.artifact
 {
@@ -25,9 +26,9 @@ namespace com.espertech.esper.common.client.artifact
             AppDomain = appDomain;
         }
 
-        protected override Assembly MaterializeAssembly(byte[] image)
+        protected override Supplier<Assembly> MaterializeAssemblySupplier(byte[] image)
         {
-            return AppDomain.Load(image);
+            return () => AppDomain.Load(image);
         }
     }
 }

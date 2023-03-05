@@ -133,12 +133,12 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			return _path.IsEmpty() && _locals.Classes.IsEmpty();
 		}
 
-		public void AddTo(ICollection<Artifact> artifacts)
+		public void AddTo(ICollection<IArtifact> artifacts)
 		{
 			_path.Traverse(cp => artifacts.Add(cp.Artifact));
 		}
 
-		public void RemoveFrom(ICollection<Artifact> artifacts)
+		public void RemoveFrom(ICollection<IArtifact> artifacts)
 		{
 			Consumer<ClassProvided> classProvidedByteCodeRemover = item => {
 				artifacts.Remove(item.Artifact);

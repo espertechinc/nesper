@@ -126,7 +126,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var classPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
             EPCompiledManifest manifest;
-            Artifact artifact;
+            ICompileArtifact artifact;
 
             FAFQueryMethodForge query;
             if (specCompiled.Raw.InsertIntoDesc != null) {
@@ -196,7 +196,7 @@ namespace com.espertech.esper.compiler.@internal.util
             CompilerOptions compilerOptions,
             ModuleCompileTimeServices compileTimeServices,
             IArtifactRepository artifactRepository,
-            out Artifact artifact)
+            out ICompileArtifact artifact)
         {
             string queryMethodProviderClassName;
             try {
@@ -232,7 +232,7 @@ namespace com.espertech.esper.compiler.@internal.util
             string classPostfix,
             ModuleCompileTimeServices compileTimeServices,
             IArtifactRepository artifactRepository,
-            out Artifact artifact)
+            out ICompileArtifact artifact)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);

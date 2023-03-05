@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public void Run(RegressionEnvironment env)
         {
             var context = SupportConditionHandlerFactory.FactoryContexts[0];
-            Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+            Assert.AreEqual("default", context.RuntimeURI);
             var handler = SupportConditionHandlerFactory.LastHandler;
 
             RunAssertionFollowedWithMax(env, handler);

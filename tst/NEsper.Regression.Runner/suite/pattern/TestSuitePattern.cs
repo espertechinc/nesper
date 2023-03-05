@@ -675,6 +675,8 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             {
             }
 
+            protected override bool UseDefaultRuntime => true;
+
             [Test, RunInApplicationDomain]
             public void WithOperatorFollowedByMaxInvalid() => RegressionRunner.Run(_session, PatternOperatorFollowedByMax.WithOperatorFollowedByMaxInvalid());
 

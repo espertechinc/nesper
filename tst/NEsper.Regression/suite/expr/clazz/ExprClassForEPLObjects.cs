@@ -180,6 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				    "@Name('s0') select s.Id as c0 from SupportBean as e,\n" +
 				    "method:MyFromClauseMethod.GetBeans() as s";
 				var compiled = env.Compile(epl, path);
+
 				var assemblies = compiled.Assemblies;
 				var assemblyTypes = assemblies.SelectMany(_ => _.GetExportedTypes());
 				foreach (var assemblyType in assemblyTypes) {

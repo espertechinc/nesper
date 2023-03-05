@@ -49,7 +49,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			}
 		}
 
-		public void Completed(IEnumerable<Artifact> artifacts)
+		public void Completed(IEnumerable<IArtifact> artifacts)
 		{
 			_latch.CountDown();
 		}

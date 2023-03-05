@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             Classes[key] = detail;
         }
 
-        public void AddTo(ICollection<Artifact> additionalClasses)
+        public void AddTo(ICollection<IArtifact> additionalClasses)
         {
             foreach (var entry in Classes) {
                 additionalClasses.Add(entry.Value.Artifact);

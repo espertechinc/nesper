@@ -40,17 +40,80 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         public static ICollection<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprFilterInAndNotInKeywordMultivalue());
-            executions.Add(new ExprFilterOptimizableMethodInvocationContext());
-            executions.Add(new ExprFilterOptimizableTypeOf());
-            executions.Add(new ExprFilterOptimizableVariableAndSeparateThread());
-            executions.Add(new ExprFilterOptimizableInspectFilter());
-            executions.Add(new ExprFilterOrToInRewrite());
-            executions.Add(new ExprFilterOrContext());
-            executions.Add(new ExprFilterPatternUDFFilterOptimizable());
-            executions.Add(new ExprFilterDeployTimeConstant()); // substitution and variables are here
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithInAndNotInKeywordMultivalue(execs);
+            WithOptimizableMethodInvocationContext(execs);
+            WithOptimizableTypeOf(execs);
+            WithOptimizableVariableAndSeparateThread(execs);
+            WithOptimizableInspectFilter(execs);
+            WithOrToInRewrite(execs);
+            WithOrContext(execs);
+            WithPatternUDFFilterOptimizable(execs);
+            WithDeployTimeConstant(execs); // substitution and variables are here
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDeployTimeConstant(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterDeployTimeConstant());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternUDFFilterOptimizable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterPatternUDFFilterOptimizable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOrContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrToInRewrite(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOrToInRewrite());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOptimizableInspectFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizableInspectFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOptimizableVariableAndSeparateThread(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizableVariableAndSeparateThread());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOptimizableTypeOf(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizableTypeOf());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOptimizableMethodInvocationContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizableMethodInvocationContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInAndNotInKeywordMultivalue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInAndNotInKeywordMultivalue());
+            return execs;
         }
 
         internal class ExprFilterOrContext : RegressionExecution
@@ -74,11 +137,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                TryInKeyword(env, "Ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
+                TryInKeyword(env, "Ints", new SupportInKeywordBean(new[] { 1, 2 }), milestone);
                 TryInKeyword(env, "MapOfIntKey", new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")), milestone);
                 TryInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
-                TryNotInKeyword(env, "Ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
+                TryNotInKeyword(env, "Ints", new SupportInKeywordBean(new[] { 1, 2 }), milestone);
                 TryNotInKeyword(env, "MapOfIntKey", new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")), milestone);
                 TryNotInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
@@ -312,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", new[] {10, 11}));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", new[] { 10, 11 }));
             if (HasFilterIndexPlanBasicOrMore(env)) {
                 SupportFilterServiceHelper.AssertFilterSvcSingle(env.Statement("s0"), "IntPrimitive", FilterOperator.IN_LIST_OF_VALUES);
             }
@@ -571,7 +634,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                       "@Name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.Ints));\n";
             env.CompileDeploy(epl).AddListener("s1").AddListener("s2");
 
-            env.SendEventBean(new SupportInKeywordBean(new[] {1, 2}));
+            env.SendEventBean(new SupportInKeywordBean(new[] { 1, 2 }));
 
             env.SendEventBean(new SupportBean("E1", 1));
             Assert.IsTrue(env.Listener("s1").IsInvokedAndReset() && env.Listener("s2").IsInvokedAndReset());
@@ -677,7 +740,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             env.CompileDeploy("@Name('s0')" + epl, path).AddListener("s0").MilestoneInc(milestone);
-            var statementSPI = (EPStatementSPI) env.Statement("s0");
+            var statementSPI = (EPStatementSPI)env.Statement("s0");
             if (HasFilterIndexPlanBasicOrMore(env)) {
                 var param = SupportFilterServiceHelper.GetFilterSvcSingle(statementSPI);
                 Assert.AreEqual(op, param.Op, "failed for '" + epl + "'");

@@ -77,7 +77,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
         /// Initializes a new instance of the <see cref="SystemThreadLocal&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="factory">The factory used to create values when not found.</param>
-        public SystemThreadLocal(Func<T> factory )
+        public SystemThreadLocal(Func<T> factory)
         {
             _dataStoreSlot = Thread.AllocateDataSlot();
             _dataFactory = factory;

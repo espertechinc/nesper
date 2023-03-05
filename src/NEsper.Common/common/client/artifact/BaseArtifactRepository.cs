@@ -6,6 +6,7 @@ using System.Reflection;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using Microsoft.CodeAnalysis;
 
@@ -20,26 +21,30 @@ namespace com.espertech.esper.common.client.artifact
         /// <summary>
         /// Dictionary that maps ids to artifacts.
         /// </summary>
-        private readonly IDictionary<string, Artifact> _idToArtifact;
+        private readonly IDictionary<string, IArtifact> _idToArtifact;
         
         /// <summary>
         /// Constructor.
         /// </summary>
         protected BaseArtifactRepository()
         {
-            _idToArtifact = new Dictionary<string, Artifact>();
+            _idToArtifact = new Dictionary<string, IArtifact>();
         }
 
         /// <summary>
         /// Returns an enumerable of all artifacts
         /// </summary>
-        public IEnumerable<Artifact> Artifacts {
+        public IEnumerable<IArtifact> Artifacts {
             get {
                 lock (_idToArtifact) {
                     return _idToArtifact.Values.ToList();
                 }
             }
         }
+
+        public IEnumerable<ICompileArtifact> CompileArtifacts => Artifacts.OfType<ICompileArtifact>();
+
+        public IEnumerable<IRuntimeArtifact> RuntimeArtifacts => Artifacts.OfType<IRuntimeArtifact>();
 
         /// <summary>
         /// Performs cleanup on the repository.
@@ -48,21 +53,23 @@ namespace com.espertech.esper.common.client.artifact
         {
         }
 
-        protected abstract Assembly MaterializeAssembly(byte[] image);
-
+        protected abstract Supplier<Assembly> MaterializeAssemblySupplier(byte[] image);
+        
+        
         /// <summary>
         /// Registers an image with the repository and returns a unique id for that artifact.
         /// </summary>
         /// <returns></returns>
-        public Artifact Register(EPCompilationUnit compilationUnit)
+        public ICompileArtifact Register(EPCompilationUnit compilationUnit)
         {
             var image = compilationUnit.Image;
             var id = compilationUnit.Name;
             var metadataReference = MetadataReference.CreateFromImage(image);
+            var materializer = MaterializeAssemblySupplier(image);
             var artifact = new DefaultArtifact(id) {
                 Image = image,
                 MetadataReference = metadataReference,
-                AssemblySupplier = () => MaterializeAssembly(image),
+                AssemblySupplier = materializer,
                 TypeNames = compilationUnit.TypeNames
             };
 
@@ -72,17 +79,23 @@ namespace com.espertech.esper.common.client.artifact
 
             return artifact;
         }
-
+      
         /// <summary>
         /// Resolves an artifact from the repository.
         /// </summary>
         /// <param name="artifactId"></param>
         /// <returns></returns>
-        public Artifact Resolve(string artifactId)
+        public IRuntimeArtifact Resolve(string artifactId)
         {
             lock (_idToArtifact) {
                 _idToArtifact.TryGetValue(artifactId, out var artifact);
-                return artifact;
+                if (artifact is IRuntimeArtifact runtimeArtifact) {
+                    return runtimeArtifact;
+                } else if (artifact is ICompileArtifact compileArtifact) {
+                    throw new NotSupportedException();
+                }
+
+                return null;
             }
         }
         
@@ -92,9 +105,40 @@ namespace com.espertech.esper.common.client.artifact
         public IEnumerable<MetadataReference> AllMetadataReferences {
             get {
                 lock (_idToArtifact) {
-                    return _idToArtifact.Values.Select(_ => _.MetadataReference).ToList();
+                    return _idToArtifact.Values.OfType<ICompileArtifact>().Select(_ => _.MetadataReference).ToList();
                 }
             }
+        }
+
+        /// <summary>
+        /// Takes an artifact that existed in one repository and deploys it in
+        /// another.  Deployment materializes the assembly.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public ICompileArtifact Deploy(ICompileArtifact source)
+        {
+            // the artifact id, it does not change
+            var artifactId = source.Id;
+            // the source artifact image
+            var artifactImage = source.Image;
+            // materializer
+            var materializer = MaterializeAssemblySupplier(artifactImage);
+            // create the runtime artifact
+            var target = new DefaultArtifact(artifactId) {
+                Image = artifactImage,
+                // no metadata references for runtime artifacts
+                MetadataReference = null,
+                AssemblySupplier = materializer,
+                TypeNames = source.TypeNames
+            };
+
+            // register with this repository
+            lock (_idToArtifact) {
+                _idToArtifact[artifactId] = target;
+            }
+
+            return target;
         }
 
         /// <summary>

@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var conditionHandlerFactoryContext =
                 SupportConditionHandlerFactory.FactoryContexts[0];
-            Assert.AreEqual(conditionHandlerFactoryContext.RuntimeURI, env.RuntimeURI);
+            Assert.AreEqual(conditionHandlerFactoryContext.RuntimeURI, "default");
             handler = SupportConditionHandlerFactory.LastHandler;
 
             var fields = new [] { "c0" };

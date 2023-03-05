@@ -64,40 +64,45 @@ namespace com.espertech.esper.common.client.artifact
             _assemblyLoadContext = null;
         }
 
-        protected override Assembly MaterializeAssembly(byte[] image)
+        protected override Supplier<Assembly> MaterializeAssemblySupplier(byte[] image)
         {
             // When materializing an assembly, it is important that we know which AssemblyLoadContext we should be
             // using.  During deployment or rollout, there should a contextual reflection context.  However, outside
             // of these contexts, it may be possible that someone requests a class (and by proxy assembly) to be
             // materialized.
 
-            using (_assemblyLoadContext.EnterContextualReflection()) {
-                using var stream = new MemoryStream(image);
-                return _assemblyLoadContext.LoadFromStream(stream);
-            }
+            var assemblyLoadContextReference = new System.WeakReference<AssemblyLoadContext>(_assemblyLoadContext);
+            return () => {
+                if (assemblyLoadContextReference.TryGetTarget(out var assemblyLoadContext)) {
+                    using (assemblyLoadContext.EnterContextualReflection()) {
+                        using var stream = new MemoryStream(image);
+                        return assemblyLoadContext.LoadFromStream(stream);
+                    }
+                }
+
+                throw new IllegalStateException("AssemblyLoadContext is no longer in scope");
+            };
         }
-        
+
         public static AssemblyLoadContext CreateAssemblyLoadContext(
             IArtifactRepository repository,
             string contextName,
             bool isCollectable)
         {
+            var repositoryReference = new System.WeakReference<IArtifactRepository>(repository);
             var assemblyLoadContext = new AssemblyLoadContext(contextName, isCollectable);
             assemblyLoadContext.Resolving += (context, assemblyName) => {
                 //Console.WriteLine("Resolve: {0} {1}", context, assemblyName);
                 using (context.EnterContextualReflection()) {
-                    var assemblyBaseName = assemblyName.Name;
-                    var artifact = repository.Resolve(assemblyBaseName);
-                    var assembly = artifact?.Assembly;
-                    return assembly;
+                    if (repositoryReference.TryGetTarget(out var repositoryInstance)) {
+                        var assemblyBaseName = assemblyName.Name;
+                        var artifact = repositoryInstance.Resolve(assemblyBaseName);
+                        var assembly = artifact?.Assembly;
+                        return assembly;
+                    }
+
+                    throw new IllegalStateException("repository is no longer in scope");
                 }
-            };
-            assemblyLoadContext.ResolvingUnmanagedDll += (assembly, assemblyName) => {
-                //Console.WriteLine("ResolvingUnmanagedDll: {0}", assemblyName);
-                throw new NotImplementedException();
-            };
-            assemblyLoadContext.Unloading += (context) => {
-                //Console.WriteLine("Unloading: {0}", context);
             };
             
             return assemblyLoadContext;

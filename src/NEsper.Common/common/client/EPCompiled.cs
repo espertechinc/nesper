@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.client
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
             IArtifactRepository artifactRepository,
-            ICollection<Artifact> artifacts,
+            ICollection<ICompileArtifact> artifacts,
             EPCompiledManifest manifest)
         {
             ArtifactRepository = artifactRepository;
@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.client
         ///     Returns a set of assemblies.
         /// </summary>
         public IEnumerable<Assembly> Assemblies {
-            get => Artifacts.Select(_ => _.Assembly);
+            get => Artifacts.Select(_ => _.Runtime.Assembly);
         }
 
         /// <summary>
         ///     Returns a set of compiled artifacts.
         /// </summary>
-        public ICollection<Artifact> Artifacts { get; }
+        public ICollection<ICompileArtifact> Artifacts { get; }
 
         /// <summary>
         ///     Returns a manifest object

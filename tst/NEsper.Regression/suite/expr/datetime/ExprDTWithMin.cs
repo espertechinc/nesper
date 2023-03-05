@@ -21,20 +21,34 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTWithMinInput());
-            executions.Add(new ExprDTWithMinFields());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithInput(execs);
+            WithFields(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTWithMinFields());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInput(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTWithMinInput());
+            return execs;
         }
 
         internal class ExprDTWithMinInput : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2", "val3" };
+                var fields = new[] { "val0", "val1", "val2", "val3" };
                 var eplFragment = "@Name('s0') select " +
                                   "LongDate.withMin('month') as val0," +
-                                  "DateTime.withMin('month') as val1," + 
+                                  "DateTime.withMin('month') as val1," +
                                   "DateTimeOffset.withMin('month') as val2," +
                                   "DateTimeEx.withMin('month') as val3" +
                                   " from SupportDateTime";
@@ -67,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
+                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.withMin('msec') as val0," +
                                   "DateTimeOffset.withMin('sec') as val1," +

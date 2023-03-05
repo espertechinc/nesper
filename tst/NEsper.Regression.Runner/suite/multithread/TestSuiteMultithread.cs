@@ -27,7 +27,6 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.multithread
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.None)]
     public class TestSuiteMultithread : AbstractTestBase
     {
         public static void Configure(Configuration configuration)

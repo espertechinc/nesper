@@ -203,37 +203,51 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		{
 			// resolve underlying type
 			try {
-				_underlyingType = typeResolver.ResolveType(_detail.UnderlyingClassName, false);
+				_underlyingType = typeResolver.ResolveType(_detail.UnderlyingClassName, true);
+				if (_underlyingType == null) {
+					throw new EPException($"Failed to find class: {_detail.UnderlyingClassName}");    
+				}
 			}
 			catch (TypeLoadException ex) {
-				throw new EPException("Failed to load Json underlying class: " + ex.Message, ex);
+				throw new EPException($"Failed to load Json underlying class: {ex.Message}", ex);
 			}
 			
 			// resolve delegate
 	        try {
-	            _delegateType = typeResolver.ResolveType(_detail.DelegateClassName, false);
+	            _delegateType = typeResolver.ResolveType(_detail.DelegateClassName, true);
+	            if (_delegateType == null) {
+		            throw new EPException($"Failed to find class: {_detail.DelegateClassName}");    
+	            }
 	            _delegate = TypeHelper.Instantiate<IJsonDelegate>(_delegateType);
 	        }
 	        catch (TypeLoadException e) {
-	            throw new EPException("Failed to find class: " + e.Message, e);
+	            throw new EPException($"Failed to find class: {e.Message}", e);
 	        }
 
 			// resolve deserializer
 			try {
-				_deserializerType = typeResolver.ResolveType(_detail.DeserializerClassName, false);
+				_deserializerType = typeResolver.ResolveType(_detail.DeserializerClassName, true);
+				if (_deserializerType == null) {
+					throw new EPException($"Failed to find class: {_detail.DeserializerClassName}");    
+				}
+
 				_deserializer = TypeHelper.Instantiate<IJsonDeserializer>(_deserializerType);
 			}
 			catch (TypeLoadException e) {
-				throw new EPException("Failed to find class: " + e.Message, e);
+				throw new EPException($"Failed to find class: {e.Message}", e);
 			}
 
 			// resolve serializer
 			try {
-				_serializerType = typeResolver.ResolveType(_detail.SerializerClassName, false);
+				_serializerType = typeResolver.ResolveType(_detail.SerializerClassName, true);
+				if (_serializerType == null) {
+					throw new EPException($"Failed to find class: {_detail.SerializerClassName}");    
+				}
+				
 				_serializer = TypeHelper.Instantiate<IJsonSerializer>(_serializerType);
 			}
 			catch (TypeLoadException e) {
-				throw new EPException("Failed to find class: " + e.Message, e);
+				throw new EPException($"Failed to find class: {e.Message}", e);
 			}
 
 			//_serializationContext = TypeHelper.Instantiate<JsonSerializationContext>(deserializerFactoryType);

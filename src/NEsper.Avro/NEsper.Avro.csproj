@@ -16,13 +16,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Apache.Avro" Version="1.11.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
+        <PackageReference Include="Apache.Avro" Version="1.11.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="System.CodeDom" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj"/>
-        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj"/>
-        <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj"/>
+        <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+        <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
     </ItemGroup>
 </Project>

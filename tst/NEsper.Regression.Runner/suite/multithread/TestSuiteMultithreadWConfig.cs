@@ -26,7 +26,6 @@ namespace com.espertech.esper.regressionrun.suite.multithread
     /// </para>
     /// </summary>
     [TestFixture]
-    [Parallelizable(ParallelScope.None)]
     public class TestSuiteMultithreadWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]

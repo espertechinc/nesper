@@ -34,6 +34,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1
             string classNameSimple,
             ModuleCompileTimeServices services);
 
-        Artifact Compile(CompileRequest request);
+        ICompileArtifact Compile(CompileRequest request);
     }
 } // end of namespace

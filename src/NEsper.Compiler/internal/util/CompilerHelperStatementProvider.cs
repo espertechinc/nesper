@@ -73,7 +73,7 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices moduleCompileTimeServices,
             CompilerOptions compilerOptions,
             IArtifactRepository artifactRepository,
-            out Artifact artifact)
+            out ICompileArtifact artifact)
         {
             var compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 
@@ -361,7 +361,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     typeof(StatementProvider),
                     classPostfix);
 
-                var additionalClasses = new HashSet<Artifact>();
+                var additionalClasses = new HashSet<IArtifact>();
                 additionalClasses.Add(walked.ClassesInlined.Artifact);
                 compileTimeServices.ClassProvidedCompileTimeResolver.AddTo(additionalClasses);
                 compileTimeServices.ClassProvidedCompileTimeRegistry.AddTo(additionalClasses);

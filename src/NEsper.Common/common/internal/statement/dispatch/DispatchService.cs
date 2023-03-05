@@ -50,12 +50,11 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             using (new Tracer(Log, "DispatchFromQueue")) {
                 while (true) {
                     var next = dispatchQueue.Poll();
-                    if (next != null) {
-                        next.Execute();
-                    }
-                    else {
+                    if (next == null) {
                         break;
                     }
+
+                    next.Execute();
                 }
             }
         }

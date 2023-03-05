@@ -118,9 +118,8 @@ namespace com.espertech.esper.common.@internal.settings
 				return inlined;
 			}
 
-			var pair = _singleRowFunctions.Get(name);
-			if (pair == null) {
-				pair = _singleRowFunctions.Get(name.ToLowerInvariant());
+			if (!_singleRowFunctions.TryGetValue(name, out var pair)) {
+				_singleRowFunctions.TryGetValue(name.ToLowerInvariant(), out pair);
 			}
 
 			if (pair == null) {

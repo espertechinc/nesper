@@ -36,6 +36,7 @@ namespace com.espertech.esper.common.client.util
             
             // First pass is to see if the class exists in the materialized space
             var materializedType = _artifactRepository.Artifacts
+                .OfType<IRuntimeArtifact>()
                 .Where(_ => _.HasMaterializedAssembly)
                 .Where(_ => _.Contains(typeName))
                 .Select(_ => _.Assembly.GetType(typeName, false, false))
@@ -54,6 +55,7 @@ namespace com.espertech.esper.common.client.util
             // Attempt the same pass through the artifacts, but this time materialize any
             // assembly that contains the type
             return _artifactRepository.Artifacts
+                .OfType<IRuntimeArtifact>()
                 .Where(_ => _.Contains(typeName))
                 .Select(_ => _.Assembly.GetType(typeName, false, false))
                 .FirstOrDefault();

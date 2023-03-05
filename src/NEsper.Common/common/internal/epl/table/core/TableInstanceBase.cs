@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         internal readonly AgentInstanceContext agentInstanceContext;
         internal readonly EventTableIndexRepository indexRepository;
         internal readonly Table table;
-        internal readonly IReaderWriterLock tableLevelRWLock = new StandardReaderWriterLock(15000);
+        internal readonly IReaderWriterLock tableLevelRWLock = new SlimReaderWriterLock(15000);
 
         protected TableInstanceBase(
             Table table,

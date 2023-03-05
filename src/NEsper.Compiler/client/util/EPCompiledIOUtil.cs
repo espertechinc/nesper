@@ -80,7 +80,7 @@ namespace com.espertech.esper.compiler.client.util
 			};
 			var repository = container.ArtifactRepositoryManager().DefaultRepository;
 			var artifact = repository.Register(unit);
-			var assembly = artifact.Assembly;
+			var assembly = artifact.Runtime.Assembly;
 			var attributes = assembly
 				.GetCustomAttributes()
 				.OfType<ManifestPropertyAttribute>()

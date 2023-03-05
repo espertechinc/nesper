@@ -28,13 +28,13 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
         {
         }
         
-        public ClassProvided(Artifact artifact, String className)
+        public ClassProvided(IRuntimeArtifact artifact, String className)
         {
             Artifact = artifact;
             ClassName = className;
         }
         
-        public Artifact Artifact { get; set; }
+        public IRuntimeArtifact Artifact { get; set; }
 
         public string ModuleName { get; set; }
 
@@ -47,11 +47,6 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
         public void LoadClasses(TypeResolver parentTypeResolver)
         {
             ClassesMayNull = new List<Type>();
-            
-            // The assembly is the container for all the types, there is no need to explicitly
-            // load them as is done in Java.  In Esper, the class is loaded as a byte array which
-            // the ByteArrayProvidingClassProvider must initialize.
-
             foreach (var clazz in Artifact.Assembly.ExportedTypes) {
                 ClassesMayNull.Add(clazz);
             }
@@ -65,12 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
             var method = parent
                 .MakeChild(typeof(ClassProvided), GetType(), classScope);
             if (Artifact == null) {
-                method.Block.DeclareVar<Artifact>(
+                method.Block.DeclareVar<IRuntimeArtifact>(
                     "artifact",
                     ConstantNull());
             }
             else {
-                method.Block.DeclareVar<Artifact>(
+                method.Block.DeclareVar<IRuntimeArtifact>(
                     "artifact",
                     ExprDotMethod(
                         symbols.GetAddInitSvc(method),

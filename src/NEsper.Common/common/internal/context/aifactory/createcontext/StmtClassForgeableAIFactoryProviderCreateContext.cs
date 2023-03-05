@@ -86,9 +86,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         "controllers",
                         Constant(i),
                         LocalMethod(forges[i].MakeCodegen(classScope, method, symbols)))
-                    .ExprDotMethod(
-                        ArrayAtIndex(Ref("controllers"), Constant(i)),
+                    .StaticMethod(
+                        typeof(ContextControllerFactoryExtensions),
                         "WithFactoryEnv",
+                        ArrayAtIndex(Ref("controllers"), Constant(i)),
                         forges[i].FactoryEnv.ToExpression());
             }
 

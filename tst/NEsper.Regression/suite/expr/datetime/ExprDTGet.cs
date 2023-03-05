@@ -19,17 +19,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTGetFields());
-            executions.Add(new ExprDTGetInput());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithFields(execs);
+            WithInput(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInput(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTGetInput());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTGetFields());
+            return execs;
         }
 
         internal class ExprDTGetInput : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0", "val1", "val2", "val3" };
+                var fields = new[] { "val0", "val1", "val2", "val3" };
                 var epl = "@Name('s0') select " +
                           "DateTimeEx.get('month') as val0," +
                           "DateTimeOffset.get('month') as val1," +
@@ -65,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(SupportTimeStartEndA.Make("A0", startTime, 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "val0" },
+                    new[] { "val0" },
                     new object[] { 5 });
 
                 env.UndeployAll();
@@ -76,8 +90,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(new SupportEventWithJustGet());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {1, 2});
+                    new[] { "c0", "c1" },
+                    new object[] { 1, 2 });
 
                 env.UndeployAll();
             }
@@ -87,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
+                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6", "val7" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.get('msec') as val0," +
                                   "DateTimeOffset.get('sec') as val1," +
@@ -112,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {3, 2, 1, 9, 30, 5, 2002, 22});
+                    new object[] { 3, 2, 1, 9, 30, 5, 2002, 22 });
 
                 env.UndeployAll();
             }

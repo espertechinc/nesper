@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                 compilables.Add(new CompilableClass(classText, className));
             }
 
-            Artifact artifact;
+            ICompileArtifact artifact;
             try {
                 artifact = compileTimeServices.CompilerServices.Compile(
                     new CompileRequest(compilables, compileTimeServices.Services));
@@ -74,11 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             // current context as this is a compile time context.  These classes will
             // be materialized in the default load context
 
-            foreach (var exportedType in artifact.Assembly.ExportedTypes) {
+            IRuntimeArtifact runtimeArtifact = artifact.Runtime;
+            foreach (var exportedType in runtimeArtifact.Assembly.ExportedTypes) {
                 existingTypes.Add(exportedType.FullName, exportedType);
             }
 
-            return new ClassProvidedPrecompileResult(artifact, existingTypes.Values.ToList());
+            return new ClassProvidedPrecompileResult(runtimeArtifact, existingTypes.Values.ToList());
         }
 
         private static ExprValidationException HandleException(

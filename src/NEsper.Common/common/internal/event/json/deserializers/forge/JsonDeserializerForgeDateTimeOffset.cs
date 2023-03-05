@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
             CodegenClassScope classScope,
             CodegenExpression elementExpr)
         {
-            return ExprDotMethod(elementExpr, "GetBoxedDateTimeOffset");
+            return StaticMethod(typeof(JsonElementExtensions), "GetBoxedDateTimeOffset", elementExpr);
         }
     }
 } // end of namespace

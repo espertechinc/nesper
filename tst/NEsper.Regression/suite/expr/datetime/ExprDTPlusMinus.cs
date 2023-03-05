@@ -22,10 +22,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTPlusMinusSimple());
-            executions.Add(new ExprDTPlusMinusTimePeriod());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithSimple(execs);
+            WithTimePeriod(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimePeriod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTPlusMinusTimePeriod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTPlusMinusSimple());
+            return execs;
         }
 
         internal class ExprDTPlusMinusSimple : RegressionExecution
@@ -42,19 +56,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val2a", "val2b", "val2c", "val2d", "val2e",
                 };
                 var epl = "@Name('s0') select " +
-                          
                           "current_timestamp.plus(varmsec) as val1a," +
                           "DateTimeEx.plus(varmsec) as val1b," +
                           "DateTimeOffset.plus(varmsec) as val1c," +
                           "DateTime.plus(varmsec) as val1d," +
                           "LongDate.plus(varmsec) as val1e," +
-
                           "current_timestamp.minus(varmsec) as val2a," +
                           "DateTimeEx.minus(varmsec) as val2b," +
                           "DateTimeOffset.minus(varmsec) as val2c," +
                           "DateTime.minus(varmsec) as val2d," +
                           "LongDate.minus(varmsec) as val2e" +
-
                           " from SupportDateTime";
 
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -94,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 expectedPlus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T09:00:01.000",
                     "long",
-                    "dtx", 
+                    "dtx",
                     "dto",
                     "date",
                     "long");
@@ -120,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 expectedMinus = SupportDateTime.GetArrayCoerced(
                     "2002-05-28T09:00:00.000",
-                    "long", 
+                    "long",
                     "dtx",
                     "dto",
                     "date",
@@ -165,19 +176,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val2e"
                 };
                 var eplFragment = "@Name('s0') select " +
-                                  
                                   "current_timestamp.plus(1 hour 10 sec 20 msec) as val1a," +
                                   "DateTimeEx.plus(1 hour 10 sec 20 msec) as val1b," +
                                   "DateTimeOffset.plus(1 hour 10 sec 20 msec) as val1c," +
                                   "DateTime.plus(1 hour 10 sec 20 msec) as val1d," +
                                   "LongDate.plus(1 hour 10 sec 20 msec) as val1e," +
-
                                   "current_timestamp.minus(1 hour 10 sec 20 msec) as val2a," +
                                   "DateTimeEx.minus(1 hour 10 sec 20 msec) as val2b," +
                                   "DateTimeOffset.minus(1 hour 10 sec 20 msec) as val2c," +
                                   "DateTime.minus(1 hour 10 sec 20 msec) as val2d," +
                                   "LongDate.minus(1 hour 10 sec 20 msec) as val2e" +
-
                                   " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");

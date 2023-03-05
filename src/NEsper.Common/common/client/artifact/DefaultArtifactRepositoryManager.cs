@@ -57,10 +57,11 @@ namespace com.espertech.esper.common.client.artifact
         /// Returns a named repository (based on deployment)
         /// </summary>
         /// <param name="deploymentId"></param>
-        public IArtifactRepository GetArtifactRepository(string deploymentId)
+        /// <param name="createIfMissing"></param>
+        public IArtifactRepository GetArtifactRepository(string deploymentId, bool createIfMissing)
         {
             lock (_repositoryTable) {
-                if (_repositoryTable.TryGetValue(deploymentId, out var artifactRepository)) {
+                if (!_repositoryTable.TryGetValue(deploymentId, out var artifactRepository) && createIfMissing) {
 #if NETCORE
                     artifactRepository = new ArtifactRepositoryAssemblyLoadContext(deploymentId);
 #else

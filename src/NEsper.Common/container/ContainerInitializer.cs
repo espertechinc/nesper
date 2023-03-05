@@ -136,12 +136,12 @@ namespace com.espertech.esper.container
         private static IReaderWriterLockManager DefaultRWLockManager()
         {
             return new DefaultReaderWriterLockManager(
-                lockTimeout => new StandardReaderWriterLock(lockTimeout));
+                lockTimeout => new SlimReaderWriterLock(lockTimeout));
         }
 
         private static IThreadLocalManager DefaultThreadLocalManager()
         {
-            return new DefaultThreadLocalManager(new SystemThreadLocalFactory());
+            return new DefaultThreadLocalManager(new FastThreadLocalFactory());
         }
 
         private static IResourceManager DefaultResourceManager()

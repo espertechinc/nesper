@@ -104,9 +104,11 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             return CodegenExpressionBuilder.NotEqualsNull(
-                CodegenExpressionBuilder.ExprDotMethodChain(underlyingExpression)
-                    .Get("Schema")
-                    .Add("GetField", CodegenExpressionBuilder.Constant(_propertyName)));
+                CodegenExpressionBuilder.StaticMethod(
+                    typeof(SchemaExtensions),
+                    "GetField",
+                    CodegenExpressionBuilder.ExprDotMethodChain(underlyingExpression).Get("Schema"),
+                    CodegenExpressionBuilder.Constant(_propertyName)));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

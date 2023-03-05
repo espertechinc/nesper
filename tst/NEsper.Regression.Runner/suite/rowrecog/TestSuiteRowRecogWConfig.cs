@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
         [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWideNoPreventStart()
         {
-            using var session = RegressionRunner.Session(Container);
+            using var session = RegressionRunner.Session(Container, true);
             Configure(session.Configuration);
             session.Configuration.Runtime.MatchRecognize.MaxStates = 3L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = false;

@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public interface EPModuleClassProvidedInitServices
     {
-        Artifact ResolveArtifact(string artifactName);
+        IRuntimeArtifact ResolveArtifact(string artifactName);
         
         ClassProvidedCollector ClassProvidedCollector { get; }
     }

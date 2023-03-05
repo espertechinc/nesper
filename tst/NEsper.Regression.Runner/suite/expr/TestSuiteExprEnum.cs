@@ -144,6 +144,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumDistinct : AbstractTestBase
         {
             public TestExprEnumDistinct() : base(Configure)
@@ -170,6 +171,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumDataSources : AbstractTestBase
         {
             public TestExprEnumDataSources() : base(Configure)
@@ -244,6 +246,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumDocSamples : AbstractTestBase
         {
             public TestExprEnumDocSamples() : base(Configure) { }
@@ -286,6 +289,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumGroupBy : AbstractTestBase
         {
             public TestExprEnumGroupBy() : base(Configure) { }
@@ -310,6 +314,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumSumOf : AbstractTestBase
         {
             public TestExprEnumSumOf() : base(Configure) { }
@@ -340,6 +345,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumToMap : AbstractTestBase
         {
             public TestExprEnumToMap() : base(Configure) { }
@@ -361,6 +367,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumOrderBy : AbstractTestBase
         {
             public TestExprEnumOrderBy() : base(Configure) { }
@@ -388,6 +395,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumMinMax : AbstractTestBase
         {
             public TestExprEnumMinMax() : base(Configure) { }
@@ -415,6 +423,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumArrayOf : AbstractTestBase
         {
             public TestExprEnumArrayOf() : base(Configure) { }
@@ -442,6 +451,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumAllOfAnyOf : AbstractTestBase
         {
             public TestExprEnumAllOfAnyOf() : base(Configure) { }
@@ -460,6 +470,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumAggregate : AbstractTestBase
         {
             public TestExprEnumAggregate() : base(Configure) { }
@@ -478,6 +489,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumAverage : AbstractTestBase
         {
             public TestExprEnumAverage() : base(Configure) { }
@@ -502,6 +514,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumCountOf : AbstractTestBase
         {
             public TestExprEnumCountOf() : base(Configure) { }
@@ -520,6 +533,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumFirstLastOf : AbstractTestBase
         {
             public TestExprEnumFirstLastOf() : base(Configure) { }
@@ -544,6 +558,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumWhere : AbstractTestBase
         {
             public TestExprEnumWhere() : base(Configure) { }
@@ -565,6 +580,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumTakeWhileAndWhileLast : AbstractTestBase
         {
             public TestExprEnumTakeWhileAndWhileLast() : base(Configure) { }
@@ -583,6 +599,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumTakeAndTakeLast : AbstractTestBase
         {
             public TestExprEnumTakeAndTakeLast() : base(Configure) { }
@@ -601,6 +618,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumSequenceEqual : AbstractTestBase
         {
             public TestExprEnumSequenceEqual() : base(Configure) { }
@@ -622,6 +640,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumSelectFrom : AbstractTestBase
         {
             public TestExprEnumSelectFrom() : base(Configure) { }
@@ -649,6 +668,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumReverse : AbstractTestBase
         {
             public TestExprEnumReverse() : base(Configure) { }
@@ -667,6 +687,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumNested : AbstractTestBase
         {
             public TestExprEnumNested() : base(Configure) { }
@@ -691,6 +712,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumMostLeastFrequent : AbstractTestBase
         {
             public TestExprEnumMostLeastFrequent() : base(Configure) { }
@@ -712,6 +734,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.All)]
         public class TestExprEnumMinMaxBy : AbstractTestBase
         {
             public TestExprEnumMinMaxBy() : base(Configure) { }
