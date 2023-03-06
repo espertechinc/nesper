@@ -429,6 +429,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithUniqueIndexCorrelated() => RegressionRunner.Run(_session, EPLSubselectIndex.WithUniqueIndexCorrelated());
 
             [Test, RunInApplicationDomain]
+            [Parallelizable(ParallelScope.None)]
             public void WithIndexChoicesOverdefinedWhere() => RegressionRunner.Run(_session, EPLSubselectIndex.WithIndexChoicesOverdefinedWhere());
         }
 

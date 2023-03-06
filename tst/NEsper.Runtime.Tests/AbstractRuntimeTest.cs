@@ -18,9 +18,14 @@ namespace com.espertech.esper.runtime
         [SetUp]
         public virtual void SetUpCommon()
         {
-            Container = SupportContainer.CreateContainer();
+            Container = CreateContainer();
             supportEventTypeFactorySupplier = Suppliers.Memoize(() => 
                 SupportEventTypeFactory.GetInstance(Container));
+        }
+
+        protected virtual IContainer CreateContainer()
+        {
+            return SupportContainer.CreateContainer();
         }
     }
 }

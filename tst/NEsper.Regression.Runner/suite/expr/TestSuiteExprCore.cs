@@ -76,6 +76,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Common.AddImportType(typeof(SupportPrivateCtor));
             configuration.Common.AddImportType(typeof(SupportObjectCtor));
             configuration.Common.AddImportType(typeof(SupportEnumTwo));
+            configuration.Common.AddImportType(typeof(SupportEnumTwoExtensions));
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
 
             var map = new Dictionary<string, object>();

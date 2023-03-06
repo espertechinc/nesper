@@ -6,10 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.timers;
+using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -18,6 +22,8 @@ namespace com.espertech.esper.runtime.@internal.timer
     [TestFixture]
     public class TestTimerServiceImpl : AbstractRuntimeTest
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         [SetUp]
         public void SetUp()
         {
@@ -29,6 +35,17 @@ namespace com.espertech.esper.runtime.@internal.timer
         private SupportTimerCallback callback;
         private TimerServiceImpl service;
 
+        protected override IContainer CreateContainer()
+        {
+            var container = ContainerExtensions.CreateDefaultContainer(false);
+            container.Register<ITimerFactory>(ic => new SystemTimerFactory(), Lifespan.Singleton);
+            container
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
+            return container;
+        }
+
         private void Sleep(long msec)
         {
             try
@@ -37,11 +54,9 @@ namespace com.espertech.esper.runtime.@internal.timer
             }
             catch (ThreadInterruptedException e)
             {
-                log.Error("Interrupted: {}", e.Message, e);
+                Log.Error("Interrupted: {}", e.Message, e);
             }
         }
-
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test, RunInApplicationDomain]
         public void TestClocking()
@@ -65,7 +80,7 @@ namespace com.espertech.esper.runtime.@internal.timer
             Assert.IsTrue(callback.GetAndResetCount() == 1);
             Sleep(service.MsecTimerResolution * 20);
             var count = callback.GetAndResetCount();
-            log.Debug(".testClocking count=" + count);
+            Log.Debug(".testClocking count=" + count);
             Assert.That(count, Is.GreaterThanOrEqualTo(19L));
 
             // Stop and check again

@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.support.filter
         {
             SupportFilterPlanEntry found = null;
             foreach (var entry in _entries) {
-                if (!entry.EventType.Name.Equals(typeName)) {
+                if (entry.EventType.Name != typeName) {
                     continue;
                 }
 

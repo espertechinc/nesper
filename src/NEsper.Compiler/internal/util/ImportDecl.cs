@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 using com.espertech.esper.compat.collections;
 
@@ -49,6 +51,15 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Replace(".event", ".@event");
         }
 
+        private static string GetNestedTypeName(Type type)
+        {
+            if (type.IsNested) {
+                return GetNestedTypeName(type.DeclaringType) + "." + type.Name;
+            }
+
+            return type.Name;
+        }
+        
         private static IEnumerable<UsingDirectiveSyntax> ConvertToUsingDirectives(Type type)
         {
             var @namespace = type.Namespace;
@@ -76,8 +87,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     foreach (var directive in ConvertToUsingDirectives(type.DeclaringType)) {
                         yield return directive;
                     }
-                    
-                    typeNameSyntax = SyntaxFactory.IdentifierName(type.DeclaringType.Name + '.' + type.Name);
+
+                    typeNameSyntax = SyntaxFactory.IdentifierName(GetNestedTypeName(type));
                 }
 
                 NameSyntax importName;
@@ -88,6 +99,15 @@ namespace com.espertech.esper.compiler.@internal.util
                     importName = typeNameSyntax;
                 }
 
+                if (type.IsDefined(typeof(ExtensionAttribute), false)) {
+                    yield return SyntaxFactory.UsingDirective(
+                        SyntaxFactory.Token(SyntaxKind.UsingKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                        null,
+                        importName,
+                        SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                }
+                
                 yield return SyntaxFactory.UsingDirective(SyntaxFactory.NameEquals(typeAlias), importName);
             }
         }

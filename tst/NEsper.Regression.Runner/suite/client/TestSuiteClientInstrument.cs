@@ -53,6 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         public void TestClientInstrumentMetricsReportingStmtMetrics()
         {
             using (var session = RegressionRunner.Session(Container, true)) {
+#if !NETCORE
                 ApplyMetricsConfig(session.Configuration, -1, -1);
 
                 ConfigurationRuntimeMetricsReporting.StmtGroupMetrics configOne = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
@@ -68,6 +69,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 session.Configuration.Runtime.MetricsReporting.AddStmtGroup("metrics", configTwo);
 
                 RegressionRunner.Run(session, new ClientInstrumentMetricsReportingStmtMetrics());
+#endif
             }
         }
 

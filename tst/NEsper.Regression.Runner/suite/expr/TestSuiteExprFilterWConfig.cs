@@ -547,12 +547,12 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
+        [Parallelizable(ParallelScope.None)]
         public class TestExprFilterOptimizableConditionNegateConfirm : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
 
-            public TestExprFilterOptimizableConditionNegateConfirm(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning)
-            {
+            public TestExprFilterOptimizableConditionNegateConfirm(ConfigurationCompilerExecution.FilterIndexPlanningEnum indexPlanning) : base(_ => { }) {
                 _indexPlanning = indexPlanning;
             }
 
@@ -723,7 +723,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.All)]
+        [Parallelizable(ParallelScope.None)]
         public class TestExprFilterOptimizableBooleanLimitedExpr : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -817,7 +817,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.All)]
+        [Parallelizable(ParallelScope.None)]
         public class TestExprFilterOptimizableValueLimitedExpr : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;
@@ -1344,6 +1344,8 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 _indexPlanning = indexPlanning;
             }
 
+            protected override bool UseDefaultRuntime => true;
+
             [Test, RunInApplicationDomain]
             public void WithDeployTimeConstant() => RunAssertionFilter(
                 _session,
@@ -1375,8 +1377,9 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 ExprFilterOptimizable.WithOptimizableInspectFilter());
 
             [Test, RunInApplicationDomain]
-            public void WithOptimizableVariableAndSeparateThread() => RegressionRunner.Run(
+            public void WithOptimizableVariableAndSeparateThread() => RunAssertionFilter(
                 _session,
+                _indexPlanning,
                 ExprFilterOptimizable.WithOptimizableVariableAndSeparateThread());
 
             [Test, RunInApplicationDomain]
@@ -1386,8 +1389,9 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 ExprFilterOptimizable.WithOptimizableTypeOf());
 
             [Test, RunInApplicationDomain]
-            public void WithOptimizableMethodInvocationContext() => RegressionRunner.Run(
+            public void WithOptimizableMethodInvocationContext() => RunAssertionFilter(
                 _session,
+                _indexPlanning,
                 ExprFilterOptimizable.WithOptimizableMethodInvocationContext());
 
             [Test, RunInApplicationDomain]
@@ -1407,7 +1411,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC)]
         [TestFixture(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED)]
-        [Parallelizable(ParallelScope.Self)]
+        [Parallelizable(ParallelScope.None)]
         public class TestExprFilterOptimizableLookupableLimitedExpr : AbstractTestBase
         {
             private readonly ConfigurationCompilerExecution.FilterIndexPlanningEnum _indexPlanning;

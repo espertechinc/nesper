@@ -38,6 +38,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 typeof(SupportBean_ST0),
                 typeof(SupportSelectorWithListEvent),
                 typeof(SupportEnumTwoEvent),
+                typeof(SupportEnumTwoExtensions),
                 typeof(SupportSelectorEvent),
                 typeof(SupportContainerEvent),
                 typeof(Item),
