@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             config.Common.AddEventType("S0", typeof(SupportBean_S0));
             var runtimeURI = nameof(MultithreadStmtPatternFollowedBy) + "_" + profile;
-            var runtime = _runtimeProvider.GetRuntime(runtimeURI, config);
+            var runtime = _runtimeProvider.GetRuntimeInstance(runtimeURI, config);
             runtime.Initialize();
 
             string[] epls = {

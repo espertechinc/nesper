@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // This should fail all test in this class
             // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
-            var runtime = _runtimeProvider.GetRuntime(
+            var runtime = _runtimeProvider.GetRuntimeInstance(
                 nameof(MultithreadDeterminismInsertIntoLockConfig),
                 configuration);
             runtime.Initialize();

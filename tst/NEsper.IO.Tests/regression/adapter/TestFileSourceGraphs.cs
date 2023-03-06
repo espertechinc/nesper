@@ -55,7 +55,7 @@ namespace com.espertech.esperio.regression.adapter
 				new object[] {typeof(DateTime), typeof(DateTimeEx)});
 
 			_runtimeProvider = new EPRuntimeProvider();
-			_runtime = _runtimeProvider.GetDefaultRuntime(configuration);
+			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
 			_runtime.Initialize();
 		}
 

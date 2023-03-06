@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             _runtimeProvider = new EPRuntimeProvider();
             
-            var runtime = _runtimeProvider.GetRuntime(GetType().Name, configuration);
+            var runtime = _runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
             runtime.Initialize();
             _runtime = runtime.EventService;
 

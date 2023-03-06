@@ -14,6 +14,7 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.compat.timers
 {
+#if NET6
     public class PeriodicTimerFactory : ITimerFactory
     {
         public ITimer CreateTimer(
@@ -74,4 +75,5 @@ namespace com.espertech.esper.compat.timers
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
+#endif
 }

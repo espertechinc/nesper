@@ -53,7 +53,7 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddEventType("myNonMapEvent", typeof(Type).FullName);
 
             _runtimeProvider = new EPRuntimeProvider();
-            _runtime = _runtimeProvider.GetRuntime("CSVProvider", configuration);
+            _runtime = _runtimeProvider.GetRuntimeInstance("CSVProvider", configuration);
             _runtime.Initialize();
 
             var statementText = "select * from mapEvent#length(5)";

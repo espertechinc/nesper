@@ -55,7 +55,7 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddEventType(_eventTypeName, propertyTypes);
 
             _runtimeProvider = new EPRuntimeProvider();
-    		_runtime = _runtimeProvider.GetRuntime("Adapter", configuration);
+    		_runtime = _runtimeProvider.GetRuntimeInstance("Adapter", configuration);
     		_runtime.Initialize();
             
     		var statementText = "select * from mapEvent#length(5)";

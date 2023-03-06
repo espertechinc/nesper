@@ -61,6 +61,7 @@ namespace NEsper.Examples.Transaction
         public void Dispose()
         {
             if (_main != null) {
+                var runtime = new EPRuntimeProvider();
                 EPRuntimeProvider.GetRuntime(_engineURI)
                     .DeploymentService
                     .UndeployAll();

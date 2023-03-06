@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var listener = new SupportRuntimeStateListener();
                 var runtimeProvider = new EPRuntimeProvider();
                 //var runtimeProvider = EPRuntimeProvider.DefaultProvider;
-                var runtime = runtimeProvider.GetRuntime(GetType().Name + "__listenerstatechange", config);
+                var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name + "__listenerstatechange", config);
                 runtime.AddRuntimeStateListener(listener);
                 runtime.Destroy();
                 Assert.AreSame(runtime, listener.AssertOneGetAndResetDestroyedEvents());
@@ -91,9 +91,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var runtimeProvider = new EPRuntimeProvider();
                 //var runtimeProvider = EPRuntimeProvider.DefaultProvider;
                 var uriOne = GetType().Name + "_1";
-                var runtimeOne = runtimeProvider.GetRuntime(uriOne, config);
+                var runtimeOne = runtimeProvider.GetRuntimeInstance(uriOne, config);
                 var uriTwo = GetType().Name + "_2";
-                var runtimeTwo = runtimeProvider.GetRuntime(uriTwo, config);
+                var runtimeTwo = runtimeProvider.GetRuntimeInstance(uriTwo, config);
                 EPAssertionUtil.AssertContains(runtimeProvider.RuntimeURIs, uriOne, uriTwo);
                 Assert.IsNotNull(runtimeProvider.GetExistingRuntime(uriOne));
                 Assert.IsNotNull(runtimeProvider.GetExistingRuntime(uriTwo));
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 config.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
 
                 try {
-                    runtimeProvider.GetRuntime(GetType().Name, config).Initialize();
+                    runtimeProvider.GetRuntimeInstance(GetType().Name, config).Initialize();
                     Assert.Fail();
                 }
                 catch (ConfigurationException ex) {
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 config.Runtime.Threading.IsInternalTimerEnabled = false;
-                var runtime = runtimeProvider.GetRuntime(GetType().Name, config);
+                var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, config);
 
                 try {
                     runtime.EventService.ClockInternal();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Diagnostics;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -59,7 +60,9 @@ namespace com.espertech.esper.common.client.artifact
         /// </summary>
         public override void Dispose()
         {
+#if DEGUG && TRACE
             Console.WriteLine("Dispose: {0}", _assemblyLoadContext);
+#endif
             _assemblyLoadContext?.Unload();
             _assemblyLoadContext = null;
         }

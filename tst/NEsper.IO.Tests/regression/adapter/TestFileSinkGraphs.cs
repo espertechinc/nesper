@@ -39,7 +39,7 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
 			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 			_runtimeProvider = new EPRuntimeProvider();
-			_runtime = _runtimeProvider.GetDefaultRuntime(configuration);
+			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
 			_runtime.Initialize();
 		}
 

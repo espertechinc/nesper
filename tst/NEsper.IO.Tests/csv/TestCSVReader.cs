@@ -202,7 +202,7 @@ namespace com.espertech.esperio.csv
             configuration.Common.AddEventType(typeof(Figure));
 
             var runtimeProvider = new EPRuntimeProvider();
-            var runtime = runtimeProvider.GetRuntime("testNestedProperties", configuration);
+            var runtime = runtimeProvider.GetRuntimeInstance("testNestedProperties", configuration);
             var ul = new SupportUpdateListener();
 
             var stmt = CompileUtil.CompileDeploy(runtime, "select * from Figure").Statements[0];
@@ -234,7 +234,7 @@ namespace com.espertech.esperio.csv
             configuration.Common.AddEventType("Figure", figure);
             
             var runtimeProvider = new EPRuntimeProvider();
-            var runtime = runtimeProvider.GetRuntime("testNestedMapProperties", configuration);
+            var runtime = runtimeProvider.GetRuntimeInstance("testNestedMapProperties", configuration);
             var ul = new SupportUpdateListener();
             var stmt = CompileUtil.CompileDeploy(runtime, "select * from Figure").Statements[0];
             stmt.Events += ul.Update;

@@ -41,13 +41,18 @@
 		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET472;</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
 		<NetCore>true</NetCore>
 		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NET5;NET6;</DefineConstants>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
 		<NetCore>true</NetCore>
-		<DefineConstants>$(DefineConstants);NETCORE;</DefineConstants>
+		<DefineConstants>$(DefineConstants);NETCORE;NET5;</DefineConstants>
 	</PropertyGroup>
 </Project>

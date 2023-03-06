@@ -49,7 +49,7 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp));
 
             var runtimeProvider = new EPRuntimeProvider();
-            _runtime = runtimeProvider.GetRuntime("testExistingTypeNoOptions", configuration);
+            _runtime = runtimeProvider.GetRuntimeInstance("testExistingTypeNoOptions", configuration);
             _runtime.Initialize();
 
             var stmt = CompileUtil.CompileDeploy(_runtime, "select * from ExampleMarketDataBeanReadWrite#length(100)").Statements[0];

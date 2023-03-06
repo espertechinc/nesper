@@ -101,13 +101,13 @@ namespace com.espertech.esper.regressionrun.runner
 
                 if (session.UseDefaultRuntime) {
                     exists = runtimeProvider.HasRuntime(EPRuntimeProvider.DEFAULT_RUNTIME_URI);
-                    runtime = runtimeProvider.GetDefaultRuntime(session.Configuration);
+                    runtime = runtimeProvider.GetDefaultRuntimeInstance(session.Configuration);
                 }
                 else {
                     var sessionId = Guid.NewGuid().ToString();
                     var sessionUri = $"test:{sessionId}";
                     exists = runtimeProvider.HasRuntime(sessionUri);
-                    runtime = runtimeProvider.GetRuntime(sessionUri, session.Configuration);
+                    runtime = runtimeProvider.GetRuntimeInstance(sessionUri, session.Configuration);
                 }
 
                 if (exists) {

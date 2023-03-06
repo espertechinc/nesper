@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Common.AddEventType(typeof(TestEvent));
 
             var runtimeProvider = new EPRuntimeProvider();
-            var runtime = runtimeProvider.GetRuntime(GetType().Name, configuration);
+            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
             runtime.Initialize();
 
             var path = new RegressionPath();

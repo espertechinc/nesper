@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Common.AddEventType(typeof(MyEvent));
 
             var runtimeURI = GetType().Name + "_" + profile;
-            var runtime = _runtimeProvider.GetRuntime(runtimeURI, configuration);
+            var runtime = _runtimeProvider.GetRuntimeInstance(runtimeURI, configuration);
 
             var path = new RegressionPath();
             var eplContext = "create context MyContext start @now end after 100 milliseconds;\n";

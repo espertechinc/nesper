@@ -42,7 +42,7 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddEventType("MyLineEvent", typeof(MyLineEvent));
             configuration.Common.AddEventType("MyInvalidEvent", typeof(MyInvalidEvent));
             _runtimeProvider = new EPRuntimeProvider();
-            _runtime = _runtimeProvider.GetDefaultRuntime(configuration);
+            _runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
             _runtime.Initialize();
         }
 

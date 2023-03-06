@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.framework
             configurer.Invoke(config);
 
             try {
-                runtimeProvider.GetRuntime(Guid.NewGuid().ToString(), config);
+                runtimeProvider.GetRuntimeInstance(Guid.NewGuid().ToString(), config);
                 Assert.Fail();
             }
             catch (ConfigurationException ex) {

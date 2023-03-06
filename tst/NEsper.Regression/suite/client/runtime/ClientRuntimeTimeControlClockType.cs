@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Common.AddEventType(typeof(SupportBean));
 
             var runtimeProvider = new EPRuntimeProvider();
-            var runtime = runtimeProvider.GetRuntime(nameof(ClientRuntimeTimeControlClockType), configuration);
+            var runtime = runtimeProvider.GetRuntimeInstance(nameof(ClientRuntimeTimeControlClockType), configuration);
 
             runtime.EventService.AdvanceTime(0);
             Assert.AreEqual(0, runtime.EventService.CurrentTime);

@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            var runtime = _runtimeProvider.GetRuntime(
+            var runtime = _runtimeProvider.GetRuntimeInstance(
                 nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "_" + runtimeNum + "_" + _count++,
                 config);
             runtime.Initialize();

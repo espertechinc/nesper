@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     typeof(SupportInvalidAggregationFunctionForge));
 
                 var runtimeProvider = new EPRuntimeProvider();
-                var runtime = runtimeProvider.GetRuntime(
+                var runtime = runtimeProvider.GetRuntimeInstance(
                     typeof(ClientRuntimeExHandlerGetContext).FullName,
                     configuration);
 
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 configuration.Common.AddEventType(typeof(SupportBean));
 
                 var runtimeProvider = new EPRuntimeProvider();
-                var runtime = runtimeProvider.GetRuntime(
+                var runtime = runtimeProvider.GetRuntimeInstance(
                     nameof(ClientRuntimeExceptionHandlerNoHandler),
                     configuration);
 
