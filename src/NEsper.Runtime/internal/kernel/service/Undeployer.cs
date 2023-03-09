@@ -194,7 +194,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			DeleteFromEventTypeBus(services, deploymentTypes);
 			DeleteFromPathRegistries(services, deploymentId);
 
-			services.ClassLoaderParent.Remove(deploymentId);
+			services.TypeResolverParent.Remove(deploymentId);
 
 			if (InstrumentationHelper.ENABLED) {
 				var instrumentation = InstrumentationHelper.Get();

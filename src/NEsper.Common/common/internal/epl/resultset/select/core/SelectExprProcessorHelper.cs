@@ -1391,7 +1391,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 // The type may however be an auto-import or fully-qualified class name
                                 Type clazz = null;
                                 try {
-                                    clazz = importService.ResolveClass(_insertIntoDesc.EventTypeName, false, ExtensionClassEmpty.INSTANCE);
+                                    clazz = importService.ResolveType(_insertIntoDesc.EventTypeName, false, ExtensionClassEmpty.INSTANCE);
                                 }
                                 catch (ImportException) {
                                     Log.Debug(

@@ -12,16 +12,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-#if NETSTANDARD
+#if NETCORE
 using System.Runtime.Loader;
 #endif
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -29,49 +29,34 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
+using IContainer = com.espertech.esper.container.IContainer;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
     public partial class RoslynCompiler
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        internal static readonly LanguageVersion MaxLanguageVersion = Enum
+        private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof(LanguageVersion))
             .Cast<LanguageVersion>()
             .Max();
-
-        private readonly IDictionary<Assembly, PortableExecutableReference> _portableExecutionReferenceCache =
-            new Dictionary<Assembly, PortableExecutableReference>();
-        private readonly IDictionary<string, CacheBinding> _assemblyCacheBindings = 
-            new Dictionary<string, CacheBinding>();
-
-        private IList<MetadataReference> _metadataReferences = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoslynCompiler"/> class.
         /// </summary>
         public RoslynCompiler(IContainer container)
         {
+            Container = container;
             Sources = new List<Source>();
-#if NETSTANDARD
-            LoadContext = container.LoadContext();
-#endif
             InitializeAssemblyResolution();
         }
 
-#if NETSTANDARD
         /// <summary>
-        /// Gets the assembly load context.
+        /// Application container
         /// </summary>
-
-        public AssemblyLoadContext LoadContext { get; private set; }
-#endif
-
-        /// <summary>
-        /// Gets the assembly.
-        /// </summary>
-        public Assembly Assembly { get; private set; }
-
+        public IContainer Container { get; }
+        
         /// <summary>
         /// Gets the assembly image.
         /// </summary>
@@ -92,12 +77,24 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         public IList<Source> Sources { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the metadata references.
+        /// </summary>
+        public IEnumerable<MetadataReference> MetadataReferences { get; set; }
+        
+        /// <summary>
+        /// Returns true if the compiler should set optimization to debug.
+        /// </summary>
+        public bool IsDebugOptimization { get; set; }
+
         /// <summary>
         /// Initializes the assembly resolution mechanism.
         /// </summary>
         private void InitializeAssemblyResolution()
         {
-#if NETSTANDARD
+#if FALSE
+#if NETCORE
             LoadContext.Resolving += (
                 context,
                 name) => {
@@ -121,6 +118,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
                 return null;
             };
+#endif
 #endif
         } 
         
@@ -148,8 +146,20 @@ namespace com.espertech.esper.compiler.@internal.util
             Sources = sources;
             return this;
         }
+
+        public RoslynCompiler WithMetaDataReferences(IEnumerable<MetadataReference> metadataReferences)
+        {
+            MetadataReferences = metadataReferences;
+            return this;
+        }
         
-        internal bool IsGeneratedAssembly(Assembly assembly)
+        public RoslynCompiler WithDebugOptimization(bool isDebugOptimization)
+        {
+            IsDebugOptimization = isDebugOptimization;
+            return this;
+        }
+
+        private static bool IsGeneratedAssembly(Assembly assembly)
         {
             var generatedAttributesCount = assembly
                 .GetCustomAttributes()
@@ -158,51 +168,20 @@ namespace com.espertech.esper.compiler.@internal.util
             return generatedAttributesCount > 0;
         }
 
-        /// <summary>
-        /// Gets the current metadata references.  Metadata references are specific to the AppDomain.
-        /// </summary>
-        internal ICollection<MetadataReference> GetCurrentMetadataReferences()
+        internal IEnumerable<MetadataReference> GetCoreMetadataReferences()
         {
-            if (_metadataReferences == null) {
-                var metadataReferences = new List<MetadataReference>();
-
-                lock (_assemblyCacheBindings) {
-                    foreach (var assemblyBinding in _assemblyCacheBindings) {
-                        metadataReferences.Add(assemblyBinding.Value.MetadataReference);
-                    }
-                }
-
-#if NETSTANDARD
-                var assemblies = Enumerable.Concat(
-                    AssemblyLoadContext.Default.Assemblies,
-                    LoadContext.Assemblies);
+#if NETCORE
+            var coreAssemblies = AssemblyLoadContext.Default.Assemblies;
 #else
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var coreAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 #endif
 
-                foreach (var assembly in assemblies) {
-                    if (!IsGeneratedAssembly(assembly) &&
-                        !assembly.IsDynamic && 
-                        !string.IsNullOrEmpty(assembly.Location)) {
-                        lock (_portableExecutionReferenceCache) {
-                            if (!_portableExecutionReferenceCache.TryGetValue(
-                                assembly,
-                                out var portableExecutableReference)) {
-                                portableExecutableReference = MetadataReference.CreateFromFile(assembly.Location);
-                                _portableExecutionReferenceCache[assembly] = portableExecutableReference;
-                            }
-
-                            metadataReferences.Add(portableExecutableReference);
-                        }
-                    }
-                }
-
-                _metadataReferences = metadataReferences;
-            }
-
-            return _metadataReferences;
+            return coreAssemblies
+                .Distinct()
+                .Select(GetMetadataReference)
+                .Where(_ => _ != null);
         }
-
+        
         /// <summary>
         /// Compiles a single source into its syntax elements.
         /// </summary>
@@ -271,7 +250,7 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
-        public Pair<Assembly, byte[]> Compile()
+        public EPCompilationUnit Compile()
         {
 #if COMPILATION_DIAGNOSTICS
             var startMicro = PerformanceObserver.MicroTime;
@@ -299,22 +278,44 @@ namespace com.espertech.esper.compiler.@internal.util
 #endif
         }
 
+        public static bool IsDynamicAssembly(Assembly assembly)
+        {
+            return (
+                assembly.IsDynamic ||
+                string.IsNullOrEmpty(assembly.Location) ||
+                IsGeneratedAssembly(assembly)
+            );
+        }
+        
+        public MetadataReference GetMetadataReference(Assembly assembly)
+        {
+            if (!IsDynamicAssembly(assembly))
+                return MetadataReference.CreateFromFile(assembly.Location);
+        
+            return null;
+        }
+
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
-        private Pair<Assembly, byte[]> CompileInternal()
+        private EPCompilationUnit CompileInternal()
         {
             // Convert the codegen class into it's source representation.
             var syntaxTreePairs = CreateSyntaxTree();
             var syntaxTrees = syntaxTreePairs.Select(_ => _.Item3).ToList();
             syntaxTrees.Insert(0, CompileAssemblyBindings());
+
+            var exportedTypes = GetExportedTypes(syntaxTrees);
+
+            var optimizationLevel = IsDebugOptimization ? OptimizationLevel.Debug : OptimizationLevel.Release;
             
             // Create an in-memory representation of the compiled source.
             var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                .WithOptimizationLevel(OptimizationLevel.Debug)
+                .WithOptimizationLevel(optimizationLevel)
                 .WithAllowUnsafe(true);
 
-            var metadataReferences = GetCurrentMetadataReferences();
+            var metadataReferences = Enumerable
+                .Concat(GetCoreMetadataReferences(), MetadataReferences);
 
             var assemblyId = Guid.NewGuid().ToString().Replace("-", "");
             var assemblyName = $"NEsper_{assemblyId}";
@@ -329,45 +330,15 @@ namespace com.espertech.esper.compiler.@internal.util
 
 #if DIAGNOSTICS
             Console.WriteLine("EmitToImage: {0}", assemblyName);
-            foreach (var syntaxTreePair in syntaxTreePairs) {
-                Console.WriteLine("\t- {0}", syntaxTreePair.First.ClassName);
-            }
 #endif
 
-            AssemblyImage = EmitToImage(compilation);
+            var assemblyImage = EmitToImage(compilation);
 
-#if DIAGNOSTICS
-            Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
-#endif
-
-#if NETSTANDARD
-            using (var stream = new MemoryStream(AssemblyImage)) {
-                Assembly = LoadContext.LoadFromStream(stream);
-            }
-#else
-            Assembly = AppDomain.CurrentDomain.Load(AssemblyImage);
-#endif
-            
-#if DIAGNOSTICS
-            Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
-            Console.WriteLine($"\tFullName:{_assembly.FullName}");
-            Console.WriteLine($"\tName:{_assembly.GetName()}");
-#endif
-
-            lock (_assemblyCacheBindings) {
-                var metadataReference = MetadataReference.CreateFromImage(AssemblyImage);
-
-#if DIAGNOSTICS
-                Console.WriteLine($"MetaDataReference: {DateTime.Now}");
-                Console.WriteLine($"\tFullType: {metadataReference.GetType().FullName}");
-                Console.WriteLine($"\tDisplay: {metadataReference.Display}");
-                Console.WriteLine($"\tProperties: {metadataReference.Properties}");
-#endif
-                _metadataReferences.Add(metadataReference);
-                _assemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
-            }
-
-            return new Pair<Assembly, byte[]>(Assembly, AssemblyImage);
+            return new EPCompilationUnit() {
+                Name = assemblyName,
+                Image = assemblyImage,
+                TypeNames = exportedTypes
+            };
         }
 
         private void WriteCodeAudit(IList<System.Tuple<string, string, SyntaxTree>> syntaxTreePairs, string targetDirectory)
@@ -407,7 +378,42 @@ namespace com.espertech.esper.compiler.@internal.util
             }
         }
 
-        private string GetNamespaceForSyntaxTree(SyntaxTree syntaxTree)
+        private static ICollection<string> GetExportedTypes(IEnumerable<SyntaxTree> syntaxTreeList)
+        {
+            var exportVisitor = new ExportVisitor();
+            foreach (var syntaxTree in syntaxTreeList) {
+                exportVisitor.Visit(syntaxTree.GetRoot());
+            }
+            return exportVisitor.TypeNames;
+        }
+        
+        public class ExportVisitor : CSharpSyntaxWalker
+        {
+            private string _namespace = null;
+            private string _prefix = "";
+
+            public readonly ISet<string> TypeNames = new HashSet<string>();
+            
+            public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+            {
+                _namespace = node.Name.ToFullString().Trim();
+                _prefix = _namespace + ".";
+                base.VisitNamespaceDeclaration(node);
+            }
+
+            public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+            {
+                var save = _prefix;
+                var name = node.Identifier.ToFullString().Trim();
+                var fqtn = _prefix + name;
+                TypeNames.Add(fqtn);
+                _prefix = fqtn + '+';
+                base.VisitClassDeclaration(node);
+                _prefix = save;
+            }
+        }
+        
+        private static string GetNamespaceForSyntaxTree(SyntaxTree syntaxTree)
         {
             var namespaceVisitor = new NamespaceVisitor();
             namespaceVisitor.Visit(syntaxTree.GetRoot());
@@ -423,20 +429,6 @@ namespace com.espertech.esper.compiler.@internal.util
             public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
             {
                 _namespace = node.Name.ToFullString().Trim();
-            }
-        }
-        
-        struct CacheBinding
-        {
-            internal readonly Assembly Assembly;
-            internal readonly MetadataReference MetadataReference;
-
-            public CacheBinding(
-                Assembly assembly,
-                MetadataReference metadataReference)
-            {
-                Assembly = assembly;
-                MetadataReference = metadataReference;
             }
         }
     }

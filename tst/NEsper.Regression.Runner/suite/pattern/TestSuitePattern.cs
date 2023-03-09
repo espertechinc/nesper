@@ -28,26 +28,9 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.pattern
 {
     [TestFixture]
-    public class TestSuitePattern
+    public class TestSuitePattern : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] {
                 typeof(SupportBean_A),
@@ -128,42 +111,42 @@ namespace com.espertech.esper.regressionrun.suite.pattern
         [Test, RunInApplicationDomain]
         public void TestPatternGuardTimerWithinOrMax()
         {
-            RegressionRunner.Run(session, new PatternGuardTimerWithinOrMax());
+            RegressionRunner.Run(_session, new PatternGuardTimerWithinOrMax());
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternOperatorOperatorMix()
         {
-            RegressionRunner.Run(session, new PatternOperatorOperatorMix());
+            RegressionRunner.Run(_session, new PatternOperatorOperatorMix());
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternDeadPattern()
         {
-            RegressionRunner.Run(session, new PatternDeadPattern());
+            RegressionRunner.Run(_session, new PatternDeadPattern());
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternStartLoop()
         {
-            RegressionRunner.Run(session, new PatternStartLoop());
+            RegressionRunner.Run(_session, new PatternStartLoop());
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternMicrosecondResolution()
         {
-            RegressionRunner.Run(session, new PatternMicrosecondResolution(false));
+            RegressionRunner.Run(_session, new PatternMicrosecondResolution(false));
         }
         [Test, RunInApplicationDomain]
         public void TestPatternSuperAndInterfaces()
         {
-            RegressionRunner.Run(session, new PatternSuperAndInterfaces());
+            RegressionRunner.Run(_session, new PatternSuperAndInterfaces());
         }
 
         [Test, RunInApplicationDomain]
         public void TestPatternExpressionText()
         {
-            RegressionRunner.Run(session, new PatternExpressionText());
+            RegressionRunner.Run(_session, new PatternExpressionText());
         }
 
         /// <summary>
@@ -691,6 +674,8 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             public TestPatternOperatorFollowedByMax() : base(Configure)
             {
             }
+
+            protected override bool UseDefaultRuntime => true;
 
             [Test, RunInApplicationDomain]
             public void WithOperatorFollowedByMaxInvalid() => RegressionRunner.Run(_session, PatternOperatorFollowedByMax.WithOperatorFollowedByMaxInvalid());

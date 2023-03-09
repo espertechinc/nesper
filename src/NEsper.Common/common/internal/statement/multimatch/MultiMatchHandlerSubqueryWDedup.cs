@@ -11,13 +11,16 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public class MultiMatchHandlerSubqueryWDedup : MultiMatchHandler
     {
         private readonly bool subselectPreeval;
-
+        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes = 
+            new FastThreadLocal<LinkedHashSet<FilterHandleCallback>>(
+                () => new LinkedHashSet<FilterHandleCallback>());
         protected internal MultiMatchHandlerSubqueryWDedup(bool subselectPreeval)
         {
             this.subselectPreeval = subselectPreeval;
@@ -27,7 +30,7 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
             ICollection<FilterHandleCallback> callbacks,
             EventBean theEvent)
         {
-            var dedup = MultiMatchHandlerNoSubqueryWDedup.DEDUPS.GetOrCreate();
+            var dedup = dedupes.GetOrCreate();
             dedup.Clear();
             dedup.AddAll(callbacks);
 

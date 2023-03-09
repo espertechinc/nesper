@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "val0", "val1", "val2", "val3" };
+            var fields = new[] { "val0", "val1", "val2", "val3" };
             var eplFragment = "@Name('s0') select " +
                               "LongDate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
                               "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3) as val1," +

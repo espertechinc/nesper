@@ -43,7 +43,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestInvalidCases()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = nameof(SupportBean);
 
 			AssertIsInvalid(className + "(val=10000).");
 			AssertIsInvalid("select * from com.xxx().std:win(3) where a not is null");
@@ -214,7 +214,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestValidCases()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = nameof(SupportBean);
 			var preFill = "select * from " + className;
 
 			// output rate limiting
@@ -388,10 +388,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("insert rstream into MyEvent select 1 from b#length(1)");
 
 			// pattern inside
-			AssertIsValid("select * from pattern [a=" + typeof(SupportBean).Name + "]");
-			AssertIsValid("select * from pattern [a=" + typeof(SupportBean).Name + "] as xyz");
-			AssertIsValid("select * from pattern [a=" + typeof(SupportBean).Name + "]#length(100) as xyz");
-			AssertIsValid("select * from pattern [a=" + typeof(SupportBean).Name + "]#length(100)#someview() as xyz");
+			AssertIsValid("select * from pattern [a=" + nameof(SupportBean) + "]");
+			AssertIsValid("select * from pattern [a=" + nameof(SupportBean) + "] as xyz");
+			AssertIsValid("select * from pattern [a=" + nameof(SupportBean) + "]#length(100) as xyz");
+			AssertIsValid("select * from pattern [a=" + nameof(SupportBean) + "]#length(100)#someview() as xyz");
 			AssertIsValid("select * from xxx");
 			AssertIsValid("select rstream * from xxx");
 			AssertIsValid("select istream * from xxx");
@@ -751,7 +751,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestBitWiseCases()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = nameof(SupportBean);
 			var eplSmt = "select (intPrimitive & intBoxed) from " + className;
 			AssertIsValid(eplSmt + ".win:lenght()");
 			eplSmt = "select boolPrimitive|boolBoxed from " + className;
@@ -763,7 +763,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestIfThenElseCase()
 		{
-			var className = typeof(SupportBean).Name;
+			var className = nameof(SupportBean);
 			var eplSmt = "select case when 1 then (a + 1) when 2 then (a*2) end from " + className;
 			AssertIsValid(eplSmt + ".win:lenght()");
 			eplSmt = "select case a when 1 then (a + 1) end from " + className;
@@ -782,7 +782,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		private void TryJoin(string joinType)
 		{
-			var className = typeof(SupportBean).Name;
+			var className = nameof(SupportBean);
 			AssertIsValid(
 				"select intPrimitive from " +
 				className +

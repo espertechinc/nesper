@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
                     return MultiMatchHandlerNoSubqueryNoDedup.INSTANCE;
                 }
 
-                return MultiMatchHandlerNoSubqueryWDedup.INSTANCE;
+                return new MultiMatchHandlerNoSubqueryWDedup();
             }
 
             if (!needDedup) {

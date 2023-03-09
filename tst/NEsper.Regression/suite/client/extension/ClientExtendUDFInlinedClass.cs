@@ -29,16 +29,58 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ClientExtendUDFInlinedLocalClass(false));
-			execs.Add(new ClientExtendUDFInlinedLocalClass(true));
-			execs.Add(new ClientExtendUDFInlinedInvalid());
-			execs.Add(new ClientExtendUDFInlinedFAF());
-			execs.Add(new ClientExtendUDFCreateInlinedSameModule());
-			execs.Add(new ClientExtendUDFOverloaded());
-			execs.Add(new ClientExtendUDFInlinedWOptions());
-			
+			WithInlinedLocalClass(execs);
+			WithInlinedInvalid(execs);
+			WithInlinedFAF(execs);
+			WithCreateInlinedSameModule(execs);
+			WithOverloaded(execs);
+			WithInlinedWOptions(execs);
+
 			// Following test is broken due to the need for namespace isolation within an assembly
 			// execs.Add(new ClientExtendUDFCreateInlinedOtherModule());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInlinedWOptions(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendUDFInlinedWOptions());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithOverloaded(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendUDFOverloaded());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithCreateInlinedSameModule(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendUDFCreateInlinedSameModule());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInlinedFAF(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendUDFInlinedFAF());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInlinedInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendUDFInlinedInvalid());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInlinedLocalClass(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendUDFInlinedLocalClass(false));
+			execs.Add(new ClientExtendUDFInlinedLocalClass(true));
 			return execs;
 		}
 
@@ -47,27 +89,29 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				var @namespace = NamespaceGenerator.Create();
-				var epl = 
+				var epl =
 					"@Name('s0') inlined_class \"\"\"\n" +
-				    "  using com.espertech.esper.common.client.hook.singlerowfunc;\n" +
-				    "  namespace " + @namespace + " {\n" +
-				    "    [ExtensionSingleRowFunction(Name=\"multiply\", MethodName=\"MultiplyIt\")]\n" +
-				    "    public class MultiplyHelper {\n" +
-				    "      public static int MultiplyIt(int a, int b) {\n" +
-				    "        return a*b;\n" +
-				    "      }\n" +
-				    "      public static int MultiplyIt(int a, int b, int c) {\n" +
-				    "        return a*b*c;\n" +
-				    "      }\n" +
-				    "    }\n" +
-				    "  }\n" +
-				    "\"\"\" " +
-				    "select multiply(IntPrimitive,IntPrimitive) as c0, multiply(IntPrimitive,IntPrimitive,IntPrimitive) as c1 \n" +
-				    " from SupportBean";
+					"  using com.espertech.esper.common.client.hook.singlerowfunc;\n" +
+					"  namespace " +
+					@namespace +
+					" {\n" +
+					"    [ExtensionSingleRowFunction(Name=\"multiply\", MethodName=\"MultiplyIt\")]\n" +
+					"    public class MultiplyHelper {\n" +
+					"      public static int MultiplyIt(int a, int b) {\n" +
+					"        return a*b;\n" +
+					"      }\n" +
+					"      public static int MultiplyIt(int a, int b, int c) {\n" +
+					"        return a*b*c;\n" +
+					"      }\n" +
+					"    }\n" +
+					"  }\n" +
+					"\"\"\" " +
+					"select multiply(IntPrimitive,IntPrimitive) as c0, multiply(IntPrimitive,IntPrimitive,IntPrimitive) as c1 \n" +
+					" from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 4));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {16, 64});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] { 16, 64 });
 
 				env.UndeployAll();
 			}
@@ -80,21 +124,29 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var @namespace = NamespaceGenerator.Create();
 				var epl =
 					"@Name('s0') inlined_class \"\"\"\n" +
-				    " namespace " + @namespace + " {\n" +
-				    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(\n" +
-				    "      Name=\"multiply\", MethodName=\"MultiplyIfPositive\",\n" +
-				    "      ValueCache=" + typeof(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum).FullName.CodeInclusionTypeName() + ".DISABLED,\n" +
-				    "      FilterOptimizable=" + typeof(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum).FullName.CodeInclusionTypeName() + ".DISABLED,\n" +
-				    "      RethrowExceptions=false,\n" +
-				    "      EventTypeName=\"abc\"\n" +
-				    "      )]\n" +
-				    "    public class MultiplyHelper {\n" +
-				    "      public static int MultiplyIfPositive(int a, int b) {\n" +
-				    "        return a*b;\n" +
-				    "      }\n" +
-				    "    }\n" +
-				    "  }\n" +
-				    "\"\"\" " +
+					" namespace " +
+					@namespace +
+					" {\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(\n" +
+					"      Name=\"multiply\", MethodName=\"MultiplyIfPositive\",\n" +
+					"      ValueCache=" +
+					typeof(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum).FullName.CodeInclusionTypeName() +
+					".DISABLED,\n" +
+					"      FilterOptimizable=" +
+					typeof(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum).FullName.CodeInclusionTypeName() +
+					".DISABLED,\n" +
+					"      RethrowExceptions=false,\n" +
+					"      EventTypeName=\"abc\"\n" +
+					"      )]\n" +
+					"    public class MultiplyHelper {\n" +
+					"      public static int MultiplyIfPositive(int a, int b) {\n" +
+					"        return a*b;\n" +
+					"      }\n" +
+					"    }\n" +
+					"  }\n" +
+					"\"\"\" " +
 					"select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -111,7 +163,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var eplCreateInlined =
 					"@Name('clazz') @public create inlined_class \"\"\"\n" +
 					" namespace %NAMESPACE% {\n" +
-				    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
 					"   public class MultiplyHelper {\n" +
 					"     public static int Multiply(int a, int b) {\n" +
 					"       %BEHAVIOR%\n" +
@@ -124,7 +178,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.Compile(
 					eplCreateInlined
 						.Replace("%NAMESPACE%", ns1)
-						.Replace("%BEHAVIOR%", "return -1;"), path);
+						.Replace("%BEHAVIOR%", "return -1;"),
+					path);
 
 				var eplSelect = "@Name('s0') select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				var compiledSelect = env.Compile(eplSelect, path);
@@ -154,18 +209,22 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				var @namespace = NamespaceGenerator.Create();
-				var epl = 
+				var epl =
 					"create inlined_class \"\"\"\n" +
-					" namespace " + @namespace + " {\n" +
-				    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
-				    "   public class MultiplyHelper {\n" +
-				    "     public static int Multiply(int a, int b) {\n" +
-				    "       return a*b;\n" +
-				    "     }\n" +
-				    "   }\n" +
+					" namespace " +
+					@namespace +
+					" {\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+					"   public class MultiplyHelper {\n" +
+					"     public static int Multiply(int a, int b) {\n" +
+					"       return a*b;\n" +
+					"     }\n" +
+					"   }\n" +
 					" }\n" +
-				    "\"\"\"\n;" +
-				    "@Name('s0') select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean;\n";
+					"\"\"\"\n;" +
+					"@Name('s0') select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertIntMultiply(env, 5, 25);
@@ -185,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				var eplWindow = 
+				var eplWindow =
 					"create window MyWindow#keepall as (TheString string);\n" +
 					"on SupportBean merge MyWindow insert select TheString;\n";
 				env.CompileDeploy(eplWindow, path);
@@ -195,7 +254,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var eplFAF =
 					"inlined_class \"\"\"\n" +
 					" namespace %NAMESPACE% {\n" +
-					"   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"appendDelimiters\", MethodName=\"DoIt\")]\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(Name=\"appendDelimiters\", MethodName=\"DoIt\")]\n" +
 					"   public class MyClass {\n" +
 					"     public static string DoIt(string parameter) {\n" +
 					"       return '>' + parameter + '<';\n" +
@@ -224,18 +285,24 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var @namespace = NamespaceGenerator.Create();
 				var epl =
 					"@Name('s0') inlined_class \"\"\"\n" +
-					" namespace " + @namespace + " {\n" +
-				    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+					" namespace " +
+					@namespace +
+					" {\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
 					"   public class MultiplyHelperOne {\n" +
-				    "     public static int Multiply(int a, int b) { return 0; }\n" +
-				    "   }\n" +
-				    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
-				    "   public class MultiplyHelperTwo {\n" +
-				    "     public static int Multiply(int a, int b, int c) { return 0; }\n" +
-				    "   }\n" +
+					"     public static int Multiply(int a, int b) { return 0; }\n" +
+					"   }\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+					"   public class MultiplyHelperTwo {\n" +
+					"     public static int Multiply(int a, int b, int c) { return 0; }\n" +
+					"   }\n" +
 					" }\n" +
-				    "\"\"\" " +
-				    "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
+					"\"\"\" " +
+					"select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				TryInvalidCompile(
 					env,
 					epl,
@@ -257,16 +324,20 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var @namespace = NamespaceGenerator.Create();
 				var epl =
 					"@Name('s0') inlined_class \"\"\"\n" +
-					" namespace " + @namespace + " {\n" +
-				    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
-				    "   public class MultiplyHelper {\n" +
-				    "     public static int Multiply(int a, int b) {\n" +
-				    "       return a*b;\n" +
-				    "     }\n" +
-				    "   }\n" +
+					" namespace " +
+					@namespace +
+					" {\n" +
+					"   [" +
+					typeof(ExtensionSingleRowFunctionAttribute).FullName +
+					"(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+					"   public class MultiplyHelper {\n" +
+					"     public static int Multiply(int a, int b) {\n" +
+					"       return a*b;\n" +
+					"     }\n" +
+					"   }\n" +
 					" }\n" +
-				    "\"\"\" " +
-				    "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
+					"\"\"\" " +
+					"select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				env.CompileDeploy(soda, epl).AddListener("s0");
 
 				SendAssertIntMultiply(env, 5, 25);

@@ -21,8 +21,22 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new NonOverlappingSubqueryAndInvalid());
+            WithNonOverlappingSubqueryAndInvalid(execs);
+            WithAtNowWithSelectedEventEnding(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAtNowWithSelectedEventEnding(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new AtNowWithSelectedEventEnding());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonOverlappingSubqueryAndInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new NonOverlappingSubqueryAndInvalid());
             return execs;
         }
 
@@ -68,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] { "TheString" };
                 var epl = "@Priority(1) create context C1 start @now end SupportBean;\n" +
                           "@Name('s0') @Priority(0) context C1 select * from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -77,13 +91,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E1"});
+                    new object[] { "E1" });
 
                 env.SendEventBean(new SupportBean("E2", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E2"});
+                    new object[] { "E2" });
 
                 env.UndeployAll();
             }

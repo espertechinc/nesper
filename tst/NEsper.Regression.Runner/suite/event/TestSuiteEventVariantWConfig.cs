@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -16,7 +17,7 @@ using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUti
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventVariantWConfig
+    public class TestSuiteEventVariantWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
@@ -30,7 +31,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
         private void TryInvalidVarstream(ConfigurationCommonVariantStream config, string expected)
         {
-            TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(), configuration => configuration.Common.AddVariantStream("ABC", config), expected);
+            TryInvalidConfigurationCompiler(
+                SupportConfigFactory.GetConfiguration(Container),
+                configuration => configuration.Common.AddVariantStream("ABC", config),
+                expected);
         }
     }
 } // end of namespace

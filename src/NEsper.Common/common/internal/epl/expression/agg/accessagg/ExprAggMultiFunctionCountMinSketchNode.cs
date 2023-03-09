@@ -254,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 						if (value != null) {
 							CountMinSketchAgentForge transform;
 							try {
-								var transformClass = exprValidationContext.ImportService.ResolveClass(
+								var transformClass = exprValidationContext.ImportService.ResolveType(
 									(string) value,
 									false,
 									ExtensionClassEmpty.INSTANCE);

@@ -10,17 +10,22 @@ namespace com.espertech.esper.runtime
     {
         private Supplier<SupportEventTypeFactory> supportEventTypeFactorySupplier;
 
-        protected internal IContainer container;
+        protected IContainer Container;
 
-        protected internal SupportEventTypeFactory supportEventTypeFactory =>
+        protected SupportEventTypeFactory supportEventTypeFactory =>
             supportEventTypeFactorySupplier.Invoke();
 
         [SetUp]
         public virtual void SetUpCommon()
         {
-            container = SupportContainer.Reset();
+            Container = CreateContainer();
             supportEventTypeFactorySupplier = Suppliers.Memoize(() => 
-                SupportEventTypeFactory.GetInstance(container));
+                SupportEventTypeFactory.GetInstance(Container));
+        }
+
+        protected virtual IContainer CreateContainer()
+        {
+            return SupportContainer.CreateContainer();
         }
     }
 }

@@ -49,10 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
             catch (ArgumentException e) {
                 throw new ExprValidationException(
-                    string.Format("{0} datetime-field name '{1}' is not recognized, {2}",
-                        GetMessage(methodName),
-                        fieldname,
-                        GetValidFieldNamesMessage()),
+                    $"{GetMessage(methodName)} datetime-field name '{fieldname}' is not recognized, {GetValidFieldNamesMessage()}",
                     e);
             }
         }

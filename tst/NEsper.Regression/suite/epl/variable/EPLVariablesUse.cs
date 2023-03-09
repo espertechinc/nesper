@@ -72,14 +72,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             string p00,
             string p01)
         {
-            try {
-                var t = new Thread(() => env.SendEventBean(new SupportBean_S0(id, p00, p01)));
-                t.Start();
-                t.Join();
-            }
-            catch (ThreadInterruptedException ex) {
-                Assert.Fail(ex.Message);
-            }
+            var t = new Thread(() => env.SendEventBean(new SupportBean_S0(id, p00, p01)));
+            t.Start();
+            t.Join();
         }
 
         private static SupportBean MakeSupportBean(

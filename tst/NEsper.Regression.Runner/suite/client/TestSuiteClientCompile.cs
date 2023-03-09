@@ -23,25 +23,13 @@ using SupportBean_S1 = com.espertech.esper.common.@internal.support.SupportBean_
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
-    public class TestSuiteClientCompile
+    public class TestSuiteClientCompile : AbstractTestBase
     {
-        private RegressionSession _session;
-
-        [SetUp]
-        public void SetUp()
+        public TestSuiteClientCompile() : base(Configure)
         {
-            _session = RegressionRunner.Session();
-            Configure(_session.Configuration);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _session.Dispose();
-            _session = null;
-        }
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] {
                 typeof(SupportBean),

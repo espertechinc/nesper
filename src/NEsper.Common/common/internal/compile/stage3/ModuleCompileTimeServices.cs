@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleAccessModifierService moduleVisibilityRules,
             NamedWindowCompileTimeResolver namedWindowCompileTimeResolver,
             NamedWindowCompileTimeRegistry namedWindowCompileTimeRegistry,
-            ParentClassLoader parentClassLoader,
+            ParentTypeResolver parentTypeResolver,
             PatternObjectResolutionService patternObjectResolutionService,
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleVisibilityRules = moduleVisibilityRules;
             NamedWindowCompileTimeResolver = namedWindowCompileTimeResolver;
             NamedWindowCompileTimeRegistry = namedWindowCompileTimeRegistry;
-            ParentClassLoader = parentClassLoader;
+            ParentTypeResolver = parentTypeResolver;
             PatternObjectResolutionService = patternObjectResolutionService;
             ScriptCompileTimeRegistry = scriptCompileTimeRegistry;
             ScriptCompileTimeResolver = scriptCompileTimeResolver;
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleVisibilityRules = null;
             NamedWindowCompileTimeResolver = null;
             NamedWindowCompileTimeRegistry = null;
-            ParentClassLoader = null;
+            ParentTypeResolver = null;
             PatternObjectResolutionService = null;
             ScriptCompileTimeRegistry = null;
             ScriptCompileTimeResolver = null;
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public PatternObjectResolutionService PatternObjectResolutionService { get; }
 
-        public ParentClassLoader ParentClassLoader { get; }
+        public ParentTypeResolver ParentTypeResolver { get; }
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry { get; }
 

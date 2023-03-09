@@ -9,9 +9,13 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
@@ -19,7 +23,8 @@ namespace com.espertech.esper.common.@internal.settings
 {
     public class ImportServiceRuntime : ImportServiceBase
     {
-        private readonly IDictionary<string, ConfigurationCommonMethodRef> methodInvocationRef;
+        private readonly IDictionary<string, ConfigurationCommonMethodRef> _methodInvocationRef;
+        private readonly IArtifactRepository _artifactRepository;
 
         public ImportServiceRuntime(
             IContainer container,
@@ -29,11 +34,14 @@ namespace com.espertech.esper.common.@internal.settings
             TimeZoneInfo timeZone,
             IDictionary<string, ConfigurationCommonMethodRef> methodInvocationRef,
             IList<Import> imports,
-            IList<Import> annotationImports)
+            IList<Import> annotationImports,
+            IArtifactRepository artifactRepositoryDefault)
             : base(container, transientConfiguration, timeAbacus, eventTypeAutoNames)
         {
             TimeZone = timeZone;
-            this.methodInvocationRef = methodInvocationRef;
+
+            _artifactRepository = artifactRepositoryDefault;
+            _methodInvocationRef = methodInvocationRef;
 
             try {
                 foreach (var import in imports) {
@@ -51,9 +59,12 @@ namespace com.espertech.esper.common.@internal.settings
 
         public TimeZoneInfo TimeZone { get; }
 
+        public override TypeResolver TypeResolver => TransientConfigurationResolver
+            .ResolveTypeResolver(Container, _transientConfiguration, _artifactRepository.TypeResolver);
+        
         public ConfigurationCommonMethodRef GetConfigurationMethodRef(string configurationName)
         {
-            return methodInvocationRef.Get(configurationName);
+            return _methodInvocationRef.Get(configurationName);
         }
     }
 } // end of namespace

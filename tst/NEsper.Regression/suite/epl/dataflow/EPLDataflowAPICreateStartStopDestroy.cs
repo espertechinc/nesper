@@ -133,13 +133,7 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                           "select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                           "DefaultSupportCaptureOp(selectedData) {};";
 
-                Module module = null;
-                try {
-                    module = env.Compiler.ParseModule(epl);
-                }
-                catch (Exception e) {
-                    Assert.Fail(e.Message);
-                }
+                Module module = env.Compiler.ParseModule(epl);
 
                 Assert.AreEqual(1, module.Items.Count);
                 env.CompileDeploy(epl);

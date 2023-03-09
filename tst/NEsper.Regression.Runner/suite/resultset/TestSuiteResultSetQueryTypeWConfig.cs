@@ -6,26 +6,30 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.resultset.querytype;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.resultset
 {
     [TestFixture]
-    public class TestSuiteResultSetQueryTypeWConfig
+    public class TestSuiteResultSetQueryTypeWConfig : AbstractTestBase
     {
+        public static void Configure(Configuration configuration)
+        {
+            configuration.Common.AddEventType(typeof(SupportBean));
+            configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
+        }
+        
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution()
         {
-            RegressionSession session = RegressionRunner.Session();
-            session.Configuration.Common.AddEventType(typeof(SupportBean));
-            session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
-            RegressionRunner.Run(session, new ResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution(5000000));
-            session.Dispose();
+            RegressionRunner.Run(_session, new ResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution(5000000));
         }
     }
 } // end of namespace

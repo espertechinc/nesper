@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.view;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -23,21 +24,20 @@ using static com.espertech.esper.regressionlib.support.schedule.SupportDateTimeU
 namespace com.espertech.esper.regressionrun.suite.view
 {
     [TestFixture]
-    public class TestSuiteViewWConfig
+    public class TestSuiteViewWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestViewGroupMicroseconds()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             ConfigureMicroseconds(session);
             RegressionRunner.Run(session, new ViewGroup.ViewGroupReclaimWithFlipTime(5000000));
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestViewTimeMicrosecondsWinFlipTime()
         {
-            List<RegressionExecution> execs = new List<RegressionExecution>();
+            var execs = new List<RegressionExecution>();
 
             execs.Add(new ViewTimeWin.ViewTimeWindowFlipTimer(0, "1", 1000000));
             execs.Add(new ViewTimeWin.ViewTimeWindowFlipTimer(0, "10 milliseconds", 10000));
@@ -46,33 +46,30 @@ namespace com.espertech.esper.regressionrun.suite.view
             execs.Add(new ViewTimeWin.ViewTimeWindowFlipTimer(123456789, "10", 123456789 + 10 * 1000000));
             execs.Add(new ViewTimeWin.ViewTimeWindowFlipTimer(0, "1 months 10 microseconds", TimePlusMonth(0, 1) * 1000 + 10));
 
-            long currentTime = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-1T08:00:01.999");
+            var currentTime = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-1T08:00:01.999");
             execs.Add(new ViewTimeWin.ViewTimeWindowFlipTimer(currentTime * 1000 + 33, "3 months 100 microseconds", TimePlusMonth(currentTime, 3) * 1000 + 33 + 100));
 
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             ConfigureMicroseconds(session);
             RegressionRunner.Run(session, execs);
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestViewTimeBatchWSystemTime()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Common.AddEventType(typeof(SupportMarketDataBean));
             session.Configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             RegressionRunner.Run(session, new ViewTimeBatchWSystemTime());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestViewTimeWinWSystemTime()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Common.AddEventType(typeof(SupportMarketDataBean));
             session.Configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             RegressionRunner.Run(session, new ViewTimeWinWSystemTime());
-            session.Dispose();
         }
 
         private void ConfigureMicroseconds(RegressionSession session)

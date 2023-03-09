@@ -265,10 +265,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 var fromClause = FromClause.Create(
                     FilterStream
-                        .Create(typeof(SupportBeanString).Name, "one")
+                        .Create(nameof(SupportBeanString), "one")
                         .AddView(View.Create("length", Expressions.Constant(100))),
                     FilterStream
-                        .Create(typeof(SupportMarketDataBean).Name, "two")
+                        .Create(nameof(SupportMarketDataBean), "two")
                         .AddView(View.Create("length", Expressions.Constant(5))));
                 model.FromClause = fromClause;
                 model.WhereClause = Expressions.And()

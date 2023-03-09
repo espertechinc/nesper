@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var threads = new Thread[numThreads];
             for (var i = 0; i < runnables.Length; i++) {
                 threads[i] = new Thread(runnables[i].Run) {
-                    Name = typeof(MultithreadStmtStateless).Name
+                    Name = nameof(MultithreadStmtStateless)
                 };
             }
 

@@ -3,12 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-    <Framework Condition=" '$(Framework)' == '' ">net472</Framework>
+    <Framework Condition=" '$(Framework)' == '' ">net6.0</Framework>
 
     <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-    <Version Condition=" '$(Version)' == '' ">8.5.4</Version>
+    <Version Condition=" '$(Version)' == '' ">8.5.5</Version>
 
     <!-- Build Directories -->
     <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
@@ -175,7 +175,7 @@
   </Target>
 
   <Target Name="Copy-Binaries-All">
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net472" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net6.0" Targets="Copy-Binaries-Main"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netcoreapp3.1" Targets="Copy-Binaries-Main"/>
   </Target>
 

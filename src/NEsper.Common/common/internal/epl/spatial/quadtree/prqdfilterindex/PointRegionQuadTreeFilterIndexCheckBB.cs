@@ -20,10 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             double y)
         {
             if (!bb.ContainsPoint(x, y)) {
-                throw new EPException(string.Format("Point ({0},{1}) not in {2}", 
-                    x.RenderAny(), 
-                    y.RenderAny(),
-                    bb));
+                throw new EPException($"Point ({x.RenderAny()},{y.RenderAny()}) not in {bb}");
             }
         }
     }

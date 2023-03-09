@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.Add(Expressions.Min("LongBoxed", "IntBoxed"), "myMin")
 					.Add(Expressions.Min(Expressions.Property("LongBoxed"), Expressions.Property("IntBoxed"), Expressions.Property("ShortBoxed")), "myMinEx");
 
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name).AddView("length", Expressions.Constant(3)));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(3)));
 				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 				Assert.AreEqual(EPL, model.ToEPL());
 

@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env,
                 "select * from pattern [every SupportBean where namespace:name(10)]",
                 "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " +
-                typeof(GuardForge).Name +
+                nameof(GuardForge) +
                 " interface for guard 'name'");
         }
     }

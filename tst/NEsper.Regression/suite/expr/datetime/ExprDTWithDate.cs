@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startTime = "2002-05-30T09:00:00.000";
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-            var fields = new [] { "val0","val1","val2","val3", "val4" };
+            var fields = new[] { "val0", "val1", "val2", "val3", "val4" };
             var epl = "" +
                       "create variable int varyear;\n" +
                       "create variable int varmonth;\n" +
@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                       "@Name('s0') select " +
                       "current_timestamp.withDate(varyear, varmonth, varday) as val0," +
                       "LongDate.withDate(varyear, varmonth, varday) as val1," +
-                      "DateTimeEx.withDate(varyear, varmonth, varday) as val2," + 
+                      "DateTimeEx.withDate(varyear, varmonth, varday) as val2," +
                       "DateTimeOffset.withDate(varyear, varmonth, varday) as val3," +
                       "DateTime.withDate(varyear, varmonth, varday) as val4" +
                       " from SupportDateTime";

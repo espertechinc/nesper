@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     .Add(Expressions.Count("Volume"), "countVol");
                 model.FromClause = FromClause
                     .Create(
-                        FilterStream.Create(typeof(SupportMarketDataBean).Name)
+                        FilterStream.Create(nameof(SupportMarketDataBean))
                             .AddView("length", Expressions.Constant(3)));
                 model.WhereClause = Expressions.Or()
                     .Add(Expressions.Eq("Symbol", "DELL"))
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
                           " from " +
-                          typeof(SupportMarketDataBean).Name +
+                          nameof(SupportMarketDataBean) +
                           "#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";

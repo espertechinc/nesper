@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     try {
                         targetType = TypeHelper.GetClassForName(
                             classIdentifier.Trim(),
-                            validationContext.ImportService.ClassForNameProvider);
+                            validationContext.ImportService.TypeResolver);
                         targetType = ApplyDimensions(targetType);
                     }
                     catch (TypeLoadException) {
@@ -241,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 try {
                     targetType = TypeHelper.GetClassForName(
                         classIdentifier.Trim(),
-                        validationContext.ImportService.ClassForNameProvider);
+                        validationContext.ImportService.TypeResolver);
                 }
                 catch (TypeLoadException e) {
                     throw new ExprValidationException(

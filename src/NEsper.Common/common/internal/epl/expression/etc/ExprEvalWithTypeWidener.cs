@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
-                    writer.Write(typeof(ExprEvalWithTypeWidener).Name);
+                    writer.Write(nameof(ExprEvalWithTypeWidener));
                 });
             }
         }

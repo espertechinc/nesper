@@ -114,22 +114,19 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 }
             }
 
-            var message = string.Format(
-                "Parameters mismatch for {0} method '{1}', the method ",
-                methodType.GetTypeName(),
-                methodUsedName);
+            var message = $"Parameters mismatch for {methodType.GetTypeName()} method '{methodUsedName}', the method ";
             if (bestMatch != null) {
                 var buf = new StringWriter();
                 buf.Write(bestMatch.ToStringFootprint(isLambdaApplies));
                 buf.Write(", but receives ");
                 buf.Write(DotMethodFP.ToStringProvided(providedFootprint, isLambdaApplies));
                 throw new ExprValidationException(
-                    string.Format("{0}requires {1}", message, buf));
+                    $"{message}requires {buf}");
             }
 
             if (footprints.Length == 1) {
                 throw new ExprValidationException(
-                    string.Format("{0}requires {1}", message, footprints[0].ToStringFootprint(isLambdaApplies)));
+                    $"{message}requires {footprints[0].ToStringFootprint(isLambdaApplies)}");
             }
             else {
                 var buf = new StringWriter();

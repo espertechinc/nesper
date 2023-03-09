@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.map;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -25,73 +26,57 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventMap
+    public class TestSuiteEventMap : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
         [Test, RunInApplicationDomain]
         public void TestEventMapCore()
         {
-            RegressionRunner.Run(session, EventMapCore.Executions());
+            RegressionRunner.Run(_session, EventMapCore.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapPropertyDynamic()
         {
-            RegressionRunner.Run(session, new EventMapPropertyDynamic());
+            RegressionRunner.Run(_session, new EventMapPropertyDynamic());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapObjectArrayInterUse()
         {
-            RegressionRunner.Run(session, new EventMapObjectArrayInterUse());
+            RegressionRunner.Run(_session, new EventMapObjectArrayInterUse());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapInheritanceInitTime()
         {
-            RegressionRunner.Run(session, new EventMapInheritanceInitTime());
+            RegressionRunner.Run(_session, new EventMapInheritanceInitTime());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapNestedEscapeDot()
         {
-            RegressionRunner.Run(session, new EventMapNestedEscapeDot());
+            RegressionRunner.Run(_session, new EventMapNestedEscapeDot());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapNestedConfigStatic()
         {
-            RegressionRunner.Run(session, new EventMapNestedConfigStatic());
+            RegressionRunner.Run(_session, new EventMapNestedConfigStatic());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapNested()
         {
-            RegressionRunner.Run(session, EventMapNested.Executions());
+            RegressionRunner.Run(_session, EventMapNested.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventMapProperties()
         {
-            RegressionRunner.Run(session, EventMapProperties.Executions());
+            RegressionRunner.Run(_session, EventMapProperties.Executions());
         }
 
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] {typeof(SupportBean)}) {
                 configuration.Common.AddEventType(clazz.Name, clazz);

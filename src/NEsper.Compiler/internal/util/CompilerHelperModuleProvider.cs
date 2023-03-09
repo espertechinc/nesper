@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.module;
@@ -62,18 +63,24 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions)
         {
-            ICollection<Pair<Assembly, byte[]>> assemblies = new HashSet<Pair<Assembly, byte[]>>();
+            IArtifactRepository artifactRepository = compileTimeServices
+                .Container
+                .ArtifactRepositoryManager()
+                .DefaultRepository;
+
+            ICollection<ICompileArtifact> artifacts = new HashSet<ICompileArtifact>();
             
             try {
                 EPCompiledManifest manifest = CompileToModules(
-                    assemblies,
+                    artifacts,
                     compilables,
                     optionalModuleName,
                     moduleProperties,
                     compileTimeServices,
-                    compilerOptions);
+                    compilerOptions,
+                    artifactRepository);
 
-                return new EPCompiled(assemblies, manifest);
+                return new EPCompiled(artifactRepository, artifacts, manifest);
             }
             catch (EPCompileException) {
                 throw;
@@ -87,12 +94,13 @@ namespace com.espertech.esper.compiler.@internal.util
         }
 
         private static EPCompiledManifest CompileToModules(
-            ICollection<Pair<Assembly, byte[]>> assemblies,
+            ICollection<ICompileArtifact> artifacts,
             IList<Compilable> compilables,
             string optionalModuleName,
             IDictionary<ModuleProperty, object> moduleProperties,
             ModuleCompileTimeServices compileTimeServices,
-            CompilerOptions compilerOptions)
+            CompilerOptions compilerOptions,
+            IArtifactRepository artifactRepository)
         {
             var moduleAssignedName = optionalModuleName ?? Guid.NewGuid().ToString();
             var moduleIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(moduleAssignedName);
@@ -104,7 +112,7 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<EPCompileExceptionItem> exceptions = new List<EPCompileExceptionItem>();
             IList<EPCompileExceptionItem> postLatchExceptions = new List<EPCompileExceptionItem>();
 
-            Pair<Assembly, byte[]> assemblyWithImage;
+            ICompileArtifact artifact;
 
             foreach (var compilable in compilables) {
                 string className = null;
@@ -119,11 +127,12 @@ namespace com.espertech.esper.compiler.@internal.util
                         statementNames,
                         compileTimeServices,
                         compilerOptions,
-                        out assemblyWithImage);
+                        artifactRepository,
+                        out artifact);
 
-                    assemblies.Add(assemblyWithImage);
+                    artifacts.Add(artifact);
                     className = compilableItem.ProviderClassName;
-                    compilableItem.PostCompileLatch.Completed(assemblies);
+                    compilableItem.PostCompileLatch.Completed(artifacts);
                     
                     // there can be a post-compile step, which may block submitting further compilables
                     try {
@@ -172,15 +181,17 @@ namespace com.espertech.esper.compiler.@internal.util
                 statementClassNames,
                 moduleIdentPostfix,
                 compileTimeServices,
-                out assemblyWithImage);
-            
-#if TBD // revisit
-            // remove path create-class class-provided byte code
-            compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(moduleBytes);
+                out var moduleArtifact);
 
-            // add class-provided create-class classes to module bytes
+            artifacts.Add(moduleArtifact);
+
+#if TBD
+            // remove path create-class class-provided byte code
+            compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(moduleArtifact.ExportedTypes);
+
+            // add class-provided create-class classes to module
             foreach (var entry in compileTimeServices.ClassProvidedCompileTimeRegistry.Classes) {
-                moduleBytes.Put(entry.Value.Assembly);
+                moduleArtifact.BoundTypes.Add(entry.Value);
             }
 #endif
 
@@ -194,7 +205,7 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<string> statementClassNames,
             string moduleIdentPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Pair<Assembly, byte[]> assemblyWithImage)
+            out ICompileArtifact artifact)
         {
             // write code to create an implementation of StatementResource
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
@@ -448,13 +459,15 @@ namespace com.espertech.esper.compiler.@internal.util
                 new EmptyList<CodegenInnerClass>());
             
             var container = compileTimeServices.Container;
+            var repository = container.ArtifactRepositoryManager().DefaultRepository;
             var compiler = container
                 .RoslynCompiler()
+                .WithMetaDataReferences(repository.AllMetadataReferences)
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new[] {clazz});
 
-            assemblyWithImage = compiler.Compile();
+            artifact = repository.Register(compiler.Compile());
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                 compileTimeServices.Namespace,
@@ -529,7 +542,7 @@ namespace com.espertech.esper.compiler.@internal.util
             method.Block.Expression(
                 ExprDotMethodChain(symbols.GetAddInitSvc(method))
                     .Get(EPModuleClassProvidedInitServicesConstants.GETCLASSPROVIDEDCOLLECTOR)
-                    .Add("RegisterClass", Constant(classProvided.Key), classProvided.Value.Make(method, classScope)));
+                    .Add("RegisterClass", Constant(classProvided.Key), classProvided.Value.Make(method, classScope, symbols)));
             return method;
         }
 

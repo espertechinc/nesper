@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             testEvaluator = new SupportEventEvaluator();
             testBean = new SupportBean();
             testEventBean = SupportEventBeanFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateObject(testBean);
             testEventType = testEventBean.EventType;
             matchesList = new List<FilterHandle>();

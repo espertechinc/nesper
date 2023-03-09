@@ -42,16 +42,86 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraJoinIndexChoice());
-            execs.Add(new InfraRightOuterJoinLateStart());
-            execs.Add(new InfraFullOuterJoinNamedAggregationLateStart());
-            execs.Add(new InfraJoinNamedAndStream());
-            execs.Add(new InfraJoinBetweenNamed());
-            execs.Add(new InfraJoinBetweenSameNamed());
-            execs.Add(new InfraJoinSingleInsertOneWindow());
-            execs.Add(new InfraUnidirectional());
-            execs.Add(new InfraWindowUnidirectionalJoin());
+            WithJoinIndexChoice(execs);
+            WithRightOuterJoinLateStart(execs);
+            WithFullOuterJoinNamedAggregationLateStart(execs);
+            WithJoinNamedAndStream(execs);
+            WithJoinBetweenNamed(execs);
+            WithJoinBetweenSameNamed(execs);
+            WithJoinSingleInsertOneWindow(execs);
+            WithUnidirectional(execs);
+            WithWindowUnidirectionalJoin(execs);
+            WithInnerJoinLateStart(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInnerJoinLateStart(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInnerJoinLateStart());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowUnidirectionalJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWindowUnidirectionalJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnidirectional(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUnidirectional());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinSingleInsertOneWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraJoinSingleInsertOneWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinBetweenSameNamed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraJoinBetweenSameNamed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinBetweenNamed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraJoinBetweenNamed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinNamedAndStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraJoinNamedAndStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFullOuterJoinNamedAggregationLateStart(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFullOuterJoinNamedAggregationLateStart());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRightOuterJoinLateStart(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraRightOuterJoinLateStart());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinIndexChoice(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraJoinIndexChoice());
             return execs;
         }
 
@@ -115,11 +185,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var received = listenerStmtOne.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertEqualsExactOrder(
                 SupportBean.GetBeansPerIndex(beans, indexesAll),
-                (object[]) received.Get("c0"));
+                (object[])received.Get("c0"));
             EPAssertionUtil.AssertEqualsExactOrder(
                 SupportBean.GetBeansPerIndex(beans, indexesWhere),
-                (ICollection<object>) received.Get("c1"));
-            EPAssertionUtil.AssertPropsMap((IDictionary<object, object>) received.Get("c2"), mapKeys, mapValues);
+                (ICollection<object>)received.Get("c1"));
+            EPAssertionUtil.AssertPropsMap((IDictionary<object, object>)received.Get("c2"), mapKeys, mapValues);
         }
 
         internal class InfraWindowUnidirectionalJoin : RegressionExecution
@@ -147,10 +217,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 AssertReceived(
                     env.Listener("s0"),
                     beans,
-                    new[] {0, 1},
-                    new[] {0, 1},
-                    new [] { "E0","E1" },
-                    new object[] {0, 1});
+                    new[] { 0, 1 },
+                    new[] { 0, 1 },
+                    new[] { "E0", "E1" },
+                    new object[] { 0, 1 });
 
                 // add bean
                 env.SendEventBean(beans[2]);
@@ -158,10 +228,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 AssertReceived(
                     env.Listener("s0"),
                     beans,
-                    new[] {0, 1, 2},
-                    new[] {0, 1},
-                    new [] { "E0","E1","E2" },
-                    new object[] {0, 1, 2});
+                    new[] { 0, 1, 2 },
+                    new[] { 0, 1 },
+                    new[] { "E0", "E1", "E2" },
+                    new object[] { 0, 1, 2 });
 
                 // delete bean
                 env.SendEventBean(new SupportBean_S1(11, "E1"));
@@ -169,15 +239,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 AssertReceived(
                     env.Listener("s0"),
                     beans,
-                    new[] {0, 2},
-                    new[] {0},
-                    new [] { "E0","E2" },
-                    new object[] {0, 2});
+                    new[] { 0, 2 },
+                    new[] { 0 },
+                    new[] { "E0", "E2" },
+                    new object[] { 0, 2 });
 
                 // delete another bean
                 env.SendEventBean(new SupportBean_S1(13, "E0"));
                 env.SendEventBean(new SupportBean_S0(14));
-                AssertReceived(env.Listener("s0"), beans, new[] {2}, new int[0], new [] { "E2" }, new object[] {2});
+                AssertReceived(env.Listener("s0"), beans, new[] { 2 }, new int[0], new[] { "E2" }, new object[] { 2 });
 
                 // delete last bean
                 env.SendEventBean(new SupportBean_S1(15, "E2"));
@@ -200,19 +270,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 object[] preloadedEventsOne =
-                    {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+                    { new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22) };
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = new [] { "ssb2.S2","ssb1.S1","ssb1.I1" };
+                    var fields = new[] { "ssb2.S2", "ssb1.S1", "ssb1.I1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
                         fields,
-                        new object[] {"E2", "E2", 20});
+                        new object[] { "E2", "E2", 20 });
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 60, 11, 12));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
                         fields,
-                        new object[] {"E1", "E1", 10});
+                        new object[] { "E1", "E1", 10 });
                 };
 
                 // no index, since this is "unique(S1)" we don't need one
@@ -226,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion));
 
                 // single index one field (duplicate in essence, since "unique(S1)"
-                string[] indexOneField = {"create unique index One on MyWindow (S1)"};
+                string[] indexOneField = { "create unique index One on MyWindow (S1)" };
                 AssertIndexChoice(
                     env,
                     indexOneField,
@@ -236,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion));
 
                 // single index two field (includes "unique(S1)")
-                string[] indexTwoField = {"create unique index One on MyWindow (S1, L1)"};
+                string[] indexTwoField = { "create unique index One on MyWindow (S1, L1)" };
                 AssertIndexChoice(
                     env,
                     indexTwoField,
@@ -367,8 +437,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 sendPortfolio(env, eventRepresentationEnum, "Portfolio", "productB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("Query2").AssertOneGetNewAndReset(),
-                    new[] {"portfolio", "ProductWin.product", "size"},
-                    new object[] {"Portfolio", "productB", 2});
+                    new[] { "portfolio", "ProductWin.product", "size" },
+                    new object[] { "Portfolio", "productB", 2 });
 
                 sendPortfolio(env, eventRepresentationEnum, "Portfolio", "productC");
                 env.Listener("Query2").Reset();
@@ -377,8 +447,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 sendPortfolio(env, eventRepresentationEnum, "Portfolio", "productC");
                 EPAssertionUtil.AssertProps(
                     env.Listener("Query2").AssertOneGetNewAndReset(),
-                    new[] {"portfolio", "ProductWin.product", "size"},
-                    new object[] {"Portfolio", "productC", 3});
+                    new[] { "portfolio", "ProductWin.product", "size" },
+                    new object[] { "Portfolio", "productC", 3 });
 
                 env.UndeployAll();
             }
@@ -390,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 int size)
             {
                 if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                    env.SendEventObjectArray(new object[] {product, size}, "Product");
+                    env.SendEventObjectArray(new object[] { product, size }, "Product");
                 }
                 else if (eventRepresentationEnum.IsMapEvent()) {
                     var theEvent = new LinkedHashMap<string, object>();
@@ -425,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string product)
             {
                 if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                    env.SendEventObjectArray(new object[] {portfolio, product}, "Portfolio");
+                    env.SendEventObjectArray(new object[] { portfolio, product }, "Portfolio");
                 }
                 else if (eventRepresentationEnum.IsMapEvent()) {
                     var theEvent = new LinkedHashMap<string, object>();
@@ -508,28 +578,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(stmtTextTwo, path);
 
                 object[][] expected = {
-                    new object[] {"0", "166583", 124.0, 1L, 1L, 0L},
-                    new object[] {"0", "169254", 124.0, 1L, 1L, 0L},
-                    new object[] {"1", "166583", 124.0, 1L, 1L, 0L},
-                    new object[] {"1", "169254", 124.0, 1L, 1L, 0L},
-                    new object[] {"2", "166583", 124.0, 1L, 1L, 0L},
-                    new object[] {"2", "169254", 124.0, 1L, 1L, 0L},
-                    new object[] {"3", "166583", 124.0, 1L, 1L, 0L},
-                    new object[] {"3", "169254", 124.0, 1L, 1L, 0L},
-                    new object[] {"4", "166583", 127.0, 1L, 0L, 1L},
-                    new object[] {"4", "169254", 127.0, 1L, 0L, 1L}
+                    new object[] { "0", "166583", 124.0, 1L, 1L, 0L },
+                    new object[] { "0", "169254", 124.0, 1L, 1L, 0L },
+                    new object[] { "1", "166583", 124.0, 1L, 1L, 0L },
+                    new object[] { "1", "169254", 124.0, 1L, 1L, 0L },
+                    new object[] { "2", "166583", 124.0, 1L, 1L, 0L },
+                    new object[] { "2", "169254", 124.0, 1L, 1L, 0L },
+                    new object[] { "3", "166583", 124.0, 1L, 1L, 0L },
+                    new object[] { "3", "169254", 124.0, 1L, 1L, 0L },
+                    new object[] { "4", "166583", 127.0, 1L, 0L, 1L },
+                    new object[] { "4", "169254", 127.0, 1L, 0L, 1L }
                 };
 
                 // assert iterator results
                 var received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("s2"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    new [] { "loc","sku","avgTime","cntEnter","cntLeave","diff" },
+                    new[] { "loc", "sku", "avgTime", "cntEnter", "cntLeave", "diff" },
                     expected);
                 received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("s1"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    new [] { "loc","sku","avgTime","cntEnter","cntLeave","diff" },
+                    new[] { "loc", "sku", "avgTime", "cntEnter", "cntLeave", "diff" },
                     expected);
 
                 env.UndeployAll();
@@ -547,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl, path).AddListener("create");
 
                 // fill window
-                string[] stringValues = {"c0", "c1", "c2"};
+                string[] stringValues = { "c0", "c1", "c2" };
                 for (var i = 0; i < stringValues.Length; i++) {
                     for (var j = 0; j < 3; j++) {
                         for (var k = 0; k < 2; k++) {
@@ -559,7 +629,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     }
                 }
 
-                env.SendEventBean(new SupportBean("c1", 2) {BoolPrimitive = true});
+                env.SendEventBean(new SupportBean("c1", 2) { BoolPrimitive = true });
 
                 var received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("create"));
                 Assert.AreEqual(19, received.Length);
@@ -580,18 +650,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("select"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    new [] { "TheString","IntPrimitive","cntBool","Symbol" },
+                    new[] { "TheString", "IntPrimitive", "cntBool", "Symbol" },
                     new[] {
-                        new object[] {null, null, 0L, "c3"},
-                        new object[] {"c0", 0, 2L, "c0"},
-                        new object[] {"c0", 1, 2L, "c0"},
-                        new object[] {"c0", 2, 2L, "c0"},
-                        new object[] {"c1", 0, 2L, null},
-                        new object[] {"c1", 1, 2L, null},
-                        new object[] {"c1", 2, 3L, null},
-                        new object[] {"c2", 0, 2L, null},
-                        new object[] {"c2", 1, 2L, null},
-                        new object[] {"c2", 2, 2L, null}
+                        new object[] { null, null, 0L, "c3" },
+                        new object[] { "c0", 0, 2L, "c0" },
+                        new object[] { "c0", 1, 2L, "c0" },
+                        new object[] { "c0", 2, 2L, "c0" },
+                        new object[] { "c1", 0, 2L, null },
+                        new object[] { "c1", 1, 2L, null },
+                        new object[] { "c1", 2, 3L, null },
+                        new object[] { "c2", 0, 2L, null },
+                        new object[] { "c2", 1, 2L, null },
+                        new object[] { "c2", 2, 2L, null }
                     });
 
                 env.UndeployModuleContaining("select");
@@ -611,7 +681,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl, path);
 
                 // create consumer
-                string[] fields = {"Symbol", "a", "b"};
+                string[] fields = { "Symbol", "a", "b" };
                 epl = "@Name('s0') select irstream Symbol, a, b " +
                       " from SupportMarketDataBean#length(10) as S0," +
                       "MyWindowJNS as S1 where S1.a = Symbol";
@@ -619,7 +689,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     env.Statement("s0").EventType.PropertyNames,
-                    new[] {"Symbol", "a", "b"});
+                    new[] { "Symbol", "a", "b" });
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("Symbol"));
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("a"));
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("b"));
@@ -631,13 +701,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S1", "S1", 1});
+                    new object[] { "S1", "S1", 1 });
 
                 SendSupportBean_A(env, "S1"); // deletes from window
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] {"S1", "S1", 1});
+                    new object[] { "S1", "S1", 1 });
 
                 SendMarketBean(env, "S1");
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -649,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S2", "S2", 2});
+                    new object[] { "S2", "S2", 2 });
 
                 SendSupportBean(env, "S3", 3);
                 SendSupportBean(env, "S3", 4);
@@ -674,7 +744,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"a1", "b1", "a2", "b2"};
+                string[] fields = { "a1", "b1", "a2", "b2" };
 
                 var epl =
                     "@Name('createOne') create window MyWindowOne#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean;\n" +
@@ -693,7 +763,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 2});
+                    new object[] { "S0", 1, "S0", 2 });
 
                 SendSupportBean(env, false, "S1", 3);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -702,13 +772,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S1", 4, "S1", 3});
+                    new object[] { "S1", 4, "S1", 3 });
 
                 SendSupportBean(env, true, "S1", 5);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S1", 5, "S1", 3});
+                    new object[] { "S1", 5, "S1", 3 });
 
                 SendSupportBean(env, false, "S1", 6);
                 Assert.AreEqual(2, env.Listener("s0").LastNewData.Length);
@@ -719,26 +789,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 2});
+                    new object[] { "S0", 1, "S0", 2 });
 
                 SendSupportBean(env, false, "S0", 7);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 7});
+                    new object[] { "S0", 1, "S0", 7 });
 
                 // delete and insert back in
                 SendMarketBean(env, "S0", 1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 7});
+                    new object[] { "S0", 1, "S0", 7 });
 
                 SendSupportBean(env, true, "S0", 8);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S0", 8, "S0", 7});
+                    new object[] { "S0", 8, "S0", 7 });
 
                 env.UndeployAll();
             }
@@ -748,7 +818,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"a0", "b0", "a1", "b1"};
+                string[] fields = { "a0", "b0", "a1", "b1" };
 
                 var epl =
                     "@Name('create') create window MyWindowJSN#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
@@ -761,19 +831,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E1", 1, "E1", 1});
+                    new object[] { "E1", 1, "E1", 1 });
 
                 SendSupportBean(env, "E2", 2);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E2", 2, "E2", 2});
+                    new object[] { "E2", 2, "E2", 2 });
 
                 SendMarketBean(env, "E1", 1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] {"E1", 1, "E1", 1});
+                    new object[] { "E1", 1, "E1", 1 });
 
                 SendMarketBean(env, "E0", 0);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -786,7 +856,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"a1", "b1", "a2", "b2"};
+                string[] fields = { "a1", "b1", "a2", "b2" };
 
                 var epl =
                     "@Name('create') create window MyWindowJSIOne#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean;\n" +
@@ -805,7 +875,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 2});
+                    new object[] { "S0", 1, "S0", 2 });
 
                 SendSupportBean(env, false, "S1", 3);
                 Assert.IsFalse(env.Listener("select").IsInvoked);
@@ -814,13 +884,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S1", 4, "S1", 3});
+                    new object[] { "S1", 4, "S1", 3 });
 
                 SendSupportBean(env, true, "S1", 5);
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S1", 5, "S1", 3});
+                    new object[] { "S1", 5, "S1", 3 });
 
                 SendSupportBean(env, false, "S1", 6);
                 Assert.AreEqual(2, env.Listener("select").LastNewData.Length);
@@ -831,26 +901,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 2});
+                    new object[] { "S0", 1, "S0", 2 });
 
                 SendSupportBean(env, false, "S0", 7);
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 7});
+                    new object[] { "S0", 1, "S0", 7 });
 
                 // delete and insert back in
                 SendMarketBean(env, "S0", 1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] {"S0", 1, "S0", 7});
+                    new object[] { "S0", 1, "S0", 7 });
 
                 SendSupportBean(env, true, "S0", 8);
                 EPAssertionUtil.AssertProps(
                     env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"S0", 8, "S0", 7});
+                    new object[] { "S0", 8, "S0", 7 });
 
                 env.UndeployAll();
             }

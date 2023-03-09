@@ -122,8 +122,8 @@ namespace com.espertech.esper.compat.threading.locks
         private IReaderWriterLock WrapLock(IReaderWriterLock readerWriterLock, string category)
         {
             if (IsTelemetryEnabled) {
-                var rLockCategory = TelemetryEngine.GetCategory(string.Format("{0}.Read", category));
-                var wLockCategory = TelemetryEngine.GetCategory(string.Format("{0}.Write", category));
+                var rLockCategory = TelemetryEngine.GetCategory($"{category}.Read");
+                var wLockCategory = TelemetryEngine.GetCategory($"{category}.Write");
                 var lockObject = new TelemetryReaderWriterLock(readerWriterLock);
                 lockObject.ReadLockReleased += rLockCategory.OnLockReleased;
                 lockObject.WriteLockReleased += wLockCategory.OnLockReleased;

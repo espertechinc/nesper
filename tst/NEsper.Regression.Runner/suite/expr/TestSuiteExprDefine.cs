@@ -19,25 +19,13 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionrun.suite.expr
 {
     [TestFixture]
-    public class TestSuiteExprDefine
+    public class TestSuiteExprDefine : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
+        public TestSuiteExprDefine() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -61,19 +49,19 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test, RunInApplicationDomain]
         public void TestExprDefineAliasFor()
         {
-            RegressionRunner.Run(session, ExprDefineAliasFor.Executions());
+            RegressionRunner.Run(_session, ExprDefineAliasFor.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestExprDefineEventParameterNonStream()
         {
-            RegressionRunner.Run(session, ExprDefineEventParameterNonStream.Executions());
+            RegressionRunner.Run(_session, ExprDefineEventParameterNonStream.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestExprDefineLambdaLocReport()
         {
-            RegressionRunner.Run(session, new ExprDefineLambdaLocReport());
+            RegressionRunner.Run(_session, new ExprDefineLambdaLocReport());
         }
 
         /// <summary>

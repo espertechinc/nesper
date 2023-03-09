@@ -27,23 +27,93 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetOutputCrontabAt());
-            execs.Add(new ResultSetOutputCrontabAtOMCreate());
-            execs.Add(new ResultSetOutputCrontabAtOMCompile());
-            execs.Add(new ResultSetOutputWhenBuiltInCountInsert());
-            execs.Add(new ResultSetOutputWhenBuiltInCountRemove());
-            execs.Add(new ResultSetOutputWhenBuiltInLastTimestamp());
-            execs.Add(new ResultSetOutputCrontabAtVariable());
-            execs.Add(new ResultSetOutputWhenExpression());
-            execs.Add(new ResultSetOutputWhenThenExpression());
-            execs.Add(new ResultSetOutputWhenThenExpressionSODA());
-            execs.Add(new ResultSetOutputWhenThenSameVarTwice());
-            execs.Add(new ResultSetOutputWhenThenWVariable());
-            execs.Add(new ResultSetOutputWhenThenWCount());
-            execs.Add(new ResultSetInvalid());
+WithOutputCrontabAt(execs);
+WithOutputCrontabAtOMCreate(execs);
+WithOutputCrontabAtOMCompile(execs);
+WithOutputWhenBuiltInCountInsert(execs);
+WithOutputWhenBuiltInCountRemove(execs);
+WithOutputWhenBuiltInLastTimestamp(execs);
+WithOutputCrontabAtVariable(execs);
+WithOutputWhenExpression(execs);
+WithOutputWhenThenExpression(execs);
+WithOutputWhenThenExpressionSODA(execs);
+WithOutputWhenThenSameVarTwice(execs);
+WithOutputWhenThenWVariable(execs);
+WithOutputWhenThenWCount(execs);
+WithInvalid(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenThenWCount(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenThenWCount());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenThenWVariable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenThenWVariable());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenThenSameVarTwice(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenThenSameVarTwice());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenThenExpressionSODA(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenThenExpressionSODA());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenThenExpression(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenThenExpression());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenExpression(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenExpression());
+    return execs;
+}public static IList<RegressionExecution> WithOutputCrontabAtVariable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputCrontabAtVariable());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenBuiltInLastTimestamp(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenBuiltInLastTimestamp());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenBuiltInCountRemove(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenBuiltInCountRemove());
+    return execs;
+}public static IList<RegressionExecution> WithOutputWhenBuiltInCountInsert(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputWhenBuiltInCountInsert());
+    return execs;
+}public static IList<RegressionExecution> WithOutputCrontabAtOMCompile(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputCrontabAtOMCompile());
+    return execs;
+}public static IList<RegressionExecution> WithOutputCrontabAtOMCreate(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputCrontabAtOMCreate());
+    return execs;
+}public static IList<RegressionExecution> WithOutputCrontabAt(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ResultSetOutputCrontabAt());
+    return execs;
+}
         private static void TryAssertionCrontab(
             RegressionEnvironment env,
             int days)

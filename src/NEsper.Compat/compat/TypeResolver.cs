@@ -11,14 +11,15 @@ using System;
 namespace com.espertech.esper.compat
 {
     /// <summary>
-    /// ClassLoader provides a limited amount of cross-over functionality
-    /// from the "Java" world.  In short, it exists to load classes.
+    /// TypeResolver is similar to the ClassLoader of Java, but it's purpose is to provide
+    /// resolution of types that may or may not be materialized into the process space.
     /// </summary>
-    public interface ClassLoader
+    public interface TypeResolver
     {
-        /// <summary>Gets the class.</summary>
-        /// <param name="typeName">Name of the class.</param>
+        /// <summary>Gets the class; potentially resolving the class if it has not been loaded into materialized space.</summary>
+        /// <param name="typeName">Name of the type.</param>
+        /// <param name="resolve">if true, the resolver should attempt to resolve the type if it is not loaded</param>
         /// <returns></returns>
-        Type GetClass(string typeName);
+        Type ResolveType(string typeName, bool resolve = false);
     }
 }

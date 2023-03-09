@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.client.annotation
 
         public override string ToString()
         {
-            return string.Format("@Hint(\"{0}\")", Value);
+            return $"@Hint(\"{Value}\")";
         }
     }
 } // end of namespace

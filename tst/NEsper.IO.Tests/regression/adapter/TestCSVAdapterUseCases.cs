@@ -46,10 +46,12 @@ namespace com.espertech.esperio.regression.adapter
 
         private IContainer _container;
         private EPRuntime _runtime;
+        private EPRuntimeProvider _runtimeProvider;
 
         [SetUp]
         public void SetUp()
         {
+            _runtimeProvider = new EPRuntimeProvider();
             _container = SupportContainer.Reset();
         }
 
@@ -92,7 +94,7 @@ namespace com.espertech.esperio.regression.adapter
             var source = sourceSupplier.Invoke();
             var spec = new CSVInputAdapterSpec(source, "TypeC");
 
-            _runtime = EPRuntimeProvider.GetRuntime("testPlayFromInputStream", MakeConfig("TypeC"));
+            _runtime = _runtimeProvider.GetRuntimeInstance("testPlayFromInputStream", MakeConfig("TypeC"));
             _runtime.Initialize();
             InputAdapter feed = new CSVInputAdapter(_runtime, spec);
 
@@ -140,7 +142,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestAppThread()
         {
-            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            _runtime = _runtimeProvider.GetRuntimeInstance("testExistingTypeNoOptions", MakeConfig("TypeA"));
             _runtime.Initialize();
 
             var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
@@ -173,7 +175,7 @@ namespace com.espertech.esperio.regression.adapter
             config.Common.AddEventType("TradeEvent", tradeProps);
             config.Common.AddEventType("PriceEvent", priceProps);
 
-            _runtime = EPRuntimeProvider.GetRuntime("testCoordinated", config);
+            _runtime = _runtimeProvider.GetRuntimeInstance("testCoordinated", config);
             _runtime.Initialize();
             _runtime.EventService.ClockExternal();
             _runtime.EventService.AdvanceTime(0);
@@ -239,7 +241,8 @@ namespace com.espertech.esperio.regression.adapter
 
             var config = new Configuration(_container);
             config.Runtime.Threading.IsInternalTimerEnabled = false;
-            _runtime = EPRuntimeProvider.GetDefaultRuntime(config);
+            
+            _runtime = _runtimeProvider.GetDefaultRuntimeInstance(config);
             _runtime.Initialize();
 
             CompileDeploy(_runtime, "@public @buseventtype create schema TypeB(symbol string, price string, volume string)");
@@ -264,7 +267,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEngineThread1000PerSec()
         {
-            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            _runtime = _runtimeProvider.GetRuntimeInstance("testExistingTypeNoOptions", MakeConfig("TypeA"));
             _runtime.Initialize();
 
             var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
@@ -289,7 +292,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEngineThread1PerSec()
         {
-            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            _runtime = _runtimeProvider.GetRuntimeInstance("testExistingTypeNoOptions", MakeConfig("TypeA"));
             _runtime.Initialize();
 
             var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
@@ -320,7 +323,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestExistingTypeNoOptions()
         {
-            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
+            _runtime = _runtimeProvider.GetRuntimeInstance("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
             _runtime.Initialize();
 
             var stmt = CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];

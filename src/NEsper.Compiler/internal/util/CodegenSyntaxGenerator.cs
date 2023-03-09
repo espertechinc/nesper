@@ -27,23 +27,127 @@ namespace com.espertech.esper.compiler.@internal.util
     {
         private static readonly CodegenIndent INDENT = new CodegenIndent(true);
 
-        private static List<AssemblyIndex> AssemblyIndices = new List<AssemblyIndex>();
+        private static readonly IDictionary<AssemblyName, AssemblyCache> _globalAssemblyCache = new Dictionary<AssemblyName, AssemblyCache>();
 
-        private class AssemblyIndex
+        private class AssemblyCache
         {
-            public Assembly Assembly;
-            public ISet<string> Index;
+            private readonly AssemblyName _assemblyName;
+            private readonly System.WeakReference<Assembly> _assemblyReference;
+            private readonly IDictionary<string, bool> _resolutions;
 
-            public bool CheckType(string typeName)
+            public AssemblyName AssemblyName => _assemblyName;
+
+            public AssemblyCache(Assembly assembly)
             {
-                return Index.Contains(typeName);
+                _assemblyName = assembly.GetName();
+                _assemblyReference = new System.WeakReference<Assembly>(assembly);
+                _resolutions = new Dictionary<string, bool>();
             }
 
-            public AssemblyIndex(Assembly assembly)
+            public bool TryContainsType(
+                string typeName,
+                out bool exists)
             {
-                Assembly = assembly;
-                Index = new HashSet<string>(
-                    assembly.GetTypes().Select(t => t.FullName));
+                if (_assemblyReference.TryGetTarget(out var assembly)) {
+                    if (!_resolutions.TryGetValue(typeName, out exists)) {
+                        exists = (assembly.GetType(typeName, false) != null);
+                        _resolutions[typeName] = exists;
+                    }
+
+                    return true;
+                }
+
+                exists = false;
+                return false;
+            }
+        }
+
+        private static AssemblyCache GetAssemblyCache(Assembly assembly)
+        {
+            var assemblyName = assembly.GetName();
+            lock (_globalAssemblyCache) {
+                if (!_globalAssemblyCache.TryGetValue(assemblyName, out var assemblyCache)) {
+                    assemblyCache = _globalAssemblyCache[assemblyName] = new AssemblyCache(assembly);
+                }
+
+                return assemblyCache;
+            }
+        }
+        
+        private class AssemblyIndexCache
+        {
+            private readonly LinkedList<AssemblyCache> _indices;
+            private readonly IDictionary<string, bool> _resolutions;
+            
+            public AssemblyIndexCache(Assembly[] assemblies)
+            {
+                _indices = new LinkedList<AssemblyCache>();
+                _indices.AddAll(assemblies.Select(GetAssemblyCache));
+                _resolutions = new Dictionary<string, bool>();
+            }
+
+            private bool DoesImportResolveType(
+                Type type,
+                ImportDecl import)
+            {
+                if (import.IsNamespaceImport)
+                {
+                    var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
+                    var current = _indices.First;
+                    while (current != null) {
+                        var assemblyCacheReference = current.Value;
+                        if (assemblyCacheReference.TryContainsType(importName, out var typeExists)) {
+                            if (typeExists) {
+                                return true;
+                            }
+
+                            current = current.Next;
+                        }
+                        else {
+                            lock (_globalAssemblyCache) {
+                                _globalAssemblyCache.Remove(assemblyCacheReference.AssemblyName);
+                            }
+
+                            _indices.Remove(current);
+                            current = current.Next;
+                        }
+                    }
+
+                    return false;
+                }
+
+                return import.TypeName == type.Name;
+            }
+
+            public bool IsAmbiguous(
+                Type type,
+                ISet<ImportDecl> imports)
+            {
+                //Console.WriteLine("IsAmbiguous: {0}", type.Name);
+
+                if (_resolutions.TryGetValue(type.Name, out var isAmbiguous)) {
+                    return isAmbiguous;
+                }
+
+                return (_resolutions[type.Name] = IsAmbiguousInternal(type, imports));
+            }
+
+            private bool IsAmbiguousInternal(
+                Type type,
+                ISet<ImportDecl> imports)
+            {
+                var count = 0;
+                
+                //return imports.Count(import => DoesImportResolveType(type, import)) > 1;
+                foreach (var import in imports) {
+                    if (DoesImportResolveType(type, import)) {
+                        if (++count > 1) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
             }
         }
 
@@ -55,29 +159,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // generate code
             return GenerateCode(imports, clazz);
-        }
-
-        private static bool DoesImportResolveType(
-            Type type,
-            ImportDecl import,
-            IList<AssemblyIndex> assemblyIndices)
-        {
-            if (import.IsNamespaceImport)
-            {
-                var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
-                return assemblyIndices.Any(assemblyIndex => assemblyIndex.CheckType(importName));
-            }
-
-            return import.TypeName == type.Name;
-        }
-
-        private static bool IsAmbiguous(
-            Type type,
-            ISet<ImportDecl> imports,
-            IList<AssemblyIndex> assemblyIndices)
-        {
-            int resolutionPaths = imports.Count(import => DoesImportResolveType(type, import, assemblyIndices));
-            return resolutionPaths > 1;
         }
 
         private static ICollection<ImportDecl> CompileImports(IEnumerable<Type> types)
@@ -92,27 +173,23 @@ namespace com.espertech.esper.compiler.@internal.util
             imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace, null));
             imports.Add(new ImportDecl(typeof(Enumerable).Namespace, null));
 
-            for (var ii = 0; ii < typeList.Count; ii++) {
+            var typeListSize = typeList.Count;
+            for (var ii = 0; ii < typeListSize; ii++) {
                 var type = typeList[ii];
                 if (type.Namespace != null) {
-                    imports.Add(new ImportDecl(type.Namespace, null));
+                    imports.Add(new ImportDecl(type));
                 }
             }
 
-            if (AssemblyIndices.Count == 0) {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                AssemblyIndices.AddRange(assemblies.Select(assembly => new AssemblyIndex(assembly)));
-            }
+            //var assemblyIndices = new AssemblyIndexCache(AppDomain.CurrentDomain.GetAssemblies());
 
             // Ensure that all types can be imported without any ambiguity.
 
             foreach (var type in typeList) {
-#if false
-                if (IsAmbiguous(type, imports, assemblies))
+#if true
+                imports.Add(new ImportDecl(type));
 #else
-                if (IsAmbiguous(type, imports, AssemblyIndices))
-#endif
-                {
+                if (assemblyIndices.IsAmbiguous(type, imports)) {
                     if (type.Namespace != null) {
                         imports.Add(
                             new ImportDecl(
@@ -120,6 +197,7 @@ namespace com.espertech.esper.compiler.@internal.util
                                 type.CleanName(false)));
                     }
                 }
+#endif
             }
 
             return imports;

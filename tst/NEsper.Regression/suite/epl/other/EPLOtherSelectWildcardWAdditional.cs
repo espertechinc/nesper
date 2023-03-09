@@ -297,8 +297,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var eventNameOne = typeof(SupportBeanSimple).Name;
-                var eventNameTwo = typeof(SupportMarketDataBean).Name;
+                var eventNameOne = nameof(SupportBeanSimple);
+                var eventNameTwo = nameof(SupportMarketDataBean);
                 var text = "@Name('s0') select *, MyString||MyString as concat from " +
                            eventNameOne +
                            "#length(5) as eventOne, " +
@@ -329,8 +329,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var eventNameOne = typeof(SupportBean_A).Name;
-                var eventNameTwo = typeof(SupportBean_B).Name;
+                var eventNameOne = nameof(SupportBean_A);
+                var eventNameTwo = nameof(SupportBean_B);
                 var text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                            "from " +
                            eventNameOne +

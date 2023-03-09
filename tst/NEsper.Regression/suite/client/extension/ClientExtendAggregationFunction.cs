@@ -31,19 +31,110 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationManagedWindow());
-			execs.Add(new ClientExtendAggregationManagedGrouped());
-			execs.Add(new ClientExtendAggregationManagedDistinctAndStarParam());
-			execs.Add(new ClientExtendAggregationManagedDotMethod());
-			execs.Add(new ClientExtendAggregationManagedMappedPropertyLookAlike());
-			execs.Add(new ClientExtendAggregationMultiParamMulti());
-			execs.Add(new ClientExtendAggregationMultiParamNoParam());
-			execs.Add(new ClientExtendAggregationMultiParamSingleArray());
-			execs.Add(new ClientExtendAggregationCodegeneratedCount());
-			execs.Add(new ClientExtendAggregationFailedValidation());
-			execs.Add(new ClientExtendAggregationInvalidUse());
-			execs.Add(new ClientExtendAggregationInvalidCannotResolve());
+			WithManagedWindow(execs);
+			WithManagedGrouped(execs);
+			WithManagedDistinctAndStarParam(execs);
+			WithManagedDotMethod(execs);
+			WithManagedMappedPropertyLookAlike(execs);
+			WithMultiParamMulti(execs);
+			WithMultiParamNoParam(execs);
+			WithMultiParamSingleArray(execs);
+			WithCodegeneratedCount(execs);
+			WithFailedValidation(execs);
+			WithInvalidUse(execs);
+			WithInvalidCannotResolve(execs);
+			WithTable(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithTable(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ClientExtendAggregationTable());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalidCannotResolve(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationInvalidCannotResolve());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithInvalidUse(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationInvalidUse());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithFailedValidation(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationFailedValidation());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithCodegeneratedCount(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationCodegeneratedCount());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMultiParamSingleArray(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationMultiParamSingleArray());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMultiParamNoParam(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationMultiParamNoParam());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithMultiParamMulti(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationMultiParamMulti());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithManagedMappedPropertyLookAlike(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationManagedMappedPropertyLookAlike());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithManagedDotMethod(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationManagedDotMethod());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithManagedDistinctAndStarParam(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationManagedDistinctAndStarParam());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithManagedGrouped(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationManagedGrouped());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithManagedWindow(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationManagedWindow());
 			return execs;
 		}
 
@@ -89,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(text).AddListener("s0");
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {-1}, new object[] {0});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { -1 }, new object[] { 0 });
 
 				env.UndeployAll();
 			}
@@ -103,16 +194,16 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(text).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("a", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a"}, new object[] {""});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a" }, new object[] { "" });
 
 				env.SendEventBean(new SupportBean("b", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a b"}, new object[] {"a"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a b" }, new object[] { "a" });
 
 				env.SendEventBean(new SupportBean("c", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"b c"}, new object[] {"a b"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "b c" }, new object[] { "a b" });
 
 				env.SendEventBean(new SupportBean("d", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"c d"}, new object[] {"b c"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "c d" }, new object[] { "b c" });
 
 				env.UndeployAll();
 			}
@@ -164,22 +255,22 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.AddListener("s0");
 
 				env.SendEventBean(new SupportBean("a", 1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a"}, new object[] {""});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a" }, new object[] { "" });
 
 				env.SendEventBean(new SupportBean("b", 2));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"b"}, new object[] {""});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "b" }, new object[] { "" });
 
 				env.SendEventBean(new SupportBean("c", 1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a c"}, new object[] {"a"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a c" }, new object[] { "a" });
 
 				env.SendEventBean(new SupportBean("d", 2));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"b d"}, new object[] {"b"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "b d" }, new object[] { "b" });
 
 				env.SendEventBean(new SupportBean("e", 1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a c e"}, new object[] {"a c"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a c e" }, new object[] { "a c" });
 
 				env.SendEventBean(new SupportBean("f", 2));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"b d f"}, new object[] {"b d"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "b d f" }, new object[] { "b d" });
 
 				env.Listener("s0").Reset();
 				env.UndeployModuleContaining("s0");
@@ -195,13 +286,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(textTwo).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("d", -1));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "val".SplitCsv(), new object[] {"SupportBean(\"d\", -1)"});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "val".SplitCsv(), new object[] { "SupportBean(\"d\", -1)" });
 
 				env.SendEventBean(new SupportBean("e", 2));
 				EPAssertionUtil.AssertProps(
 					env.Listener("s0").AssertOneGetNewAndReset(),
 					"val".SplitCsv(),
-					new object[] {"SupportBean(\"d\", -1) SupportBean(\"e\", 2)"});
+					new object[] { "SupportBean(\"d\", -1) SupportBean(\"e\", 2)" });
 
 				TryInvalidCompile(
 					env,
@@ -214,19 +305,19 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(text).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("a", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a"}, new object[] {""});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a" }, new object[] { "" });
 
 				env.SendEventBean(new SupportBean("b", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a b"}, new object[] {"a"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a b" }, new object[] { "a" });
 
 				env.SendEventBean(new SupportBean("b", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a b"}, new object[] {"a b"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a b" }, new object[] { "a b" });
 
 				env.SendEventBean(new SupportBean("c", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a b c"}, new object[] {"a b"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a b c" }, new object[] { "a b" });
 
 				env.SendEventBean(new SupportBean("a", -1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a b c"}, new object[] {"a b c"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a b c" }, new object[] { "a b c" });
 
 				env.UndeployAll();
 			}
@@ -243,10 +334,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 					.AddListener("s0");
 
 				env.SendEventBean(new SupportBean_A("A1"));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"XX", 1});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { "XX", 1 });
 
 				env.SendEventBean(new SupportBean_A("A2"));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"XX", 2});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { "XX", 2 });
 
 				Assert.AreEqual(1, SupportSupportBeanAggregationFunctionFactory.InstanceCount);
 
@@ -271,23 +362,23 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(soda, text).AddListener("s0");
 
 				var validContext = SupportLowerUpperCompareAggregationFunctionForge.Contexts[0];
-				EPAssertionUtil.AssertEqualsExactOrder(new Type[] {typeof(int), typeof(int), typeof(int?), typeof(SupportBean)}, validContext.ParameterTypes);
-				EPAssertionUtil.AssertEqualsExactOrder(new object[] {1, 10, null, null}, validContext.ConstantValues);
-				EPAssertionUtil.AssertEqualsExactOrder(new bool[] {true, true, false, false}, validContext.IsConstantValue);
+				EPAssertionUtil.AssertEqualsExactOrder(new Type[] { typeof(int), typeof(int), typeof(int?), typeof(SupportBean) }, validContext.ParameterTypes);
+				EPAssertionUtil.AssertEqualsExactOrder(new object[] { 1, 10, null, null }, validContext.ConstantValues);
+				EPAssertionUtil.AssertEqualsExactOrder(new bool[] { true, true, false, false }, validContext.IsConstantValue);
 
 				SupportBean e1 = new SupportBean("E1", 5);
 				env.SendEventBean(e1);
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {1}, new object[] {0});
-				EPAssertionUtil.AssertEqualsExactOrder(new object[] {1, 10, 5, e1}, SupportLowerUpperCompareAggregationFunction.LastEnterParameters);
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { 1 }, new object[] { 0 });
+				EPAssertionUtil.AssertEqualsExactOrder(new object[] { 1, 10, 5, e1 }, SupportLowerUpperCompareAggregationFunction.LastEnterParameters);
 
 				env.SendEventBean(new SupportBean("E1", 0));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {1}, new object[] {1});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { 1 }, new object[] { 1 });
 
 				env.SendEventBean(new SupportBean("E1", 11));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {1}, new object[] {1});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { 1 }, new object[] { 1 });
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {2}, new object[] {1});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { 2 }, new object[] { 1 });
 
 				env.UndeployAll();
 			}
@@ -301,10 +392,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				env.CompileDeploy(text).AddListener("s0");
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {-1}, new object[] {0});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { -1 }, new object[] { 0 });
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {-2}, new object[] {-1});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { -2 }, new object[] { -1 });
 
 				env.UndeployAll();
 			}
@@ -319,13 +410,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("val"));
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a"}, new object[] {""});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a" }, new object[] { "" });
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a a"}, new object[] {"a"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a a" }, new object[] { "a" });
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] {"a a a"}, new object[] {"a a"});
+				EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").AssertInvokedAndReset(), "val", new object[] { "a a a" }, new object[] { "a a" });
 
 				env.UndeployAll();
 			}

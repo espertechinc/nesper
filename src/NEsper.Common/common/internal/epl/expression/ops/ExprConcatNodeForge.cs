@@ -14,20 +14,24 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprConcatNodeForge : ExprForgeInstrumentable
     {
-        private ExprConcatNode _parent;
+        private readonly ExprConcatNode _parent;
         private readonly ThreadingProfile _threadingProfile;
+        private readonly IThreadLocalManager _threadLocalManager;
 
         public ExprConcatNodeForge(
+            IThreadLocalManager threadLocalManager,
             ExprConcatNode parent,
             ThreadingProfile threadingProfile)
         {
             _parent = parent;
             _threadingProfile = threadingProfile;
+            _threadLocalManager = threadLocalManager;
         }
 
         public ExprConcatNode ForgeRenderable => _parent;
@@ -41,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     return new ExprConcatNodeForgeEvalWNew(this, evaluators);
                 }
 
-                return new ExprConcatNodeForgeEvalThreadLocal(this, evaluators);
+                return new ExprConcatNodeForgeEvalThreadLocal(_threadLocalManager, this, evaluators);
             }
         }
 

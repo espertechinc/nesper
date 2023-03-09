@@ -12,11 +12,19 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util
 {
-    public class ClassLoaderDefault : ClassLoader
+    public class TypeResolverDefault : TypeResolver
     {
-        public Type GetClass(string typeName)
+        public static readonly TypeResolver INSTANCE = new TypeResolverDefault();
+
+        private TypeResolverDefault()
         {
-            return TypeHelper.ResolveType(typeName, true);
+        }
+        
+        public Type ResolveType(
+            string typeName,
+            bool resolve)
+        {
+            return TypeHelper.ResolveType(typeName, resolve);
         }
     }
 }

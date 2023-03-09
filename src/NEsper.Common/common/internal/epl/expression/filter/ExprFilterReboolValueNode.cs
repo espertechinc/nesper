@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.filter
 						writer,
 						parentPrecedence,
 						flags) => {
-						writer.Write(typeof(ExprFilterReboolValueNode).Name);
+						writer.Write(nameof(ExprFilterReboolValueNode));
 						writer.Write("(");
 						writer.Write(returnType.GetType().Name);
 						writer.Write(")");

@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.regressionlib.suite.infra.namedwindow;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -16,14 +17,14 @@ namespace com.espertech.esper.regressionrun.suite.infra
 {
     // see INFRA suite for additional Named Window tests
     [TestFixture]
-    public class TestSuiteInfraNamedWindowWConfig
+    public class TestSuiteInfraNamedWindowWConfig : AbstractTestContainer
     {
         private void RunAssertion(
             bool useDefault,
             bool? preserve,
             Locking? locking)
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             if (!useDefault) {
                 session.Configuration.Runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder =
                     preserve.GetValueOrDefault();
@@ -33,7 +34,6 @@ namespace com.espertech.esper.regressionrun.suite.infra
 
             var exec = new InfraNamedWindowOnUpdateWMultiDispatch();
             RegressionRunner.Run(session, exec);
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]

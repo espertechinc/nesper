@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             // test Bean-type Date-type timestamps
             var typeName = typeof(SupportBean).FullName;
             var startA = "2002-05-30T09:00:00.000";
-            var epl = 
+            var epl =
                 $"create schema SupportBeanXXX as {typeName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n" +
                 $"@Name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
 
@@ -114,8 +114,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             object startB,
             object endB)
         {
-            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() + " create schema TypeA as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts;\n";
-            epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() + " create schema TypeB as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts;\n";
+            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() +
+                      " create schema TypeA as (startts " +
+                      typeOfDatetimeProp +
+                      ", endts " +
+                      typeOfDatetimeProp +
+                      ") starttimestamp startts endtimestamp endts;\n";
+            epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() +
+                   " create schema TypeB as (startts " +
+                   typeOfDatetimeProp +
+                   ", endts " +
+                   typeOfDatetimeProp +
+                   ") starttimestamp startts endtimestamp endts;\n";
             epl += "@Name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
@@ -134,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             object endTs)
         {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new[] {startTs, endTs}, typeName);
+                env.SendEventObjectArray(new[] { startTs, endTs }, typeName);
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new Dictionary<string, object>();
@@ -167,6 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             // ReSharper disable UnusedMember.Global
             // ReSharper disable IdentifierTypo
             public T startts;
+
             public T endts;
             // ReSharper restore IdentifierTypo
             // ReSharper restore UnusedMember.Global
@@ -177,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public class MyLocalJsonProvidedLong : MyLocalJsonProvided<long>
         {
         }
-        
+
         [Serializable]
         public class MyLocalJsonProvidedDateTimeEx : MyLocalJsonProvided<DateTimeEx>
         {
@@ -192,6 +203,5 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public class MyLocalJsonProvidedDateTime : MyLocalJsonProvided<DateTime>
         {
         }
-
     }
 } // end of namespace

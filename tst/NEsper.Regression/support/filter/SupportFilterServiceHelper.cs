@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             var filterServiceSPI = (FilterServiceSPI) statementSPI.StatementContext.FilterService;
             var set = filterServiceSPI.Get(Collections.SingletonSet(statementSPI.StatementId));
 
-            var sorted = new SortedSet<string>();
+            var sorted = new SortedSet<string>(StringComparer.Ordinal);
             foreach (var typeEntry in set) {
                 foreach (var filterItems in typeEntry.Value.Values) {
                     foreach (var itemArray in filterItems) {

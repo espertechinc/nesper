@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.runtime;
@@ -97,6 +98,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             Configuration configs)
         {
             var container = epRuntime.Container;
+
+            var artifactRepositoryManager = container.ArtifactRepositoryManager();
+            var artifactRepositoryDefault = artifactRepositoryManager.DefaultRepository;
+            
             var runtimeEnvContext = new RuntimeEnvContext();
             var eventProcessingRWLock = epRuntime.Container.RWLockManager().CreateLock("EventProcLock");
             var deploymentLifecycleService = new DeploymentLifecycleServiceImpl(-1);
@@ -113,7 +118,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 configs.Common.EventTypeAutoNameNamespaces, timeZone,
                 configs.Common.MethodInvocationReferences,
                 configs.Common.Imports,
-                configs.Common.AnnotationImports);
+                configs.Common.AnnotationImports,
+                artifactRepositoryDefault);
 
             var epServicesHA = InitHA(epRuntime.URI, configs, runtimeEnvContext, eventProcessingRWLock, runtimeSettingsService);
 
@@ -196,7 +202,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var patternFactoryService = MakePatternFactoryService();
 
             var exceptionHandlingService = InitExceptionHandling(
-                epRuntime.URI, configs.Runtime.ExceptionHandling, configs.Runtime.ConditionHandling, ClassForNameProviderDefault.INSTANCE);
+                epRuntime.URI,
+                configs.Runtime.ExceptionHandling,
+                configs.Runtime.ConditionHandling,
+                TypeResolverDefault.INSTANCE);
 
             var timeSourceService = MakeTimeSource(configs);
             var schedulingService = MakeSchedulingService(
@@ -309,7 +318,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             var eventSerdeFactory = MakeEventSerdeFactory(epServicesHA.RuntimeExtensionServices);
             var eventTypeSerdeRepository = MakeEventTypeSerdeRepository(eventTypeRepositoryPreconfigured, eventTypePathRegistry);
-            var classLoaderParent = new ParentClassLoader(importServiceRuntime.ClassLoader);
+            var classLoaderParent = new ParentTypeResolver(importServiceRuntime.TypeResolver);
 
             var stageRecoveryService = MakeStageRecoveryService(epServicesHA);
 
@@ -320,7 +329,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 aggregationServiceFactoryService,
                 beanEventTypeFactoryPrivate,
                 beanEventTypeStemService,
-                ClassForNameProviderDefault.INSTANCE,
+                TypeResolverDefault.INSTANCE,
                 classLoaderParent,
                 classProvidedPathRegistry,
                 configs,
@@ -510,7 +519,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string runtimeURI,
             ConfigurationRuntimeExceptionHandling exceptionHandling,
             ConfigurationRuntimeConditionHandling conditionHandling,
-            ClassForNameProvider classForNameProvider)
+            TypeResolver typeResolver)
         {
             IList<ExceptionHandler> exceptionHandlers;
             if (exceptionHandling.HandlerFactories == null || exceptionHandling.HandlerFactories.IsEmpty()) {
@@ -522,7 +531,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 foreach (var className in exceptionHandling.HandlerFactories) {
                     try {
                         var factory = TypeHelper.Instantiate<ExceptionHandlerFactory>(
-                            className, classForNameProvider);
+                            className, typeResolver);
                         var handler = factory.GetHandler(context);
                         if (handler == null) {
                             Log.Warn("Exception handler factory '" + className + "' returned a null handler, skipping factory");
@@ -548,7 +557,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 foreach (var className in conditionHandling.HandlerFactories) {
                     try {
                         var factory = TypeHelper.Instantiate<ConditionHandlerFactory>(
-                            className, classForNameProvider);
+                            className, typeResolver);
                         var handler = factory.GetHandler(context);
                         if (handler == null) {
                             Log.Warn("Condition handler factory '" + className + "' returned a null handler, skipping factory");

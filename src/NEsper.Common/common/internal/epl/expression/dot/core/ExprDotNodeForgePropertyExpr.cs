@@ -126,12 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             object received)
         {
             var receivedText = received == null ? "null" : received.GetType().CleanName();
-            return string.Format(
-                "Statement '{0}' property {1} parameter expression expected a value of {2} but received {3}",
-                statementName,
-                propertyName,
-                expectedType,
-                receivedText);
+            return $"Statement '{statementName}' property {propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
         }
     }
 } // end of namespace

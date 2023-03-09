@@ -19,12 +19,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumTakeAndTakeLast
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumTakeEvents());
+			WithEvents(execs);
+			WithScalar(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumTakeScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumTakeEvents());
 			return execs;
 		}
 

@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         protected String PositionalToNamedTextConverter(int parameterIndex)
         {
-            return String.Format("{0}arg{1}", ParamPrefix, parameterIndex);
+            return $"{ParamPrefix}arg{parameterIndex}";
         }
 
         /// <summary>

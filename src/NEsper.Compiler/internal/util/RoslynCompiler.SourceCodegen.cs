@@ -1,4 +1,8 @@
-﻿using com.espertech.esper.common.@internal.bytecodemodel.core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -9,6 +13,15 @@ namespace com.espertech.esper.compiler.@internal.util
             private readonly CodegenClass _codegenClass;
             public string Name => _codegenClass.ClassName;
             public string Code => CodegenSyntaxGenerator.Compile(_codegenClass);
+            public IEnumerable<Type> References {
+                get {
+                    return _codegenClass
+                        .GetReferencedClasses()
+                        //.Select(_ => _.Assembly)
+                        .Distinct();
+                }
+            }
+
 
             /// <summary>
             /// Constructor.

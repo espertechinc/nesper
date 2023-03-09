@@ -28,7 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             //
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             configuration.Common.AddEventType(typeof(TestEvent));
-            var runtime = EPRuntimeProvider.GetRuntime(GetType().Name, configuration);
+
+            var runtimeProvider = new EPRuntimeProvider();
+            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
             runtime.Initialize();
 
             var path = new RegressionPath();
@@ -76,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Console.Out.WriteLine("count=" + count + "  sum=" + sum);
+            Console.Out.WriteLine($"count={count}  sum={sum}");
             Assert.AreEqual(numEvents, count);
             Assert.AreEqual(0, sum);
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 using System.Linq;
 
 #if NETCORE
@@ -22,36 +23,56 @@ namespace com.espertech.esper.regressionrun.runner
 {
     public class RegressionSession : IDisposable
     {
-        public RegressionSession(Configuration configuration)
+        public RegressionSession(Configuration configuration, bool useDefaultRuntime)
         {
+            Id = Guid.NewGuid();
+            // independent providers allows us to have interoperable runtimes that do not
+            // cross each other at the session-level... instead, they are isolated runtimes
+            // under the given runtime provier
+            RuntimeProvider = new EPRuntimeProvider();
             Configuration = configuration;
-#if NETCORE
-            LoadContext = new DisposableAssemblyLoadContext();
-            Configuration.Container.Register<AssemblyLoadContext>(
-                    LoadContext,
-                    Lifespan.Singleton);
-#endif
+            UseDefaultRuntime = useDefaultRuntime;
+            CleanDirectory(configuration);
         }
 
+        public Guid Id { get; set; }
+
         public IContainer Container => Configuration.Container;
+        
+        public EPRuntimeProvider RuntimeProvider { get; }
 
         public Configuration Configuration { get; }
-
-        public EPRuntime Runtime { get; set; }
         
-#if NETCORE
-        public DisposableAssemblyLoadContext LoadContext { get; set; }
-#endif
+        public bool UseDefaultRuntime { get; }
+        
+        public EPRuntime Runtime { get; set; }
+
+        public void Reset()
+        {
+            Runtime = null;
+        }
+
+        private void CleanDirectory(Configuration config)
+        {
+            if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
+                if (Directory.Exists(config.Compiler.Logging.AuditDirectory)) {
+                    foreach (var subDirectory in Directory.GetDirectories(config.Compiler.Logging.AuditDirectory)) {
+                        var subDirectoryName = Path.GetFileName(subDirectory);
+                        if (subDirectoryName.StartsWith("generation")) {
+                            Directory.Delete(subDirectory, true);
+                        }
+                    }
+                }
+                else {
+                    Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
+                }
+            }
+        }
         
         public void Dispose()
         {
             Runtime?.Destroy();
             Runtime = null;
-
-#if NETCORE
-            LoadContext?.Dispose();
-            LoadContext = null;
-#endif
         }
         
 #if NETCORE

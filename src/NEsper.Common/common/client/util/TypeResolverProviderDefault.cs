@@ -11,19 +11,30 @@ using com.espertech.esper.compat;
 namespace com.espertech.esper.common.client.util
 {
     /// <summary>
-    /// Provider of a classloader.
+    /// Default class loader provider returns the current thread context classloader.
     /// </summary>
-    public interface ClassLoaderProvider
-    {
-        /// <summary>
-        /// Returns the classloader.
-        /// </summary>
-        /// <returns>classloader</returns>
-        ClassLoader GetClassLoader();
-    }
-
-    public class ClassLoaderProviderConstants
+    public class TypeResolverProviderDefault : TypeResolverProvider
     {
         public const string NAME = "ClassLoaderProvider";
+
+        private readonly TypeResolver typeResolver;
+
+        public TypeResolverProviderDefault(TypeResolver typeResolver)
+        {
+            this.typeResolver = typeResolver;
+        }
+
+#if FALSE
+        public ClassLoaderProviderDefault(IContainer container)
+        {
+            container.Register<ClassLoader, ClassLoaderDefault>(Lifespan.Singleton);
+            _classLoader = container.Resolve<ClassLoader>();
+        }
+#endif
+
+        public TypeResolver GetTypeResolver()
+        {
+            return typeResolver;
+        }
     }
 } // end of namespace

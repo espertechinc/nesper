@@ -23,10 +23,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions(bool isMicrosecond)
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTResolutionEventTime(isMicrosecond));
-            executions.Add(new ExprDTLongProperty(isMicrosecond));
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithResolutionEventTime(isMicrosecond, execs);
+            WithLongProperty(isMicrosecond, execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLongProperty(
+            bool isMicrosecond,
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTLongProperty(isMicrosecond));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithResolutionEventTime(
+            bool isMicrosecond,
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTResolutionEventTime(isMicrosecond));
+            return execs;
         }
 
         private static void RunAssertionLongProperty(
@@ -61,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 " where a.withDate(2002, 5, 30).before(b)";
             env.CompileDeploy(epl).AddListener("s0");
 
-            env.SendEventObjectArray(new object[] {"B", tsB, tsB}, "MyEvent");
+            env.SendEventObjectArray(new object[] { "B", tsB, tsB }, "MyEvent");
 
-            env.SendEventObjectArray(new object[] {"A", flipTimeEndtsA - 1, flipTimeEndtsA - 1}, "MyEvent");
+            env.SendEventObjectArray(new object[] { "A", flipTimeEndtsA - 1, flipTimeEndtsA - 1 }, "MyEvent");
             Assert.IsTrue(env.Listener("s0").IsInvokedAndReset());
 
-            env.SendEventObjectArray(new object[] {"A", flipTimeEndtsA, flipTimeEndtsA}, "MyEvent");
+            env.SendEventObjectArray(new object[] { "A", flipTimeEndtsA, flipTimeEndtsA }, "MyEvent");
             Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
 
             env.UndeployAll();
@@ -122,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "current_timestamp.toDateTime() as c5," +
                     "current_timestamp.toDateTimeEx() as c6," +
                     "current_timestamp.minus(1) as c7";
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
+                var fields = new[] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
 
                 if (!isMicrosecond) {
                     RunAssertionLongProperty(

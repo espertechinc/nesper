@@ -254,11 +254,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public override string ToString()
         {
-            return string.Format(
-                "{0}({1}, {2})",
-                GetType().Name,
-                _theString.RenderAny(),
-                _intPrimitive);
+            return $"{GetType().Name}({_theString.RenderAny()}, {_intPrimitive})";
         }
 
         protected bool Equals(SupportBean other)

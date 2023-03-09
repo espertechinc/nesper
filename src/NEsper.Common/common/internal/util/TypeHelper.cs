@@ -14,6 +14,11 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
+#if NETCORE
+using System.Runtime.Loader;
+#endif
+
 using System.Text;
 using System.Xml;
 
@@ -891,10 +896,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             throw new CoercionException(
-                string.Format(
-                    "Types cannot be compared: {0} and {1}",
-                    typeOne.FullName,
-                    typeTwo.FullName));
+                $"Types cannot be compared: {typeOne.FullName} and {typeTwo.FullName}");
         }
 
         /// <summary>
@@ -1519,7 +1521,7 @@ namespace com.espertech.esper.common.@internal.util
         ///     and so on.
         /// </summary>
         /// <param name="typeName">is the name to recognize</param>
-        /// <param name="classForNameProvider">the class for name provider</param>
+        /// <param name="typeResolver">the type resolver</param>
         /// <param name="boxed">if set to <c>true</c> [boxed].</param>
         /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
         /// <returns>
@@ -1528,7 +1530,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
         public static Type GetTypeForSimpleName(
             string typeName,
-            ClassForNameProvider classForNameProvider,
+            TypeResolver typeResolver,
             bool boxed = false,
             bool throwOnError = false)
         {
@@ -1539,10 +1541,10 @@ namespace com.espertech.esper.common.@internal.util
                 return builtin;
             }
             
-            if (classForNameProvider != null)
+            if (typeResolver != null)
             {
                 try {
-                    var clazz = classForNameProvider.ClassForName(typeName);
+                    var clazz = typeResolver.ResolveType(typeName, false);
                     if (clazz != null) {
                         return clazz;
                     }
@@ -2074,8 +2076,14 @@ namespace com.espertech.esper.common.@internal.util
             string typeName,
             bool throwOnError = true)
         {
-            var assemblySearchPath =
-                AssemblySearchPath != null ? AssemblySearchPath.Invoke() : AppDomain.CurrentDomain.GetAssemblies();
+            IEnumerable<Assembly> assemblySearchPath = AssemblySearchPath?.Invoke();
+            if (assemblySearchPath == null) {
+#if NETCORE
+                assemblySearchPath = AssemblyLoadContext.Default.Assemblies.ToList();
+#else
+                assemblySearchPath = AppDomain.CurrentDomain.GetAssemblies();
+#endif
+            }
 
             return ResolveType(typeName, assemblySearchPath, throwOnError);
         }
@@ -2108,9 +2116,9 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetClassForName(
             string typeName,
-            ClassForNameProvider classForNameProvider)
+            TypeResolver typeResolver)
         {
-            return classForNameProvider.ClassForName(typeName);
+            return typeResolver.ResolveType(typeName, false);
         }
 
         private static Type MakeArrayType(
@@ -2336,20 +2344,20 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
         /// <param name="typeName">Name of the type.</param>
-        /// <param name="classForNameProvider">The class for name provider.</param>
+        /// <param name="typeResolver">The class for name provider.</param>
         /// <returns>
         ///     instance of given class, via newInstance
         /// </returns>
         public static T Instantiate<T>(
             string typeName,
-            ClassForNameProvider classForNameProvider)
+            TypeResolver typeResolver)
         {
             var implementedOrExtendedType = typeof(T);
 
             Type type;
             try
             {
-                type = classForNameProvider.ClassForName(typeName);
+                type = typeResolver.ResolveType(typeName, false);
             }
             catch (Exception ex)
             {
@@ -3148,10 +3156,10 @@ namespace com.espertech.esper.common.@internal.util
 
         public static IDictionary<string, object> GetClassObjectFromPropertyTypeNames(
             Properties properties,
-            ClassForNameProvider classForNameProvider)
+            TypeResolver typeResolver)
         {
             return GetClassObjectFromPropertyTypeNames(
-                properties, classForNameProvider.ClassForName);
+                properties, _ => typeResolver.ResolveType(_, false));
         }
 
         public static IDictionary<string, object> GetClassObjectFromPropertyTypeNames(Properties properties)

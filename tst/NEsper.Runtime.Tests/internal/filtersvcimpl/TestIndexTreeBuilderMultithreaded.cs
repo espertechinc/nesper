@@ -32,10 +32,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void SetUp()
         {
             lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                container.RWLockManager());
+                Container.RWLockManager());
 
             eventType = SupportEventTypeFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateBeanType(typeof(SupportBean));
             topNode = new FilterHandleSetNode(new SlimReaderWriterLock());
             filterCallbacks = new List<FilterHandle>();
@@ -142,7 +142,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     testFilterSpecs,
                     matchedEvents,
                     unmatchedEvents,
-                    container.RWLockManager());
+                    Container.RWLockManager());
 
                 pool.Submit(() => runnable.Run());
             }
@@ -189,7 +189,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             bean.IntPrimitive = aInt;
             bean.DoublePrimitive = aDouble;
             return SupportEventBeanFactory
-                .GetInstance(container)
+                .GetInstance(Container)
                 .CreateObject(bean);
         }
 

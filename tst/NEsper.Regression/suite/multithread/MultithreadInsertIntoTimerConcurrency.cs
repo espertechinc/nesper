@@ -27,25 +27,28 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static readonly ILog log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private EPEventService epRuntime;
-        private IExecutorService executorService;
+        private EPRuntimeProvider _runtimeProvider;
+        private EPEventService _runtime;
+        private IExecutorService _executorService;
 
-        private AtomicLong idCounter;
-        private NoActionUpdateListener noActionUpdateListener;
+        private AtomicLong _idCounter;
+        private NoActionUpdateListener _noActionUpdateListener;
 
         public void Run(Configuration configuration)
         {
-            idCounter = new AtomicLong(0);
-            executorService = Executors.NewCachedThreadPool();
-            noActionUpdateListener = new NoActionUpdateListener();
+            _idCounter = new AtomicLong(0);
+            _executorService = Executors.NewCachedThreadPool();
+            _noActionUpdateListener = new NoActionUpdateListener();
 
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             configuration.Common.AddEventType(typeof(SupportBean));
             configuration.Runtime.Threading.InsertIntoDispatchLocking = Locking.SUSPEND;
 
-            var runtime = EPRuntimeProvider.GetRuntime(GetType().Name, configuration);
+            _runtimeProvider = new EPRuntimeProvider();
+            
+            var runtime = _runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
             runtime.Initialize();
-            epRuntime = runtime.EventService;
+            _runtime = runtime.EventService;
 
             var path = new RegressionPath();
             var epl = "insert into Stream1 select count(*) as cnt from SupportBean#time(7 sec)";
@@ -53,9 +56,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             path.Add(compiled);
             SupportCompileDeployUtil.Deploy(compiled, runtime);
 
-            epl = epl + " output every 10 seconds";
+            epl += " output every 10 seconds";
             compiled = SupportCompileDeployUtil.Compile(epl, configuration, path);
-            SupportCompileDeployUtil.DeployAddListener(compiled, "insert", noActionUpdateListener, runtime);
+            SupportCompileDeployUtil.DeployAddListener(compiled, "insert", _noActionUpdateListener, runtime);
 
             var sendTickEventRunnable = new SendEventRunnable(this, 10000);
             Start(sendTickEventRunnable, 4);
@@ -64,8 +67,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ThreadSleep(3000);
             sendTickEventRunnable.Shutdown = true;
 
-            executorService.Shutdown();
-            SupportCompileDeployUtil.ExecutorAwait(executorService, 1, TimeUnit.SECONDS);
+            _executorService.Shutdown();
+            SupportCompileDeployUtil.ExecutorAwait(_executorService, 1, TimeUnit.SECONDS);
             runtime.Destroy();
         }
 
@@ -80,16 +83,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         private IFuture<T> Start<T>(ICallable<T> task)
         {
-            var future = executorService.Submit(task);
+            var future = _executorService.Submit(task);
             return future;
         }
 
         public void SendEvent()
         {
-            var id = idCounter.GetAndIncrement();
+            var id = _idCounter.GetAndIncrement();
             var theEvent = new SupportBean();
             theEvent.LongPrimitive = id;
-            epRuntime.SendEventBean(theEvent, "SupportBean");
+            _runtime.SendEventBean(theEvent, "SupportBean");
         }
 
         private class SendEventRunnable : ICallable<object>

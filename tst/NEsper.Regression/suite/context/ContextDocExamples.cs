@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             };
             Create(env, path, "context TxnCategoryContext create window BankTxnWindow#time(1 min) as BankTxn");
             var faf = env.CompileFAF("select count(*) from BankTxnWindow", path);
-            env.Runtime.FireAndForgetService.ExecuteQuery(faf, new ContextPartitionSelector[] {categorySmallMed});
+            env.Runtime.FireAndForgetService.ExecuteQuery(faf, new ContextPartitionSelector[] { categorySmallMed });
 
             Create(
                 env,

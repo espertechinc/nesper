@@ -12,7 +12,8 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <returns></returns>
         public static RoslynCompiler RoslynCompiler(this IContainer container)
         {
-            return container.ResolveSingleton<RoslynCompiler>(() => new RoslynCompiler(container));
+            return new RoslynCompiler(container);
+            //return container.ResolveSingleton<RoslynCompiler>(() => new RoslynCompiler(container));
         }
     }
 }

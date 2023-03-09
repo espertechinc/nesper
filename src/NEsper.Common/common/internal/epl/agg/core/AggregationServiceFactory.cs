@@ -13,8 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     /// <summary>
     /// Factory for aggregation service instances.
-    /// <para />Consolidates aggregation nodes such that result futures point to a single instance and
-    /// no re-evaluation of the same result occurs.
+    /// <para>
+    ///     Consolidates aggregation nodes such that result futures point to a single instance and
+    ///     no re-evaluation of the same result occurs.
+    /// </para>
     /// </summary>
     public interface AggregationServiceFactory
     {

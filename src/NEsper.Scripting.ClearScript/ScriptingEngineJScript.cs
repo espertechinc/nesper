@@ -16,7 +16,9 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.script.core;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
@@ -51,7 +53,7 @@ namespace NEsper.Scripting.ClearScript
                 {
                     ExposeTypesToEngine(engine);
 
-                    engine.AddHostObject("host", new XHostFunctions());
+                    engine.AddHostObject("host", new XHostFunctions(null));
                     engine.AddHostObject("debug", new DebugFunctions(this));
 
                     var writer = new StringWriter();
@@ -69,9 +71,12 @@ namespace NEsper.Scripting.ClearScript
             }
         }
 
-        public Func<ScriptArgs, Object> Compile(ExpressionScriptProvided expressionScript)
+        public Func<ScriptArgs, object> Compile(
+            ExpressionScriptProvided expressionScript,
+            ImportService importService)
         {
-            return args => ExecuteWithScriptArgs(expressionScript, args);
+            var classLoader = importService.TypeResolver; 
+            return args => ExecuteWithScriptArgs(expressionScript, classLoader, args);
         }
 
         private bool IsPrimitive(object value)
@@ -96,10 +101,12 @@ namespace NEsper.Scripting.ClearScript
                 (value is decimal);
         }
 
-        private object ExecuteWithScriptArgs(ExpressionScriptProvided expressionScript, ScriptArgs args)
+        private object ExecuteWithScriptArgs(
+            ExpressionScriptProvided expressionScript,
+            TypeResolver typeResolver,
+            ScriptArgs args)
         {
-            using (var engine = new Microsoft.ClearScript.Windows.JScriptEngine())
-            {
+            using (var engine = new Microsoft.ClearScript.Windows.JScriptEngine()) {
                 var primitives = new ExpandoObject();
                 var primitivesAsDictionary = (IDictionary<string, object>)primitives;
 
@@ -118,7 +125,7 @@ namespace NEsper.Scripting.ClearScript
                 ExposeTypesToEngine(engine);
 
                 engine.AddHostObject("__variables", primitives);
-                engine.AddHostObject("host", new XHostFunctions());
+                engine.AddHostObject("host", new XHostFunctions(typeResolver));
                 engine.AddHostObject("debug", new DebugFunctions(this));
 
                 var writer = new StringWriter();
@@ -178,14 +185,21 @@ namespace NEsper.Scripting.ClearScript
 
         public class XHostFunctions : ExtendedHostFunctions
         {
+            private readonly TypeResolver typeResolver;
+
+            public XHostFunctions(TypeResolver typeResolver)
+            {
+                this.typeResolver = typeResolver;
+            }
+
             public object resolveType(string typeName)
             {
-                return type(TypeHelper.ResolveType(typeName, false));
+                return type(typeResolver.ResolveType(typeName, false));
             }
 
             public void throwException(string exceptionTypeName, string message)
             {
-                var exceptionType = TypeHelper.ResolveType(exceptionTypeName, true);
+                var exceptionType = typeResolver.ResolveType(exceptionTypeName, true);
                 if (exceptionType.IsInstanceOfType(typeof(Exception)))
                 {
                     // attempt to find a constructor with a single argument

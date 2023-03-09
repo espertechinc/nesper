@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
             CodegenClassScope classScope,
             CodegenExpression elementExpr)
         {
-            return ExprDotMethod(elementExpr, "GetBoxedInt32");
+            return StaticMethod(typeof(JsonElementExtensions), "GetBoxedInt32", elementExpr);
         }
     }
 } // end of namespace

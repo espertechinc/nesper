@@ -17,30 +17,24 @@ namespace com.espertech.esper.compat.threading.locks
     {
         private readonly long _id;
         private readonly int _lockTimeout;
+        private readonly bool _useUpgradeableLocks;
 
-#if MONO
-        public const string ExceptionText = "ReaderWriterLockSlim is not supported on this platform";
-#else
         private readonly ReaderWriterLockSlim _rwLock;
-#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlimReaderWriterLock"/> class.
         /// </summary>
-        public SlimReaderWriterLock(int lockTimeout)
+        public SlimReaderWriterLock(int lockTimeout, bool useUpgradeableLocks = false)
         {
             _id = DebugId<SlimReaderWriterLock>.NewId();
             _lockTimeout = lockTimeout;
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
+            _useUpgradeableLocks = useUpgradeableLocks;
             _rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
             ReadLock = new CommonReadLock(this, _lockTimeout);
             WriteLock = new CommonWriteLock(this, _lockTimeout);
 
             _rDisposable = new TrackedDisposable(ReleaseReaderLock);
             _wDisposable = new TrackedDisposable(ReleaseWriterLock);
-#endif
         }
 
         /// <summary>
@@ -67,68 +61,65 @@ namespace com.espertech.esper.compat.threading.locks
 
         public IDisposable AcquireReadLock()
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireReadLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
-            if (_rwLock.TryEnterUpgradeableReadLock(_lockTimeout)) {
-#if DIAGNOSTICS
+            try {
+                if (_useUpgradeableLocks) {
+                    if (_rwLock.TryEnterUpgradeableReadLock(_lockTimeout)) {
+                        return _rDisposable;
+                    }
+                }
+                else if (_rwLock.TryEnterReadLock(_lockTimeout)) {
+                    return _rDisposable;
+                }
+            }
+            finally {
+#if DIAGNOSTICS && DEBUG
                 Console.WriteLine("{0}:AcquireReadLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
-                return _rDisposable;
             }
 
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireReadLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
-#endif
         }
 
         public IDisposable AcquireWriteLock()
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireWriteLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
             if (_rwLock.TryEnterWriteLock(_lockTimeout)) {
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
                 Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
                 return _wDisposable;
             }
 
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireWriteLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
 #endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
-#endif
         }
 
         public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireWriteLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
 #endif
             if (_rwLock.TryEnterWriteLock(lockWaitDuration)) {
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
                 Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
 #endif
                 return _wDisposable;
             }
 
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireWriteLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
 #endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
-#endif
         }
 
         /// <summary>
@@ -161,25 +152,29 @@ namespace com.espertech.esper.compat.threading.locks
         /// <param name="timeout">The timeout.</param>
         public void AcquireReaderLock(long timeout)
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-            
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireReaderLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
-            if (_rwLock.TryEnterUpgradeableReadLock((int) timeout)) {
-#if DIAGNOSTICS
+            try {
+                if (_useUpgradeableLocks) {
+                    if (_rwLock.TryEnterUpgradeableReadLock((int)timeout)) {
+                        return;
+                    }
+                }
+                else if (_rwLock.TryEnterReadLock((int)timeout)) {
+                    return;
+                }
+            }
+            finally {
+#if DIAGNOSTICS && DEBUG
                 Console.WriteLine("{0}:AcquireReaderLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
-                return;
             }
 
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireReaderLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
-#endif
         }
 
         /// <summary>
@@ -188,24 +183,20 @@ namespace com.espertech.esper.compat.threading.locks
         /// <param name="timeout">The timeout.</param>
         public void AcquireWriterLock(long timeout)
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireWriterLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
             if (_rwLock.TryEnterWriteLock((int) timeout)) {
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
                 Console.WriteLine("{0}:AcquireWriterLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
                 return;
             }
 
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:AcquireWriterLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
 #endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
-#endif
         }
 
         /// <summary>
@@ -213,16 +204,17 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public void ReleaseReaderLock()
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:ReleaseReaderLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif
-            _rwLock.ExitUpgradeableReadLock();
-#if DIAGNOSTICS
+            if (_useUpgradeableLocks) {
+                _rwLock.ExitUpgradeableReadLock();
+            }
+            else {
+                _rwLock.ExitReadLock();
+            }
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:ReleaseReaderLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
-#endif
 #endif
         }
 
@@ -231,16 +223,12 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public void ReleaseWriterLock()
         {
-#if MONO
-            throw new NotSupportedException(ExceptionText);
-#else
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:ReleaseWriterLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
 #endif
             _rwLock.ExitWriteLock();
-#if DIAGNOSTICS
+#if DIAGNOSTICS && DEBUG
             Console.WriteLine("{0}:ReleaseWriterLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
-#endif
 #endif
         }
     }

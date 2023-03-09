@@ -27,11 +27,46 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextLifecycleSplitStream());
-            execs.Add(new ContextLifecycleVirtualDataWindow());
-            execs.Add(new ContextLifecycleNWOtherContextOnExpr());
-            execs.Add(new ContextLifecycleInvalid());
+            WithSplitStream(execs);
+            WithVirtualDataWindow(execs);
+            WithNWOtherContextOnExpr(execs);
+            WithInvalid(execs);
+            WithSimple(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextLifecycleSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNWOtherContextOnExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleNWOtherContextOnExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVirtualDataWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleVirtualDataWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSplitStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleSplitStream());
             return execs;
         }
 
@@ -54,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path.Clear();
 
                 // test with subquery
-                var fields = new [] { "mymax" };
+                var fields = new[] { "mymax" };
                 var eplTwo = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
                              "context CtxSegmentedByTarget create window NewEvent#unique(TheString) as SupportBean;" +
                              "@Name('out') context CtxSegmentedByTarget on SupportBean " +
@@ -67,19 +102,19 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null});
+                    new object[] { null });
 
                 env.SendEventBean(new SupportBean("E1", 100));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null});
+                    new object[] { null });
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {100});
+                    new object[] { 100 });
 
                 env.UndeployAll();
             }

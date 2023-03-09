@@ -488,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // try fully-qualified
                 epl = "@" +
-                      typeof(NameAttribute).Name +
+                      nameof(NameAttribute) +
                       "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
                       "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");

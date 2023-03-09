@@ -27,16 +27,86 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetLimitOneWithOrderOptimization());
-            execs.Add(new ResultSetBatchNoOffsetNoOrder());
-            execs.Add(new ResultSetOrderBy());
-            execs.Add(new ResultSetBatchOffsetNoOrderOM());
-            execs.Add(new ResultSetFullyGroupedOrdered());
-            execs.Add(new ResultSetEventPerRowUnGrouped());
-            execs.Add(new ResultSetGroupedSnapshot());
-            execs.Add(new ResultSetGroupedSnapshotNegativeRowcount());
-            execs.Add(new ResultSetInvalid());
+            WithLimitOneWithOrderOptimization(execs);
+            WithBatchNoOffsetNoOrder(execs);
+            WithOrderBy(execs);
+            WithBatchOffsetNoOrderOM(execs);
+            WithFullyGroupedOrdered(execs);
+            WithEventPerRowUnGrouped(execs);
+            WithGroupedSnapshot(execs);
+            WithGroupedSnapshotNegativeRowcount(execs);
+            WithInvalid(execs);
+            WithLengthOffsetVariable(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthOffsetVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetLengthOffsetVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedSnapshotNegativeRowcount(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetGroupedSnapshotNegativeRowcount());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedSnapshot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetGroupedSnapshot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventPerRowUnGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetEventPerRowUnGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFullyGroupedOrdered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetFullyGroupedOrdered());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchOffsetNoOrderOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetBatchOffsetNoOrderOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrderBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOrderBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchNoOffsetNoOrder(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetBatchNoOffsetNoOrder());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLimitOneWithOrderOptimization(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLimitOneWithOrderOptimization());
             return execs;
         }
 
@@ -49,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
         private static void TryAssertionVariable(RegressionEnvironment env)
         {
-            var fields = new [] { "TheString" };
+            var fields = new[] { "TheString" };
 
             EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -58,36 +128,36 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E2"}});
+                new[] { new object[] { "E2" } });
 
             SendEvent(env, "E3", 3);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E2"}, new object[] {"E3"}});
+                new[] { new object[] { "E2" }, new object[] { "E3" } });
 
             SendEvent(env, "E4", 4);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E2"}, new object[] {"E3"}});
+                new[] { new object[] { "E2" }, new object[] { "E3" } });
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             SendEvent(env, "E5", 5);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E2"}, new object[] {"E3"}});
+                new[] { new object[] { "E2" }, new object[] { "E3" } });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
                 fields,
-                new[] {new object[] {"E2"}, new object[] {"E3"}});
+                new[] { new object[] { "E2" }, new object[] { "E3" } });
 
             SendEvent(env, "E6", 6);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E3"}, new object[] {"E4"}});
+                new[] { new object[] { "E3" }, new object[] { "E4" } });
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             // change variable values
@@ -96,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E6"}, new object[] {"E7"}});
+                new[] { new object[] { "E6" }, new object[] { "E7" } });
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             env.SendEventBean(new SupportBeanNumeric(-1, 0));
@@ -105,8 +175,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.Statement("s0").GetEnumerator(),
                 fields,
                 new[] {
-                    new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"},
-                    new object[] {"E8"}
+                    new object[] { "E4" }, new object[] { "E5" }, new object[] { "E6" }, new object[] { "E7" },
+                    new object[] { "E8" }
                 });
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -116,8 +186,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.Statement("s0").GetEnumerator(),
                 fields,
                 new[] {
-                    new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"},
-                    new object[] {"E9"}
+                    new object[] { "E5" }, new object[] { "E6" }, new object[] { "E7" }, new object[] { "E8" },
+                    new object[] { "E9" }
                 });
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -126,29 +196,29 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E9"}, new object[] {"E10"}});
+                new[] { new object[] { "E9" }, new object[] { "E10" } });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
                 fields,
-                new[] {new object[] {"E9"}, new object[] {"E10"}});
+                new[] { new object[] { "E9" }, new object[] { "E10" } });
 
             env.SendEventBean(new SupportBeanNumeric(1, 1));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E7"}});
+                new[] { new object[] { "E7" } });
 
             env.SendEventBean(new SupportBeanNumeric(2, 1));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E7"}, new object[] {"E8"}});
+                new[] { new object[] { "E7" }, new object[] { "E8" } });
 
             env.SendEventBean(new SupportBeanNumeric(1, 2));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E8"}});
+                new[] { new object[] { "E8" } });
 
             env.SendEventBean(new SupportBeanNumeric(6, 6));
             EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
@@ -157,42 +227,42 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E10"}});
+                new[] { new object[] { "E10" } });
 
             env.SendEventBean(new SupportBeanNumeric(null, null));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
                 new[] {
-                    new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}, new object[] {"E9"},
-                    new object[] {"E10"}
+                    new object[] { "E6" }, new object[] { "E7" }, new object[] { "E8" }, new object[] { "E9" },
+                    new object[] { "E10" }
                 });
 
             env.SendEventBean(new SupportBeanNumeric(null, 2));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E8"}, new object[] {"E9"}, new object[] {"E10"}});
+                new[] { new object[] { "E8" }, new object[] { "E9" }, new object[] { "E10" } });
 
             env.SendEventBean(new SupportBeanNumeric(2, null));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E6"}, new object[] {"E7"}});
+                new[] { new object[] { "E6" }, new object[] { "E7" } });
 
             env.SendEventBean(new SupportBeanNumeric(-1, 4));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E10"}});
+                new[] { new object[] { "E10" } });
 
             env.SendEventBean(new SupportBeanNumeric(-1, 0));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
                 new[] {
-                    new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}, new object[] {"E9"},
-                    new object[] {"E10"}
+                    new object[] { "E6" }, new object[] { "E7" }, new object[] { "E8" }, new object[] { "E9" },
+                    new object[] { "E10" }
                 });
 
             env.SendEventBean(new SupportBeanNumeric(0, 0));
@@ -201,49 +271,49 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
         private static void TryAssertion(RegressionEnvironment env)
         {
-            var fields = new [] { "TheString" };
+            var fields = new[] { "TheString" };
 
             SendEvent(env, "E1", 1);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E1"}});
+                new[] { new object[] { "E1" } });
 
             SendEvent(env, "E2", 2);
             Assert.IsFalse(env.Listener("s0").IsInvoked);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E1"}});
+                new[] { new object[] { "E1" } });
 
             SendEvent(env, "E3", 3);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
                 fields,
-                new[] {new object[] {"E1"}});
+                new[] { new object[] { "E1" } });
             EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
             SendEvent(env, "E4", 4);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E4"}});
+                new[] { new object[] { "E4" } });
 
             SendEvent(env, "E5", 5);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {"E4"}});
+                new[] { new object[] { "E4" } });
 
             SendEvent(env, "E6", 6);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
-                new[] {new object[] {"E4"}});
+                new[] { new object[] { "E4" } });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastOldData,
                 fields,
-                new[] {new object[] {"E1"}});
+                new[] { new object[] { "E1" } });
             EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
         }
 
@@ -268,8 +338,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean_S1(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "TheString" },
-                new object[] {expected});
+                new[] { "TheString" },
+                new object[] { expected });
         }
 
         private static void SendSBSequenceAndAssert(
@@ -286,8 +356,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean_S1(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "TheString","IntPrimitive" },
-                new object[] {expectedString, expectedInt});
+                new[] { "TheString", "IntPrimitive" },
+                new object[] { expectedString, expectedInt });
         }
 
         internal class ResultSetLimitOneWithOrderOptimization : RegressionExecution
@@ -334,24 +404,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "F",
                     10,
                     new[] {
-                        new object[] {"F", 10}, new object[] {"X", 8}, new object[] {"F", 8}, new object[] {"G", 10},
-                        new object[] {"X", 1}
+                        new object[] { "F", 10 }, new object[] { "X", 8 }, new object[] { "F", 8 }, new object[] { "G", 10 },
+                        new object[] { "X", 1 }
                     });
                 SendSBSequenceAndAssert(
                     env,
                     "G",
                     12,
                     new[] {
-                        new object[] {"X", 10}, new object[] {"G", 12}, new object[] {"H", 100}, new object[] {"G", 10},
-                        new object[] {"X", 1}
+                        new object[] { "X", 10 }, new object[] { "G", 12 }, new object[] { "H", 100 }, new object[] { "G", 10 },
+                        new object[] { "X", 1 }
                     });
                 SendSBSequenceAndAssert(
                     env,
                     "G",
                     11,
                     new[] {
-                        new object[] {"G", 10}, new object[] {"G", 8}, new object[] {"G", 8}, new object[] {"G", 10},
-                        new object[] {"G", 11}
+                        new object[] { "G", 10 }, new object[] { "G", 8 }, new object[] { "G", 8 }, new object[] { "G", 10 },
+                        new object[] { "G", 11 }
                     });
 
                 env.UndeployModuleContaining("s0");
@@ -364,9 +434,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                SendSBSequenceAndAssert(env, "A", new[] {"F", "Q", "R", "T", "M", "T", "A", "I", "P", "B"});
-                SendSBSequenceAndAssert(env, "B", new[] {"P", "Q", "P", "T", "P", "T", "P", "P", "P", "B"});
-                SendSBSequenceAndAssert(env, "C", new[] {"C", "P", "Q", "P", "T", "P", "T", "P", "P", "P", "X"});
+                SendSBSequenceAndAssert(env, "A", new[] { "F", "Q", "R", "T", "M", "T", "A", "I", "P", "B" });
+                SendSBSequenceAndAssert(env, "B", new[] { "P", "Q", "P", "T", "P", "T", "P", "P", "P", "B" });
+                SendSBSequenceAndAssert(env, "C", new[] { "C", "P", "Q", "P", "T", "P", "T", "P", "P", "P", "X" });
 
                 env.UndeployModuleContaining("s0");
             }
@@ -425,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select * from SupportBean#length(5) output every 5 events order by IntPrimitive limit 2 offset 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString" };
+                var fields = new[] { "TheString" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -439,24 +509,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1"}});
+                    new[] { new object[] { "E1" } });
 
                 SendEvent(env, "E4", 99);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1"}, new object[] {"E4"}});
+                    new[] { new object[] { "E1" }, new object[] { "E4" } });
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEvent(env, "E5", 6);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E1"}});
+                    new[] { new object[] { "E3" }, new object[] { "E1" } });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E1"}});
+                    new[] { new object[] { "E3" }, new object[] { "E1" } });
 
                 env.UndeployAll();
             }
@@ -496,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString order by sum(IntPrimitive) limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString","mysum" };
+                var fields = new[] { "TheString", "mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -504,31 +574,31 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1", 90}});
+                    new[] { new object[] { "E1", 90 } });
 
                 SendEvent(env, "E2", 5);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E2", 5}, new object[] {"E1", 90}});
+                    new[] { new object[] { "E2", 5 }, new object[] { "E1", 90 } });
 
                 SendEvent(env, "E3", 60);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E2", 5}, new object[] {"E3", 60}});
+                    new[] { new object[] { "E2", 5 }, new object[] { "E3", 60 } });
 
                 SendEvent(env, "E3", 40);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E2", 5}, new object[] {"E1", 90}});
+                    new[] { new object[] { "E2", 5 }, new object[] { "E1", 90 } });
 
                 SendEvent(env, "E2", 1000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1", 90}, new object[] {"E3", 100}});
+                    new[] { new object[] { "E1", 90 }, new object[] { "E3", 100 } });
 
                 env.UndeployAll();
             }
@@ -543,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString","mysum" };
+                var fields = new[] { "TheString", "mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -556,7 +626,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {"E4", 65}, new object[] {"E3", 35}});
+                    new[] { new object[] { "E4", 65 }, new object[] { "E3", 35 } });
 
                 env.UndeployAll();
             }
@@ -571,7 +641,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString","mysum" };
+                var fields = new[] { "TheString", "mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -584,7 +654,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {"E1", 40}, new object[] {"E3", 20}});
+                    new[] { new object[] { "E1", 40 }, new object[] { "E3", 20 } });
 
                 env.UndeployAll();
             }
@@ -599,7 +669,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit -1 offset 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "TheString","mysum" };
+                var fields = new[] { "TheString", "mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -612,7 +682,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {"E3", 20}, new object[] {"E2", 5}});
+                    new[] { new object[] { "E3", 20 }, new object[] { "E2", 5 } });
 
                 env.UndeployAll();
             }

@@ -7,16 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
 
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.logging;
+
 namespace com.espertech.esper.container
 {
-    public class ContainerImpl : IContainer
+    public class ContainerImpl : IContainer, IDisposable
     {
-        private readonly Guid _id;
-        private readonly IWindsorContainer _container;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly Guid _id = Guid.NewGuid();
+        private IWindsorContainer _container;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContainerImpl"/> class.
@@ -24,17 +30,44 @@ namespace com.espertech.esper.container
         /// <param name="container">The container.</param>
         public ContainerImpl(IWindsorContainer container)
         {
-            _id = Guid.NewGuid();
             _container = container;
         }
 
         public IWindsorContainer WindsorContainer => _container;
 
         /// <summary>
+        /// Cleans up resources associated with this container.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Dispose()
+        {
+            lock (this) {
+                Log.Info("Dispose(): disposing of windsor container");
+                _container?.Dispose();
+                _container = null;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"ContainerImpl:({nameof(_id)}: {_id}, {nameof(_container)}: {_container})";
+        }
+
+        private void CheckDisposed()
+        {
+            lock (this) {
+                if (_container == null) {
+                    throw new IllegalStateException("container " + _id + " has been disposed");
+                }
+            }
+        }
+        
+        /// <summary>
         /// Resolves an object within a container.
         /// </summary>
         public object Resolve(Type serviceType)
         {
+            CheckDisposed();
             return _container.Resolve(serviceType);
         }
 
@@ -45,6 +78,7 @@ namespace com.espertech.esper.container
         /// <returns></returns>
         public T Resolve<T>()
         {
+            CheckDisposed();
             return _container.Resolve<T>();
         }
 
@@ -56,6 +90,7 @@ namespace com.espertech.esper.container
         /// <returns></returns>
         public T Resolve<T>(string name)
         {
+            CheckDisposed();
             return _container.Resolve<T>(name);
         }
         
@@ -92,6 +127,7 @@ namespace com.espertech.esper.container
         /// </returns>
         public bool Has(string name)
         {
+            CheckDisposed();
             return _container.Kernel.HasComponent(name);
         }
 
@@ -102,11 +138,13 @@ namespace com.espertech.esper.container
         /// <returns></returns>
         public bool Has<T>()
         {
+            CheckDisposed();
             return _container.Kernel.HasComponent(typeof(T));
         }
 
         public bool Has(Type serviceType)
         {
+            CheckDisposed();
             return _container.Kernel.HasComponent(serviceType);
         }
 
@@ -124,6 +162,7 @@ namespace com.espertech.esper.container
             where T : class
             where TImpl : T
         {
+            CheckDisposed();
             _container.Register(
                 WithLifespan(
                     WithName(Component.For<T>().ImplementedBy<TImpl>(), name),
@@ -134,6 +173,7 @@ namespace com.espertech.esper.container
         public IContainer Register<T>(T value, Lifespan lifespan, string name)
             where T : class
         {
+            CheckDisposed();
             _container.Register(
                 WithLifespan(
                     WithName(Component.For<T>().Instance(value), name),
@@ -144,6 +184,7 @@ namespace com.espertech.esper.container
         public IContainer Register<T>(Func<IContainer, T> factory, Lifespan lifespan, string name)
             where T : class
         {
+            CheckDisposed();
             _container.Register(
                 WithLifespan(
                     WithName(Component.For<T>().UsingFactoryMethod(kernel => factory.Invoke(this)), name),

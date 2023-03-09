@@ -35,10 +35,17 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
 
             dialect ??= DEFAULT_DIALECT;
+            var expressionScriptProvided = new ExpressionScriptProvided(
+                scriptName,
+                expression,
+                parameterNames,
+                null,
+                false,
+                null,
+                dialect);
+
             return new ExpressionScriptCompiledImpl(
-                scriptingCompiler.Compile(
-                    dialect ?? DEFAULT_DIALECT,
-                    new ExpressionScriptProvided(scriptName, expression, parameterNames, null, false, null, dialect)));
+                scriptingCompiler.Compile(dialect, expressionScriptProvided, importService));
         }
     }
 } // end of namespace

@@ -18,16 +18,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         private readonly ExprEvaluator[] _evaluators;
         private readonly ExprConcatNodeForge _form;
-
-        private readonly IThreadLocal<StringBuilder> _localBuffer = new SystemThreadLocal<StringBuilder>(
-            () => new StringBuilder());
+        private readonly IThreadLocal<StringBuilder> _localBuffer;
 
         public ExprConcatNodeForgeEvalThreadLocal(
+            IThreadLocalManager threadLocalManager,
             ExprConcatNodeForge forge,
             ExprEvaluator[] evaluators)
         {
             _form = forge;
             _evaluators = evaluators;
+            _localBuffer = threadLocalManager.Create(() => new StringBuilder());
         }
 
         public object Evaluate(

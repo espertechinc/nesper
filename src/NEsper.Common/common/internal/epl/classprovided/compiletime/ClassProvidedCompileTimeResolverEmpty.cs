@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
@@ -49,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             return true;
         }
 
-        public void AddTo(ICollection<Type> types)
+        public void AddTo(ICollection<IArtifact> artifacts)
         {
         }
 
-        public void RemoveFrom(ICollection<Type> types)
+        public void RemoveFrom(ICollection<IArtifact> artifacts)
         {
         }
     }

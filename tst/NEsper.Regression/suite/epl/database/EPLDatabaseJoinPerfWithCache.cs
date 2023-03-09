@@ -373,9 +373,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();
-                Assert.AreEqual(typeof(PollResultIndexingStrategyHashForge).Name, historical.IndexName);
+                Assert.AreEqual(nameof(PollResultIndexingStrategyHashForge), historical.IndexName);
                 Assert.AreEqual(
-                    typeof(HistoricalIndexLookupStrategyInKeywordSingleForge).Name,
+                    nameof(HistoricalIndexLookupStrategyInKeywordSingleForge),
                     historical.StrategyName);
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -405,8 +405,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();
-                Assert.AreEqual(typeof(PollResultIndexingStrategyInKeywordMultiForge).Name, historical.IndexName);
-                Assert.AreEqual(typeof(HistoricalIndexLookupStrategyInKeywordMultiForge).Name, historical.StrategyName);
+                Assert.AreEqual(nameof(PollResultIndexingStrategyInKeywordMultiForge), historical.IndexName);
+                Assert.AreEqual(nameof(HistoricalIndexLookupStrategyInKeywordMultiForge), historical.StrategyName);
 
                 var delta = PerformanceObserver.TimeMillis(
                     () => {

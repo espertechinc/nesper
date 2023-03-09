@@ -26,6 +26,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
 
@@ -100,6 +101,8 @@ namespace com.espertech.esper.common.@internal.view.core
         public InstrumentationCommon InstrumentationProvider => AgentInstanceContext.InstrumentationProvider;
 
         public ExceptionHandlingService ExceptionHandlingService => AgentInstanceContext.ExceptionHandlingService;
+
+        public TypeResolver TypeResolver => AgentInstanceContext.TypeResolver;
 
         public object FilterReboolConstant {
             get => null;

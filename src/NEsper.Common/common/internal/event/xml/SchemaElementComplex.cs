@@ -84,16 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public override string ToString()
         {
             return
-                string.Format(
-                    "SchemaElementComplex{{Attributes: {0}, ComplexElements: {1}, SimpleElements: {2}, Name: {3}, Namespace: {4}, IsArray: {5}, OptionalSimpleType: {6}, OptionalSimpleTypeName: {7}}}",
-                    Attributes,
-                    ComplexElements,
-                    SimpleElements,
-                    Name,
-                    Namespace,
-                    IsArray,
-                    OptionalSimpleType,
-                    OptionalSimpleTypeName);
+                $"SchemaElementComplex{{Attributes: {Attributes}, ComplexElements: {ComplexElements}, SimpleElements: {SimpleElements}, Name: {Name}, Namespace: {Namespace}, IsArray: {IsArray}, OptionalSimpleType: {OptionalSimpleType}, OptionalSimpleTypeName: {OptionalSimpleTypeName}}}";
         }
 
         #region SchemaElement Members

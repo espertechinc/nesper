@@ -29,6 +29,7 @@ namespace com.espertech.esperio.regression.adapter
     	private SupportUpdateListener _listener;
     	private String _eventTypeName;
         private IContainer _container;
+        private EPRuntimeProvider _runtimeProvider;
     	private EPRuntime _runtime;
     	private long _currentTime;
     	private AdapterCoordinator _coordinator;
@@ -53,7 +54,8 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Runtime.Threading.IsInternalTimerEnabled = false;
             configuration.Common.AddEventType(_eventTypeName, propertyTypes);
 
-    		_runtime = EPRuntimeProvider.GetRuntime("Adapter", configuration);
+            _runtimeProvider = new EPRuntimeProvider();
+    		_runtime = _runtimeProvider.GetRuntimeInstance("Adapter", configuration);
     		_runtime.Initialize();
             
     		var statementText = "select * from mapEvent#length(5)";

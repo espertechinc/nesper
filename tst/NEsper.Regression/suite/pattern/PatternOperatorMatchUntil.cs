@@ -1054,7 +1054,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     env,
                     "(a=SupportBean_A until c=SupportBean_B) -> c=SupportBean_C",
                     "Tag 'c' for event 'SupportBean_C' has already been declared for events of type " +
-                    typeof(SupportBean_B).Name);
+                    nameof(SupportBean_B));
                 TryInvalidPattern(
                     env,
                     "((a=SupportBean_A until b=SupportBean_B) until a=SupportBean_A)",

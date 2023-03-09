@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 						"p1");
 				model.FromClause = FromClause.Create(
 					FilterStream
-						.Create(typeof(SupportMarketDataBean).Name)
+						.Create(nameof(SupportMarketDataBean))
 						.AddView("win", "length", Expressions.Constant(10)));
 				model = copier.Copy(model);
 
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 							.SetElse(Expressions.Property("Volume"))
 							.Add(Expressions.Eq("Symbol", "DELL"), Expressions.Multiply(Expressions.Property("Volume"), Expressions.Constant(3))),
 						"p1");
-				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).Name).AddView("length", Expressions.Constant(10)));
+				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(10)));
 				model = copier.Copy(model);
 
 				var epl = "select case " +
@@ -833,7 +833,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				model.FromClause = FromClause
 					.Create(
 						FilterStream
-							.Create(typeof(SupportBean).Name)
+							.Create(nameof(SupportBean))
 							.AddView("length", Expressions.Constant(100)));
 				model = copier.Copy(model);
 
@@ -1025,7 +1025,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) then 1 " +
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) then 2 " +
 				          " end as p1 " +
-				          " from " + typeof(SupportBeanWithEnum).Name + "#length(10)";
+				          " from " + nameof(SupportBeanWithEnum) + "#length(10)";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("p1"));

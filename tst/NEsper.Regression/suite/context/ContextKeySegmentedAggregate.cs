@@ -26,15 +26,78 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextKeySegmentedRowForAll());
-            execs.Add(new ContextKeySegmentedAccessOnly());
-            execs.Add(new ContextKeySegmentedSubqueryWithAggregation());
-            execs.Add(new ContextKeySegmentedRowPerGroupStream());
-            execs.Add(new ContextKeySegmentedRowPerGroupBatchContextProp());
-            execs.Add(new ContextKeySegmentedRowPerGroupWithAccess());
-            execs.Add(new ContextKeySegmentedRowPerGroupUnidirectionalJoin());
-            execs.Add(new ContextKeySegmentedRowPerEvent());
+            WithRowForAll(execs);
+            WithAccessOnly(execs);
+            WithSubqueryWithAggregation(execs);
+            WithRowPerGroupStream(execs);
+            WithRowPerGroupBatchContextProp(execs);
+            WithRowPerGroupWithAccess(execs);
+            WithRowPerGroupUnidirectionalJoin(execs);
+            WithRowPerEvent(execs);
+            WithRowPerGroup3Stmts(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowPerGroup3Stmts(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextKeySegmentedRowPerGroup3Stmts());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowPerEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedRowPerEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowPerGroupUnidirectionalJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedRowPerGroupUnidirectionalJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowPerGroupWithAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedRowPerGroupWithAccess());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowPerGroupBatchContextProp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedRowPerGroupBatchContextProp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowPerGroupStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedRowPerGroupStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryWithAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedSubqueryWithAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessOnly(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedAccessOnly());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeySegmentedRowForAll());
             return execs;
         }
 
@@ -67,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fieldsGrouped = new [] { "TheString","IntPrimitive","col1" };
+                var fieldsGrouped = new[] { "TheString", "IntPrimitive", "col1" };
                 var eplGroupedAccess =
                     "@Name('s0') context SegmentedByString select TheString,IntPrimitive,window(LongPrimitive) as col1 from SupportBean#keepall sb group by IntPrimitive";
                 env.CompileDeploy(eplGroupedAccess, path);
@@ -80,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsGrouped,
                     new object[] {
                         "G1", 1,
-                        new long[] {10L}
+                        new long[] { 10L }
                     });
 
                 env.Milestone(0);
@@ -91,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsGrouped,
                     new object[] {
                         "G1", 2,
-                        new long[] {100L}
+                        new long[] { 100L }
                     });
 
                 env.SendEventBean(MakeEvent("G2", 1, 200L));
@@ -100,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsGrouped,
                     new object[] {
                         "G2", 1,
-                        new long[] {200L}
+                        new long[] { 200L }
                     });
 
                 env.Milestone(1);
@@ -111,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsGrouped,
                     new object[] {
                         "G1", 1,
-                        new long[] {10L, 11L}
+                        new long[] { 10L, 11L }
                     });
 
                 env.UndeployAll();
@@ -127,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                string[] fields = {"TheString", "IntPrimitive", "val0"};
+                string[] fields = { "TheString", "IntPrimitive", "val0" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select TheString, IntPrimitive, (select count(*) from SupportBean_S0#keepall as S0 where sb.IntPrimitive = S0.Id) as val0 " +
@@ -143,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 10, 0L});
+                    new object[] { "G1", 10, 0L });
 
                 env.UndeployAll();
             }
@@ -158,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = new [] { "IntPrimitive","count(*)" };
+                var fieldsOne = new[] { "IntPrimitive", "count(*)" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString select IntPrimitive, count(*) from SupportBean group by IntPrimitive",
                     path);
@@ -168,42 +231,42 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {10, 1L});
+                    new object[] { 10, 1L });
 
                 env.SendEventBean(new SupportBean("G2", 200));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {200, 1L});
+                    new object[] { 200, 1L });
 
                 env.SendEventBean(new SupportBean("G1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {10, 2L});
+                    new object[] { 10, 2L });
 
                 env.SendEventBean(new SupportBean("G1", 11));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {11, 1L});
+                    new object[] { 11, 1L });
 
                 env.SendEventBean(new SupportBean("G2", 200));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {200, 2L});
+                    new object[] { 200, 2L });
 
                 env.SendEventBean(new SupportBean("G2", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {10, 1L});
+                    new object[] { 10, 1L });
 
                 env.UndeployModuleContaining("s0");
 
                 // add "string" : a context property
-                var fieldsTwo = new [] { "TheString","IntPrimitive","count(*)" };
+                var fieldsTwo = new[] { "TheString", "IntPrimitive", "count(*)" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString select TheString, IntPrimitive, count(*) from SupportBean group by IntPrimitive",
                     path);
@@ -213,37 +276,37 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G1", 10, 1L});
+                    new object[] { "G1", 10, 1L });
 
                 env.SendEventBean(new SupportBean("G2", 200));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G2", 200, 1L});
+                    new object[] { "G2", 200, 1L });
 
                 env.SendEventBean(new SupportBean("G1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G1", 10, 2L});
+                    new object[] { "G1", 10, 2L });
 
                 env.SendEventBean(new SupportBean("G1", 11));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G1", 11, 1L});
+                    new object[] { "G1", 11, 1L });
 
                 env.SendEventBean(new SupportBean("G2", 200));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G2", 200, 2L});
+                    new object[] { "G2", 200, 2L });
 
                 env.SendEventBean(new SupportBean("G2", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G2", 10, 1L});
+                    new object[] { "G2", 10, 1L });
 
                 env.UndeployAll();
             }
@@ -258,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = new [] { "IntPrimitive","count(*)" };
+                var fieldsOne = new[] { "IntPrimitive", "count(*)" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString select IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive order by IntPrimitive asc",
                     path);
@@ -274,11 +337,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastNewData[0],
                     fieldsOne,
-                    new object[] {10, 1L});
+                    new object[] { 10, 1L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").GetAndResetLastNewData()[1],
                     fieldsOne,
-                    new object[] {11, 1L});
+                    new object[] { 11, 1L });
 
                 env.Milestone(1);
 
@@ -291,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {200, 2L});
+                    new object[] { 200, 2L });
 
                 env.Milestone(3);
 
@@ -299,11 +362,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastNewData[0],
                     fieldsOne,
-                    new object[] {10, 2L});
+                    new object[] { 10, 2L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").GetAndResetLastNewData()[1],
                     fieldsOne,
-                    new object[] {11, 0L});
+                    new object[] { 11, 0L });
 
                 env.Milestone(4);
 
@@ -312,16 +375,16 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastNewData[0],
                     fieldsOne,
-                    new object[] {10, 2L});
+                    new object[] { 10, 2L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").GetAndResetLastNewData()[1],
                     fieldsOne,
-                    new object[] {200, 0L});
+                    new object[] { 200, 0L });
 
                 env.UndeployModuleContaining("s0");
 
                 // add "string" : add context property
-                var fieldsTwo = new [] { "TheString","IntPrimitive","count(*)" };
+                var fieldsTwo = new[] { "TheString", "IntPrimitive", "count(*)" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString select TheString, IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive order by TheString, IntPrimitive asc",
                     path);
@@ -337,11 +400,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastNewData[0],
                     fieldsTwo,
-                    new object[] {"G1", 10, 1L});
+                    new object[] { "G1", 10, 1L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").GetAndResetLastNewData()[1],
                     fieldsTwo,
-                    new object[] {"G1", 11, 1L});
+                    new object[] { "G1", 11, 1L });
 
                 env.SendEventBean(new SupportBean("G1", 10));
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -352,17 +415,17 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsTwo,
-                    new object[] {"G2", 200, 2L});
+                    new object[] { "G2", 200, 2L });
 
                 env.SendEventBean(new SupportBean("G1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastNewData[0],
                     fieldsTwo,
-                    new object[] {"G1", 10, 2L});
+                    new object[] { "G1", 10, 2L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").GetAndResetLastNewData()[1],
                     fieldsTwo,
-                    new object[] {"G1", 11, 0L});
+                    new object[] { "G1", 11, 0L });
 
                 env.Milestone(7);
 
@@ -371,11 +434,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastNewData[0],
                     fieldsTwo,
-                    new object[] {"G2", 10, 2L});
+                    new object[] { "G2", 10, 2L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").GetAndResetLastNewData()[1],
                     fieldsTwo,
-                    new object[] {"G2", 200, 0L});
+                    new object[] { "G2", 200, 0L });
 
                 env.UndeployAll();
             }
@@ -390,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = new [] { "IntPrimitive","col1","col2","col3" };
+                var fieldsOne = new[] { "IntPrimitive", "col1", "col2", "col3" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select IntPrimitive, count(*) as col1, toArray(window(*).selectFrom(v->v.LongPrimitive)) as col2, first().LongPrimitive as col3 " +
@@ -405,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsOne,
                     new object[] {
                         10, 1L,
-                        new object[] {200L}, 200L
+                        new object[] { 200L }, 200L
                     });
 
                 env.SendEventBean(MakeEvent("G1", 10, 300L));
@@ -414,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsOne,
                     new object[] {
                         10, 2L,
-                        new object[] {200L, 300L}, 200L
+                        new object[] { 200L, 300L }, 200L
                     });
 
                 env.Milestone(0);
@@ -425,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsOne,
                     new object[] {
                         10, 1L,
-                        new object[] {1000L}, 1000L
+                        new object[] { 1000L }, 1000L
                     });
 
                 env.Milestone(1);
@@ -436,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsOne,
                     new object[] {
                         10, 2L,
-                        new object[] {1000L, 1010L}, 1000L
+                        new object[] { 1000L, 1010L }, 1000L
                     });
 
                 env.UndeployModuleContaining("s0");
@@ -449,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var fieldsOne = new [] { "col1" };
+                var fieldsOne = new[] { "col1" };
                 var path = new RegressionPath();
 
                 var eplCtx =
@@ -465,7 +528,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {3});
+                    new object[] { 3 });
 
                 env.MilestoneInc(milestone);
 
@@ -473,7 +536,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {2});
+                    new object[] { 2 });
 
                 env.MilestoneInc(milestone);
 
@@ -481,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {7});
+                    new object[] { 7 });
 
                 env.MilestoneInc(milestone);
 
@@ -489,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {3});
+                    new object[] { 3 });
 
                 env.MilestoneInc(milestone);
 
@@ -497,14 +560,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {-1});
+                    new object[] { -1 });
 
                 env.MilestoneInc(milestone);
 
                 env.UndeployModuleContaining("s0");
 
                 // test mixed with access
-                var fieldsTwo = new [] { "col1","col2" };
+                var fieldsTwo = new[] { "col1", "col2" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select sum(IntPrimitive) as col1, toArray(window(*).selectFrom(v->v.IntPrimitive)) as col2 " +
@@ -518,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsTwo,
                     new object[] {
                         8,
-                        new object[] {8}
+                        new object[] { 8 }
                     });
 
                 env.SendEventBean(new SupportBean("G2", 5));
@@ -527,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsTwo,
                     new object[] {
                         5,
-                        new object[] {5}
+                        new object[] { 5 }
                     });
 
                 env.SendEventBean(new SupportBean("G1", 1));
@@ -536,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsTwo,
                     new object[] {
                         9,
-                        new object[] {8, 1}
+                        new object[] { 8, 1 }
                     });
 
                 env.SendEventBean(new SupportBean("G2", 2));
@@ -545,13 +608,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fieldsTwo,
                     new object[] {
                         7,
-                        new object[] {5, 2}
+                        new object[] { 5, 2 }
                     });
 
                 env.UndeployModuleContaining("s0");
 
                 // test only access
-                var fieldsThree = new [] { "col1" };
+                var fieldsThree = new[] { "col1" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select toArray(window(*).selectFrom(v->v.IntPrimitive)) as col1 " +
@@ -563,25 +626,25 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsThree,
-                    new object[] {new object[] {8}});
+                    new object[] { new object[] { 8 } });
 
                 env.SendEventBean(new SupportBean("G2", 5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsThree,
-                    new object[] {new object[] {5}});
+                    new object[] { new object[] { 5 } });
 
                 env.SendEventBean(new SupportBean("G1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsThree,
-                    new object[] {new object[] {8, 1}});
+                    new object[] { new object[] { 8, 1 } });
 
                 env.SendEventBean(new SupportBean("G2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsThree,
-                    new object[] {new object[] {5, 2}});
+                    new object[] { new object[] { 5, 2 } });
 
                 env.UndeployModuleContaining("s0");
 
@@ -617,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = new [] { "IntPrimitive","col1" };
+                var fieldsOne = new[] { "IntPrimitive", "col1" };
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select IntPrimitive, count(*) as col1 " +
@@ -635,7 +698,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {10, 2L});
+                    new object[] { 10, 2L });
 
                 env.Milestone(0);
 
@@ -645,7 +708,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {10, 3L});
+                    new object[] { 10, 3L });
 
                 env.Milestone(1);
 
@@ -657,7 +720,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {20, 1L});
+                    new object[] { 20, 1L });
 
                 env.SendEventBean(new SupportBean_S0(5));
 
@@ -667,13 +730,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {20, 2L});
+                    new object[] { 20, 2L });
 
                 env.SendEventBean(new SupportBean("G1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldsOne,
-                    new object[] {10, 5L});
+                    new object[] { 10, 5L });
 
                 env.UndeployModuleContaining("s0");
                 env.UndeployAll();
@@ -689,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = new [] { "TheString","col1" };
+                var fields = new[] { "TheString", "col1" };
                 var eplUngrouped =
                     "@Name('S1') context SegmentedByString select TheString,sum(IntPrimitive) as col1 from SupportBean";
                 env.CompileDeploy(eplUngrouped, path).AddListener("S1");
@@ -704,26 +767,26 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2});
+                    new object[] { "G1", 2 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1",
-                        new int[] {2}
+                        new int[] { 2 }
                     });
 
                 env.SendEventBean(new SupportBean("G1", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 5});
+                    new object[] { "G1", 5 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1",
-                        new int[] {2, 3}
+                        new int[] { 2, 3 }
                     });
                 AssertPartitionInfo(env);
 
@@ -734,13 +797,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 10});
+                    new object[] { "G2", 10 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G2",
-                        new int[] {10}
+                        new int[] { 10 }
                     });
 
                 env.Milestone(2);
@@ -749,13 +812,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 21});
+                    new object[] { "G2", 21 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G2",
-                        new int[] {10, 11}
+                        new int[] { 10, 11 }
                     });
 
                 env.Milestone(3);
@@ -764,13 +827,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 9});
+                    new object[] { "G1", 9 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1",
-                        new int[] {2, 3, 4}
+                        new int[] { 2, 3, 4 }
                     });
 
                 env.Milestone(4);
@@ -779,13 +842,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 100});
+                    new object[] { "G3", 100 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G3",
-                        new int[] {100}
+                        new int[] { 100 }
                     });
 
                 env.Milestone(5);
@@ -794,13 +857,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 201});
+                    new object[] { "G3", 201 });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G3",
-                        new int[] {100, 101}
+                        new int[] { 100, 101 }
                     });
 
                 env.UndeployModuleContaining("S1");
@@ -816,8 +879,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "SegmentedByString",
                     ContextPartitionSelectorAll.INSTANCE);
                 Assert.AreEqual(1, partitions.Identifiers.Count);
-                var ident = (ContextPartitionIdentifierPartitioned) partitions.Identifiers.Values.First();
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {"G1"}, ident.Keys);
+                var ident = (ContextPartitionIdentifierPartitioned)partitions.Identifiers.Values.First();
+                EPAssertionUtil.AssertEqualsExactOrder(new[] { "G1" }, ident.Keys);
             }
         }
 
@@ -830,7 +893,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = new [] { "TheString","IntPrimitive","col1" };
+                var fields = new[] { "TheString", "IntPrimitive", "col1" };
                 var eplGrouped =
                     "@Name('S1') context SegmentedByString select TheString,IntPrimitive,sum(LongPrimitive) as col1 from SupportBean group by IntPrimitive";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");
@@ -847,18 +910,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 1, 10L});
+                    new object[] { "G1", 1, 10L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1", 1,
-                        new long[] {10L}
+                        new long[] { 10L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 1, 10L});
+                    new object[] { "G1", 1, 10L });
 
                 env.Milestone(0);
 
@@ -866,18 +929,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 1, 25L});
+                    new object[] { "G2", 1, 25L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G2", 1,
-                        new long[] {25L}
+                        new long[] { 25L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 1, 25L});
+                    new object[] { "G2", 1, 25L });
 
                 env.Milestone(1);
 
@@ -885,18 +948,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2, 2L});
+                    new object[] { "G1", 2, 2L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1", 2,
-                        new long[] {2L}
+                        new long[] { 2L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2, 2L});
+                    new object[] { "G1", 2, 2L });
 
                 env.Milestone(2);
 
@@ -904,18 +967,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 2, 100L});
+                    new object[] { "G2", 2, 100L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G2", 2,
-                        new long[] {100L}
+                        new long[] { 100L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 2, 100L});
+                    new object[] { "G2", 2, 100L });
 
                 env.Milestone(3);
 
@@ -923,18 +986,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 1, 20L});
+                    new object[] { "G1", 1, 20L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1", 1,
-                        new long[] {10L, 10L}
+                        new long[] { 10L, 10L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 1, 10L});
+                    new object[] { "G1", 1, 10L });
 
                 env.Milestone(4);
 
@@ -942,18 +1005,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2, 5L});
+                    new object[] { "G1", 2, 5L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1", 2,
-                        new long[] {2L, 3L}
+                        new long[] { 2L, 3L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2, 5L});
+                    new object[] { "G1", 2, 5L });
 
                 env.Milestone(5);
 
@@ -961,18 +1024,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 2, 201L});
+                    new object[] { "G2", 2, 201L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G2", 2,
-                        new long[] {100L, 101L}
+                        new long[] { 100L, 101L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G2", 2, 201L});
+                    new object[] { "G2", 2, 201L });
 
                 env.Milestone(6);
 
@@ -980,18 +1043,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 1, -1L});
+                    new object[] { "G3", 1, -1L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G3", 1,
-                        new long[] {-1L}
+                        new long[] { -1L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 1, -1L});
+                    new object[] { "G3", 1, -1L });
 
                 env.Milestone(7);
 
@@ -999,18 +1062,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 2, -2L});
+                    new object[] { "G3", 2, -2L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G3", 2,
-                        new long[] {-2L}
+                        new long[] { -2L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 2, -2L});
+                    new object[] { "G3", 2, -2L });
 
                 env.Milestone(8);
 
@@ -1018,18 +1081,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 1, -4L});
+                    new object[] { "G3", 1, -4L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G3", 1,
-                        new long[] {-1L, -3L}
+                        new long[] { -1L, -3L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G3", 1, -4L});
+                    new object[] { "G3", 1, -4L });
 
                 env.Milestone(9);
 
@@ -1037,18 +1100,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("S1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2, 8L});
+                    new object[] { "G1", 2, 8L });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S2").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
                         "G1", 2,
-                        new long[] {2L, 3L, 3L}
+                        new long[] { 2L, 3L, 3L }
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("S3").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"G1", 2, 5L});
+                    new object[] { "G1", 2, 5L });
 
                 env.UndeployAll();
             }

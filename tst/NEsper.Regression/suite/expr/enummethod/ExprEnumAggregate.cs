@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumAggregateEvents());
+			WithEvents(execs);
+			WithScalar(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumAggregateScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumAggregateEvents());
 			return execs;
 		}
 
@@ -44,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					stmt => LambdaAssertionUtil.AssertTypes(
 						stmt.EventType,
 						fields,
-						new[] {typeof(int?), typeof(string), typeof(string), typeof(int?), typeof(int?)}));
+						new[] { typeof(int?), typeof(string), typeof(string), typeof(int?), typeof(int?) }));
 
 				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2"))
 					.Expect(fields, 25, ", E1, E2, E2", "E1,E2,E2", 12 + 21 + 22, 312 + 321 + 322);

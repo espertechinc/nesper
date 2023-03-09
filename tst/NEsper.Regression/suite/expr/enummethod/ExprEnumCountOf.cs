@@ -19,15 +19,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumCountOf
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumCountOfEvents());
-			execs.Add(new ExprEnumCountOfScalar());
+WithEvents(execs);
+WithScalar(execs);
 			return execs;
 		}
-
+public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprEnumCountOfScalar());
+    return execs;
+}public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprEnumCountOfEvents());
+    return execs;
+}
 		internal class ExprEnumCountOfEvents : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)

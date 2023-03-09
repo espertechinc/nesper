@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -38,21 +39,30 @@ namespace com.espertech.esper.compiler.@internal.util
 
             foreach (var importDecl in imports) {
                 if (importDecl.Namespace != null) {
-                    usingsList.Add(importDecl.UsingDirective);
+                    foreach (var usingDirective in importDecl.UsingDirectives) {
+                        usingsList.Add(usingDirective);
+                    }
                 }
             }
 
             return usingsList;
         }
+        
+        
 
         public static void Importsdecl(
             StringBuilder builder,
             ICollection<ImportDecl> imports)
         {
-            foreach (var importDecl in imports) {
-                if (importDecl.Namespace != null) {
-                    Importdecl(builder, importDecl);
-                }
+            var usingDirectives = imports
+                .Where(_ => _.Namespace != null)
+                .SelectMany(_ => _.UsingDirectives)
+                .Distinct(new UsingDirectiveEqualityComparer())
+                .Select(_ => _.NormalizeWhitespace());
+
+            foreach (var usingDirective in usingDirectives) {
+                builder.Append(usingDirective.ToFullString());
+                builder.Append('\n');
             }
 
             builder.Append("\n");
@@ -111,24 +121,19 @@ namespace com.espertech.esper.compiler.@internal.util
             builder.Append(text);
         }
 
-        public static void Importdecl(
-            StringBuilder builder,
-            ImportDecl importDecl)
+        public class UsingDirectiveEqualityComparer : IEqualityComparer<UsingDirectiveSyntax>
         {
-            builder.Append("using ");
-
-            if (importDecl.IsNamespaceImport) {
-                builder.Append(importDecl.Namespace);
-            }
-            else {
-                builder.Append(importDecl.TypeName);
-                builder.Append(" = ");
-                builder.Append(importDecl.Namespace);
-                builder.Append(".");
-                builder.Append(importDecl.TypeName);
+            public bool Equals(
+                UsingDirectiveSyntax x,
+                UsingDirectiveSyntax y)
+            {
+                return string.Equals(x.ToFullString(), y.ToFullString());
             }
 
-            builder.Append(";\n");
+            public int GetHashCode(UsingDirectiveSyntax node)
+            {
+                return node.ToFullString().GetHashCode();
+            }
         }
     }
 } // end of namespace

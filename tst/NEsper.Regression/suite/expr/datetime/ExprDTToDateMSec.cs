@@ -23,11 +23,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
     public class ExprDTToDateMSec
     {
-        public static ICollection<RegressionExecution> Executions() {
-            List<RegressionExecution> executions = new List<RegressionExecution>();
-            executions.Add(new ExprToDateTimeExChain());
-            executions.Add(new ExprDTToDateTimeExMSecValue());
-            return executions;
+        public static ICollection<RegressionExecution> Executions()
+        {
+            List<RegressionExecution> execs = new List<RegressionExecution>();
+            WithToDateTimeExChain(execs);
+            WithDTToDateTimeExMSecValue(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDTToDateTimeExMSecValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTToDateTimeExMSecValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithToDateTimeExChain(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprToDateTimeExChain());
+            return execs;
         }
 
         public class ExprToDateTimeExChain : RegressionExecution
@@ -45,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 Assert.That(theEvent.Get("c"), Is.InstanceOf<DateTimeEx>());
 
                 var expDateTime = DateTimeEx.UtcInstance(0).AddDays(1);
-                var theDateTime = (DateTimeEx) theEvent.Get("c");
+                var theDateTime = (DateTimeEx)theEvent.Get("c");
                 Assert.That(theDateTime, Is.EqualTo(expDateTime));
 
                 env.UndeployAll();
@@ -70,31 +85,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 var eplFragment =
                     "@Name('s0') select " +
-
                     "current_timestamp.toDateTime() as val1a," +
                     "LongDate.toDateTime() as val1b," +
                     "DateTimeEx.toDateTime() as val1c," +
                     "DateTimeOffset.toDateTime() as val1d," +
                     "DateTimeEx.toDateTime() as val1e," +
-
                     "current_timestamp.toDateTimeOffset() as val2a," +
                     "LongDate.toDateTimeOffset() as val2b," +
                     "DateTime.toDateTimeOffset() as val2c," +
                     "DateTimeOffset.toDateTimeOffset() as val2d," +
                     "DateTimeEx.toDateTimeOffset() as val2e," +
-
                     "current_timestamp.toDateTimeEx() as val3a," +
                     "LongDate.toDateTimeEx() as val3b," +
                     "DateTime.toDateTimeEx() as val3c," +
                     "DateTimeOffset.toDateTimeEx() as val3d," +
                     "DateTimeEx.toDateTimeEx() as val3e," +
-
                     "current_timestamp.toMillisec() as val4a," +
                     "LongDate.toMillisec() as val4b," +
                     "DateTime.toMillisec() as val4c," +
                     "DateTimeOffset.toMillisec() as val4d," +
                     "DateTimeEx.toMillisec() as val4e" +
-
                     " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");

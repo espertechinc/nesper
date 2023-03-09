@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("create window MainEventWindow#length(10000) as MyVariantTwoTypedSBVariant", path);
                 env.CompileDeploy(
                     "insert into MainEventWindow select " +
-                    typeof(EventVariantStream).Name +
+                    nameof(EventVariantStream) +
                     ".PreProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
                     path);
                 env.CompileDeploy("@Name('s0') select * from MainEventWindow where TheString = 'E'", path);

@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             }
 
             try {
-                var clazz = TypeHelper.GetTypeForSimpleName(type, importService.ClassForNameProvider);
+                var clazz = TypeHelper.GetTypeForSimpleName(type, importService.TypeResolver);
                 if (clazz == null) {
                     return null;
                 }

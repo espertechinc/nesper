@@ -102,6 +102,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>logging settings</value>
         public ConfigurationCompilerLogging Logging { get; private set; }
+        
+        /// <summary>
+        /// Returns true if the compiler should set optimization to debug.
+        /// </summary>
+        public bool IsDebugOptimization { get; private set; }
 
         /// <summary>
         ///     Returns the expression-related settings for compiler.

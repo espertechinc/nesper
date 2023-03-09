@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.runtime.client;
 
@@ -23,12 +24,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerRollout
 	{
-		public static DeployerRolloutDeploymentResult Rollout(
-			int currentStatementId,
-			ICollection<EPDeploymentRolloutCompiled> itemsProvided,
-			EPRuntimeSPI runtime)
+		public static DeployerRolloutDeploymentResult Rollout(DeployerRolloutArgs deployerRolloutArgs)
 		{
-			var items = itemsProvided.ToArray();
+			var currentStatementId = deployerRolloutArgs.CurrentStatementId;
+			var items = deployerRolloutArgs.ItemsProvided.ToArray();
+			var runtime = deployerRolloutArgs.Runtime;
 
 			// per-deployment: determine deployment id
 			var deploymentIds = new string[items.Length];
@@ -48,7 +48,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			for (var i = 0; i < items.Length; i++) {
 				var classLoader = DeployerHelperResolver.GetClassLoader(i, items[i].Options.DeploymentClassLoaderOption, runtime.ServicesContext);
 				try {
-					moduleProviders[i] = ModuleProviderUtil.Analyze(items[i].Compiled, classLoader, runtime.ServicesContext.ClassProvidedPathRegistry);
+					moduleProviders[i] = ModuleProviderUtil.Analyze(
+						items[i].Compiled,
+						classLoader,
+						runtime.ServicesContext.ClassProvidedPathRegistry);
 				}
 				catch (Exception) {
 					RolloutCleanClassloader(deploymentIds, runtime.ServicesContext);
@@ -167,7 +170,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			EPServicesContext services)
 		{
 			for (var i = 0; i < deploymentIds.Length; i++) {
-				services.ClassLoaderParent.Remove(deploymentIds[i]);
+				services.TypeResolverParent.Remove(deploymentIds[i]);
 			}
 		}
 

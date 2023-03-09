@@ -10,6 +10,8 @@ using System.Xml.XPath;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
+using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
 
@@ -18,18 +20,22 @@ using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUti
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventXMLWConfig
+    public class TestSuiteEventXMLWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
+            var runtimeProvider = new EPRuntimeProvider();
+            
             ConfigurationCommonEventTypeXMLDOM desc = new ConfigurationCommonEventTypeXMLDOM();
             desc.RootElementName = "ABC";
             desc.StartTimestampPropertyName = "mystarttimestamp";
             desc.EndTimestampPropertyName = "myendtimestamp";
             desc.AddXPathProperty("mystarttimestamp", "/test/prop", XPathResultType.Number);
 
-            TryInvalidConfigurationCompileAndRuntime(SupportConfigFactory.GetConfiguration(),
+            TryInvalidConfigurationCompileAndRuntime(
+                runtimeProvider,
+                SupportConfigFactory.GetConfiguration(Container),
                 config => config.Common.AddEventType("TypeXML", desc),
                 "Declared start timestamp property 'mystarttimestamp' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.Nullable<System.Double>'");
         }

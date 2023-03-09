@@ -37,10 +37,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [SetUp]
         public void SetUp()
         {
-            var supportEventTypeFactory = SupportEventTypeFactory.GetInstance(container);
+            var supportEventTypeFactory = SupportEventTypeFactory.GetInstance(Container);
 
             lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                container.RWLockManager());
+                Container.RWLockManager());
 
             eventTypeIndex = new EventTypeIndex(lockFactory);
             indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);

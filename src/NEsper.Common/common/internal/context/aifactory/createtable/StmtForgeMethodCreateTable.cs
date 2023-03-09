@@ -325,7 +325,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     var propname = identNode.FullUnresolvedName.Trim();
                     var clazz = TypeHelper.GetTypeForSimpleName(
                         propname,
-                        classpathImportService.ClassForNameProvider);
+                        classpathImportService.TypeResolver);
                     if (propname.ToLowerInvariant().Trim().Equals("@object")) {
                         clazz = typeof(object);
                     }
@@ -333,7 +333,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     ImportException ex = null;
                     if (clazz == null) {
                         try {
-                            clazz = classpathImportService.ResolveClass(propname, false, services.ClassProvidedExtension);
+                            clazz = classpathImportService.ResolveType(propname, false, services.ClassProvidedExtension);
                         }
                         catch (ImportException e) {
                             ex = e;

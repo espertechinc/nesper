@@ -24,25 +24,9 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLDataflow
+    public class TestSuiteEPLDataflow : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -100,49 +84,49 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowAPIConfigAndInstance()
         {
-            RegressionRunner.Run(session, new EPLDataflowAPIConfigAndInstance());
+            RegressionRunner.Run(_session, new EPLDataflowAPIConfigAndInstance());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowAPIExceptions()
         {
-            RegressionRunner.Run(session, new EPLDataflowAPIExceptions());
+            RegressionRunner.Run(_session, new EPLDataflowAPIExceptions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowAPIStartCaptive()
         {
-            RegressionRunner.Run(session, new EPLDataflowAPIStartCaptive());
+            RegressionRunner.Run(_session, new EPLDataflowAPIStartCaptive());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowAPIStatistics()
         {
-            RegressionRunner.Run(session, new EPLDataflowAPIStatistics());
+            RegressionRunner.Run(_session, new EPLDataflowAPIStatistics());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowExampleRollingTopWords()
         {
-            RegressionRunner.Run(session, new EPLDataflowExampleRollingTopWords());
+            RegressionRunner.Run(_session, new EPLDataflowExampleRollingTopWords());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowExampleVwapFilterSelectJoin()
         {
-            RegressionRunner.Run(session, new EPLDataflowExampleVwapFilterSelectJoin());
+            RegressionRunner.Run(_session, new EPLDataflowExampleVwapFilterSelectJoin());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowExampleWordCount()
         {
-            RegressionRunner.Run(session, new EPLDataflowExampleWordCount());
+            RegressionRunner.Run(_session, new EPLDataflowExampleWordCount());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowOpLogSink()
         {
-            RegressionRunner.Run(session, new EPLDataflowOpLogSink());
+            RegressionRunner.Run(_session, new EPLDataflowOpLogSink());
         }
 
         /// <summary>

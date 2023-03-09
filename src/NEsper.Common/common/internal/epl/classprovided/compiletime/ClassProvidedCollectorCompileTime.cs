@@ -15,16 +15,16 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
 	public class ClassProvidedCollectorCompileTime : ClassProvidedCollector {
 	    private readonly IDictionary<string, ClassProvided> moduleClassProvideds;
-	    private readonly ClassLoader parentClassLoader;
+	    private readonly TypeResolver parentTypeResolver;
 
-	    public ClassProvidedCollectorCompileTime(IDictionary<string, ClassProvided> moduleClassProvideds, ClassLoader parentClassLoader) {
+	    public ClassProvidedCollectorCompileTime(IDictionary<string, ClassProvided> moduleClassProvideds, TypeResolver parentTypeResolver) {
 	        this.moduleClassProvideds = moduleClassProvideds;
-	        this.parentClassLoader = parentClassLoader;
+	        this.parentTypeResolver = parentTypeResolver;
 	    }
 
 	    public void RegisterClass(string className, ClassProvided meta) {
 	        moduleClassProvideds.Put(className, meta);
-	        meta.LoadClasses(parentClassLoader);
+	        meta.LoadClasses(parentTypeResolver);
 	    }
 	}
 } // end of namespace

@@ -8,8 +8,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+#if NETCORE
+using System.Runtime.Loader;
+
+using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.reporting;
+#endif
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -20,7 +30,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
-using static com.espertech.esper.common.client.util.UndeployRethrowPolicy; // RETHROW_FIRST
+using static com.espertech.esper.common.client.util.UndeployRethrowPolicy;
 using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperDependencies; // getDependenciesConsumed, getDependenciesProvided
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
@@ -31,6 +41,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
 		private readonly EPServicesContext _services;
 		private readonly EPRuntimeSPI _runtime;
+		private readonly IArtifactRepositoryManager _artifactRepositoryManager;
 
 		public EPDeploymentServiceImpl(
 			EPServicesContext services,
@@ -38,6 +49,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			_services = services;
 			_runtime = runtime;
+			_artifactRepositoryManager = _services.Container.ArtifactRepositoryManager();
 		}
 
 		public EPDeploymentRollout Rollout(ICollection<EPDeploymentRolloutCompiled> items)
@@ -88,7 +100,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					currentStatementId = 1;
 				}
 
-				rolloutResult = DeployerRollout.Rollout(currentStatementId.Value, items, _runtime);
+				rolloutResult = DeployerRollout.Rollout(
+						new DeployerRolloutArgs {
+							CurrentStatementId = currentStatementId.Value,
+							ItemsProvided = items,
+							Runtime = _runtime
+						}
+					);
 				statementIdRecovery.CurrentStatementId = currentStatementId + rolloutResult.NumStatements;
 
 				// dispatch event
@@ -115,41 +133,47 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			EPCompiled compiled,
 			DeploymentOptions options)
 		{
-			using (_services.Container.EnterContextualReflection()) {
-				if (options == null) {
-					options = new DeploymentOptions();
+			if (options == null) {
+				options = new DeploymentOptions();
+			}
+
+			ValidateRuntimeAlive();
+			CheckManifest(-1, compiled.Manifest);
+
+			DeploymentInternal deployerResult;
+
+			using (GetDeploymentLock(options)) {
+				var statementIdRecovery = _services.EpServicesHA.StatementIdRecoveryService;
+				var currentStatementId = statementIdRecovery.CurrentStatementId;
+				if (currentStatementId == null) {
+					currentStatementId = 1;
 				}
 
-				ValidateRuntimeAlive();
-				CheckManifest(-1, compiled.Manifest);
+				var deploymentId = DeployerHelperResolver.DetermineDeploymentIdCheckExists(
+					-1,
+					options,
+					_runtime.ServicesContext.DeploymentLifecycleService);
 
-				DeploymentInternal deployerResult;
+				var artifactRepository = _artifactRepositoryManager
+					.GetArtifactRepository(deploymentId, true);
+				var recompiled = new EPCompiled(
+					artifactRepository,
+					compiled.Artifacts.Select(source => artifactRepository.Deploy(source)).ToList(),
+					compiled.Manifest);
+				
+				deployerResult = Deployer.DeployFresh(
+					deploymentId,
+					currentStatementId.Value,
+					recompiled,
+					options.StatementNameRuntime,
+					options.StatementUserObjectRuntime,
+					options.StatementSubstitutionParameter,
+					options.DeploymentClassLoaderOption,
+					_runtime);
+				statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
 
-				using (GetDeploymentLock(options)) {
-					var statementIdRecovery = _services.EpServicesHA.StatementIdRecoveryService;
-					var currentStatementId = statementIdRecovery.CurrentStatementId;
-					if (currentStatementId == null) {
-						currentStatementId = 1;
-					}
-
-					var deploymentId = DeployerHelperResolver.DetermineDeploymentIdCheckExists(
-						-1,
-						options,
-						_runtime.ServicesContext.DeploymentLifecycleService);
-					deployerResult = Deployer.DeployFresh(
-						deploymentId,
-						currentStatementId.Value,
-						compiled,
-						options.StatementNameRuntime,
-						options.StatementUserObjectRuntime,
-						options.StatementSubstitutionParameter,
-						options.DeploymentClassLoaderOption,
-						_runtime);
-					statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
-
-					// dispatch event
-					DispatchOnDeploymentEvent(deployerResult, -1);
-				}
+				// dispatch event
+				DispatchOnDeploymentEvent(deployerResult, -1);
 
 				return MakeDeployment(deployerResult);
 			}
@@ -310,7 +334,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				options = new UndeploymentOptions();
 			}
 
-
 			using (options.UndeploymentLockStrategy.Acquire(_services.EventProcessingRWLock)) {
 				// build list of statements in reverse order
 				var reverted = new StatementContext[statements.Length];
@@ -350,6 +373,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				_services.EpServicesHA.DeploymentRecoveryService.Remove(deploymentId);
 				_services.DeploymentLifecycleService.RemoveDeployment(deploymentId);
 
+				//Console.WriteLine($"UndeployRemoveInternal: RemoveArtifactRepository {deploymentId}");
+				_artifactRepositoryManager.RemoveArtifactRepository(deploymentId);
+				
 				DispatchOnUndeploymentEvent(deployment, -1);
 
 				// rethrow exception if configured
@@ -422,7 +448,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				deployed.ModuleProvider.ModuleName,
 				stmts,
 				rolloutItemNumber);
-			foreach (DeploymentStateListener listener in listeners) {
+			foreach (var listener in listeners) {
 				try {
 					listener.OnDeployment(@event);
 				}

@@ -168,9 +168,11 @@ namespace NEsper.Avro.Getter
                 .IfRefNullReturnFalse("inner")
                 .MethodReturn(
                     CodegenExpressionBuilder.NotEqualsNull(
-                        CodegenExpressionBuilder.ExprDotMethodChain(CodegenExpressionBuilder.Ref("inner"))
-                            .Get("Schema")
-                            .Add("GetField", CodegenExpressionBuilder.Constant(_propertyName))));
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(SchemaExtensions),
+                            "GetField",
+                            CodegenExpressionBuilder.ExprDotMethodChain(CodegenExpressionBuilder.Ref("inner")).Get("Schema"),
+                            CodegenExpressionBuilder.Constant(_propertyName))));
         }
     }
 } // end of namespace

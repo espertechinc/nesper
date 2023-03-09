@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
             catch (InvalidCastException e) {
                 var message = "Error casting observer factory instance to " +
-                              typeof(ObserverFactory).Name +
+                              nameof(ObserverFactory) +
                               " interface for observer '" +
                               spec.ObjectName +
                               "'";
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
             catch (InvalidCastException e) {
                 var message = "Error casting guard forge instance to " +
-                              typeof(GuardForge).Name +
+                              nameof(GuardForge) +
                               " interface for guard '" +
                               spec.ObjectName +
                               "'";

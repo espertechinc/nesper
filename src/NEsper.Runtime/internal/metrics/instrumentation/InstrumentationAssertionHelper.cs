@@ -67,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
             {
                 var spi = (EPRuntimeSPI) runtime;
                 assertionService = TypeHelper.Instantiate<InstrumentationAssertionService>(
-                    provider, spi.ServicesContext.ImportServiceRuntime.ClassForNameProvider);
+                    provider, spi.ServicesContext.ImportServiceRuntime.TypeResolver);
             }
         }
 

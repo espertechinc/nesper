@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     new[] {true},
                     false,
                     false);
-                FilterSpecValidatedDesc descX = FilterSpecCompiler.ValidateAllowSubquery(
+                var descX = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
                     streamTypeService,
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     null,
                     statementRawInfo,
                     services);
-                TableQueryStreamSpec tableStreamSpec = new TableQueryStreamSpec(
+                var tableStreamSpec = new TableQueryStreamSpec(
                     streamSpec.OptionalStreamName,
                     streamSpec.ViewSpecs,
                     streamSpec.Options,
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     false,
                     false);
 
-                FilterSpecValidatedDesc validated = FilterSpecCompiler.ValidateAllowSubquery(
+                var validated = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
                     streamTypeService,
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         services);
                 }
 
-                NamedWindowConsumerStreamSpec consumer = new NamedWindowConsumerStreamSpec(
+                var consumer = new NamedWindowConsumerStreamSpec(
                     namedWindowInfo,
                     streamSpec.OptionalStreamName,
                     streamSpec.ViewSpecs,
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 false,
                 false);
 
-            FilterSpecCompiledDesc desc = FilterSpecCompiler.MakeFilterSpec(
+            var desc = FilterSpecCompiler.MakeFilterSpec(
                 eventType, 
                 eventTypeName,
                 rawFilterSpec.FilterExpressions,
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 statementRawInfo,
                 services);
             
-            FilterStreamSpecCompiled compiled = new FilterStreamSpecCompiled(
+            var compiled = new FilterStreamSpecCompiled(
                 desc.FilterSpecCompiled,
                 streamSpec.ViewSpecs,
                 streamSpec.OptionalStreamName,
@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var nodeStack = new Stack<EvalForgeNode>();
 
             // determine ordered tags
-            ISet<string> allTagNamesOrdered = FilterSpecCompilerTagUtil.AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
+            var allTagNamesOrdered = FilterSpecCompilerTagUtil.AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
 
             // construct root : assigns factory node ids
             var top = streamSpecRaw.EvalForgeNode;
@@ -291,7 +291,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 services.ImportServiceCompileTime);
             hook?.Pattern(root);
 
-            PatternStreamSpecCompiled compiled = new PatternStreamSpecCompiled(
+            var compiled = new PatternStreamSpecCompiled(
                 root,
                 tags.TaggedEventTypes,
                 tags.ArrayEventTypes,
@@ -482,7 +482,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
                 var exprNodes = filterNode.RawFilterSpec.FilterExpressions;
 
-                FilterSpecCompiledDesc compiled = FilterSpecCompiler.MakeFilterSpec(
+                var compiled = FilterSpecCompiler.MakeFilterSpec(
                     resolvedEventType,
                     eventName,
                     exprNodes,

@@ -27,16 +27,72 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     {
         public static ICollection<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprFilterOptLkupEqualsOneStmt());
-            executions.Add(new ExprFilterOptLkupEqualsOneStmtWPatternSharingIndex());
-            executions.Add(new ExprFilterOptLkupEqualsMultiStmtSharingIndex());
-            executions.Add(new ExprFilterOptLkupEqualsCoercion());
-            executions.Add(new ExprFilterOptLkupInSetOfValue());
-            executions.Add(new ExprFilterOptLkupInRangeWCoercion());
-            executions.Add(new ExprFilterOptLkupDisqualify());
-            executions.Add(new ExprFilterOptLkupCurrentTimestamp());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithEqualsOneStmt(execs);
+            WithEqualsOneStmtWPatternSharingIndex(execs);
+            WithEqualsMultiStmtSharingIndex(execs);
+            WithEqualsCoercion(execs);
+            WithInSetOfValue(execs);
+            WithInRangeWCoercion(execs);
+            WithDisqualify(execs);
+            WithCurrentTimestamp(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCurrentTimestamp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupCurrentTimestamp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDisqualify(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupDisqualify());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInRangeWCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupInRangeWCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSetOfValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupInSetOfValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupEqualsCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsMultiStmtSharingIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupEqualsMultiStmtSharingIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsOneStmtWPatternSharingIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupEqualsOneStmtWPatternSharingIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsOneStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptLkupEqualsOneStmt());
+            return execs;
         }
 
         private class ExprFilterOptLkupCurrentTimestamp : RegressionExecution
@@ -80,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
                 env.Compile(objects, path);
 
-                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
 
                 AssertDisqualified(
                     env,
@@ -250,8 +306,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env.Listener("s0").GetAndResetLastNewData(),
                     "s0.Id".SplitCsv(),
                     new object[][] {
-                        new object[] {1},
-                        new object[] {2}
+                        new object[] { 1 },
+                        new object[] { 2 }
                     });
 
                 env.UndeployAll();

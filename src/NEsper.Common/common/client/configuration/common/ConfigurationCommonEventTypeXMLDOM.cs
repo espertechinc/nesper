@@ -202,7 +202,7 @@ namespace com.espertech.esper.common.client.configuration.common
                     castToType = castToType.Replace("[]", "");
                 }
 
-                castToTypeClass = TypeHelper.GetTypeForSimpleName(castToType, ClassForNameProviderDefault.INSTANCE);
+                castToTypeClass = TypeHelper.GetTypeForSimpleName(castToType, TypeResolverDefault.INSTANCE);
                 if (castToTypeClass == null) {
                     throw new ConfigurationException(
                         "Invalid cast-to type for xpath expression named '" + name + "', the type is not recognized");

@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long numEvents = 10000000;
             var myRunnable = new MyRunnable(env.Runtime, numEvents);
             var thread = new Thread(myRunnable.Run);
-            thread.Name = typeof(MultithreadContextStartedBySameEvent).Name;
+            thread.Name = nameof(MultithreadContextStartedBySameEvent);
             thread.Start();
             SupportCompileDeployUtil.ThreadJoin(thread);
 

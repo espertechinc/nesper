@@ -27,7 +27,8 @@ namespace com.espertech.esperio.regression.adapter
 	[TestFixture]
 	public class TestFileSinkGraphs : AbstractIOTest
 	{
-		private EPRuntime runtime;
+		private EPRuntimeProvider _runtimeProvider;
+		private EPRuntime _runtime;
 
 		[SetUp]
 		public void SetUp()
@@ -37,8 +38,9 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Common.AddImportNamespace(typeof(FileSinkFactory));
 			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
 			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
-			runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
-			runtime.Initialize();
+			_runtimeProvider = new EPRuntimeProvider();
+			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
+			_runtime.Initialize();
 		}
 
 		[Test]
@@ -49,7 +51,7 @@ namespace com.espertech.esperio.regression.adapter
 			graph = "create dataflow FlowOne " +
 			        "DefaultSupportSourceOp -> mystreamOne<MyMapEvent> {}" +
 			        "FileSink(mystreamOne, mystreamOne) {file: 'x:\\a.bb'}";
-			TryInvalidCompileGraph(runtime, graph,
+			TryInvalidCompileGraph(_runtime, graph,
 				"Error during compilation: " +
 				"Failed to obtain operator 'FileSink': " +
 				"FileSinkForge expected a single input port");
@@ -70,10 +72,10 @@ namespace com.espertech.esperio.regression.adapter
 			string epl,
 			string message)
 		{
-			var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
+			var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
 			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
 			try {
-				runtime.DataFlowService.Instantiate(
+				_runtime.DataFlowService.Instantiate(
 					stmtGraph.DeploymentId,
 					dataflowName,
 					new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
@@ -84,7 +86,7 @@ namespace com.espertech.esperio.regression.adapter
 			}
 
 			try {
-				runtime.DeploymentService.UndeployAll();
+				_runtime.DeploymentService.UndeployAll();
 			}
 			catch (EPUndeployException e) {
 				throw new EPRuntimeException(e);
@@ -99,7 +101,7 @@ namespace com.espertech.esperio.regression.adapter
 			RunAssertion("MyMapEvent", DefaultSupportGraphEventUtil.GetMapEvents(), false);
 			RunAssertion("MyDefaultSupportGraphEvent", DefaultSupportGraphEventUtil.GetPONOEvents(), true);
 
-			CompileDeploy(runtime, "@public @buseventtype create json schema MyJsonEvent(MyDouble double, MyInt int, MyString string)");
+			CompileDeploy(_runtime, "@public @buseventtype create json schema MyJsonEvent(MyDouble double, MyInt int, MyString string)");
 			RunAssertion("MyJsonEvent", DefaultSupportGraphEventUtil.GetJsonEvents(), true);
 		}
 
@@ -120,12 +122,12 @@ namespace com.espertech.esperio.regression.adapter
 					"file: '" + tempFile + "', " +
 					"append: " + append +
 					"}";
-				var stmtGraph = CompileDeploy(runtime, graph).Statements[0];
+				var stmtGraph = CompileDeploy(_runtime, graph).Statements[0];
 
 				var source = new DefaultSupportSourceOp(events);
 				var options = new EPDataFlowInstantiationOptions();
 				options.OperatorProvider = new DefaultSupportGraphOpProvider(source);
-				var instance = runtime.DataFlowService.Instantiate(stmtGraph.DeploymentId, "WriteCSV", options);
+				var instance = _runtime.DataFlowService.Instantiate(stmtGraph.DeploymentId, "WriteCSV", options);
 				instance.Run();
 
 				var contents = File.ReadAllLines(tempFile)
@@ -149,7 +151,7 @@ namespace com.espertech.esperio.regression.adapter
 			}
 
 
-			UndeployAll(runtime);
+			UndeployAll(_runtime);
 		}
 	}
 } // end of namespace

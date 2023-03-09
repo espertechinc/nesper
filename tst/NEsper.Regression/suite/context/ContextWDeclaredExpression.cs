@@ -19,26 +19,47 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextWDeclaredExpressionSimple());
-            execs.Add(new ContextWDeclaredExpressionAlias());
+            WithSimple(execs);
+            WithAlias(execs);
+            WithWFilter(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextWDeclaredExpressionWFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAlias(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextWDeclaredExpressionAlias());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextWDeclaredExpressionSimple());
             return execs;
         }
 
         private static void TryAssertionExpression(RegressionEnvironment env)
         {
-            var fields = new [] { "c0", "c1", "c2" };
+            var fields = new[] { "c0", "c1", "c2" };
             env.SendEventBean(new SupportBean("E1", -2));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"n", "xnx", "n"});
+                new object[] { "n", "xnx", "n" });
 
             env.SendEventBean(new SupportBean("E2", 1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"p", "xpx", "p"});
+                new object[] { "p", "xpx", "p" });
         }
 
         internal class ContextWDeclaredExpressionSimple : RegressionExecution
@@ -115,8 +136,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("y", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "e1.IntPrimitive","e2.IntPrimitive" },
-                    new object[] {1, 2});
+                    new[] { "e1.IntPrimitive", "e2.IntPrimitive" },
+                    new object[] { 1, 2 });
 
                 env.UndeployAll();
             }

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
@@ -22,10 +23,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         /// <param name="dialect">The dialect.</param>
         /// <param name="script">The script.</param>
+        /// <param name="importService"></param>
         /// <returns></returns>
         Func<ScriptArgs, object> Compile(
             string dialect,
-            ExpressionScriptProvided script);
+            ExpressionScriptProvided script,
+            ImportService importService);
 
         /// <summary>
         /// Verifies the script given the specified dialect.

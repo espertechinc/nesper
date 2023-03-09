@@ -249,6 +249,7 @@ namespace com.espertech.esper.regressionlib.framework
         }
 
         public static void TryInvalidConfigurationRuntime(
+            EPRuntimeProvider runtimeProvider,
             Configuration config,
             Consumer<Configuration> configurer,
             string expected)
@@ -257,7 +258,7 @@ namespace com.espertech.esper.regressionlib.framework
             configurer.Invoke(config);
 
             try {
-                EPRuntimeProvider.GetRuntime(Guid.NewGuid().ToString(), config);
+                runtimeProvider.GetRuntimeInstance(Guid.NewGuid().ToString(), config);
                 Assert.Fail();
             }
             catch (ConfigurationException ex) {
@@ -266,6 +267,7 @@ namespace com.espertech.esper.regressionlib.framework
         }
 
         public static void TryInvalidConfigurationCompileAndRuntime(
+            EPRuntimeProvider runtimeProvider,
             Configuration configuration,
             Consumer<Configuration> configurer,
             string expected)
@@ -275,6 +277,7 @@ namespace com.espertech.esper.regressionlib.framework
                 configurer,
                 "Failed compiler startup: " + expected);
             TryInvalidConfigurationRuntime(
+                runtimeProvider,
                 configuration,
                 configurer,
                 "Failed runtime startup: " + expected);

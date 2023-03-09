@@ -17,14 +17,11 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public class MultiMatchHandlerNoSubqueryWDedup : MultiMatchHandler
     {
-        protected internal static readonly MultiMatchHandlerNoSubqueryWDedup INSTANCE =
-            new MultiMatchHandlerNoSubqueryWDedup();
-
-        protected internal static readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> DEDUPS =
-            new SystemThreadLocal<LinkedHashSet<FilterHandleCallback>>(
+        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes = 
+            new FastThreadLocal<LinkedHashSet<FilterHandleCallback>>(
                 () => new LinkedHashSet<FilterHandleCallback>());
 
-        private MultiMatchHandlerNoSubqueryWDedup()
+        protected internal MultiMatchHandlerNoSubqueryWDedup()
         {
         }
 
@@ -33,7 +30,7 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
             EventBean theEvent)
         {
             if (callbacks.Count >= 8) {
-                var dedup = DEDUPS.GetOrCreate();
+                var dedup = dedupes.GetOrCreate();
                 dedup.Clear();
                 dedup.AddAll(callbacks);
                 foreach (var callback in dedup) {

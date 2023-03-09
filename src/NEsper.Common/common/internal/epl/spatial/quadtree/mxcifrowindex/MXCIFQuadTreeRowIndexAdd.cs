@@ -288,11 +288,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         {
             return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(
                 indexName,
-                string.Format("({0},{1},{2},{3})", 
-                    other.X.RenderAny(),
-                    other.Y.RenderAny(), 
-                    other.W.RenderAny(), 
-                    other.H.RenderAny()));
+                $"({other.X.RenderAny()},{other.Y.RenderAny()},{other.W.RenderAny()},{other.H.RenderAny()})");
         }
     }
 } // end of namespace

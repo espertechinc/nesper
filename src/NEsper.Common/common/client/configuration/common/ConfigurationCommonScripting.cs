@@ -9,20 +9,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.common.client.configuration.common
-{
+namespace com.espertech.esper.common.client.configuration.common {
     /// <summary>
     ///     Holds scripting settings.
     /// </summary>
     [Serializable]
-    public class ConfigurationCommonScripting
-    {
+    public class ConfigurationCommonScripting {
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationCommonScripting()
-        {
-            Engines = new HashSet<string>();
+        internal ConfigurationCommonScripting () {
+            Engines = new HashSet<string> ();
         }
 
         /// <summary>
@@ -35,28 +32,25 @@ namespace com.espertech.esper.common.client.configuration.common
         /// Adds an engine type name.
         /// </summary>
         /// <param name="typeName"></param>
-        public ConfigurationCommonScripting AddEngine(string typeName)
-        {
-            Engines.Add(typeName);
+        public ConfigurationCommonScripting AddEngine (string typeName) {
+            Engines.Add (typeName);
             return this;
         }
 
         /// <summary>
         /// Adds an engine type name.
         /// </summary>
-        /// <param name="typeName"></param>
-        public ConfigurationCommonScripting AddEngine(Type engineType)
-        {
-            return AddEngine(engineType.FullName);
+        /// <param name="engineType">the engine type</param>
+        public ConfigurationCommonScripting AddEngine (Type engineType) {
+            return AddEngine (engineType.FullName);
         }
 
         /// <summary>
         /// Adds an engine type name.
         /// </summary>
-        /// <param name="typeName"></param>
-        public ConfigurationCommonScripting AddEngine<T>()
-        {
-            return AddEngine(typeof(T));
+        /// <typeparam name="T">the engine type</typeparam>
+        public ConfigurationCommonScripting AddEngine<T> () {
+            return AddEngine (typeof (T));
         }
     }
 } // end of namespace

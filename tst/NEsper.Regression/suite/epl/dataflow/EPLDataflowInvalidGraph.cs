@@ -204,7 +204,7 @@ public static IList<RegressionExecution> WithInstantiate(IList<RegressionExecuti
                     "MyGraph",
                     epl,
                     "Failed to instantiate data flow 'MyGraph': Failed to find OnInput method on for operator 'MySBInputOp#1(out1)' class " +
-                    typeof(MySBInputOp).Name +
+                    nameof(MySBInputOp) +
                     ", expected an OnInput method that takes any of {Object, Object[");
             }
         }

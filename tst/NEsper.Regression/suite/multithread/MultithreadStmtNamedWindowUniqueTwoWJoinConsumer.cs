@@ -22,13 +22,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadStmtNamedWindowUniqueTwoWJoinConsumer
     {
-        private int count;
+        private int _count;
+        private EPRuntimeProvider _runtimeProvider;
 
         public void Run(Configuration configuration)
         {
+            _runtimeProvider = new EPRuntimeProvider();
+            
             configuration.Common.AddEventType(typeof(EventOne));
             configuration.Common.AddEventType(typeof(EventTwo));
-
+            
             RunAssertion(1, true, null, null, configuration);
             RunAssertion(2, false, true, Locking.SPIN, configuration);
             RunAssertion(3, false, true, Locking.SUSPEND, configuration);
@@ -57,8 +60,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            var runtime = EPRuntimeProvider.GetRuntime(
-                typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "_" + runtimeNum + "_" + count++,
+            var runtime = _runtimeProvider.GetRuntimeInstance(
+                nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "_" + runtimeNum + "_" + _count++,
                 config);
             runtime.Initialize();
 
@@ -100,13 +103,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             };
 
             var t1 = new Thread(runnableOne) {
-                Name = typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "-one"
+                Name = nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "-one"
             };
             var t2 = new Thread(runnableTwo) {
-                Name = typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "-two"
+                Name = nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "-two"
             };
             var t3 = new Thread(runnableThree) {
-                Name = typeof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer).Name + "-three"
+                Name = nameof(MultithreadStmtNamedWindowUniqueTwoWJoinConsumer) + "-three"
             };
             t1.Start();
             t2.Start();

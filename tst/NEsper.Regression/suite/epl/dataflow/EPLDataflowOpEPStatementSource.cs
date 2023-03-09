@@ -134,12 +134,7 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
 
                 var epl = "@Name('MyStatement') select TheString as Id from SupportBean";
                 var compiled = env.Compile(epl);
-                try {
-                    env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
-                }
-                catch (EPDeployException e) {
-                    Assert.Fail(e.Message);
-                }
+                env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
 
                 env.SendEventBean(new SupportBean("E2", 2));
                 captureOp.WaitForInvocation(100, 1);
@@ -154,12 +149,7 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
                 env.SendEventBean(new SupportBean("E3", 3));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                try {
-                    env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
-                }
-                catch (EPDeployException e) {
-                    Assert.Fail(e.Message);
-                }
+                env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
 
                 env.SendEventBean(new SupportBean("E4", 4));
                 captureOp.WaitForInvocation(100, 1);
@@ -175,12 +165,7 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
                 Assert.AreEqual(0, captureOp.Current.Length);
 
                 compiled = env.Compile("@Name('MyStatement') select 'X'||TheString||'X' as Id from SupportBean");
-                try {
-                    env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
-                }
-                catch (EPDeployException e) {
-                    Assert.Fail(e.Message);
-                }
+                env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
 
                 env.SendEventBean(new SupportBean("E6", 6));
                 captureOp.WaitForInvocation(100, 1);

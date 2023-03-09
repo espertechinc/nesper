@@ -24,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		public static IList<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumWhereEvents());
-			execs.Add(new ExprEnumWhereScalar());
+			WithEvents(execs);
+			WithScalar(execs);
+			WithScalarBoolean(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalarBoolean(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumWhereScalarBoolean());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumWhereScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumWhereEvents());
 			return execs;
 		}
 

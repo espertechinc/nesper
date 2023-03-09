@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
                 try {
                     avroHandler = TypeHelper.Instantiate<EventTypeAvroHandler>(
                         handlerClass,
-                        importService.ClassForNameProvider);
+                        importService.TypeResolver);
                 }
                 catch (Exception t) {
                     Log.Debug(

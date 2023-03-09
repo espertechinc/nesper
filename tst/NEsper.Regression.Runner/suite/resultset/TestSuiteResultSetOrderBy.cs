@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.resultset.@orderby;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -19,25 +20,13 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.resultset
 {
     [TestFixture]
-    public class TestSuiteResultSetOrderBy
+    public class TestSuiteResultSetOrderBy : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
+        public TestSuiteResultSetOrderBy() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -53,37 +42,37 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         [Test, RunInApplicationDomain]
         public void TestResultSetOrderByAggregateGrouped()
         {
-            RegressionRunner.Run(session, ResultSetOrderByAggregateGrouped.Executions());
+            RegressionRunner.Run(_session, ResultSetOrderByAggregateGrouped.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetOrderByRowForAll()
         {
-            RegressionRunner.Run(session, ResultSetOrderByRowForAll.Executions());
+            RegressionRunner.Run(_session, ResultSetOrderByRowForAll.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetOrderByRowPerEvent()
         {
-            RegressionRunner.Run(session, ResultSetOrderByRowPerEvent.Executions());
+            RegressionRunner.Run(_session, ResultSetOrderByRowPerEvent.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetOrderByRowPerGroup()
         {
-            RegressionRunner.Run(session, ResultSetOrderByRowPerGroup.Executions());
+            RegressionRunner.Run(_session, ResultSetOrderByRowPerGroup.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetOrderBySelfJoin()
         {
-            RegressionRunner.Run(session, ResultSetOrderBySelfJoin.Executions());
+            RegressionRunner.Run(_session, ResultSetOrderBySelfJoin.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetOrderBySimple()
         {
-            RegressionRunner.Run(session, ResultSetOrderBySimple.Executions());
+            RegressionRunner.Run(_session, ResultSetOrderBySimple.Executions());
         }
     }
 } // end of namespace

@@ -14,19 +14,19 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternSuperAndInterfaces : RegressionExecution
     {
-        private static readonly string INTERFACE_A = typeof(ISupportA).Name;
-        private static readonly string INTERFACE_B = typeof(ISupportB).Name;
-        private static readonly string INTERFACE_C = typeof(ISupportC).Name;
-        private static readonly string INTERFACE_D = typeof(ISupportD).Name;
-        private static readonly string INTERFACE_BASE_D = typeof(ISupportBaseD).Name;
-        private static readonly string INTERFACE_BASE_D_BASE = typeof(ISupportBaseDBase).Name;
-        private static readonly string INTERFACE_BASE_AB = typeof(ISupportBaseAB).Name;
-        private static readonly string SUPER_G = typeof(ISupportAImplSuperG).Name;
-        private static readonly string SUPER_G_IMPL = typeof(ISupportAImplSuperGImplPlus).Name;
-        private static readonly string OVERRIDE_BASE = typeof(SupportOverrideBase).Name;
-        private static readonly string OVERRIDE_ONE = typeof(SupportOverrideOne).Name;
-        private static readonly string OVERRIDE_ONEA = typeof(SupportOverrideOneA).Name;
-        private static readonly string OVERRIDE_ONEB = typeof(SupportOverrideOneB).Name;
+        private const string INTERFACE_A = nameof(ISupportA);
+        private const string INTERFACE_B = nameof(ISupportB);
+        private const string INTERFACE_C = nameof(ISupportC);
+        private const string INTERFACE_D = nameof(ISupportD);
+        private const string INTERFACE_BASE_D = nameof(ISupportBaseD);
+        private const string INTERFACE_BASE_D_BASE = nameof(ISupportBaseDBase);
+        private const string INTERFACE_BASE_AB = nameof(ISupportBaseAB);
+        private const string SUPER_G = nameof(ISupportAImplSuperG);
+        private const string SUPER_G_IMPL = nameof(ISupportAImplSuperGImplPlus);
+        private const string OVERRIDE_BASE = nameof(SupportOverrideBase);
+        private const string OVERRIDE_ONE = nameof(SupportOverrideOne);
+        private const string OVERRIDE_ONEA = nameof(SupportOverrideOneA);
+        private const string OVERRIDE_ONEB = nameof(SupportOverrideOneB);
 
         public void Run(RegressionEnvironment env)
         {

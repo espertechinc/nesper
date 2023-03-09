@@ -47,14 +47,16 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			}
 		}
 
-		public class MySupportClassloader : ClassLoader
+		public class MySupportClassloader : TypeResolver
 		{
 			private readonly IList<string> names = new List<string>();
 
-			public Type GetClass(string typeName)
+			public Type ResolveType(
+				string typeName,
+				bool resolve)
 			{
 				names.Add(typeName);
-				return TypeHelper.ResolveType(typeName);
+				return TypeHelper.ResolveType(typeName, resolve);
 			}
 
 			public IList<string> Names => names;

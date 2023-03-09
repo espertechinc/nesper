@@ -9,22 +9,22 @@
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.expr.clazz;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.expr
 {
     [TestFixture]
-    public class TestSuiteExprClazzWConfig
+    public class TestSuiteExprClazzWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEPLScriptExpressionDisable()
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Compiler.ByteCode.IsAllowInlinedClass = false;
             RegressionRunner.Run(session, new ExprClassDisable());
-            session.Dispose();
         }
     }
 } // end of namespace

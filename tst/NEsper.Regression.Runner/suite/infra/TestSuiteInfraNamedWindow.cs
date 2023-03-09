@@ -28,25 +28,10 @@ namespace com.espertech.esper.regressionrun.suite.infra
 {
     // see INFRA suite for additional Named Window tests
     [TestFixture]
-    public class TestSuiteInfraNamedWindow
+    [Parallelizable(ParallelScope.All)]
+    public class TestSuiteInfraNamedWindow : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -142,62 +127,56 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowConsumer()
         {
-            RegressionRunner.Run(session, InfraNamedWindowConsumer.Executions());
+            RegressionRunner.Run(_session, InfraNamedWindowConsumer.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowContainedEvent()
         {
-            RegressionRunner.Run(session, new InfraNamedWindowContainedEvent());
+            RegressionRunner.Run(_session, new InfraNamedWindowContainedEvent());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowIndex()
         {
-            RegressionRunner.Run(session, new InfraNamedWindowIndex());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestInfraNamedWindowJoin()
-        {
-            RegressionRunner.Run(session, InfraNamedWindowJoin.Executions());
+            RegressionRunner.Run(_session, new InfraNamedWindowIndex());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowLateStartIndex()
         {
-            RegressionRunner.Run(session, new InfraNamedWindowLateStartIndex());
+            RegressionRunner.Run(_session, new InfraNamedWindowLateStartIndex());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOM()
         {
-            RegressionRunner.Run(session, InfraNamedWindowOM.Executions());
+            RegressionRunner.Run(_session, InfraNamedWindowOM.Executions());
         }
 
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnSelect()
         {
-            RegressionRunner.Run(session, InfraNamedWindowOnSelect.Executions());
+            RegressionRunner.Run(_session, InfraNamedWindowOnSelect.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOutputrate()
         {
-            RegressionRunner.Run(session, new InfraNamedWindowOutputrate());
+            RegressionRunner.Run(_session, new InfraNamedWindowOutputrate());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowRemoveStream()
         {
-            RegressionRunner.Run(session, new InfraNamedWindowRemoveStream());
+            RegressionRunner.Run(_session, new InfraNamedWindowRemoveStream());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowSubquery()
         {
-            RegressionRunner.Run(session, InfraNamedWindowSubquery.Executions());
+            RegressionRunner.Run(_session, InfraNamedWindowSubquery.Executions());
         }
 
         /// <summary>
@@ -608,6 +587,48 @@ namespace com.espertech.esper.regressionrun.suite.infra
 
             [Test, RunInApplicationDomain]
             public void WithKeepAllSimple() => RegressionRunner.Run(_session, InfraNamedWindowViews.WithKeepAllSimple());
+        }
+        
+        /// <summary>
+        /// Auto-test(s): InfraNamedWindowJoin
+        /// <code>
+        /// RegressionRunner.Run(_session, InfraNamedWindowJoin.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestInfraNamedWindowJoin : AbstractTestBase
+        {
+            public TestInfraNamedWindowJoin() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithInnerJoinLateStart() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithInnerJoinLateStart());
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowUnidirectionalJoin() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithWindowUnidirectionalJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithUnidirectional() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithUnidirectional());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinSingleInsertOneWindow() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinSingleInsertOneWindow());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinBetweenSameNamed() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinBetweenSameNamed());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinBetweenNamed() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinBetweenNamed());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinNamedAndStream() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinNamedAndStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithFullOuterJoinNamedAggregationLateStart() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithFullOuterJoinNamedAggregationLateStart());
+
+            [Test, RunInApplicationDomain]
+            public void WithRightOuterJoinLateStart() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithRightOuterJoinLateStart());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinIndexChoice() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinIndexChoice());
         }
     }
 } // end of namespace

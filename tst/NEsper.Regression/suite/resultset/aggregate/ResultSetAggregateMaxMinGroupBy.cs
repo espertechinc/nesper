@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     .Add(Expressions.MaxDistinct("Volume"), "maxDistVol");
 
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name).AddView("length", Expressions.Constant(3)));
+                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(3)));
                 model.WhereClause = Expressions.Or()
                     .Add(Expressions.Eq("Symbol", "DELL"))
                     .Add(Expressions.Eq("Symbol", "IBM"))
@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "max(Volume) as maxVol, " +
                           "min(distinct Volume) as minDistVol, " +
                           "max(distinct Volume) as maxDistVol " +
-                          "from " + typeof(SupportMarketDataBean).Name + "#length(3) " +
+                          "from " + nameof(SupportMarketDataBean) + "#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());

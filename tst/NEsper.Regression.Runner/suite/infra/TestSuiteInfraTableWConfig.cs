@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.tbl;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -17,18 +18,17 @@ namespace com.espertech.esper.regressionrun.suite.infra
 {
     // see INFRA suite for additional Table tests
     [TestFixture]
-    public class TestSuiteInfraTableWConfig
+    public class TestSuiteInfraTableWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedMergeReadMergeWriteSecondaryIndexUpd()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Runtime.Execution.IsFairlock = true;
             session.Configuration.Common.AddEventType(typeof(SupportTopGroupSubGroupEvent));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Common.AddEventType(typeof(SupportBean_S0));
             RegressionRunner.Run(session, new InfraTableMTGroupedMergeReadMergeWriteSecondaryIndexUpd());
-            session.Dispose();
         }
     }
 } // end of namespace

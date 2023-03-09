@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.@event.avro;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Extensions;
 
@@ -23,25 +24,9 @@ using static NEsper.Avro.Core.AvroConstant;
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventAvro
+    public class TestSuiteEventAvro : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {typeof(SupportBean)}) {
                 configuration.Common.AddEventType(clazz);
@@ -83,25 +68,25 @@ namespace com.espertech.esper.regressionrun.suite.@event
         [Test, RunInApplicationDomain]
         public void TestEventAvroEventBean()
         {
-            RegressionRunner.Run(session, new EventAvroEventBean());
+            RegressionRunner.Run(_session, new EventAvroEventBean());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventAvroJsonWithSchema()
         {
-            RegressionRunner.Run(session, new EventAvroJsonWithSchema());
+            RegressionRunner.Run(_session, new EventAvroJsonWithSchema());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventAvroSampleConfigDocOutputSchema()
         {
-            RegressionRunner.Run(session, new EventAvroSampleConfigDocOutputSchema());
+            RegressionRunner.Run(_session, new EventAvroSampleConfigDocOutputSchema());
         }
         
         [Test, RunInApplicationDomain]
         public void TestEventAvroSupertypeInsertInto()
         {
-            RegressionRunner.Run(session, new EventAvroSupertypeInsertInto());
+            RegressionRunner.Run(_session, new EventAvroSupertypeInsertInto());
         }
     }
 } // end of namespace

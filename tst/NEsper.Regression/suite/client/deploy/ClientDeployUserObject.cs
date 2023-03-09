@@ -40,13 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 ProcGetUserObject = _ => { return userObject; }
             };
 
-            try {
-                env.Deployment.Deploy(compiled, options);
-            }
-            catch (EPDeployException e) {
-                Assert.Fail(e.Message);
-            }
-
+            env.Deployment.Deploy(compiled, options);
             env.UndeployAll();
         }
 
@@ -60,12 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 var options = new DeploymentOptions();
                 options.StatementUserObjectRuntime = new MyUserObjectRuntimeOption();
 
-                try {
-                    env.Deployment.Deploy(compiled, options);
-                }
-                catch (EPDeployException e) {
-                    Assert.Fail(e.Message);
-                }
+                env.Deployment.Deploy(compiled, options);
 
                 var ctx = MyUserObjectRuntimeOption.Contexts[0];
                 Assert.AreEqual("s0", ctx.StatementName);

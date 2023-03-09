@@ -32,7 +32,8 @@ namespace com.espertech.esperio.regression.adapter
 	[TestFixture]
 	public class TestFileSourceGraphs : AbstractIOTest
 	{
-		private EPRuntime runtime;
+		private EPRuntime _runtime;
+		private EPRuntimeProvider _runtimeProvider;
 
 		[SetUp]
 		public void SetUp()
@@ -53,8 +54,9 @@ namespace com.espertech.esperio.regression.adapter
 				"P0,P1".SplitCsv(),
 				new object[] {typeof(DateTime), typeof(DateTimeEx)});
 
-			runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
-			runtime.Initialize();
+			_runtimeProvider = new EPRuntimeProvider();
+			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
+			_runtime.Initialize();
 		}
 
 		[Test]
@@ -129,7 +131,7 @@ namespace com.espertech.esperio.regression.adapter
 		[Test]
 		public void TestConflictingPropertyOrderIgnoreTitle()
 		{
-			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (intOne int, intTwo int)");
+			CompileDeploy(_runtime, "@public @buseventtype create schema MyIntRowEvent (intOne int, intTwo int)");
 			var graph = "create dataflow ReadCSV " +
 			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../etc/regression/intsTitleRow.csv', hasHeaderLine:true, propertyNames: ['intTwo','intOne'], numLoops: 1}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
@@ -149,7 +151,7 @@ namespace com.espertech.esperio.regression.adapter
 		[Test]
 		public void TestReorder()
 		{
-			CompileDeploy(runtime, "@public @buseventtype create schema MyIntRowEvent (p3 string, p1 int, p0 long, p2 double)");
+			CompileDeploy(_runtime, "@public @buseventtype create schema MyIntRowEvent (p3 string, p1 int, p0 long, p2 double)");
 			var graph = "create dataflow ReadCSV " +
 			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../etc/regression/timestampOne.csv', propertyNames: ['p0','p1','p2','p3']}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
@@ -169,7 +171,7 @@ namespace com.espertech.esperio.regression.adapter
 		[Test]
 		public void TestStringPropertyTypes()
 		{
-			CompileDeploy(runtime, "@public @buseventtype create schema MyStrRowEvent (MyInt string, MyDouble string, MyString string)");
+			CompileDeploy(_runtime, "@public @buseventtype create schema MyStrRowEvent (MyInt string, MyDouble string, MyString string)");
 
 			var graph = "create dataflow ReadCSV " +
 			            "FileSource -> mystream<MyStrRowEvent> { file: '../../../etc/regression/noTimestampOne.csv', propertyNames: [\"MyInt\", \"MyDouble\", \"MyString\"],}" +
@@ -271,7 +273,7 @@ namespace com.espertech.esperio.regression.adapter
 			        "FileSource -> mystream { file: 'nonExistentFile' }" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			TryInvalidCompileGraph(
-				runtime,
+				_runtime,
 				graph,
 				"Error during compilation: " + 
 				"Failed to obtain operator 'FileSource': " +
@@ -310,10 +312,10 @@ namespace com.espertech.esperio.regression.adapter
 			string epl,
 			string message)
 		{
-			var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
+			var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
 			try {
 				var outputOp = new DefaultSupportCaptureOp(container.LockManager());
-				runtime.DataFlowService.Instantiate(
+				_runtime.DataFlowService.Instantiate(
 					stmtGraph.DeploymentId,
 					dataflowName,
 					new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
@@ -323,7 +325,7 @@ namespace com.espertech.esperio.regression.adapter
 				Assert.AreEqual(message, ex.Message);
 			}
 			finally {
-				UndeployAll(runtime);
+				UndeployAll(_runtime);
 			}
 		}
 
@@ -332,9 +334,9 @@ namespace com.espertech.esperio.regression.adapter
 			string epl,
 			string message)
 		{
-			var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
+			var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
 			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
-			var df = runtime.DataFlowService.Instantiate(
+			var df = _runtime.DataFlowService.Instantiate(
 				stmtGraph.DeploymentId,
 				dataflowName,
 				new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
@@ -346,20 +348,20 @@ namespace com.espertech.esperio.regression.adapter
 				StringAssert.StartsWith(message, ex.Message);
 			}
 
-			UndeployAll(runtime);
+			UndeployAll(_runtime);
 		}
 
 		private IList<IList<object>> RunDataFlow(string epl)
 		{
-			var stmt = CompileDeploy(runtime, epl).Statements[0];
+			var stmt = CompileDeploy(_runtime, epl).Statements[0];
 
 			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
-			var instance = runtime.DataFlowService.Instantiate(
+			var instance = _runtime.DataFlowService.Instantiate(
 				stmt.DeploymentId,
 				"ReadCSV",
 				new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
 			instance.Run();
-			UndeployAll(runtime);
+			UndeployAll(_runtime);
 			return outputOp.GetAndReset();
 		}
 
@@ -411,7 +413,7 @@ namespace com.espertech.esperio.regression.adapter
 
 			var fields = "MyString,MyInt,timestamp, MyDouble".SplitCsv();
 			CompileDeploy(
-				runtime,
+				_runtime,
 				representationEnum.GetAnnotationText() +
 				" @public @buseventtype create schema MyEvent(MyString string, MyInt int, timestamp long, MyDouble double)");
 			var graph = "create dataflow ReadCSV " +
@@ -420,10 +422,10 @@ namespace com.espertech.esperio.regression.adapter
 			            " hasHeaderLine: true " +
 			            "}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
-			var deployment = CompileDeploy(runtime, graph);
+			var deployment = CompileDeploy(_runtime, graph);
 
 			var outputOp = new DefaultSupportCaptureOp();
-			var instance = runtime.DataFlowService.Instantiate(
+			var instance = _runtime.DataFlowService.Instantiate(
 				deployment.DeploymentId,
 				"ReadCSV",
 				new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
@@ -441,7 +443,7 @@ namespace com.espertech.esperio.regression.adapter
 				});
 			Assert.IsTrue(representationEnum.MatchesClass(received[0].ToArray()[0].GetType()));
 
-			UndeployAll(runtime);
+			UndeployAll(_runtime);
 		}
 
 		public class MyArgCtorClass

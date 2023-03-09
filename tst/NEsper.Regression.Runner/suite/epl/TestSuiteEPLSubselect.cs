@@ -20,25 +20,10 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLSubselect
+    [Parallelizable(ParallelScope.All)]
+    public class TestSuiteEPLSubselect : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new[] {
                 typeof(SupportBean),
@@ -444,6 +429,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithUniqueIndexCorrelated() => RegressionRunner.Run(_session, EPLSubselectIndex.WithUniqueIndexCorrelated());
 
             [Test, RunInApplicationDomain]
+            [Parallelizable(ParallelScope.None)]
             public void WithIndexChoicesOverdefinedWhere() => RegressionRunner.Run(_session, EPLSubselectIndex.WithIndexChoicesOverdefinedWhere());
         }
 

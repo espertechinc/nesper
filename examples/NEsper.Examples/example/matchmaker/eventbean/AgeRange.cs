@@ -39,15 +39,9 @@ namespace NEsper.Examples.MatchMaker.eventbean
             this.high = high;
         }
 
-        public int Low
-        {
-            get { return low; }
-        }
+        public int Low => low;
 
-        public int High
-        {
-            get { return high; }
-        }
+        public int High => high;
 
         public override string ToString()
         {
@@ -57,17 +51,31 @@ namespace NEsper.Examples.MatchMaker.eventbean
                    "}";
         }
 
+        protected bool Equals(AgeRange other)
+        {
+            return low == other.low && high == other.high;
+        }
+
         public override bool Equals(object obj)
         {
-            AgeRange other = obj as AgeRange;
-            if ( other == null )
-            {
+            if (ReferenceEquals(null, obj)) {
                 return false;
             }
 
-            return
-                other.low == this.low &&
-                other.high == this.high;
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType()) {
+                return false;
+            }
+
+            return Equals((AgeRange)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(low, high);
         }
     }
 }

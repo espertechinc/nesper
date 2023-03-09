@@ -26,10 +26,38 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextSelectionAndFireAndForgetInvalid());
-            execs.Add(new ContextSelectionIterateStatement());
-            execs.Add(new ContextSelectionAndFireAndForgetNamedWindowQuery());
+            WithAndFireAndForgetInvalid(execs);
+            WithIterateStatement(execs);
+            WithAndFireAndForgetNamedWindowQuery(execs);
+            WithFAFNestedNamedWindowQuery(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFAFNestedNamedWindowQuery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextSelectionFAFNestedNamedWindowQuery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAndFireAndForgetNamedWindowQuery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextSelectionAndFireAndForgetNamedWindowQuery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIterateStatement(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextSelectionIterateStatement());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAndFireAndForgetInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextSelectionAndFireAndForgetInvalid());
             return execs;
         }
 
@@ -178,30 +206,30 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path,
                     "select sum(IntPrimitive) as c1 from MyWindow",
                     "c1",
-                    new[] {new object[] {51}},
+                    new[] { new object[] { 51 } },
                     1);
                 RunQueryAll(
                     env,
                     path,
                     "select sum(IntPrimitive) as c1 from MyWindow where IntPrimitive > 15",
                     "c1",
-                    new[] {new object[] {41}},
+                    new[] { new object[] { 41 } },
                     1);
                 RunQuery(
                     env,
                     path,
                     "select sum(IntPrimitive) as c1 from MyWindow",
                     "c1",
-                    new[] {new object[] {41}},
+                    new[] { new object[] { 41 } },
                     new ContextPartitionSelector[]
-                        {new SupportSelectorPartitioned(Collections.SingletonList(new object[] {"E2"}))});
+                        { new SupportSelectorPartitioned(Collections.SingletonList(new object[] { "E2" })) });
                 RunQuery(
                     env,
                     path,
                     "select sum(IntPrimitive) as c1 from MyWindow",
                     "c1",
-                    new[] {new object[] {41}},
-                    new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonList(1))});
+                    new[] { new object[] { 41 } },
+                    new ContextPartitionSelector[] { new SupportSelectorById(Collections.SingletonList(1)) });
 
                 // test with context props
                 RunQueryAll(
@@ -209,14 +237,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path,
                     "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow",
                     "c0,c1",
-                    new[] {new object[] {"E1", 10}, new object[] {"E2", 20}, new object[] {"E2", 21}},
+                    new[] { new object[] { "E1", 10 }, new object[] { "E2", 20 }, new object[] { "E2", 21 } },
                     1);
                 RunQueryAll(
                     env,
                     path,
                     "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1",
-                    new[] {new object[] {"E2", 20}, new object[] {"E2", 21}},
+                    new[] { new object[] { "E2", 20 }, new object[] { "E2", 21 } },
                     1);
 
                 // test targeted context partition
@@ -225,8 +253,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path,
                     "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1",
-                    new[] {new object[] {"E2", 20}, new object[] {"E2", 21}},
-                    new[] {new SupportSelectorPartitioned(Collections.SingletonList(new object[] {"E2"}))});
+                    new[] { new object[] { "E2", 20 }, new object[] { "E2", 21 } },
+                    new[] { new SupportSelectorPartitioned(Collections.SingletonList(new object[] { "E2" })) });
 
                 var compiled = env.CompileFAF("context PartitionedByString select * from MyWindow", path);
                 try {
@@ -280,23 +308,23 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path,
                     "select TheString as c1, sum(IntPrimitive) as c2 from MyWindow group by TheString",
                     "c1,c2",
-                    new[] {new object[] {"E1", 5}, new object[] {"E2", -2}, new object[] {"E3", 10}},
+                    new[] { new object[] { "E1", 5 }, new object[] { "E2", -2 }, new object[] { "E3", 10 } },
                     1);
                 RunQuery(
                     env,
                     path,
                     "select TheString as c1, sum(IntPrimitive) as c2 from MyWindow group by TheString",
                     "c1,c2",
-                    new[] {new object[] {"E1", 3}, new object[] {"E3", 5}},
-                    new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonSet(2))});
+                    new[] { new object[] { "E1", 3 }, new object[] { "E3", 5 } },
+                    new ContextPartitionSelector[] { new SupportSelectorById(Collections.SingletonSet(2)) });
 
                 RunQuery(
                     env,
                     path,
                     "context NestedContext select context.ACtx.S0.P00 as c1, context.BCtx.label as c2, TheString as c3, sum(IntPrimitive) as c4 from MyWindow group by TheString",
                     "c1,c2,c3,c4",
-                    new[] {new object[] {"S0_1", "grp3", "E1", 3}, new object[] {"S0_1", "grp3", "E3", 5}},
-                    new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonSet(2))});
+                    new[] { new object[] { "S0_1", "grp3", "E1", 3 }, new object[] { "S0_1", "grp3", "E3", 5 } },
+                    new ContextPartitionSelector[] { new SupportSelectorById(Collections.SingletonSet(2)) });
 
                 env.UndeployAll();
             }
@@ -306,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] { "c0", "c1" };
                 var epl = "create context PartitionedByString partition by TheString from SupportBean;\n" +
                           "@Name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -317,7 +345,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(0);
 
-                object[][] expectedAll = {new object[] {"E1", 10}, new object[] {"E2", 41}};
+                object[][] expectedAll = { new object[] { "E1", 10 }, new object[] { "E2", 41 } };
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     env.Statement("s0").GetSafeEnumerator(),
@@ -345,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetEnumerator(selector),
                     env.Statement("s0").GetSafeEnumerator(selector),
                     fields,
-                    new[] {new object[] {"E2", 41}});
+                    new[] { new object[] { "E2", 41 } });
 
                 Assert.IsFalse(
                     env.Statement("s0")

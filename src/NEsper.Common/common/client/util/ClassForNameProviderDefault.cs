@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.client.util
 {
+#if DEPRECATED
     /// <summary>Default provider for classname lookups.</summary>
     public class ClassForNameProviderDefault : ClassForNameProvider
     {
@@ -35,4 +36,5 @@ namespace com.espertech.esper.common.client.util
             return TypeHelper.ResolveType(className, true);
         }
     }
+#endif
 } // end of namespace

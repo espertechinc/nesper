@@ -141,10 +141,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         codegenClassScope))
                 .IfRefNull("value")
                 .BlockReturn(Ref("dto"))
+                .TypeReference(typeof(DateTimeOffsetHelper))
                 .MethodReturn(
-                    ExprDotMethod(
-                        Ref("dto"),
+                    StaticMethod(
+                        typeof(DateTimeFieldMath),
                         "SetFieldValue",
+                        Ref("dto"),
                         EnumValue(field),
                         Unbox<int?>(Ref("value"))));
             return LocalMethod(methodNode, dto);
@@ -173,10 +175,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         codegenClassScope))
                 .IfRefNull("value")
                 .BlockReturn(Ref("dateTime"))
+                .TypeReference(typeof(DateTimeHelper))
                 .MethodReturn(
-                    ExprDotMethod(
-                        Ref("dateTime"),
+                    StaticMethod(
+                        typeof(DateTimeFieldMath),
                         "SetFieldValue",
+                        Ref("dateTime"),
                         EnumValue(field),
                         Unbox<int?>(Ref("value"))));
             return LocalMethod(methodNode, dateTime);

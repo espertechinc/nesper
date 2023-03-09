@@ -8,6 +8,7 @@
 
 using com.espertech.esper.regressionlib.suite.multithread;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -15,18 +16,23 @@ namespace com.espertech.esper.regressionrun.suite.multithread
 {
     /// <summary>
     /// When running with a shared/default configuration place test in <seealso cref="TestSuiteMultithread" />since these tests share the runtime via session.
-    /// <para />When running with a configuration derived from the default configuration "SupportConfigFactory", use:
-    /// <pre>RegressionRunner.RunConfigurable</pre><para />When running with a fully custom configuration, use a separate runtime instance but obtain the base
-    /// configuration from SupportConfigFactory:
-    /// <pre>new XXX().Run(config)</pre></summary>
+    /// <para>
+    ///     When running with a configuration derived from the default configuration "SupportConfigFactory", use:
+    ///     <pre>RegressionRunner.RunConfigurable</pre>
+    /// </para>
+    /// <para>
+    ///     When running with a fully custom configuration, use a separate runtime instance but obtain the base configuration from SupportConfigFactory:
+    ///     <pre>new XXX().Run(config)</pre>
+    /// </para>
+    /// </summary>
     [TestFixture]
-    public class TestSuiteMultithreadWConfig
+    public class TestSuiteMultithreadWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestMultithreadPatternTimer()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadPatternTimer());
+                RegressionRunner.RunConfigurable(Container, new MultithreadPatternTimer());
             }
         }
 
@@ -34,7 +40,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextDBAccess()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadContextDBAccess());
+                RegressionRunner.RunConfigurable(Container, new MultithreadContextDBAccess());
             }
         }
 
@@ -42,7 +48,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextMultiStmtStartEnd()
         {
             using (new PerformanceContext()) {
-                new MultithreadContextMultiStmtStartEnd().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadContextMultiStmtStartEnd().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -50,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextNestedNonOverlapAtNow()
         {
             using (new PerformanceContext()) {
-                new MultithreadContextNestedNonOverlapAtNow().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadContextNestedNonOverlapAtNow().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -58,7 +64,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextTerminated()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadContextTerminated());
+                RegressionRunner.RunConfigurable(Container, new MultithreadContextTerminated());
             }
         }
 
@@ -66,7 +72,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadDeterminismInsertIntoLockConfig()
         {
             using (new PerformanceContext()) {
-                new MultithreadDeterminismInsertIntoLockConfig().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadDeterminismInsertIntoLockConfig().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -74,7 +80,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadDeterminismListener()
         {
             using (new PerformanceContext()) {
-                new MultithreadDeterminismListener().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadDeterminismListener().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -82,7 +88,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadInsertIntoTimerConcurrency()
         {
             using (new PerformanceContext()) {
-                new MultithreadInsertIntoTimerConcurrency().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadInsertIntoTimerConcurrency().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -90,7 +96,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtListenerAddRemove()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadStmtListenerAddRemove());
+                RegressionRunner.RunConfigurable(Container, new MultithreadStmtListenerAddRemove());
             }
         }
 
@@ -98,7 +104,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtNamedWindowPriority()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadStmtNamedWindowPriority());
+                RegressionRunner.RunConfigurable(Container, new MultithreadStmtNamedWindowPriority());
             }
         }
 
@@ -106,7 +112,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtPatternFollowedByReadMostly()
         {
             using (new PerformanceContext()) {
-                new MultithreadStmtPatternFollowedBy().RunReadMostly(SupportConfigFactory.GetConfiguration());
+                new MultithreadStmtPatternFollowedBy().RunReadMostly(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -114,7 +120,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtPatternFollowedByReadWrite()
         {
             using (new PerformanceContext()) {
-                new MultithreadStmtPatternFollowedBy().RunReadWrite(SupportConfigFactory.GetConfiguration());
+                new MultithreadStmtPatternFollowedBy().RunReadWrite(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -122,7 +128,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtNamedWindowUniqueTwoWJoinConsumer()
         {
             using (new PerformanceContext()) {
-                new MultithreadStmtNamedWindowUniqueTwoWJoinConsumer().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadStmtNamedWindowUniqueTwoWJoinConsumer().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -130,7 +136,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextOverlapDistinct()
         {
             using (new PerformanceContext()) {
-                new MultithreadContextOverlapDistinct().Run(SupportConfigFactory.GetConfiguration());
+                new MultithreadContextOverlapDistinct().Run(SupportConfigFactory.GetConfiguration(Container));
             }
         }
 
@@ -138,7 +144,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextPartitionedWTerm()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadContextPartitionedWTerm());
+                RegressionRunner.RunConfigurable(Container, new MultithreadContextPartitionedWTerm());
             }
         }
 
@@ -146,7 +152,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextStartedBySameEvent()
         {
             using (new PerformanceContext()) {
-                RegressionRunner.RunConfigurable(new MultithreadContextStartedBySameEvent());
+                RegressionRunner.RunConfigurable(Container, new MultithreadContextStartedBySameEvent());
             }
         }
     }

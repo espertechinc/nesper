@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 ImportException lastException = null;
                 if (type == null) {
                     try {
-                        type = importService.ResolveClass(variableTypeWArray.ClassIdentifier, false, extensionClass);
+                        type = importService.ResolveType(variableTypeWArray.ClassIdentifier, false, extensionClass);
                         type = TypeHelper.GetArrayType(type, variableTypeWArray.ArrayDimensions);
                     }
                     catch (ImportException e) {

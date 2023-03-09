@@ -9,8 +9,10 @@
 using System;
 using System.Linq;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.compile;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
@@ -91,12 +93,14 @@ namespace com.espertech.esper.compiler.@internal.util
             return capsuleClass.TargetType;
         }
 
-        public CompileResponse Compile(CompileRequest request)
+        public ICompileArtifact Compile(CompileRequest request)
         {
             var configuration = request.ModuleCompileTimeServices.Configuration;
             var container = request.ModuleCompileTimeServices.Container;
+            var repository = container.ArtifactRepositoryManager().DefaultRepository;
             var compiler = container
                 .RoslynCompiler()
+                .WithMetaDataReferences(repository.AllMetadataReferences)
                 .WithCodeLogging(configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(configuration.Compiler.Logging.AuditDirectory)
                 .WithSources(
@@ -104,9 +108,7 @@ namespace com.espertech.esper.compiler.@internal.util
                         .Select(_ => new RoslynCompiler.SourceBasic(_.ClassName, _.Code))
                         .ToList<RoslynCompiler.Source>());
 
-            return new CompileResponse(
-                request,
-                compiler.Compile());
+            return repository.Register(compiler.Compile());
         }
     }
 } // end of namespace

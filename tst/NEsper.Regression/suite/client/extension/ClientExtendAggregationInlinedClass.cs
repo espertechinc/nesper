@@ -25,15 +25,48 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
+			WithLocalClass(execs);
+			WithFAF(execs);
+			WithSameModule(execs);
+			WithInvalid(execs);
+			WithMultiModuleUses(execs);
+			return execs;
+		}
 
-			execs.Add(new ClientExtendAggregationInlinedLocalClass());
-			execs.Add(new ClientExtendAggregationInlinedFAF());
-			execs.Add(new ClientExtendAggregationInlinedSameModule());
+		public static IList<RegressionExecution> WithMultiModuleUses(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationInlinedMultiModuleUses());
+			return execs;
+		}
 
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			// Following test is broken due to the need for namespace isolation within an assembly
 			// execs.Add(new ClientExtendAggregationInlinedOtherModule());
 			execs.Add(new ClientExtendAggregationInlinedInvalid());
-			execs.Add(new ClientExtendAggregationInlinedMultiModuleUses());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithSameModule(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationInlinedSameModule());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithFAF(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationInlinedFAF());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithLocalClass(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ClientExtendAggregationInlinedLocalClass());
 			return execs;
 		}
 
@@ -174,8 +207,12 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 					"The plug-in aggregation function 'concat' occurs multiple times");
 
 				var eplTwiceCreate =
-					"create " + inlined.Replace("ConcatAggForge", "ConcatAggForgeOne") + ";\n" +
-					"create " + inlined.Replace("ConcatAggForge", "ConcatAggForgeTwo") + ";\n" +
+					"create " +
+					inlined.Replace("ConcatAggForge", "ConcatAggForgeOne") +
+					";\n" +
+					"create " +
+					inlined.Replace("ConcatAggForge", "ConcatAggForgeTwo") +
+					";\n" +
 					"select concat(TheString) from SupportBean";
 				TryInvalidCompile(
 					env,
@@ -225,7 +262,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var inlined = INLINEDCLASS_CONCAT.Replace("${NAMESPACE}", ns);
 
 				var epl =
-					"create " + inlined + ";\n" +
+					"create " +
+					inlined +
+					";\n" +
 					"@Name('s0') select concat(TheString) as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -279,10 +318,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var ns = NamespaceGenerator.Create();
 				var inlined = INLINEDCLASS_CONCAT.Replace("${NAMESPACE}", ns);
 
-				foreach (var module in new string[] {"XXX", "YYY", "ZZZ"}) {
+				foreach (var module in new string[] { "XXX", "YYY", "ZZZ" }) {
 					var epl =
-						"module " + module + "; " +
-						"@public create " + inlined
+						"module " +
+						module +
+						"; " +
+						"@public create " +
+						inlined
 							.Replace("ConcatAggForge", $"ConcatAggForge{module}")
 							.Replace("builder.ToString()", $"\"{module}\"");
 					env.CompileDeploy(epl, path);

@@ -350,7 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 			while (depth > 0) {
 				var classNameCandidateX = BuildClassName(chain, depth);
 				try {
-					mapContext.ImportService.ResolveClass(classNameCandidateX, false, mapContext.ClassProvidedExtension);
+					mapContext.ImportService.ResolveType(classNameCandidateX, false, mapContext.ClassProvidedExtension);
 					depthFound = depth;
 					break;
 				}

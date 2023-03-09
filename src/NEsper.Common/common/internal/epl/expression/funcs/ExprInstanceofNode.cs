@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
                 // try to look up the class, not a primitive type name
                 try {
-                    clazz = TypeHelper.GetClassForName(className.Trim(), importService.ClassForNameProvider);
+                    clazz = TypeHelper.GetClassForName(className.Trim(), importService.TypeResolver);
                 }
                 catch (TypeLoadException e) {
                     throw new ExprValidationException(

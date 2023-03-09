@@ -9,13 +9,15 @@
 using System;
 using System.Linq;
 
-#if NETSTANDARD
+#if NETCORE
 using System.Runtime.Loader;
 #endif
 
 using Castle.MicroKernel.Registration;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.common.@internal.util;
@@ -103,12 +105,16 @@ namespace com.espertech.esper.container
             //if (container.DoesNotHave<IConfigurationParser>())
             //    container.Register<IConfigurationParser, ConfigurationParser>(
             //        Lifespan.Transient);
-            if (container.DoesNotHave<ClassLoader>())
-                container.Register<ClassLoader, ClassLoaderDefault>(
+            if (container.DoesNotHave<TypeResolverProvider>())
+                container.Register<TypeResolverProvider>(
+                    ic => new ArtifactTypeResolverProvider(ic),
                     Lifespan.Singleton);
-            if (container.DoesNotHave<ClassLoaderProvider>())
-                container.Register<ClassLoaderProvider, ClassLoaderProviderDefault>(
+#if DEPRECATED
+            if (container.DoesNotHave<ClassForNameProvider>())
+                container.Register<ClassForNameProvider>(
+                    ic => new ArtifactClassForNameProvider(ic),
                     Lifespan.Singleton);
+#endif
             if (container.DoesNotHave<INamingContext>())
                 container.Register<INamingContext, SimpleNamingContext>(
                     Lifespan.Singleton);
@@ -135,7 +141,7 @@ namespace com.espertech.esper.container
 
         private static IThreadLocalManager DefaultThreadLocalManager()
         {
-            return new DefaultThreadLocalManager(new SystemThreadLocalFactory());
+            return new DefaultThreadLocalManager(new FastThreadLocalFactory());
         }
 
         private static IResourceManager DefaultResourceManager()

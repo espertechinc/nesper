@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.util;
@@ -36,10 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             Classes[key] = detail;
         }
 
-        public void AddTo(ICollection<Type> additionalClasses)
+        public void AddTo(ICollection<IArtifact> additionalClasses)
         {
             foreach (var entry in Classes) {
-                additionalClasses.AddAll(entry.Value.Types);
+                additionalClasses.Add(entry.Value.Artifact);
             }
         }
     }

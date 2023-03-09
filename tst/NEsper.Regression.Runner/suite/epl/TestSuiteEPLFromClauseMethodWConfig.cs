@@ -13,18 +13,19 @@ using com.espertech.esper.regressionlib.suite.epl.fromclausemethod;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLFromClauseMethodWConfig
+    public class TestSuiteEPLFromClauseMethodWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodCacheExpiry()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
 
             ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.SetExpiryTimeCache(1, 10);
@@ -33,14 +34,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddEventType(typeof(SupportBean));
 
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheExpiry());
-
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodCacheLRU()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
 
             ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.SetLRUCache(3);
@@ -49,14 +48,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddEventType(typeof(SupportBean));
 
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheLRU());
-
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodJoinPerformance()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
 
             ConfigurationCommonMethodRef configMethod = new ConfigurationCommonMethodRef();
             configMethod.SetLRUCache(10);
@@ -65,13 +62,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddImportType(typeof(SupportJoinMethods));
 
             RegressionRunner.Run(session, EPLFromClauseMethodJoinPerformance.Executions());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodVariable()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
 
             Configuration configuration = session.Configuration;
             configuration.Common.AddMethodRef(typeof(EPLFromClauseMethodVariable.MyStaticService), new ConfigurationCommonMethodRef());
@@ -94,14 +90,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType(typeof(SupportBean_S2));
 
             RegressionRunner.Run(session, EPLFromClauseMethodVariable.Executions());
-
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodMultikeyWArray()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using RegressionSession session = RegressionRunner.Session(Container);
 
             ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.SetExpiryTimeCache(1, 10);
@@ -110,8 +104,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.Logging.IsEnableQueryPlan = true;
 
             RegressionRunner.Run(session, EPLFromClauseMethodMultikeyWArray.Executions());
-
-            session.Dispose();
         }
     }
 } // end of namespace

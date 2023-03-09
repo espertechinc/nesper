@@ -13,33 +13,32 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.objectarray;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventObjectArrayWConfig
+    public class TestSuiteEventObjectArrayWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayConfiguredStatic()
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Common.EventMeta.DefaultEventRepresentation = EventUnderlyingType.OBJECTARRAY;
             session.Configuration.Common.AddEventType(
                 "MyOAType",
                 new[] {"bean", "TheString", "map"},
                 new object[] {typeof(SupportBean), "string", "map"});
             RegressionRunner.Run(session, new EventObjectArrayConfiguredStatic());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventObjectArrayInheritanceConfigRuntime()
         {
-            var session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             RegressionRunner.Run(session, new EventObjectArrayInheritanceConfigRuntime());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
@@ -51,7 +50,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             string[] invalidOANames = {"P00"};
             object[] invalidOATypes = {typeof(int)};
             try {
-                var configuration = SupportConfigFactory.GetConfiguration();
+                var configuration = SupportConfigFactory.GetConfiguration(Container);
                 configuration.Common.AddEventType("MyInvalidEventTwo", invalidOANames, invalidOATypes, invalidOAConfig);
                 Assert.Fail();
             }
@@ -61,7 +60,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             // mismatched property number
             try {
-                var configuration = SupportConfigFactory.GetConfiguration();
+                var configuration = SupportConfigFactory.GetConfiguration(Container);
                 configuration.Common.AddEventType(
                     "MyInvalidEvent",
                     new[] {"P00"},

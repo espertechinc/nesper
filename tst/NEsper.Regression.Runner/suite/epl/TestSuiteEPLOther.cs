@@ -31,25 +31,9 @@ using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.Support
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLOther
+    public class TestSuiteEPLOther : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             configuration.Common.AddEventType("ObjectEvent", typeof(object));
 
@@ -184,19 +168,19 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLOtherComments()
         {
-            RegressionRunner.Run(session, new EPLOtherComments());
+            RegressionRunner.Run(_session, new EPLOtherComments());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLOtherLiteralConstants()
         {
-            RegressionRunner.Run(session, new EPLOtherLiteralConstants());
+            RegressionRunner.Run(_session, new EPLOtherLiteralConstants());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLOtherUnaryMinus()
         {
-            RegressionRunner.Run(session, new EPLOtherUnaryMinus());
+            RegressionRunner.Run(_session, new EPLOtherUnaryMinus());
         }
 
         /// <summary>
@@ -206,6 +190,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.None)]
         public class TestEPLOtherPlanInKeywordQuery : AbstractTestBase
         {
             public TestEPLOtherPlanInKeywordQuery() : base(Configure)
@@ -726,6 +711,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
         /// </code>
         /// </summary>
 
+        [Parallelizable(ParallelScope.None)]
         public class TestEPLOtherPlanExcludeHint : AbstractTestBase
         {
             public TestEPLOtherPlanExcludeHint() : base(Configure)

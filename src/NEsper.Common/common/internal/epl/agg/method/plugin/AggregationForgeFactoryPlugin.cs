@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 			if (mode is AggregationFunctionModeManaged) {
 				AggregationFunctionModeManaged singleValue = (AggregationFunctionModeManaged) mode;
 				if (parent.PositionalParams.Length == 0) {
-					throw new ArgumentException(typeof(AggregationFunctionModeManaged).Name + " requires at least one positional parameter");
+					throw new ArgumentException(nameof(AggregationFunctionModeManaged) + " requires at least one positional parameter");
 				}
 
 				Type distinctType = !parent.IsDistinct ? null : aggregatedValueType;

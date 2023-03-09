@@ -12,30 +12,20 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.client.deploy;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
-    public class TestSuiteClientDeploy
+    public class TestSuiteClientDeploy : AbstractTestBase
     {
-        private RegressionSession _session;
-
-        [SetUp]
-        public void SetUp()
+        public TestSuiteClientDeploy() : base(Configure)
         {
-            _session = RegressionRunner.Session();
-            Configuration configuration = _session.Configuration;
-            Configure(configuration);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _session.Dispose();
-            _session = null;
-        }
+        protected override bool UseDefaultRuntime => true;
 
         [Test, RunInApplicationDomain]
         public void TestClientDeployUndeploy()
@@ -99,9 +89,9 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientDeployListDependencies.Executions());
         }
 
-        private void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
-            foreach (Type clazz in new Type[] { typeof(SupportBean), typeof(SupportBean_S0) })
+            foreach (var clazz in new Type[] { typeof(SupportBean), typeof(SupportBean_S0) })
             {
                 configuration.Common.AddEventType(clazz);
             }

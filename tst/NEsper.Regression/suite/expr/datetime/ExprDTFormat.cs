@@ -23,10 +23,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTFormatSimple());
-            executions.Add(new ExprDTFormatWString());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithSimple(execs);
+            WithWString(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWString(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTFormatWString());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTFormatSimple());
+            return execs;
         }
 
         internal class ExprDTFormatSimple : RegressionExecution
@@ -36,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                var fields = new [] { "val0","val1","val2","val3", "val4" };
+                var fields = new[] { "val0", "val1", "val2", "val3", "val4" };
                 var eplFragment = "@Name('s0') select " +
                                   "current_timestamp.format() as val0," +
                                   "DateTimeEx.format() as val1," +
@@ -53,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         typeof(string), // val1
                         typeof(string), // val2
                         typeof(string), // val3
-                        typeof(string)  // val4
+                        typeof(string) // val4
                     });
 
                 env.SendEventBean(SupportDateTime.Make(startTime));
@@ -85,12 +99,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var sdfPattern = "yyyy.MM.dd G 'at' HH:mm:ss";
                 var sdf = new SimpleDateFormat(sdfPattern);
 
-                var fields = new [] { "val0","val1","val2","val3" };
+                var fields = new[] { "val0", "val1", "val2", "val3" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DateTimeEx.format(\"" + sdfPattern + "\") as val0," +
-                                  "DateTimeOffset.format(\"" + sdfPattern + "\") as val1," +
-                                  "DateTime.format(\"" + sdfPattern + "\") as val2," +
-                                  "LongDate.format(\"" + sdfPattern + "\") as val3" +
+                                  "DateTimeEx.format(\"" +
+                                  sdfPattern +
+                                  "\") as val0," +
+                                  "DateTimeOffset.format(\"" +
+                                  sdfPattern +
+                                  "\") as val1," +
+                                  "DateTime.format(\"" +
+                                  sdfPattern +
+                                  "\") as val2," +
+                                  "LongDate.format(\"" +
+                                  sdfPattern +
+                                  "\") as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fields, typeof(string));

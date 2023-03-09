@@ -28,46 +28,34 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLContained
+    public class TestSuiteEPLContained : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
+        public TestSuiteEPLContained() : base(Configure)
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventSimple()
         {
-            RegressionRunner.Run(session, EPLContainedEventSimple.Executions());
+            RegressionRunner.Run(_session, EPLContainedEventSimple.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventArray()
         {
-            RegressionRunner.Run(session, EPLContainedEventArray.Executions());
+            RegressionRunner.Run(_session, EPLContainedEventArray.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventExample()
         {
-            RegressionRunner.Run(session, EPLContainedEventExample.Executions(session.Container.ResourceManager()));
+            RegressionRunner.Run(_session, EPLContainedEventExample.Executions(_session.Container.ResourceManager()));
         }
 
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventNested()
         {
-            RegressionRunner.Run(session, EPLContainedEventNested.Executions());
+            RegressionRunner.Run(_session, EPLContainedEventNested.Executions());
         }
 
         /// <summary>
@@ -91,7 +79,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithScriptContextValue() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithScriptContextValue());
         }
         
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new Type[] {
                 typeof(SupportBean),

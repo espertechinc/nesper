@@ -27,11 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withg(execs);
+            WithRuntimeExHandlerInvalidAgg(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withg(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithRuntimeExHandlerInvalidAgg(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeExHandlerInvalidAgg());
@@ -71,7 +71,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "myinvalidagg",
                     typeof(SupportInvalidAggregationFunctionForge));
 
-                var runtime = EPRuntimeProvider.GetRuntime(
+                var runtimeProvider = new EPRuntimeProvider();
+                var runtime = runtimeProvider.GetRuntimeInstance(
                     typeof(ClientRuntimeExHandlerGetContext).FullName,
                     configuration);
 
@@ -122,8 +123,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     typeof(SupportInvalidAggregationFunctionForge));
                 configuration.Common.AddEventType(typeof(SupportBean));
 
-                var runtime = EPRuntimeProvider.GetRuntime(
-                    typeof(ClientRuntimeExceptionHandlerNoHandler).Name,
+                var runtimeProvider = new EPRuntimeProvider();
+                var runtime = runtimeProvider.GetRuntimeInstance(
+                    nameof(ClientRuntimeExceptionHandlerNoHandler),
                     configuration);
 
                 var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";

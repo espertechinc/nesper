@@ -70,13 +70,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 0));
-				object result = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
-				try {
-					Assert.That(result.GetType().GetProperty("Id").GetValue(result), Is.EqualTo("E1"));
-				}
-				catch (Exception ex) {
-					Assert.Fail(ex.Message);
-				}
+				var result = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
+
+				Assert.That(result.GetType().GetProperty("Id").GetValue(result), Is.EqualTo("E1"));
 
 				env.UndeployAll();
 			}

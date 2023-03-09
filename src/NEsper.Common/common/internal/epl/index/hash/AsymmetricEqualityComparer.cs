@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         /// <returns>
         ///     <see langword="true" /> if the specified objects are equal; otherwise, <see langword="false" />.
         /// </returns>
-        public bool Equals(
+        public new bool Equals(
             object x,
             object y)
         {

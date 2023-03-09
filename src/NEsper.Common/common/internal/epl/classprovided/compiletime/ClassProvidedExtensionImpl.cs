@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         {
             // check inlined classes
             foreach (var clazz in classes) {
-                if (clazz.Name == className) {
+                if (clazz.Name == className || clazz.FullName == className) {
                     return clazz;
                 }
             }
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             var provided = resolver.ResolveClass(className);
             if (provided != null) {
                 foreach (var clazz in provided.ClassesMayNull) {
-                    if (clazz.Name == className) {
+                    if (clazz.Name == className || clazz.FullName == className) {
                         return clazz;
                     }
                 }

@@ -19,13 +19,13 @@ namespace com.espertech.esper.runtime.client.option
 	    /// <summary>
 	    ///     Ctor.
 	    /// </summary>
-	    /// <param name="runtimeParentClassLoader">runtime parent class loader</param>
+	    /// <param name="runtimeParentTypeResolver">runtime parent class loader</param>
 	    /// <param name="configuration">configuration</param>
 	    public DeploymentClassLoaderContext(
-		    ParentClassLoader runtimeParentClassLoader,
+		    ParentTypeResolver runtimeParentTypeResolver,
             Configuration configuration)
         {
-            RuntimeParentClassLoader = runtimeParentClassLoader;
+            RuntimeParentTypeResolver = runtimeParentTypeResolver;
             Configuration = configuration;
         }
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.runtime.client.option
 	    ///     Returns the classloader that is the parent class loader for the runtime.
 	    /// </summary>
 	    /// <value>parent class loader</value>
-	    public ParentClassLoader RuntimeParentClassLoader { get; }
+	    public ParentTypeResolver RuntimeParentTypeResolver { get; }
 
 	    /// <summary>
 	    ///     Returns the configuration.

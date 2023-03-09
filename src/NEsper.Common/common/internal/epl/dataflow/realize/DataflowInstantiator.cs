@@ -296,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             ISet<string> choices = new LinkedHashSet<string>();
-            choices.Add(typeof(object).Name);
+            choices.Add(nameof(Object));
             choices.Add("Object[]");
             if (expectedUnderlying != null) {
                 choices.Add(expectedUnderlying.Name);

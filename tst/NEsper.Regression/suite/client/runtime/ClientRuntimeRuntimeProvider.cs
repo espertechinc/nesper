@@ -54,7 +54,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(Configuration config)
             {
                 var listener = new SupportRuntimeStateListener();
-                var runtime = EPRuntimeProvider.GetRuntime(GetType().Name + "__listenerstatechange", config);
+                var runtimeProvider = new EPRuntimeProvider();
+                //var runtimeProvider = EPRuntimeProvider.DefaultProvider;
+                var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name + "__listenerstatechange", config);
                 runtime.AddRuntimeStateListener(listener);
                 runtime.Destroy();
                 Assert.AreSame(runtime, listener.AssertOneGetAndResetDestroyedEvents());
@@ -86,13 +88,15 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(Configuration config)
             {
+                var runtimeProvider = new EPRuntimeProvider();
+                //var runtimeProvider = EPRuntimeProvider.DefaultProvider;
                 var uriOne = GetType().Name + "_1";
-                var runtimeOne = EPRuntimeProvider.GetRuntime(uriOne, config);
+                var runtimeOne = runtimeProvider.GetRuntimeInstance(uriOne, config);
                 var uriTwo = GetType().Name + "_2";
-                var runtimeTwo = EPRuntimeProvider.GetRuntime(uriTwo, config);
-                EPAssertionUtil.AssertContains(EPRuntimeProvider.RuntimeURIs, uriOne, uriTwo);
-                Assert.IsNotNull(EPRuntimeProvider.GetExistingRuntime(uriOne));
-                Assert.IsNotNull(EPRuntimeProvider.GetExistingRuntime(uriTwo));
+                var runtimeTwo = runtimeProvider.GetRuntimeInstance(uriTwo, config);
+                EPAssertionUtil.AssertContains(runtimeProvider.RuntimeURIs, uriOne, uriTwo);
+                Assert.IsNotNull(runtimeProvider.GetExistingRuntime(uriOne));
+                Assert.IsNotNull(runtimeProvider.GetExistingRuntime(uriTwo));
 
                 config.Common.AddEventType(typeof(SupportBean));
                 EPCompiled compiled;
@@ -107,16 +111,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 var adminOne = runtimeOne.DeploymentService;
                 runtimeOne.Destroy();
-                EPAssertionUtil.AssertNotContains(EPRuntimeProvider.RuntimeURIs, uriOne);
-                EPAssertionUtil.AssertContains(EPRuntimeProvider.RuntimeURIs, uriTwo);
-                Assert.IsNull(EPRuntimeProvider.GetExistingRuntime(uriOne));
+                EPAssertionUtil.AssertNotContains(runtimeProvider.RuntimeURIs, uriOne);
+                EPAssertionUtil.AssertContains(runtimeProvider.RuntimeURIs, uriTwo);
+                Assert.IsNull(runtimeProvider.GetExistingRuntime(uriOne));
                 Assert.IsTrue(runtimeOne.IsDestroyed);
                 Assert.IsFalse(runtimeTwo.IsDestroyed);
 
                 var stageTwo = runtimeTwo.StageService;
                 runtimeTwo.Destroy();
-                EPAssertionUtil.AssertNotContains(EPRuntimeProvider.RuntimeURIs, uriOne, uriTwo);
-                Assert.IsNull(EPRuntimeProvider.GetExistingRuntime(uriTwo));
+                EPAssertionUtil.AssertNotContains(runtimeProvider.RuntimeURIs, uriOne, uriTwo);
+                Assert.IsNull(runtimeProvider.GetExistingRuntime(uriTwo));
                 Assert.IsTrue(runtimeOne.IsDestroyed);
                 Assert.IsTrue(runtimeTwo.IsDestroyed);
 
@@ -128,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     () => adminOne.Deploy(compiled),
                     Throws.InstanceOf<EPRuntimeDestroyedException>());
 
-                EPAssertionUtil.AssertNotContains(EPRuntimeProvider.RuntimeURIs, uriTwo);
+                EPAssertionUtil.AssertNotContains(runtimeProvider.RuntimeURIs, uriTwo);
 
                 TryAssertDestroyed(() => DoNothing(runtimeTwo.EventService));
                 TryAssertDestroyed(() => DoNothing(runtimeTwo.DeploymentService));
@@ -147,11 +151,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(Configuration config)
             {
+                var runtimeProvider = new EPRuntimeProvider();
+                //var runtimeProvider = EPRuntimeProvider.DefaultProvider;
+
                 config.Runtime.Threading.IsInternalTimerEnabled = true;
                 config.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
 
                 try {
-                    EPRuntimeProvider.GetRuntime(GetType().Name, config).Initialize();
+                    runtimeProvider.GetRuntimeInstance(GetType().Name, config).Initialize();
                     Assert.Fail();
                 }
                 catch (ConfigurationException ex) {
@@ -159,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 config.Runtime.Threading.IsInternalTimerEnabled = false;
-                var runtime = EPRuntimeProvider.GetRuntime(GetType().Name, config);
+                var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, config);
 
                 try {
                     runtime.EventService.ClockInternal();

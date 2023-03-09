@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var type = typeof(SupportBeanComplexProps).Name;
+                var type = nameof(SupportBeanComplexProps);
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();

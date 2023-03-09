@@ -29,7 +29,8 @@ namespace com.espertech.esperio.regression.adapter
     [TestFixture]
     public class TestFileSourceLineGraphs : AbstractIOTest
     {
-        private EPRuntime runtime;
+        private EPRuntime _runtime;
+        private EPRuntimeProvider _runtimeProvider;
 
         [SetUp]
         public void SetUp()
@@ -40,8 +41,9 @@ namespace com.espertech.esperio.regression.adapter
             configuration.Common.AddImportType(typeof(DefaultSupportCaptureOpForge));
             configuration.Common.AddEventType("MyLineEvent", typeof(MyLineEvent));
             configuration.Common.AddEventType("MyInvalidEvent", typeof(MyInvalidEvent));
-            runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
-            runtime.Initialize();
+            _runtimeProvider = new EPRuntimeProvider();
+            _runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
+            _runtime.Initialize();
         }
 
         private void TryInvalid(
@@ -51,10 +53,10 @@ namespace com.espertech.esperio.regression.adapter
             string message)
         {
             epl = epl.Replace("${SUBS_HERE}", substituion);
-            var stmtGraph = CompileDeploy(runtime, epl).Statements[0];
+            var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
             try {
                 var outputOp = new DefaultSupportCaptureOp(container.LockManager());
-                runtime.DataFlowService.Instantiate(
+                _runtime.DataFlowService.Instantiate(
                     stmtGraph.DeploymentId,
                     dataflowName,
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
@@ -64,16 +66,16 @@ namespace com.espertech.esperio.regression.adapter
                 Assert.AreEqual(message, ex.Message);
             }
             finally {
-                UndeployAll(runtime);
+                UndeployAll(_runtime);
             }
         }
 
         private IList<IList<object>> RunDataFlow(string epl)
         {
-            var deployment = CompileDeploy(runtime, epl);
+            var deployment = CompileDeploy(_runtime, epl);
 
             var outputOp = new DefaultSupportCaptureOp(container.LockManager());
-            var instance = runtime.DataFlowService.Instantiate(
+            var instance = _runtime.DataFlowService.Instantiate(
                 deployment.DeploymentId,
                 "ReadCSV",
                 new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
@@ -130,18 +132,18 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEndOfFileMarker()
         {
-            CompileDeploy(runtime, "@public @buseventtype create objectarray schema MyBOF (filename string)");
-            CompileDeploy(runtime, "@public @buseventtype create objectarray schema MyEOF (filename string)");
-            CompileDeploy(runtime, "@public @buseventtype create objectarray schema MyLine (filename string, line string)");
+            CompileDeploy(_runtime, "@public @buseventtype create objectarray schema MyBOF (filename string)");
+            CompileDeploy(_runtime, "@public @buseventtype create objectarray schema MyEOF (filename string)");
+            CompileDeploy(_runtime, "@public @buseventtype create objectarray schema MyLine (filename string, line string)");
 
             CompileDeploy(
-                runtime,
+                _runtime,
                 "@public create context FileContext " +
                 "initiated by MyBOF as mybof " +
                 "terminated by MyEOF(filename=mybof.filename)");
 
             var stmtCount = CompileDeploy(
-                    runtime,
+                    _runtime,
                     "context FileContext " +
                     "select context.mybof.filename as filename, count(*) as cnt " +
                     "from MyLine(filename=context.mybof.filename) " +
@@ -155,7 +157,7 @@ namespace com.espertech.esperio.regression.adapter
                       "numLoops: 1, format: 'line', " +
                       "propertyNameLine: 'line', propertyNameFile: 'filename'}\n" +
                       "EventBusSink(mylines, mybof, myeof) {}\n";
-            var deployment = CompileDeploy(runtime, epl);
+            var deployment = CompileDeploy(_runtime, epl);
 
             foreach (var filename in new[] {
                 "../../../etc/regression/line_file_1.txt",
@@ -163,7 +165,7 @@ namespace com.espertech.esperio.regression.adapter
             }) {
                 var options = new EPDataFlowInstantiationOptions();
                 options.AddParameterURI("FileSource/file", filename);
-                var instance = runtime.DataFlowService.Instantiate(deployment.DeploymentId, "MyEOFEventFileReader", options);
+                var instance = _runtime.DataFlowService.Instantiate(deployment.DeploymentId, "MyEOFEventFileReader", options);
                 instance.Run();
                 Assert.AreEqual(1, instance.Parameters.Count);
                 Assert.AreEqual(filename, instance.Parameters.Get("FileSource/file"));

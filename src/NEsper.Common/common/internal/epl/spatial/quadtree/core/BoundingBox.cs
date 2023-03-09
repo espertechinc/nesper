@@ -89,13 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         public override string ToString()
         {
-            return string.Format("{0}MinX={1}, MinY={2}, MaxX={3}, MaxY={4}{5}",
-                '{',
-                _minX.RenderAny(),
-                _minY.RenderAny(),
-                _maxX.RenderAny(),
-                _maxY.RenderAny(),
-                '}');
+            return $"{'{'}MinX={_minX.RenderAny()}, MinY={_minY.RenderAny()}, MaxX={_maxX.RenderAny()}, MaxY={_maxY.RenderAny()}{'}'}";
         }
 
         public QuadrantEnum GetQuadrant(

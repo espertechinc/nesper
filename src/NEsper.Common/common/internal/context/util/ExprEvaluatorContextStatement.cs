@@ -84,5 +84,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 return statementContext.TableExprEvaluatorContext;
             }
         }
+
+        public TypeResolver TypeResolver => statementContext.TypeResolver;
     }
 } // end of namespace

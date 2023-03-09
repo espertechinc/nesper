@@ -8,12 +8,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.aifactory.core;
+using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -24,19 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
         public ClassProvided()
         {
         }
-
-        public ClassProvided(
-            Assembly assembly,
-            string className)
+        
+        public ClassProvided(IRuntimeArtifact artifact, String className)
         {
-            Assembly = assembly;
+            Artifact = artifact;
             ClassName = className;
         }
         
-        public Assembly Assembly { get; set; }
+        public IRuntimeArtifact Artifact { get; set; }
 
-        public IEnumerable<Type> Types => Assembly.GetExportedTypes();
-        
         public string ModuleName { get; set; }
 
         public NameAccessModifier Visibility { get; set; } = NameAccessModifier.TRANSIENT;
@@ -45,41 +44,38 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 
         public string ClassName { get; set; }
 
-        public void LoadClasses(ClassLoader parentClassLoader)
+        public void LoadClasses(TypeResolver parentTypeResolver)
         {
             ClassesMayNull = new List<Type>();
-            
-            // The assembly is the container for all the types, there is no need to explicitly
-            // load them as is done in Java.  In Esper, the class is loaded as a byte array which
-            // the ByteArrayProvidingClassProvider must initialize.
-
-            foreach (var clazz in Assembly.GetExportedTypes()) {
+            foreach (var clazz in Artifact.Assembly.ExportedTypes) {
                 ClassesMayNull.Add(clazz);
             }
         }
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenClassScope classScope)
+            CodegenClassScope classScope,
+            ModuleClassProvidedInitializeSymbol symbols)
         {
-            var method = parent.MakeChild(typeof(ClassProvided), GetType(), classScope);
-            if (Assembly == null) {
-                method.Block.DeclareVar<Assembly>(
-                    "assembly",
+            var method = parent
+                .MakeChild(typeof(ClassProvided), GetType(), classScope);
+            if (Artifact == null) {
+                method.Block.DeclareVar<IRuntimeArtifact>(
+                    "artifact",
                     ConstantNull());
             }
             else {
-                method.Block.DeclareVar<Assembly>(
-                    "assembly",
+                method.Block.DeclareVar<IRuntimeArtifact>(
+                    "artifact",
                     ExprDotMethod(
-                        EnumValue(typeof(AppDomain), "CurrentDomain"),
-                        "Load",
-                        Constant(Assembly.FullName)));
+                        symbols.GetAddInitSvc(method),
+                        "ResolveArtifact",
+                        Constant(Artifact.Id)));
             }
 
             method.Block
                 .DeclareVar<ClassProvided>("cp", NewInstance(typeof(ClassProvided)))
-                .SetProperty(Ref("cp"), "Assembly", Ref("assembly"))
+                .SetProperty(Ref("cp"), "Artifact", Ref("artifact"))
                 .SetProperty(Ref("cp"), "ClassName", Constant(ClassName))
                 .SetProperty(Ref("cp"), "ModuleName", Constant(ModuleName))
                 .SetProperty(Ref("cp"), "Visibility", Constant(Visibility))

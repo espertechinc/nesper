@@ -229,13 +229,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private string GetGeneratorDetail(Type generator)
         {
+#if DEBUG && STACKTRACE 
             var stack = new StackTrace();
             string stackString = null;
             for (var i = 1; i < 10; i++) {
                 var frame = stack.GetFrame(i);
-                var method = frame.GetMethod();
-                if (method.DeclaringType.Namespace.Contains(typeof(CodegenProperty).Namespace)) {
-                    continue;
+                if (frame != null) {
+                    var method = frame.GetMethod();
+                    if (method.DeclaringType.Namespace.Contains(typeof(CodegenProperty).Namespace)) {
+                        continue;
+                    }
                 }
 
                 stackString = GetStackString(i, stack);
@@ -251,6 +254,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             return generator.GetSimpleName() + " --- " + stackString;
+#else
+            return generator.GetSimpleName();
+#endif
         }
 
         private string GetStackString(
@@ -264,7 +270,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var lineNumber = stackFrame.GetFileLineNumber();
             return className + "." + methodName + "():" + lineNumber;
         }
-
+        
         private CodegenProperty AddChild(CodegenProperty propertyNode)
         {
 #if false

@@ -24,15 +24,49 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
 	public class ExprEnumArrayOf
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			List<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfWSelectFromScalar());
-			execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
-			execs.Add(new ExprEnumArrayOfWSelectFromEvent());
-			execs.Add(new ExprEnumArrayOfEvents());
+			WithWSelectFromScalar(execs);
+			WithWSelectFromScalarWIndex(execs);
+			WithWSelectFromEvent(execs);
+			WithEvents(execs);
+			WithScalar(execs);
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprEnumArrayOfScalar());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfEvents());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWSelectFromEvent(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfWSelectFromEvent());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWSelectFromScalarWIndex(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
+			return execs;
+		}
+
+		public static IList<RegressionExecution> WithWSelectFromScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumArrayOfWSelectFromScalar());
 			return execs;
 		}
 
@@ -104,10 +138,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
 				builder.WithAssertion(Make2Value("E1,12", "E2,11", "E3,2"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] {"E1", "E2", "E3"}, val));
+					.Verify(fields[0], val => AssertArrayEquals(new[] { "E1", "E2", "E3" }, val));
 
 				builder.WithAssertion(Make2Value("E4,14"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] {"E4"}, val));
+					.Verify(fields[0], val => AssertArrayEquals(new[] { "E4" }, val));
 
 				builder.WithAssertion(Make2Value())
 					.Verify(fields[0], val => AssertArrayEquals(new string[0], val));
@@ -130,10 +164,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
 				builder.WithAssertion(MakeString("E1,E2,E3"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] {"E1-0", "E2-1", "E3-2"}, val));
+					.Verify(fields[0], val => AssertArrayEquals(new[] { "E1-0", "E2-1", "E3-2" }, val));
 
 				builder.WithAssertion(MakeString("E4"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] {"E4-0"}, val));
+					.Verify(fields[0], val => AssertArrayEquals(new[] { "E4-0" }, val));
 
 				builder.WithAssertion(MakeString(""))
 					.Verify(fields[0], val => AssertArrayEquals(new string[0], val));
@@ -156,10 +190,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 
 				builder.WithAssertion(MakeString("1,2,3"))
-					.Verify(fields[0], val => AssertArrayEquals(new int?[] {1, 2, 3}, val));
+					.Verify(fields[0], val => AssertArrayEquals(new int?[] { 1, 2, 3 }, val));
 
 				builder.WithAssertion(MakeString("1"))
-					.Verify(fields[0], val => AssertArrayEquals(new int?[] {1}, val));
+					.Verify(fields[0], val => AssertArrayEquals(new int?[] { 1 }, val));
 
 				builder.WithAssertion(MakeString(""))
 					.Verify(fields[0], val => AssertArrayEquals(new int?[] { }, val));
@@ -175,14 +209,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			string[] expected,
 			object received)
 		{
-			AssertEqualsExactOrder(expected, (string[]) received);
+			AssertEqualsExactOrder(expected, (string[])received);
 		}
 
 		private static void AssertArrayEquals(
 			int?[] expected,
 			object received)
 		{
-			AssertEqualsExactOrder(expected, (int?[]) received);
+			AssertEqualsExactOrder(expected, (int?[])received);
 		}
 
 		private static int[] IntArray(params int[] ints)

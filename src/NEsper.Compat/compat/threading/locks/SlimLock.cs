@@ -115,8 +115,6 @@ namespace com.espertech.esper.compat.threading.locks
         {
             var isMultiProcessor = IsMultiProcessor;
 
-            long time;
-
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             

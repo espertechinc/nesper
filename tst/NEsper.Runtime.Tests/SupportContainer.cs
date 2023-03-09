@@ -17,25 +17,7 @@ namespace com.espertech.esper.runtime
 {
     public class SupportContainer
     {
-        public static IContainer Instance;
-
-        static SupportContainer()
-        {
-            Reset();
-        }
-
-        public static T Resolve<T>()
-        {
-            return Instance.Resolve<T>();
-        }
-
-        public static IContainer Reset()
-        {
-            Instance = CreateContainer();
-            return Instance;
-        }
-
-        private static IContainer CreateContainer()
+        public static IContainer CreateContainer()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 

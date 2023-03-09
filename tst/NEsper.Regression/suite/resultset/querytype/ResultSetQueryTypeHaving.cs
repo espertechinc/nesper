@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
                     .Add(Expressions.Avg("Price"), "avgPrice");
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name).AddView("length", Expressions.Constant(5)));
+                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(5)));
                 model.HavingClause = Expressions.Lt(Expressions.Property("Price"), Expressions.Avg("Price"));
                 model = env.CopyMayFail(model);
 

@@ -12,55 +12,52 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.rowrecog;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.rowrecog
 {
     [TestFixture]
-    public class TestSuiteRowRecogWConfig
+    public class TestSuiteRowRecogWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestRowRecogIntervalMicrosecondResolution()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new RowRecogIntervalResolution(10000000));
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWideNoPreventStart()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container, true);
             Configure(session.Configuration);
             session.Configuration.Runtime.MatchRecognize.MaxStates = 3L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = false;
             RegressionRunner.Run(session, new RowRecogMaxStatesEngineWideNoPreventStart());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWide3Instance()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             Configure(session.Configuration);
             session.Configuration.Runtime.MatchRecognize.MaxStates = 3L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = true;
             RegressionRunner.Run(session, new RowRecogMaxStatesEngineWide3Instance());
-            session.Dispose();
         }
 
         [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWide4Instance()
         {
-            RegressionSession session = RegressionRunner.Session();
+            using var session = RegressionRunner.Session(Container);
             Configure(session.Configuration);
             session.Configuration.Runtime.MatchRecognize.MaxStates = 4L;
             session.Configuration.Runtime.MatchRecognize.IsMaxStatesPreventStart = true;
             RegressionRunner.Run(session, new RowRecogMaxStatesEngineWide4Instance());
-            session.Dispose();
         }
 
         private void Configure(Configuration configuration)

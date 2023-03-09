@@ -7,7 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 
+using com.espertech.esper.compat.collections;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -15,34 +22,25 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class ImportDecl : IComparable<ImportDecl>
     {
-        public string Namespace { get; set; }
+        private string _namespace;
+
+        public string Namespace {
+            get => _namespace;
+            set => _namespace = CleanNamespace(value);
+        }
+
         public string TypeName { get; set; }
 
         public bool IsNamespaceImport => TypeName == null;
+        
+        public IEnumerable<UsingDirectiveSyntax> UsingDirectives { get; }
 
-        // Converts the import into a using directive syntax expression
-        public UsingDirectiveSyntax UsingDirective {
-            get {
-                UsingDirectiveSyntax usingDirectiveSyntax = SyntaxFactory.UsingDirective(
-                    SyntaxFactory.ParseName(Namespace));
-                //if (IsStatic) {
-                //    usingDirectiveSyntax = usingDirectiveSyntax.WithStaticKeyword(
-                //        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-                //}
-
-                return usingDirectiveSyntax;
-            }
-        }
-
-        public ImportDecl(
-            string @namespace,
-            string typeName)
+        private static string CleanNamespace(string value)
         {
-            if (@namespace == null) {
-                throw new ArgumentNullException(@namespace);
-            }
-
-            Namespace = @namespace
+            if (value == null)
+                return null;
+            
+            return value
                 .Replace(".internal.", ".@internal.")
                 .Replace(".internal", ".@internal")
                 .Replace(".base.", ".@base.")
@@ -51,8 +49,105 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Replace(".lock", ".@lock")
                 .Replace(".event.", ".@event.")
                 .Replace(".event", ".@event");
+        }
 
+        private static string GetNestedTypeName(Type type)
+        {
+            if (type.IsNested) {
+                return GetNestedTypeName(type.DeclaringType) + "." + type.Name;
+            }
+
+            return type.Name;
+        }
+        
+        private static IEnumerable<UsingDirectiveSyntax> ConvertToUsingDirectives(Type type)
+        {
+            var @namespace = type.Namespace;
+            if (type.IsArray) {
+                foreach (var directive in ConvertToUsingDirectives(type.GetElementType())) {
+                    yield return directive;
+                }
+            } else if (type.IsGenericType) {
+                // Generic types cannot be imported using an alias.  As such, their entire
+                // namespace must be imported or they must be aliased to a very specific
+                // type.  Both of these cause some issues.
+                yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(CleanNamespace(type.Namespace)));
+                foreach (var argument in type.GetGenericArguments()) {
+                    foreach (var directive in ConvertToUsingDirectives(argument)) {
+                        yield return directive;
+                    }
+                }
+            }
+            else {
+                var typeAlias = type.Name;
+                var typeNamespace = CleanNamespace(type.Namespace);
+                
+                SimpleNameSyntax typeNameSyntax = SyntaxFactory.IdentifierName(type.Name);
+                if (type.IsNested && type.DeclaringType != null) {
+                    foreach (var directive in ConvertToUsingDirectives(type.DeclaringType)) {
+                        yield return directive;
+                    }
+
+                    typeNameSyntax = SyntaxFactory.IdentifierName(GetNestedTypeName(type));
+                }
+
+                NameSyntax importName;
+                if (typeNamespace != null) {
+                    importName = SyntaxFactory.QualifiedName(SyntaxFactory.ParseName(typeNamespace), typeNameSyntax);
+                }
+                else {
+                    importName = typeNameSyntax;
+                }
+
+                if (type.IsDefined(typeof(ExtensionAttribute), false)) {
+                    yield return SyntaxFactory.UsingDirective(
+                        SyntaxFactory.Token(SyntaxKind.UsingKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                        null,
+                        importName,
+                        SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                }
+                
+                yield return SyntaxFactory.UsingDirective(SyntaxFactory.NameEquals(typeAlias), importName);
+            }
+        }
+
+        public static UsingDirectiveSyntax ConvertToSimpleUsingDirective(string @namespace, string typeName)
+        {
+            UsingDirectiveSyntax usingDirectiveSyntax;
+            if (typeName == null) {
+                usingDirectiveSyntax = SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(@namespace));
+            }
+            else {
+                usingDirectiveSyntax = SyntaxFactory.UsingDirective(
+                    SyntaxFactory.NameEquals(typeName),
+                    SyntaxFactory.QualifiedName(
+                        SyntaxFactory.ParseName(@namespace),
+                        SyntaxFactory.IdentifierName(typeName)));
+            }
+            //if (IsStatic) {
+            //    usingDirectiveSyntax = usingDirectiveSyntax.WithStaticKeyword(
+            //        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+            //}
+
+            return usingDirectiveSyntax;
+        }
+        
+        public ImportDecl(Type type)
+        {
+            Namespace = type.Namespace;
+            TypeName = type.Name;
+            UsingDirectives = ConvertToUsingDirectives(type).ToList();
+        }
+        
+        public ImportDecl(
+            string @namespace,
+            string typeName)
+        {
+            Namespace = @namespace ?? throw new ArgumentNullException(nameof(@namespace));
             TypeName = typeName;
+            UsingDirectives = Collections.SingletonList(
+                ConvertToSimpleUsingDirective(@namespace, typeName));
         }
 
         protected bool Equals(ImportDecl other)
@@ -95,7 +190,15 @@ namespace com.espertech.esper.compiler.@internal.util
             var nameComparison = string.Compare(
                 Namespace, that.Namespace, StringComparison.Ordinal);
 
-            if (this.Namespace == "System") {
+            if (this.Namespace == null) {
+                if (that.Namespace == null) {
+                    nameComparison = 0;
+                }
+                else {
+                    nameComparison = -1;
+                }
+            }
+            else if (this.Namespace == "System") {
                 if (that.Namespace == "System") {
                     nameComparison = 0;
                 }

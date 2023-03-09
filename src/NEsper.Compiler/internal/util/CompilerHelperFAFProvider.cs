@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -125,7 +126,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var classPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
             EPCompiledManifest manifest;
-            Pair<Assembly, byte[]> assemblyWithImage;
+            ICompileArtifact artifact;
 
             FAFQueryMethodForge query;
             if (specCompiled.Raw.InsertIntoDesc != null) {
@@ -168,8 +169,13 @@ namespace com.espertech.esper.compiler.@internal.util
             // verify substitution parameters
             VerifySubstitutionParams(raw.SubstitutionParameters);
 
+            var repository = compileTimeServices
+                .Container
+                .ArtifactRepositoryManager()
+                .DefaultRepository;
+
             try {
-                manifest = CompileToAssembly(query, classPostfix, args.Options, services, out assemblyWithImage);
+                manifest = CompileToAssembly(query, classPostfix, args.Options, services, repository, out artifact);
             }
             catch (EPCompileException) {
                 throw;
@@ -181,7 +187,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     new EmptyList<EPCompileExceptionItem>());
             }
 
-            return new EPCompiled(new [] { assemblyWithImage }, manifest);
+            return new EPCompiled(repository, new [] { artifact }, manifest);
         }
 
         private static EPCompiledManifest CompileToAssembly(
@@ -189,11 +195,12 @@ namespace com.espertech.esper.compiler.@internal.util
             string classPostfix,
             CompilerOptions compilerOptions,
             ModuleCompileTimeServices compileTimeServices,
-            out Pair<Assembly, byte[]> assemblyWithImage)
+            IArtifactRepository artifactRepository,
+            out ICompileArtifact artifact)
         {
             string queryMethodProviderClassName;
             try {
-                queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(query, classPostfix,compileTimeServices, out assemblyWithImage);
+                queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(query, classPostfix,compileTimeServices, out artifact);
             }
             catch (StatementSpecCompileException ex) {
                 EPCompileExceptionItem first;
@@ -213,7 +220,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 queryMethodProviderClassName,
                 classPostfix,
                 compileTimeServices,
-                out assemblyWithImage);
+                artifactRepository,
+                out artifact);
 
             // create manifest
             return new EPCompiledManifest(COMPILER_VERSION, null, fafProviderClassName, false);
@@ -223,7 +231,8 @@ namespace com.espertech.esper.compiler.@internal.util
             string queryMethodProviderClassName,
             string classPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Pair<Assembly, byte[]> assemblyWithImage)
+            IArtifactRepository artifactRepository,
+            out ICompileArtifact artifact)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);
@@ -307,11 +316,12 @@ namespace com.espertech.esper.compiler.@internal.util
             var container = compileTimeServices.Container;
             var compiler = container
                 .RoslynCompiler()
+                .WithMetaDataReferences(artifactRepository.AllMetadataReferences)
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new List<CodegenClass>() { clazz });
 
-            assemblyWithImage = compiler.Compile();
+            artifact = artifactRepository.Register(compiler.Compile());
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                 compileTimeServices.Namespace,

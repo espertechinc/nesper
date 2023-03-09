@@ -21,10 +21,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprDTSetInput());
-            executions.Add(new ExprDTSetFields());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithInput(execs);
+            WithFields(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTSetFields());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInput(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDTSetInput());
+            return execs;
         }
 
         internal class ExprDTSetInput : RegressionExecution
@@ -58,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var expectedTime = "2002-01-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));
 
-                var expectedResults = SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dto", "date", "long"); 
+                var expectedResults = SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dto", "date", "long");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expectedResults);
 
                 env.UndeployAll();
@@ -69,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
+                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.set('msec', 1) as val0," +
                                   "DateTimeOffset.set('sec', 2) as val1," +
@@ -90,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         typeof(DateTimeOffset?), // val3
                         typeof(DateTimeOffset?), // val4
                         typeof(DateTimeOffset?), // val5
-                        typeof(DateTimeOffset?)  // val6
+                        typeof(DateTimeOffset?) // val6
                     });
 
                 string[] expected = {
@@ -100,12 +114,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "2002-05-30T13:00:00.000", // val3
                     "2002-05-05T09:00:00.000", // val4
                     "2002-06-30T09:00:00.000", // val5
-                    "0007-05-30T09:00:00.000"  // val6
+                    "0007-05-30T09:00:00.000" // val6
                 };
                 var startTime = "2002-05-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 var datesCoerced = SupportDateTime.GetArrayCoerced(expected, "dto");
-                
+
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,

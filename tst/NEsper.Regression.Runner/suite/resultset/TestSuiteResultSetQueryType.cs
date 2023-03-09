@@ -23,25 +23,10 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 namespace com.espertech.esper.regressionrun.suite.resultset
 {
     [TestFixture]
-    public class TestSuiteResultSetQueryType
+    public class TestSuiteResultSetQueryType : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
 
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                 typeof(SupportBean),
@@ -82,85 +67,85 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeAggregateGrouped()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeAggregateGrouped.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeAggregateGrouped.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeAggregateGroupedHaving()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeAggregateGroupedHaving.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeAggregateGroupedHaving.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeGroupByReclaimMicrosecondResolution()
         {
-            RegressionRunner.Run(session, new ResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution(5000));
+            RegressionRunner.Run(_session, new ResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution(5000));
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeHaving()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeHaving.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeHaving.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeEnumerator()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeEnumerator.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeEnumerator.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupGroupingFuncs()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeRollupGroupingFuncs.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeRollupGroupingFuncs.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupHavingAndOrderBy()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeRollupHavingAndOrderBy.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeRollupHavingAndOrderBy.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupPlanningAndSODA()
         {
-            RegressionRunner.Run(session, new ResultSetQueryTypeRollupPlanningAndSODA());
+            RegressionRunner.Run(_session, new ResultSetQueryTypeRollupPlanningAndSODA());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowForAllHaving()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeRowForAllHaving.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeRowForAllHaving.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerEvent()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeRowPerEvent.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeRowPerEvent.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerEventPerformance()
         {
-            RegressionRunner.Run(session, new ResultSetQueryTypeRowPerEventPerformance());
+            RegressionRunner.Run(_session, new ResultSetQueryTypeRowPerEventPerformance());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerGroup()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeRowPerGroup.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeRowPerGroup.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerGroupHaving()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeRowPerGroupHaving.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeRowPerGroupHaving.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeWTimeBatch()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeWTimeBatch.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeWTimeBatch.Executions());
         }
 
         /// <summary>

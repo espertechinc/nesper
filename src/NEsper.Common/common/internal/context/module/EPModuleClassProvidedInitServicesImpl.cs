@@ -6,17 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
     public class EPModuleClassProvidedInitServicesImpl : EPModuleClassProvidedInitServices
     {
-        public EPModuleClassProvidedInitServicesImpl(ClassProvidedCollector classProvidedCollector)
+        public ClassProvidedCollector ClassProvidedCollector { get; }
+        public IArtifactRepository ArtifactRepository { get; }
+
+        public EPModuleClassProvidedInitServicesImpl(
+            ClassProvidedCollector classProvidedCollector,
+            IArtifactRepository artifactRepository)
         {
             ClassProvidedCollector = classProvidedCollector;
+            ArtifactRepository = artifactRepository;
         }
 
-        public ClassProvidedCollector ClassProvidedCollector { get; }
+        public IRuntimeArtifact ResolveArtifact(string artifactName)
+        {
+            return ArtifactRepository.Resolve(artifactName);
+        }
     }
 } // end of namespace

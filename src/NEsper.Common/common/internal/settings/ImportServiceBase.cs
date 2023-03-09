@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IList<Import> _annotationImports = new List<Import>();
         private readonly IList<Import> _imports = new List<Import>();
 
-        private readonly IDictionary<string, object> _transientConfiguration;
+        private protected readonly IDictionary<string, object> _transientConfiguration;
 
         protected ImportServiceBase(
             IContainer container,
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.settings
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames)
         {
-            Container = container;
+            Container = container ?? throw new ArgumentNullException(nameof(container));
             _transientConfiguration = transientConfiguration;
             TimeAbacus = timeAbacus;
             _eventTypeAutoNames = eventTypeAutoNames;
@@ -46,13 +46,9 @@ namespace com.espertech.esper.common.@internal.settings
 
         public IContainer Container { get; }
 
-        public ClassLoader ClassLoader => TransientConfigurationResolver
-            .ResolveClassLoader(Container, _transientConfiguration)
-            .GetClassLoader();
-
         public TimeAbacus TimeAbacus { get; }
 
-        public Type ResolveClass(
+        public Type ResolveType(
             string className,
             bool forAnnotation,
             ExtensionClass extension)
@@ -68,13 +64,21 @@ namespace com.espertech.esper.common.@internal.settings
             return clazz;
         }
 
-        public ClassForNameProvider ClassForNameProvider =>
-            TransientConfigurationResolver.ResolveClassForNameProvider(_transientConfiguration);
+        public virtual TypeResolverProvider TypeResolverProvider => TransientConfigurationResolver
+            .ResolveTypeResolverProvider(Container, _transientConfiguration);
+
+        public virtual TypeResolver TypeResolver => TransientConfigurationResolver
+            .ResolveTypeResolver(Container, _transientConfiguration);
 
         public Type ResolveClassForBeanEventType(string fullyQualClassName)
         {
             try {
-                return ClassForNameProvider.ClassForName(fullyQualClassName);
+                var clazz = TypeResolver.ResolveType(fullyQualClassName, true);
+                if (clazz != null) {
+                    return clazz;
+                }
+
+                return TypeHelper.ResolveType(fullyQualClassName, true);
             }
             catch (TypeLoadException ex) {
                 // Attempt to resolve from auto-name packages
@@ -82,7 +86,7 @@ namespace com.espertech.esper.common.@internal.settings
                 foreach (var @namespace in _eventTypeAutoNames) {
                     var generatedClassName = @namespace + "." + fullyQualClassName;
                     try {
-                        var resolvedClass = ClassForNameProvider.ClassForName(generatedClassName);
+                        var resolvedClass = TypeResolver.ResolveType(generatedClassName);
                         if (clazz != null) {
                             throw new ImportException(
                                 "Failed to resolve name '" +
@@ -108,7 +112,7 @@ namespace com.espertech.esper.common.@internal.settings
                     return clazz;
                 }
                 
-                return ResolveClass(fullyQualClassName, false, ExtensionClassEmpty.INSTANCE);
+                return ResolveType(fullyQualClassName, false, ExtensionClassEmpty.INSTANCE);
             }
         }
 
@@ -246,13 +250,9 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             // Attempt to retrieve the class with the name as-is
-            try {
-                return ClassForNameProvider.ClassForName(className);
-            }
-            catch (TypeLoadException) {
-                if (Log.IsDebugEnabled) {
-                    Log.Debug("Class not found for resolving from name as-is '" + className + "'");
-                }
+            var clazzForName = TypeResolver.ResolveType(className);
+            if (clazzForName != null) {
+                return clazzForName;
             }
 
             // check annotation-specific imports first
@@ -280,7 +280,7 @@ namespace com.espertech.esper.common.@internal.settings
         {
             // Try all the imports
             foreach (var import in imports) {
-                var clazz = import.Resolve(className, ClassForNameProvider);
+                var clazz = import.Resolve(className, TypeResolver);
                 if (clazz != null) {
                     if (requireAnnotation) {
                         if (clazz.IsAttribute()) {

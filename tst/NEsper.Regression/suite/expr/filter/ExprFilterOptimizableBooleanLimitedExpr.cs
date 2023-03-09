@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                                  "@public create expression MyHandThrough {v => v};" +
                                  "@public create expression string js:MyJavaScript() [\"a\"];\n";
                 env.Compile(objects, path);
-                string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + typeof(SupportFilterPlanHook).Name + "')";
+                string hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" + nameof(SupportFilterPlanHook) + "')";
 
                 // Core disqualifing: non-constant variables, tables, subselects, lambda, plug-in UDF with filter-opt-disabled, scripts
                 AssertDisqualified(env, path, "SupportBean", hook + "select * from SupportBean(TheString regexp MYVARIABLE_NONCONSTANT)");

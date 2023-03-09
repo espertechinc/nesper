@@ -9,32 +9,33 @@
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.script;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
-    public class TestSuiteEPLScriptWConfig
+    public class TestSuiteEPLScriptWConfig : AbstractTestContainer
     {
         [Test, RunInApplicationDomain]
         public void TestEPLScriptExpressionConfiguration()
         {
-            RegressionSession session = RegressionRunner.Session();
-            session.Configuration.Common.AddEventType(typeof(SupportBean));
-            session.Configuration.Compiler.Scripts.DefaultDialect = "dummy";
-            RegressionRunner.Run(session, new EPLScriptExpressionConfiguration());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                session.Configuration.Common.AddEventType(typeof(SupportBean));
+                session.Configuration.Compiler.Scripts.DefaultDialect = "dummy";
+                RegressionRunner.Run(session, new EPLScriptExpressionConfiguration());
+            }
         }
         
         [Test, RunInApplicationDomain]
         public void testEPLScriptExpressionDisable()
         {
-            RegressionSession session = RegressionRunner.Session();
-            session.Configuration.Common.AddEventType<SupportBean>();
-            session.Configuration.Compiler.Scripts.IsEnabled = false;
-            RegressionRunner.Run(session, new EPLScriptExpressionDisable());
-            session.Dispose();
+            using (var session = RegressionRunner.Session(Container)) {
+                session.Configuration.Common.AddEventType<SupportBean>();
+                session.Configuration.Compiler.Scripts.IsEnabled = false;
+                RegressionRunner.Run(session, new EPLScriptExpressionDisable());
+            }
         }
     }
 } // end of namespace

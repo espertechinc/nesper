@@ -25,12 +25,54 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextKeyedNamedWindowBasic());
-            execs.Add(new ContextKeyedNamedWindowNonPattern());
-            execs.Add(new ContextKeyedNamedWindowPattern());
-            execs.Add(new ContextKeyedNamedWindowFAF());
-            execs.Add(new ContextKeyedSubqueryNamedWindowIndexUnShared());
+            WithNamedWindowBasic(execs);
+            WithNamedWindowNonPattern(execs);
+            WithNamedWindowPattern(execs);
+            WithNamedWindowFAF(execs);
+            WithSubqueryNamedWindowIndexUnShared(execs);
+            WithSubqueryNamedWindowIndexShared(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryNamedWindowIndexShared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextKeyedSubqueryNamedWindowIndexShared());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryNamedWindowIndexUnShared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeyedSubqueryNamedWindowIndexUnShared());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowFAF(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeyedNamedWindowFAF());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeyedNamedWindowPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowNonPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeyedNamedWindowNonPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowBasic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextKeyedNamedWindowBasic());
             return execs;
         }
 
@@ -48,16 +90,16 @@ namespace com.espertech.esper.regressionlib.suite.context
             var fields = "c0,c1".SplitCsv();
 
             env.SendEventBean(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E1", 1});
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { "E1", 1 });
 
             env.SendEventBean(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E2", 2});
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { "E2", 2 });
 
             env.SendEventBean(new SupportBean("E1", 3));
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E1", 3});
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { "E1", 3 });
 
             env.SendEventBean(new SupportBean("E2", 4));
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E2", 4});
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { "E2", 4 });
 
             TryInvalidCreateWindow(env, path);
             TryInvalidCreateWindow(env, path); // making sure all is cleaned up
@@ -67,14 +109,14 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         private static void TryAssertionSubqueryNW(RegressionEnvironment env)
         {
-            string[] fields = {"TheString", "IntPrimitive", "val0"};
+            string[] fields = { "TheString", "IntPrimitive", "val0" };
 
             env.SendEventBean(new SupportBean_S0(10, "s1"));
             env.SendEventBean(new SupportBean("G1", 10));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"G1", 10, "s1"});
+                new object[] { "G1", 10, "s1" });
 
             env.Milestone(0);
 
@@ -82,13 +124,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"G2", 10, "s1"});
+                new object[] { "G2", 10, "s1" });
 
             env.SendEventBean(new SupportBean("G3", 20));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"G3", 20, null});
+                new object[] { "G3", 20, null });
 
             env.Milestone(1);
 
@@ -97,13 +139,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"G3", 20, "s2"});
+                new object[] { "G3", 20, "s2" });
 
             env.SendEventBean(new SupportBean("G1", 20));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"G1", 20, "s2"});
+                new object[] { "G1", 20, "s2" });
         }
 
         private static void TryInvalidCreateWindow(
@@ -133,8 +175,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    new [] { "TheString" },
-                    new[] {new object[] {"G1"}});
+                    new[] { "TheString" },
+                    new[] { new object[] { "G1" } });
 
                 env.SendEventBean(new SupportBean("G2", 0));
 
@@ -142,8 +184,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    new [] { "TheString" },
-                    new[] {new object[] {"G1"}, new object[] {"G2"}});
+                    new[] { "TheString" },
+                    new[] { new object[] { "G1" }, new object[] { "G2" } });
 
                 env.UndeployAll();
             }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.compiler.@internal.util
             FAFQueryMethodForge query,
             string classPostfix,
             ModuleCompileTimeServices compileTimeServices,
-            out Pair<Assembly, byte[]> assemblyWithImage)
+            out ICompileArtifact artifact)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields),
@@ -51,7 +52,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // assign the assembly (required for completeness)
-            assemblyWithImage = null;
+            artifact = null;
 
             // compile with statement-field first
             classes = classes
@@ -59,13 +60,15 @@ namespace com.espertech.esper.compiler.@internal.util
                 .ToList();
 
             var container = compileTimeServices.Container;
+            var repository = container.ArtifactRepositoryManager().DefaultRepository;
             var compiler = container
                 .RoslynCompiler()
+                .WithMetaDataReferences(repository.AllMetadataReferences)
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(classes);
 
-            assemblyWithImage = compiler.Compile();
+            artifact = repository.Register(compiler.Compile());
 
             return queryMethodProviderClassName;
         }

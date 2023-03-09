@@ -79,7 +79,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 Assert.AreEqual("SupportBean(TheString=...) inserted SupportBean[SupportBean(\"E1\", 1)]", cb.Message);
                 Assert.AreEqual(env.DeploymentId("ABC"), cb.DeploymentId);
                 Assert.AreEqual("ABC", cb.StatementName);
-                Assert.AreEqual(DEFAULT_RUNTIME_URI, cb.RuntimeURI);
+                Assert.AreEqual(env.RuntimeURI, cb.RuntimeURI);
+                //Assert.AreEqual(DEFAULT_RUNTIME_URI, cb.RuntimeURI);
                 Assert.AreEqual(AuditEnum.STREAM, cb.Category);
                 Assert.AreEqual(1, cb.RuntimeTime);
                 AuditPath.AuditCallback = null;

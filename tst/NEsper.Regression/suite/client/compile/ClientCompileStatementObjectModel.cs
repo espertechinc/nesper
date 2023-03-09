@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 SerializableObjectCopier.CopyMayFail(env.Container, model);
             }

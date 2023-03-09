@@ -81,12 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
 				env.SendEventBean(new SupportBean("E1", 10));
 				var result = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
-				try {
-					Assert.That(result.GetType().GetProperty("Id").GetValue(result), Is.EqualTo(10));
-				}
-				catch (Exception ex) {
-					Assert.Fail(ex.Message);
-				}
+
+				Assert.That(result.GetType().GetProperty("Id")?.GetValue(result), Is.EqualTo(10));
 
 				env.UndeployAll();
 			}
@@ -126,8 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				TryInvalidCompile(
 					env,
 					eplNamedWindow,
-					"Named windows require one or more child views that are data window views");
-					//"Nestable type configuration encountered an unexpected property type name");
+					"Nestable type configuration encountered an unexpected property type name");
 
 				var eplTable =
 					EscapeClass("public class MyType {}") +
@@ -140,16 +135,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var eplScript = EscapeClass("public class MyScriptResult {}") +
-				                "expression Object[] js:myItemProducerScript() [\n" +
-				                "function myItemProducerScript() {" +
-				                "  var arrayType = host.resolveType(\"MyScriptResult\");\n" +
-				                "  var rows = host.newArr(arrayType, 2);\n" +
-				                "  return rows;\n" +
-				                "};" +
-				                "return myItemProducerScript();" +
-				                "]" +
-				                "@Name('s0') select myItemProducerScript() from SupportBean";
+				var eplScript = EscapeClass(
+					"public class MyScriptResult {}") +
+					"expression Object[] js:myItemProducerScript() [\n" +
+					"function myItemProducerScript() {" +
+					"  var arrayType = host.resolveType(\"MyScriptResult\");\n" +
+					"  var rows = host.newArr(arrayType, 2);\n" +
+					"  return rows;\n" +
+					"};" +
+					"return myItemProducerScript();" +
+					"]" +
+					"@Name('s0') select myItemProducerScript() from SupportBean";
 				env.CompileDeploy(eplScript).AddListener("s0");
 				env.SendEventBean(new SupportBean("E1", 1));
 
@@ -184,6 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				    "@Name('s0') select s.Id as c0 from SupportBean as e,\n" +
 				    "method:MyFromClauseMethod.GetBeans() as s";
 				var compiled = env.Compile(epl, path);
+
 				var assemblies = compiled.Assemblies;
 				var assemblyTypes = assemblies.SelectMany(_ => _.GetExportedTypes());
 				foreach (var assemblyType in assemblyTypes) {

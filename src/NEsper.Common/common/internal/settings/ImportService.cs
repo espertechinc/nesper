@@ -22,11 +22,13 @@ namespace com.espertech.esper.common.@internal.settings
         
         TimeAbacus TimeAbacus { get; }
 
+#if DEPRECATED
         ClassForNameProvider ClassForNameProvider { get; }
+#endif
 
-        ClassLoader ClassLoader { get; }
+        TypeResolver TypeResolver { get; }
 
-        Type ResolveClass(
+        Type ResolveType(
             string className,
             bool forAnnotation,
             ExtensionClass extensionClass);

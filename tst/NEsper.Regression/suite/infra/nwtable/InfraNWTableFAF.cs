@@ -1836,10 +1836,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"a", 1}});
 
                 // try enum-value insert
-                var epl = "create schema MyMode (Mode " + typeof(SupportEnum).Name + ");\n" +
+                var epl = "create schema MyMode (Mode " + nameof(SupportEnum) + ");\n" +
                           (namedWindow
                               ? "@Name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
-                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
+                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + nameof(SupportEnum) + ");\n");
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAF(
                     "insert into MyInfraTwo select " +

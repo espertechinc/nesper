@@ -30,36 +30,232 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     {
         public static IList<RegressionExecution> Executions()
         {
-            IList<RegressionExecution> executions = new List<RegressionExecution>();
-            executions.Add(new ExprFilterConstant());
-            executions.Add(new ExprFilterRelationalOpRange());
-            executions.Add(new ExprFilterMathExpression());
-            executions.Add(new ExprFilterBooleanExpr());
-            executions.Add(new ExprFilterIn3ValuesAndNull());
-            executions.Add(new ExprFilterNotEqualsNull());
-            executions.Add(new ExprFilterInSet());
-            executions.Add(new ExprFilterOverInClause());
-            executions.Add(new ExprFilterNotEqualsConsolidate());
-            executions.Add(new ExprFilterPromoteIndexToSetNotIn());
-            executions.Add(new ExprFilterShortCircuitEvalAndOverspecified());
-            executions.Add(new ExprFilterRelationalOpConstantFirst());
-            executions.Add(new ExprFilterNullBooleanExpr());
-            executions.Add(new ExprFilterEnumSyntaxOne());
-            executions.Add(new ExprFilterEnumSyntaxTwo());
-            executions.Add(new ExprFilterPatternFunc3Stream());
-            executions.Add(new ExprFilterPatternFunc());
-            executions.Add(new ExprFilterStaticFunc());
-            executions.Add(new ExprFilterWithEqualsSameCompare());
-            executions.Add(new ExprFilterEqualsSemanticFilter());
-            executions.Add(new ExprFilterPatternWithExpr());
-            executions.Add(new ExprFilterExprReversed());
-            executions.Add(new ExprFilterRewriteWhere());
-            executions.Add(new ExprFilterNotEqualsOp());
-            executions.Add(new ExprFilterCombinationEqualsOp());
-            executions.Add(new ExprFilterEqualsSemanticExpr());
-            executions.Add(new ExprFilterInvalid());
-            executions.Add(new ExprFilterInstanceMethodWWildcard());
-            return executions;
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithConstant(execs);
+            WithRelationalOpRange(execs);
+            WithMathExpression(execs);
+            WithBooleanExpr(execs);
+            WithIn3ValuesAndNull(execs);
+            WithNotEqualsNull(execs);
+            WithInSet(execs);
+            WithOverInClause(execs);
+            WithNotEqualsConsolidate(execs);
+            WithPromoteIndexToSetNotIn(execs);
+            WithShortCircuitEvalAndOverspecified(execs);
+            WithRelationalOpConstantFirst(execs);
+            WithNullBooleanExpr(execs);
+            WithEnumSyntaxOne(execs);
+            WithEnumSyntaxTwo(execs);
+            WithPatternFunc3Stream(execs);
+            WithPatternFunc(execs);
+            WithStaticFunc(execs);
+            WithWithEqualsSameCompare(execs);
+            WithEqualsSemanticFilter(execs);
+            WithPatternWithExpr(execs);
+            WithExprReversed(execs);
+            WithRewriteWhere(execs);
+            WithNotEqualsOp(execs);
+            WithCombinationEqualsOp(execs);
+            WithEqualsSemanticExpr(execs);
+            WithInvalid(execs);
+            WithInstanceMethodWWildcard(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInstanceMethodWWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInstanceMethodWWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsSemanticExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterEqualsSemanticExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCombinationEqualsOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterCombinationEqualsOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotEqualsOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterNotEqualsOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRewriteWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterRewriteWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExprReversed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterExprReversed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternWithExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterPatternWithExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEqualsSemanticFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterEqualsSemanticFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithEqualsSameCompare(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterWithEqualsSameCompare());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaticFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterStaticFunc());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterPatternFunc());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternFunc3Stream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterPatternFunc3Stream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumSyntaxTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterEnumSyntaxTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumSyntaxOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterEnumSyntaxOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNullBooleanExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterNullBooleanExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRelationalOpConstantFirst(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterRelationalOpConstantFirst());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithShortCircuitEvalAndOverspecified(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterShortCircuitEvalAndOverspecified());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPromoteIndexToSetNotIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterPromoteIndexToSetNotIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotEqualsConsolidate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterNotEqualsConsolidate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOverInClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOverInClause());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSet(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInSet());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotEqualsNull(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterNotEqualsNull());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIn3ValuesAndNull(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterIn3ValuesAndNull());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBooleanExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterBooleanExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMathExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterMathExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRelationalOpRange(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterRelationalOpRange());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConstant(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterConstant());
+            return execs;
         }
 
         private static object SendEvent(
@@ -96,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             var theEvent = new SupportBean();
             switch (fieldName) {
                 case "TheString":
-                    theEvent.TheString = (string) value;
+                    theEvent.TheString = (string)value;
                     break;
 
                 case "BoolPrimitive":
@@ -329,63 +525,63 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
 
                 text = "select * from SupportBean(IntBoxed in [2:3])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, true, false }));
 
                 text = "select * from SupportBean(IntBoxed in [2:3] and IntBoxed in [2:3])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, true, false }));
 
                 text = "select * from SupportBean(IntBoxed in [2:3] and IntBoxed in [2:2])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false, false }));
 
                 text = "select * from SupportBean(IntBoxed in [1:10] and IntBoxed in [3:2])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, true, false }));
 
                 text = "select * from SupportBean(IntBoxed in [3:3] and IntBoxed in [1:3])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, true, false }));
 
                 text = "select * from SupportBean(IntBoxed in [3:3] and IntBoxed in [1:3] and IntBoxed in [4:5])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, false, false }));
 
                 text = "select * from SupportBean(IntBoxed not in [3:3] and IntBoxed not in [1:3])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, false, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, false, true }));
 
                 text = "select * from SupportBean(IntBoxed not in (2:4) and IntBoxed not in (1:3))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false, false, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false, false, true }));
 
                 text = "select * from SupportBean(IntBoxed not in [2:4) and IntBoxed not in [1:3))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, false, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, false, true }));
 
                 text = "select * from SupportBean(IntBoxed not in (2:4] and IntBoxed not in (1:3])";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false, false, false }));
 
                 text = "select * from SupportBean where IntBoxed not in (2:4)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, true, false, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, true, false, true }));
 
                 text = "select * from SupportBean where IntBoxed not in [2:4]";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false, false, false }));
 
                 text = "select * from SupportBean where IntBoxed not in [2:4)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false, false, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false, false, true }));
 
                 text = "select * from SupportBean where IntBoxed not in (2:4]";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, true, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, true, false, false }));
 
                 text = "select * from SupportBean where IntBoxed in (2:4)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, true, false }));
 
                 text = "select * from SupportBean where IntBoxed in [2:4]";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, true, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, true, true }));
 
                 text = "select * from SupportBean where IntBoxed in [2:4)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, true, false }));
 
                 text = "select * from SupportBean where IntBoxed in (2:4]";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, true, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, true, true }));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
                     env,
                     assertions,
-                    new object[] {1, 2, 3, 4},
+                    new object[] { 1, 2, 3, 4 },
                     data => SendBeanIntDouble(env, data.AsInt32(), 0D),
                     milestone);
             }
@@ -479,10 +675,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {0, 1, 0},
-                    new double?[] {2d, 2d, 1d},
-                    new[] {false, true, true});
+                    new[] { 1, 1, 1 },
+                    new int?[] { 0, 1, 0 },
+                    new double?[] { 2d, 2d, 1d },
+                    new[] { false, true, true });
 
                 text = "select * from SupportBean(IntPrimitive in (IntBoxed, " +
                        typeof(SupportStaticMethodLib).FullName +
@@ -491,70 +687,70 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {0, 1, 0},
-                    new double?[] {2d, 2d, 1d},
-                    new[] {true, true, false});
+                    new[] { 1, 1, 1 },
+                    new int?[] { 0, 1, 0 },
+                    new double?[] { 2d, 2d, 1d },
+                    new[] { true, true, false });
 
                 text = "select * from SupportBean(IntPrimitive not in (IntBoxed, DoubleBoxed))";
                 Try3Fields(
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {0, 1, 0},
-                    new double?[] {2d, 2d, 1d},
-                    new[] {true, false, false});
+                    new[] { 1, 1, 1 },
+                    new int?[] { 0, 1, 0 },
+                    new double?[] { 2d, 2d, 1d },
+                    new[] { true, false, false });
 
                 text = "select * from SupportBean(IntBoxed = DoubleBoxed)";
                 Try3Fields(
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {null, 1, null},
-                    new double?[] {null, null, 1d},
-                    new[] {false, false, false});
+                    new[] { 1, 1, 1 },
+                    new int?[] { null, 1, null },
+                    new double?[] { null, null, 1d },
+                    new[] { false, false, false });
 
                 text = "select * from SupportBean(IntBoxed in (DoubleBoxed))";
                 Try3Fields(
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {null, 1, null},
-                    new double?[] {null, null, 1d},
-                    new[] {false, false, false});
+                    new[] { 1, 1, 1 },
+                    new int?[] { null, 1, null },
+                    new double?[] { null, null, 1d },
+                    new[] { false, false, false });
 
                 text = "select * from SupportBean(IntBoxed not in (DoubleBoxed))";
                 Try3Fields(
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {null, 1, null},
-                    new double?[] {null, null, 1d},
-                    new[] {false, false, false});
+                    new[] { 1, 1, 1 },
+                    new int?[] { null, 1, null },
+                    new double?[] { null, null, 1d },
+                    new[] { false, false, false });
 
                 text = "select * from SupportBean(IntBoxed in [DoubleBoxed:10))";
                 Try3Fields(
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {null, 1, 2},
-                    new double?[] {null, null, 1d},
-                    new[] {false, false, true});
+                    new[] { 1, 1, 1 },
+                    new int?[] { null, 1, 2 },
+                    new double?[] { null, null, 1d },
+                    new[] { false, false, true });
 
                 text = "select * from SupportBean(IntBoxed not in [DoubleBoxed:10))";
                 Try3Fields(
                     env,
                     milestone,
                     text,
-                    new[] {1, 1, 1},
-                    new int?[] {null, 1, 2},
-                    new double?[] {null, null, 1d},
-                    new[] {false, true, false});
+                    new[] { 1, 1, 1 },
+                    new int?[] { null, 1, 2 },
+                    new double?[] { null, null, 1d },
+                    new[] { false, true, false });
             }
         }
 
@@ -574,30 +770,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s3') select * from SupportBean where TheString = 'A' or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
-                stmts = new[] {"s0", "s1", "s2", "s3"};
+                stmts = new[] { "s0", "s1", "s2", "s3" };
 
                 SendSupportBean(env, new SupportBean(null, 0));
-                AssertListeners(env, stmts, new[] {false, false, false, false});
+                AssertListeners(env, stmts, new[] { false, false, false, false });
 
                 SendSupportBean(env, new SupportBean(null, 1));
-                AssertListeners(env, stmts, new[] {false, true, false, true});
+                AssertListeners(env, stmts, new[] { false, true, false, true });
 
                 SendSupportBean(env, new SupportBean("A", 0));
-                AssertListeners(env, stmts, new[] {false, false, true, true});
+                AssertListeners(env, stmts, new[] { false, false, true, true });
 
                 SendSupportBean(env, new SupportBean("A", 1));
-                AssertListeners(env, stmts, new[] {false, true, true, true});
+                AssertListeners(env, stmts, new[] { false, true, true, true });
 
                 SendSupportBean(env, new SupportBean("B", 0));
-                AssertListeners(env, stmts, new[] {true, true, false, false});
+                AssertListeners(env, stmts, new[] { true, true, false, false });
 
                 SendSupportBean(env, new SupportBean("B", 1));
-                AssertListeners(env, stmts, new[] {true, true, false, true});
+                AssertListeners(env, stmts, new[] { true, true, false, true });
 
                 env.UndeployAll();
 
                 // test equals&selection
-                var fields = new[] {"val0", "val1", "val2", "val3", "val4", "val5"};
+                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5" };
                 epl = "@Name('s0') select " +
                       "TheString != 'A' as val0, " +
                       "TheString != 'A' or IntPrimitive != 0 as val1, " +
@@ -611,7 +807,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, null, false, null, null, false});
+                    new object[] { null, null, false, null, null, false });
 
                 env.MilestoneInc(milestone);
 
@@ -627,25 +823,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, true, true, false});
+                    new object[] { false, false, false, true, true, false });
 
                 SendSupportBean(env, new SupportBean("A", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true, false, true, true, true});
+                    new object[] { false, true, false, true, true, true });
 
                 SendSupportBean(env, new SupportBean("B", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, false, false, false, false});
+                    new object[] { true, true, false, false, false, false });
 
                 SendSupportBean(env, new SupportBean("B", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, true, false, true, false});
+                    new object[] { true, true, true, false, true, false });
 
                 env.UndeployAll().MilestoneInc(milestone);
 
@@ -659,19 +855,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "@Name('s3') select * from SupportBean where TheString is not null or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
-                stmts = new[] {"s0", "s1", "s2", "s3"};
+                stmts = new[] { "s0", "s1", "s2", "s3" };
 
                 SendSupportBean(env, new SupportBean(null, 0));
-                AssertListeners(env, stmts, new[] {true, true, false, false});
+                AssertListeners(env, stmts, new[] { true, true, false, false });
 
                 SendSupportBean(env, new SupportBean(null, 1));
-                AssertListeners(env, stmts, new[] {true, true, false, true});
+                AssertListeners(env, stmts, new[] { true, true, false, true });
 
                 SendSupportBean(env, new SupportBean("A", 0));
-                AssertListeners(env, stmts, new[] {false, false, true, true});
+                AssertListeners(env, stmts, new[] { false, false, true, true });
 
                 SendSupportBean(env, new SupportBean("A", 1));
-                AssertListeners(env, stmts, new[] {false, true, true, true});
+                AssertListeners(env, stmts, new[] { false, true, true, true });
 
                 env.UndeployAll();
 
@@ -690,25 +886,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, false, false, false, false});
+                    new object[] { true, true, false, false, false, false });
 
                 SendSupportBean(env, new SupportBean(null, 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, true, false, true, false});
+                    new object[] { true, true, true, false, true, false });
 
                 SendSupportBean(env, new SupportBean("A", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, true, true, false});
+                    new object[] { false, false, false, true, true, false });
 
                 SendSupportBean(env, new SupportBean("A", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true, false, true, true, true});
+                    new object[] { false, true, false, true, true, true });
 
                 env.UndeployAll();
 
@@ -720,18 +916,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s4') select * from SupportBean where TheString != null").AddListener("s4");
                 env.CompileDeploy("@Name('s5') select * from SupportBean(TheString != null)").AddListener("s5");
                 env.MilestoneInc(milestone);
-                stmts = new[] {"s0", "s1", "s2", "s3", "s4", "s5"};
+                stmts = new[] { "s0", "s1", "s2", "s3", "s4", "s5" };
 
                 SendSupportBean(env, new SupportBean(null, 0));
-                AssertListeners(env, stmts, new[] {true, false, false, false, false, false});
+                AssertListeners(env, stmts, new[] { true, false, false, false, false, false });
 
                 SendSupportBean(env, new SupportBean("A", 0));
-                AssertListeners(env, stmts, new[] {false, false, false, true, false, false});
+                AssertListeners(env, stmts, new[] { false, false, false, true, false, false });
 
                 env.UndeployAll();
 
                 // select constants
-                fields = new[] {"val0", "val1", "val2", "val3"};
+                fields = new[] { "val0", "val1", "val2", "val3" };
                 env.CompileDeploy(
                         "@Name('s0') select " +
                         "2 != null as val0," +
@@ -746,7 +942,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, null, null, null});
+                    new object[] { null, null, null, null });
 
                 env.UndeployAll();
 
@@ -825,7 +1021,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MultiStmtAssertUtil.RunEPL(
                     env,
                     Arrays.AsList(epl),
-                    new object[] {0, 1, 2, 3, 4},
+                    new object[] { 0, 1, 2, 3, 4 },
                     data => SendSupportBean(env, new SupportBean("", data.AsInt32())),
                     (
                         eventIndex,
@@ -904,24 +1100,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 assertions.Add(
                     new EPLWithInvokedFlags(
                         "select * from SupportInstanceMethodBean where 4 < X",
-                        new[] {false, false, true}));
+                        new[] { false, false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
                         "select * from SupportInstanceMethodBean where 4 <= X",
-                        new[] {false, true, true}));
+                        new[] { false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
                         "select * from SupportInstanceMethodBean where 4 > X",
-                        new[] {true, false, false}));
+                        new[] { true, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
                         "select * from SupportInstanceMethodBean where 4 >= X",
-                        new[] {true, true, false}));
+                        new[] { true, true, false }));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
                     env,
                     assertions,
-                    new object[] {3, 4, 5},
+                    new object[] { 3, 4, 5 },
                     data => env.SendEventBean(new SupportInstanceMethodBean(data.AsInt32())),
                     milestone);
             }
@@ -1038,13 +1234,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 4, -2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 5, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, false, false, false, false, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 4, -2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 5, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, false, false, false, false, false, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1054,13 +1250,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 4, -2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 5, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, true, false, false, false, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 4, -2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 5, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, false, true, false, false, false, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1070,13 +1266,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 4, -2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 5, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, true, true, true, false, false, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 4, -2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 5, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, true, true, true, false, false, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1086,13 +1282,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 4, -2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 5, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, true, false, false, false, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 4, -2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 5, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, false, true, false, false, false, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1102,13 +1298,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 4, -2},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, 3, 1, 8, null, 5, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, false, false, false, true, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 4, -2 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, 3, 1, 8, null, 5, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, false, false, false, false, true, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1118,13 +1314,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {2, 8, null, 2, 1, null, 1},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {-2, null, null, 3, 1, 8, 4},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, null, null, 3, 1, 8, 5},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, false, true, false, false, true});
+                    new int?[] { 2, 8, null, 2, 1, null, 1 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { -2, null, null, 3, 1, 8, 4 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, null, null, 3, 1, 8, 5 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, false, false, true, false, false, true });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1134,13 +1330,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {2, 8, null, 2, 1, null, 1},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {-2, null, null, 3, 1, 8, 4},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {null, null, null, 3, 1, 8, 5},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {true, true, false, true, false, true, true});
+                    new int?[] { 2, 8, null, 2, 1, null, 1 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { -2, null, null, 3, 1, 8, 4 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { null, null, null, 3, 1, 8, 5 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { true, true, false, true, false, true, true });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1150,13 +1346,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {2, 2, 1, 2, 1, 7, 1},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {0, 0, 0, 0, 0, 0, 0},
-                    new double?[] {1d, 2d, 0d, 2d, 0d, 1d, 0d},
-                    new int?[] {2, 2, 3, 2, 1, 7, 5},
-                    new double?[] {1d, 1d, 1d, 2d, 1d, 1d, 1d},
-                    new[] {true, false, false, true, false, true, false});
+                    new int?[] { 2, 2, 1, 2, 1, 7, 1 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 0, 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 1d, 2d, 0d, 2d, 0d, 1d, 0d },
+                    new int?[] { 2, 2, 3, 2, 1, 7, 5 },
+                    new double?[] { 1d, 1d, 1d, 2d, 1d, 1d, 1d },
+                    new[] { true, false, false, true, false, true, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1166,13 +1362,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {2, 1, 1, null, 1, null, 1},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {1, 2, 1, null, null, 2, 0},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {2, 2, 3, null, 1, null, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {true, true, false, false, true, false, false});
+                    new int?[] { 2, 1, 1, null, 1, null, 1 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 1, 2, 1, null, null, 2, 0 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 2, 2, 3, null, 1, null, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { true, true, false, false, true, false, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1182,13 +1378,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {2, 1, 1, null, 1, null, 1},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {1, 2, 1, null, null, 2, 0},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {2, 1, 3, null, 1, null, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {true, true, false, false, false, false, false});
+                    new int?[] { 2, 1, 1, null, 1, null, 1 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 1, 2, 1, null, null, 2, 0 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 2, 1, 3, null, 1, null, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { true, true, false, false, false, false, false });
 
                 text = "select * from pattern [" +
                        "a=SupportBean -> " +
@@ -1198,13 +1394,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {2, 1, 1, null, 1, null, 1},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {1, 2, 1, null, null, 2, 0},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new int?[] {2, 1, 3, null, 1, null, null},
-                    new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, true, false, true, false, false});
+                    new int?[] { 2, 1, 1, null, 1, null, 1 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 1, 2, 1, null, null, 2, 0 },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new int?[] { 2, 1, 3, null, 1, null, null },
+                    new double?[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                    new[] { false, false, true, false, true, false, false });
             }
         }
 
@@ -1216,241 +1412,241 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(IntBoxed = a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {2d, 2d, 2d, 1d, 5d, 6d, 7d},
-                    new int?[] {null, 3, 1, 8, null, 1, 2},
-                    new double?[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
-                    new[] {false, false, true, false, false, true, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 2d, 2d, 2d, 1d, 5d, 6d, 7d },
+                    new int?[] { null, 3, 1, 8, null, 1, 2 },
+                    new double?[] { 2d, 3d, 2d, 1d, 5d, 6d, 8d },
+                    new[] { false, false, true, false, false, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(IntBoxed is a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {null, 2, 1, null, 8, 1, 2},
-                    new double?[] {2d, 2d, 2d, 1d, 5d, 6d, 7d},
-                    new int?[] {null, 3, 1, 8, null, 1, 2},
-                    new double?[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
-                    new[] {true, false, true, false, false, true, false});
+                    new int?[] { null, 2, 1, null, 8, 1, 2 },
+                    new double?[] { 2d, 2d, 2d, 1d, 5d, 6d, 7d },
+                    new int?[] { null, 3, 1, 8, null, 1, 2 },
+                    new double?[] { 2d, 3d, 2d, 1d, 5d, 6d, 8d },
+                    new[] { true, false, true, false, false, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed = DoubleBoxed)]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {0, 0},
-                    new double?[] {2d, 2d},
-                    new int?[] {0, 0},
-                    new double?[] {2d, 3d},
-                    new[] {true, false});
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 2d },
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 3d },
+                    new[] { true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed = b.DoubleBoxed)]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {0, 0},
-                    new double?[] {2d, 2d},
-                    new int?[] {0, 0},
-                    new double?[] {2d, 3d},
-                    new[] {true, false});
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 2d },
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 3d },
+                    new[] { true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed != DoubleBoxed)]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {0, 0},
-                    new double?[] {2d, 2d},
-                    new int?[] {0, 0},
-                    new double?[] {2d, 3d},
-                    new[] {false, true});
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 2d },
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 3d },
+                    new[] { false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed != b.DoubleBoxed)]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {0, 0},
-                    new double?[] {2d, 2d},
-                    new int?[] {0, 0},
-                    new double?[] {2d, 3d},
-                    new[] {false, true});
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 2d },
+                    new int?[] { 0, 0 },
+                    new double?[] { 2d, 3d },
+                    new[] { false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {false, true, true, true, true, false});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { false, true, true, true, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in (a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {false, false, true, true, true, false});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { false, false, true, true, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(b.DoubleBoxed in (a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {false, false, true, true, false, false});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { false, false, true, true, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {false, true, true, true, false, false});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { false, true, true, true, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {true, false, false, false, false, true});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { true, false, false, false, false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {true, true, false, false, false, true});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { true, true, false, false, false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(b.DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {true, true, false, false, true, true});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { true, true, false, false, true, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {true, false, false, false, true, true});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { true, false, false, false, true, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in (a.DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {true, false, true, false, false, true});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { true, false, true, false, false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in (a.DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {false, true, false, true, true, false});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { false, true, false, true, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(b.DoubleBoxed in (DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {true, true, true, true, true, true});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { true, true, true, true, true, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in (DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
                     text,
                     milestone,
-                    new int?[] {1, 1, 1, 1, 1, 1},
-                    new double?[] {10d, 10d, 10d, 10d, 10d, 10d},
-                    new int?[] {0, 0, 0, 0, 0, 0},
-                    new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
-                    new[] {false, false, false, false, false, false});
+                    new int?[] { 1, 1, 1, 1, 1, 1 },
+                    new double?[] { 10d, 10d, 10d, 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0, 0, 0, 0 },
+                    new double?[] { 0d, 1d, 2d, 9d, 10d, 11d },
+                    new[] { false, false, false, false, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".MinusOne(a.DoubleBoxed))]";
@@ -1458,14 +1654,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {0, 0, 0},
-                    new double?[] {10d, 10d, 10d},
-                    new int?[] {0, 0, 0},
-                    new double?[] {9d, 10d, 11d},
-                    new[] {true, false, false});
+                    new int?[] { 0, 0, 0 },
+                    new double?[] { 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0 },
+                    new double?[] { 9d, 10d, 11d },
+                    new[] { true, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".MinusOne(a.DoubleBoxed) or " +
@@ -1476,11 +1672,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     text,
                     milestone,
-                    new int?[] {0, 0, 12},
-                    new double?[] {10d, 10d, 10d},
-                    new int?[] {0, 0, 0},
-                    new double?[] {9d, 10d, 11d},
-                    new[] {true, false, true});
+                    new int?[] { 0, 0, 12 },
+                    new double?[] { 10d, 10d, 10d },
+                    new int?[] { 0, 0, 0 },
+                    new double?[] { 9d, 10d, 11d },
+                    new[] { true, false, true });
             }
         }
 
@@ -1495,40 +1691,40 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 text = "select * from SupportBean(" +
                        typeof(SupportStaticMethodLib).FullName +
                        ".IsStringEquals('b', TheString))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean(" +
                        typeof(SupportStaticMethodLib).FullName +
                        ".IsStringEquals('bx', TheString || 'x'))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean('b'=TheString," +
                        typeof(SupportStaticMethodLib).FullName +
                        ".IsStringEquals('bx', TheString || 'x'))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean('b'=TheString, TheString='b', TheString != 'a')";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean(TheString != 'a', TheString != 'c')";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean(TheString = 'b', TheString != 'c')";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean(TheString != 'a' and TheString != 'c')";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 text = "select * from SupportBean(TheString = 'a' and TheString = 'c' and " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".IsStringEquals('bx', TheString || 'x'))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, false, false }));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
                     env,
                     assertions,
-                    new object[] {"a", "b", "c"},
-                    data => SendBeanString(env, (string) data),
+                    new object[] { "a", "b", "c" },
+                    data => SendBeanString(env, (string)data),
                     milestone);
             }
         }
@@ -1542,23 +1738,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
 
                 text = "select * from SupportBean(IntBoxed=DoubleBoxed)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false }));
 
                 text = "select * from SupportBean(IntBoxed=IntBoxed and DoubleBoxed=DoubleBoxed)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, true}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, true }));
 
                 text = "select * from SupportBean(DoubleBoxed=IntBoxed)";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false }));
 
                 text = "select * from SupportBean(DoubleBoxed in (IntBoxed))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false }));
 
                 text = "select * from SupportBean(IntBoxed in (DoubleBoxed))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false }));
 
                 {
-                    var intArray = new[] {1, 1};
-                    var doubleArray = new double[] {1, 10};
+                    var intArray = new[] { 1, 1 };
+                    var doubleArray = new double[] { 1, 10 };
 
                     MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                         env,
@@ -1570,11 +1766,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 assertions.Clear();
                 text = "select * from SupportBean(DoubleBoxed not in (10, IntBoxed))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { false, true, false }));
 
                 {
-                    var intArray = new[] {1, 1, 1};
-                    var doubleArray = new double[] {1, 5, 10};
+                    var intArray = new[] { 1, 1, 1 };
+                    var doubleArray = new double[] { 1, 5, 10 };
 
                     MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                         env,
@@ -1586,11 +1782,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 assertions.Clear();
                 text = "select * from SupportBean(DoubleBoxed in (IntBoxed:20))";
-                assertions.Add(new EPLWithInvokedFlags(text, new[] {true, false, false}));
+                assertions.Add(new EPLWithInvokedFlags(text, new[] { true, false, false }));
 
                 {
-                    var intArray = new[] {0, 1, 2};
-                    var doubleArray = new double[] {1, 1, 1};
+                    var intArray = new[] { 0, 1, 2 };
+                    var doubleArray = new double[] { 1, 1, 1 };
 
                     MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                         env,
@@ -1753,7 +1949,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [a=SupportBean -> b=" +
-                    typeof(SupportBean).Name +
+                    nameof(SupportBean) +
                     "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
                     "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.I...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
 
@@ -1774,15 +1970,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 TryFilterInstanceMethod(
                     env,
                     "select * from SupportInstanceMethodBean(S0.MyInstanceMethodAlwaysTrue()) as S0",
-                    new[] {true, true, true});
+                    new[] { true, true, true });
                 TryFilterInstanceMethod(
                     env,
                     "select * from SupportInstanceMethodBean(S0.MyInstanceMethodEventBean(S0, 'X', 1)) as S0",
-                    new[] {false, true, false});
+                    new[] { false, true, false });
                 TryFilterInstanceMethod(
                     env,
                     "select * from SupportInstanceMethodBean(S0.MyInstanceMethodEventBean(*, 'X', 1)) as S0",
-                    new[] {false, true, false});
+                    new[] { false, true, false });
             }
 
             private void TryFilterInstanceMethod(

@@ -27,7 +27,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             configuration.Common.AddEventType(typeof(TestEvent));
 
-            var runtime = EPRuntimeProvider.GetRuntime(GetType().Name, configuration);
+            var runtimeProvider = new EPRuntimeProvider();
+            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
             runtime.Initialize();
             ThreadSleep(100); // allow time for start up
 

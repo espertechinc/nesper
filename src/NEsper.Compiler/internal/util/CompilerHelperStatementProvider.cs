@@ -13,6 +13,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
@@ -71,7 +72,8 @@ namespace com.espertech.esper.compiler.@internal.util
             ISet<string> statementNames,
             ModuleCompileTimeServices moduleCompileTimeServices,
             CompilerOptions compilerOptions,
-            out Pair<Assembly, byte[]> assemblyWithImage)
+            IArtifactRepository artifactRepository,
+            out ICompileArtifact artifact)
         {
             var compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 
@@ -338,7 +340,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     if (eventType is JsonEventType) {
                         postCompile = new CompilableItemPostCompileLatchJson(
                             compileTimeServices.EventTypeCompileTimeRegistry.NewTypesAdded,
-                            compileTimeServices.ParentClassLoader);
+                            compileTimeServices.ParentTypeResolver,
+                            artifactRepository);
                         break;
                     }
                 }
@@ -346,19 +349,20 @@ namespace com.espertech.esper.compiler.@internal.util
                 var container = compileTimeServices.Container;
                 var compiler = container
                     .RoslynCompiler()
+                    .WithMetaDataReferences(artifactRepository.AllMetadataReferences)
                     .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                     .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                     .WithCodegenClasses(sorted);
 
-                assemblyWithImage = compiler.Compile();
+                artifact = artifactRepository.Register(compiler.Compile());
 
                 string statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                     compileTimeServices.Namespace,
                     typeof(StatementProvider),
                     classPostfix);
 
-                var additionalClasses = new HashSet<Type>();
-                additionalClasses.AddAll(walked.ClassesInlined.Classes);
+                var additionalClasses = new HashSet<IArtifact>();
+                additionalClasses.Add(walked.ClassesInlined.Artifact);
                 compileTimeServices.ClassProvidedCompileTimeResolver.AddTo(additionalClasses);
                 compileTimeServices.ClassProvidedCompileTimeRegistry.AddTo(additionalClasses);
 
@@ -395,9 +399,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 return clazz.FullName;
             }
 
-            var exportedTypes = classesInlined.Assembly.GetExportedTypes()
-                .Select(t => t.Name)
-                .ToList();
+            var exportedTypes = classesInlined.Artifact.TypeNames.ToList();
             
             throw new IllegalStateException("Could not determine class name, entries are: " + exportedTypes.RenderAny());
         }

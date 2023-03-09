@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
@@ -17,6 +18,11 @@ namespace com.espertech.esper.common.client.configuration.common
     {
         public abstract Type Resolve(
             string providedTypeName,
-            ClassForNameProvider classForNameProvider);
+#if DEPRECATED
+            ClassForNameProvider classForNameProvider
+#else
+            TypeResolver typeResolver
+#endif
+        );
     }
 }

@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventMap(theEvent, typeName);
             }
             else if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new object[] {userId, keyword, productId, score}, typeName);
+                env.SendEventObjectArray(new object[] { userId, keyword, productId, score }, typeName);
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 var record = new GenericRecord(
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EventRepresentationChoice eventRepresentationEnum,
                 AtomicLong milestone)
             {
-                var fields = new[] {"UserId", "Keyword", "SumScore"};
+                var fields = new[] { "UserId", "Keyword", "SumScore" };
                 var epl =
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedScoreCycle>() +
                     "create schema ScoreCycle (UserId string, Keyword string, ProductId string, Score long);\n" +
@@ -241,31 +241,31 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"Pete", "K1", 100L});
+                    new object[] { "Pete", "K1", 100L });
 
                 MakeSendScoreEvent(env, "ScoreCycle", eventRepresentationEnum, "Pete", "K1", "P2", 15);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"Pete", "K1", 115L});
+                    new object[] { "Pete", "K1", 115L });
 
                 MakeSendScoreEvent(env, "ScoreCycle", eventRepresentationEnum, "Joe", "K1", "P2", 30);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"Joe", "K1", 30L});
+                    new object[] { "Joe", "K1", 30L });
 
                 MakeSendScoreEvent(env, "ScoreCycle", eventRepresentationEnum, "Joe", "K2", "P1", 40);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"Joe", "K2", 40L});
+                    new object[] { "Joe", "K2", 40L });
 
                 MakeSendScoreEvent(env, "ScoreCycle", eventRepresentationEnum, "Joe", "K1", "P1", 20);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"Joe", "K1", 50L});
+                    new object[] { "Joe", "K1", 50L });
 
                 env.UndeployAll();
             }
@@ -275,7 +275,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = new[] { "c0", "c1", "c2" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context MyCtx as coalesce consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate",
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
                     new[] {
-                        new object[] {5, "E1", 1}
+                        new object[] { 5, "E1", 1 }
                     });
 
                 env.SendEventBean(new SupportBean("E2", 10));
@@ -308,11 +308,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
                     new[] {
-                        new object[] {5, "E1", 6},
-                        new object[] {15, "E2", 10},
-                        new object[] {9, "E3", 201}
+                        new object[] { 5, "E1", 6 },
+                        new object[] { 15, "E2", 10 },
+                        new object[] { 9, "E3", 201 }
                     });
-                SupportContextPropUtil.AssertContextProps(env, "ctx", "MyCtx", new[] {5, 15, 9}, null, null);
+                SupportContextPropUtil.AssertContextProps(env, "ctx", "MyCtx", new[] { 5, 15, 9 }, null, null);
 
                 env.Milestone(2);
 
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(selector),
                     fields,
                     new[] {
-                        new object[] {15, "E2", 10}
+                        new object[] { 15, "E2", 10 }
                     });
                 selector = new SupportSelectorByHashCode(new HashSet<int>(Arrays.AsList(1, 9, 5)));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -331,8 +331,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(selector),
                     fields,
                     new[] {
-                        new object[] {5, "E1", 6},
-                        new object[] {9, "E3", 201}
+                        new object[] { 5, "E1", 6 },
+                        new object[] { 9, "E3", 201 }
                     });
                 Assert.IsFalse(
                     env.Statement("s0")
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(filtered),
                     fields,
                     new[] {
-                        new object[] {15, "E2", 10}
+                        new object[] { 15, "E2", 10 }
                     });
                 filtered = new MySelectorFilteredHash(new HashSet<int>(Arrays.AsList(1, 9, 5)));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -366,8 +366,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(filtered),
                     fields,
                     new[] {
-                        new object[] {5, "E1", 6},
-                        new object[] {9, "E3", 201}
+                        new object[] { 5, "E1", 6 },
+                        new object[] { 9, "E3", 201 }
                     });
 
                 // test always-false filter - compare context partition info
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var ctx = "HashSegmentedContext";
-                var fields = new[] {"c0", "c1"};
+                var fields = new[] { "c0", "c1" };
 
                 var eplCtx = "@Name('context') create context " +
                              ctx +
@@ -491,13 +491,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, 12});
+                    new object[] { ctx, 12 });
                 AssertIterator(
                     env,
                     "s0",
                     fields,
                     new[] {
-                        new object[] {ctx, 12}
+                        new object[] { ctx, 12 }
                     });
 
                 env.Milestone(2);
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "s0",
                     fields,
                     new[] {
-                        new object[] {ctx, 12}
+                        new object[] { ctx, 12 }
                     });
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, 15});
+                    new object[] { ctx, 15 });
 
                 env.UndeployAll();
             }
@@ -535,7 +535,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = new[] { "c0", "c1", "c2" };
                 var eplGrouped = "@Name('s0') context CtxHash " +
                                  "select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {0, "E1", 10});
+                    new object[] { 0, "E1", 10 });
 
                 env.Milestone(0);
 
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {1, "E2", 11});
+                    new object[] { 1, "E2", 11 });
 
                 env.Milestone(1);
 
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {1, "E2", 23});
+                    new object[] { 1, "E2", 23 });
 
                 env.Milestone(2);
 
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {0, "E1", 24});
+                    new object[] { 0, "E1", 24 });
 
                 env.UndeployAll();
 
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                   "granularity 1000000";
                 env.CompileDeploy(eplCtxCRC32, path);
 
-                var fields = new[] {"c1", "c2", "c3", "c4", "c5"};
+                var fields = new[] { "c1", "c2", "c3", "c4", "c5" };
                 var eplStmt = "@Name('s0') context Ctx1 select IntPrimitive as c1, " +
                               "sum(LongPrimitive) as c2, prev(1, LongPrimitive) as c3, prior(1, LongPrimitive) as c4," +
                               "(select P00 from SupportBean_S0#length(2)) as c5 " +
@@ -608,13 +608,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {100, 20L, null, null, null});
+                    new object[] { 100, 20L, null, null, null });
 
                 env.SendEventBean(MakeBean("E1", 100, 21L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {100, 41L, 20L, 20L, null});
+                    new object[] { 100, 41L, 20L, 20L, null });
 
                 env.MilestoneInc(milestone);
 
@@ -626,7 +626,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {100, 63L, 21L, 21L, "S0"});
+                    new object[] { 100, 63L, 21L, 21L, "S0" });
 
                 env.UndeployAll();
             }
@@ -655,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                               "select context.name as c0, IntPrimitive as c1, Id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.P00";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = new[] { "c0", "c1", "c2" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean_S0(1, "E2"));
@@ -672,13 +672,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, 10, 3});
+                    new object[] { ctx, 10, 3 });
                 AssertIterator(
                     env,
                     "s0",
                     fields,
                     new[] {
-                        new object[] {ctx, 10, 3}
+                        new object[] { ctx, 10, 3 }
                     });
 
                 env.SendEventBean(new SupportBean_S0(4, "E4"));
@@ -694,14 +694,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {ctx, 12, 1});
+                    new object[] { ctx, 12, 1 });
                 AssertIterator(
                     env,
                     "s0",
                     fields,
                     new[] {
-                        new object[] {ctx, 10, 3},
-                        new object[] {ctx, 12, 1}
+                        new object[] { ctx, 10, 3 },
+                        new object[] { ctx, 12, 1 }
                     });
 
                 env.UndeployAll();
@@ -806,19 +806,19 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string stmtNameIterate,
                 string stmtNameContext)
             {
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = new[] { "c0", "c1", "c2" };
 
                 env.SendEventBean(new SupportBean("E1", 5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E1", 5});
+                    new object[] { stmtNameContext, "E1", 5 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E1", 5}
+                        new object[] { stmtNameContext, "E1", 5 }
                     });
 
                 env.MilestoneInc(milestone);
@@ -827,29 +827,29 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E2", 6});
+                    new object[] { stmtNameContext, "E2", 6 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E1", 5},
-                        new object[] {stmtNameContext, "E2", 6}
+                        new object[] { stmtNameContext, "E1", 5 },
+                        new object[] { stmtNameContext, "E2", 6 }
                     });
 
                 env.SendEventBean(new SupportBean("E3", 7));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E3", 7});
+                    new object[] { stmtNameContext, "E3", 7 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E1", 5},
-                        new object[] {stmtNameContext, "E3", 7},
-                        new object[] {stmtNameContext, "E2", 6}
+                        new object[] { stmtNameContext, "E1", 5 },
+                        new object[] { stmtNameContext, "E3", 7 },
+                        new object[] { stmtNameContext, "E2", 6 }
                     });
 
                 env.MilestoneInc(milestone);
@@ -858,33 +858,33 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E4", 8});
+                    new object[] { stmtNameContext, "E4", 8 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E1", 5},
-                        new object[] {stmtNameContext, "E3", 7},
-                        new object[] {stmtNameContext, "E4", 8},
-                        new object[] {stmtNameContext, "E2", 6}
+                        new object[] { stmtNameContext, "E1", 5 },
+                        new object[] { stmtNameContext, "E3", 7 },
+                        new object[] { stmtNameContext, "E4", 8 },
+                        new object[] { stmtNameContext, "E2", 6 }
                     });
 
                 env.SendEventBean(new SupportBean("E5", 9));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E5", 9});
+                    new object[] { stmtNameContext, "E5", 9 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E5", 9},
-                        new object[] {stmtNameContext, "E1", 5},
-                        new object[] {stmtNameContext, "E3", 7},
-                        new object[] {stmtNameContext, "E4", 8},
-                        new object[] {stmtNameContext, "E2", 6}
+                        new object[] { stmtNameContext, "E5", 9 },
+                        new object[] { stmtNameContext, "E1", 5 },
+                        new object[] { stmtNameContext, "E3", 7 },
+                        new object[] { stmtNameContext, "E4", 8 },
+                        new object[] { stmtNameContext, "E2", 6 }
                     });
 
                 env.MilestoneInc(milestone);
@@ -893,34 +893,34 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E1", 15});
+                    new object[] { stmtNameContext, "E1", 15 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E5", 9},
-                        new object[] {stmtNameContext, "E1", 15},
-                        new object[] {stmtNameContext, "E3", 7},
-                        new object[] {stmtNameContext, "E4", 8},
-                        new object[] {stmtNameContext, "E2", 6}
+                        new object[] { stmtNameContext, "E5", 9 },
+                        new object[] { stmtNameContext, "E1", 15 },
+                        new object[] { stmtNameContext, "E3", 7 },
+                        new object[] { stmtNameContext, "E4", 8 },
+                        new object[] { stmtNameContext, "E2", 6 }
                     });
 
                 env.SendEventBean(new SupportBean("E4", 11));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {stmtNameContext, "E4", 19});
+                    new object[] { stmtNameContext, "E4", 19 });
                 AssertIterator(
                     env,
                     stmtNameIterate,
                     fields,
                     new[] {
-                        new object[] {stmtNameContext, "E5", 9},
-                        new object[] {stmtNameContext, "E1", 15},
-                        new object[] {stmtNameContext, "E3", 7},
-                        new object[] {stmtNameContext, "E4", 19},
-                        new object[] {stmtNameContext, "E2", 6}
+                        new object[] { stmtNameContext, "E5", 9 },
+                        new object[] { stmtNameContext, "E1", 15 },
+                        new object[] { stmtNameContext, "E3", 7 },
+                        new object[] { stmtNameContext, "E4", 19 },
+                        new object[] { stmtNameContext, "E2", 6 }
                     });
 
                 Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
@@ -946,12 +946,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplStmt =
                     "@Name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
-                    typeof(ContextHashSegmented).Name +
+                    nameof(ContextHashSegmented) +
                     ".MySecondFunc(*, TheString) as c4 from SupportBean";
                 env.CompileDeploy(eplStmt, path);
                 env.AddListener("s0");
 
-                var fields = new[] {"c1", "c2", "c3", "c4"};
+                var fields = new[] { "c1", "c2", "c3", "c4" };
 
                 env.Milestone(0);
 
@@ -959,13 +959,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {3, 3, "E1", "E1"}); // context Id matches the number returned by myHashFunc
+                    new object[] { 3, 3, "E1", "E1" }); // context Id matches the number returned by myHashFunc
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {0, 0, "E2", "E2"});
+                    new object[] { 0, 0, "E2", "E2" });
 
                 env.Milestone(1);
 
@@ -973,7 +973,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {3, 7, "E3", "E3"});
+                    new object[] { 3, 7, "E3", "E3" });
 
                 env.UndeployAll();
             }
@@ -994,7 +994,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier)
             {
-                var id = (ContextPartitionIdentifierHash) contextPartitionIdentifier;
+                var id = (ContextPartitionIdentifierHash)contextPartitionIdentifier;
                 if (match == null && cpids.Contains(id.ContextPartitionId)) {
                     throw new EPException("Already exists context Id: " + id.ContextPartitionId);
                 }

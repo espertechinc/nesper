@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.namedwindow;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -22,37 +23,21 @@ namespace com.espertech.esper.regressionrun.suite.infra
 {
     // see INFRA suite for additional Named Window tests
     [TestFixture]
-    public class TestSuiteInfraNamedWindowPerf
+    public class TestSuiteInfraNamedWindowPerf : AbstractTestBase
     {
-        private RegressionSession session;
-
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowPerformance()
         {
-            RegressionRunner.Run(session, InfraNamedWindowPerformance.Executions());
+            RegressionRunner.Run(_session, InfraNamedWindowPerformance.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestInfraNamedWIndowFAFQueryJoinPerformance()
         {
-            RegressionRunner.Run(session, new InfraNamedWIndowFAFQueryJoinPerformance());
+            RegressionRunner.Run(_session, new InfraNamedWIndowFAFQueryJoinPerformance());
         }
 
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{
                 typeof(SupportBean),

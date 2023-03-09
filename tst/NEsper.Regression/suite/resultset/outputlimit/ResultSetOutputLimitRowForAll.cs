@@ -28,34 +28,230 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSet1NoneNoHavingNoJoin());
-            execs.Add(new ResultSet2NoneNoHavingJoin());
-            execs.Add(new ResultSet3NoneHavingNoJoin());
-            execs.Add(new ResultSet4NoneHavingJoin());
-            execs.Add(new ResultSet5DefaultNoHavingNoJoin());
-            execs.Add(new ResultSet6DefaultNoHavingJoin());
-            execs.Add(new ResultSet7DefaultHavingNoJoin());
-            execs.Add(new ResultSet8DefaultHavingJoin());
-            execs.Add(new ResultSet9AllNoHavingNoJoin());
-            execs.Add(new ResultSet10AllNoHavingJoin());
-            execs.Add(new ResultSet11AllHavingNoJoin());
-            execs.Add(new ResultSet12AllHavingJoin());
-            execs.Add(new ResultSet13LastNoHavingNoJoin());
-            execs.Add(new ResultSet14LastNoHavingJoin());
-            execs.Add(new ResultSet15LastHavingNoJoin());
-            execs.Add(new ResultSet16LastHavingJoin());
-            execs.Add(new ResultSet17FirstNoHavingNoJoin());
-            execs.Add(new ResultSet18SnapshotNoHavingNoJoin());
-            execs.Add(new ResultSetOutputLastWithInsertInto());
-            execs.Add(new ResultSetAggAllHaving());
-            execs.Add(new ResultSetAggAllHavingJoin());
-            execs.Add(new ResultSetJoinSortWindow());
-            execs.Add(new ResultSetMaxTimeWindow());
-            execs.Add(new ResultSetTimeWindowOutputCountLast());
-            execs.Add(new ResultSetTimeBatchOutputCount());
-            execs.Add(new ResultSetLimitSnapshot());
-            execs.Add(new ResultSetLimitSnapshotJoin());
+            With1NoneNoHavingNoJoin(execs);
+            With2NoneNoHavingJoin(execs);
+            With3NoneHavingNoJoin(execs);
+            With4NoneHavingJoin(execs);
+            With5DefaultNoHavingNoJoin(execs);
+            With6DefaultNoHavingJoin(execs);
+            With7DefaultHavingNoJoin(execs);
+            With8DefaultHavingJoin(execs);
+            With9AllNoHavingNoJoin(execs);
+            With10AllNoHavingJoin(execs);
+            With11AllHavingNoJoin(execs);
+            With12AllHavingJoin(execs);
+            With13LastNoHavingNoJoin(execs);
+            With14LastNoHavingJoin(execs);
+            With15LastHavingNoJoin(execs);
+            With16LastHavingJoin(execs);
+            With17FirstNoHavingNoJoin(execs);
+            With18SnapshotNoHavingNoJoin(execs);
+            WithOutputLastWithInsertInto(execs);
+            WithAggAllHaving(execs);
+            WithAggAllHavingJoin(execs);
+            WithJoinSortWindow(execs);
+            WithMaxTimeWindow(execs);
+            WithTimeWindowOutputCountLast(execs);
+            WithTimeBatchOutputCount(execs);
+            WithLimitSnapshot(execs);
+            WithLimitSnapshotJoin(execs);
+            WithOutputSnapshotGetValue(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputSnapshotGetValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetOutputSnapshotGetValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLimitSnapshotJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLimitSnapshotJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLimitSnapshot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLimitSnapshot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeBatchOutputCount(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetTimeBatchOutputCount());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWindowOutputCountLast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetTimeWindowOutputCountLast());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMaxTimeWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetMaxTimeWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinSortWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetJoinSortWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggAllHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggAllHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggAllHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggAllHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputLastWithInsertInto(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputLastWithInsertInto());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With18SnapshotNoHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet18SnapshotNoHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With17FirstNoHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet17FirstNoHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With16LastHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet16LastHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With15LastHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet15LastHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With14LastNoHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet14LastNoHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With13LastNoHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet13LastNoHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With12AllHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet12AllHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With11AllHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet11AllHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With10AllNoHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet10AllNoHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With9AllNoHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet9AllNoHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With8DefaultHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet8DefaultHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With7DefaultHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet7DefaultHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With6DefaultNoHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet6DefaultNoHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With5DefaultNoHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet5DefaultNoHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With4NoneHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet4NoneHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3NoneHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet3NoneHavingNoJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2NoneNoHavingJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet2NoneNoHavingJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With1NoneNoHavingNoJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSet1NoneNoHavingNoJoin());
             return execs;
         }
 
@@ -199,8 +395,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean("E2", 20));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "thesum" },
-                new object[] {30});
+                new[] { "thesum" },
+                new object[] { 30 });
 
             env.UndeployAll();
         }
@@ -213,68 +409,68 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 200,
                 1,
-                new[] {new object[] {25d}},
-                new[] {new object[] {null}});
+                new[] { new object[] { 25d } },
+                new[] { new object[] { null } });
             expected.AddResultInsRem(
                 800,
                 1,
-                new[] {new object[] {34d}},
-                new[] {new object[] {25d}});
+                new[] { new object[] { 34d } },
+                new[] { new object[] { 25d } });
             expected.AddResultInsRem(
                 1500,
                 1,
-                new[] {new object[] {58d}},
-                new[] {new object[] {34d}});
+                new[] { new object[] { 58d } },
+                new[] { new object[] { 34d } });
             expected.AddResultInsRem(
                 1500,
                 2,
-                new[] {new object[] {59d}},
-                new[] {new object[] {58d}});
+                new[] { new object[] { 59d } },
+                new[] { new object[] { 58d } });
             expected.AddResultInsRem(
                 2100,
                 1,
-                new[] {new object[] {85d}},
-                new[] {new object[] {59d}});
+                new[] { new object[] { 85d } },
+                new[] { new object[] { 59d } });
             expected.AddResultInsRem(
                 3500,
                 1,
-                new[] {new object[] {87d}},
-                new[] {new object[] {85d}});
+                new[] { new object[] { 87d } },
+                new[] { new object[] { 85d } });
             expected.AddResultInsRem(
                 4300,
                 1,
-                new[] {new object[] {109d}},
-                new[] {new object[] {87d}});
+                new[] { new object[] { 109d } },
+                new[] { new object[] { 87d } });
             expected.AddResultInsRem(
                 4900,
                 1,
-                new[] {new object[] {112d}},
-                new[] {new object[] {109d}});
+                new[] { new object[] { 112d } },
+                new[] { new object[] { 109d } });
             expected.AddResultInsRem(
                 5700,
                 0,
-                new[] {new object[] {87d}},
-                new[] {new object[] {112d}});
+                new[] { new object[] { 87d } },
+                new[] { new object[] { 112d } });
             expected.AddResultInsRem(
                 5900,
                 1,
-                new[] {new object[] {88d}},
-                new[] {new object[] {87d}});
+                new[] { new object[] { 88d } },
+                new[] { new object[] { 87d } });
             expected.AddResultInsRem(
                 6300,
                 0,
-                new[] {new object[] {79d}},
-                new[] {new object[] {88d}});
+                new[] { new object[] { 79d } },
+                new[] { new object[] { 88d } });
             expected.AddResultInsRem(
                 7000,
                 0,
-                new[] {new object[] {54d}},
-                new[] {new object[] {79d}});
+                new[] { new object[] { 54d } },
+                new[] { new object[] { 79d } });
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
             execution.Execute(false);
@@ -288,23 +484,23 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 4300,
                 1,
-                new[] {new object[] {109d}},
+                new[] { new object[] { 109d } },
                 null);
             expected.AddResultInsRem(
                 4900,
                 1,
-                new[] {new object[] {112d}},
-                new[] {new object[] {109d}});
+                new[] { new object[] { 112d } },
+                new[] { new object[] { 109d } });
             expected.AddResultInsRem(
                 5700,
                 0,
                 null,
-                new[] {new object[] {112d}});
+                new[] { new object[] { 112d } });
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
             execution.Execute(false);
@@ -318,43 +514,43 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 1200,
                 0,
-                new[] {new object[] {34d}},
-                new[] {new object[] {null}});
+                new[] { new object[] { 34d } },
+                new[] { new object[] { null } });
             expected.AddResultInsRem(
                 2200,
                 0,
-                new[] {new object[] {85d}},
-                new[] {new object[] {34d}});
+                new[] { new object[] { 85d } },
+                new[] { new object[] { 34d } });
             expected.AddResultInsRem(
                 3200,
                 0,
-                new[] {new object[] {85d}},
-                new[] {new object[] {85d}});
+                new[] { new object[] { 85d } },
+                new[] { new object[] { 85d } });
             expected.AddResultInsRem(
                 4200,
                 0,
-                new[] {new object[] {87d}},
-                new[] {new object[] {85d}});
+                new[] { new object[] { 87d } },
+                new[] { new object[] { 85d } });
             expected.AddResultInsRem(
                 5200,
                 0,
-                new[] {new object[] {112d}},
-                new[] {new object[] {87d}});
+                new[] { new object[] { 112d } },
+                new[] { new object[] { 87d } });
             expected.AddResultInsRem(
                 6200,
                 0,
-                new[] {new object[] {88d}},
-                new[] {new object[] {112d}});
+                new[] { new object[] { 88d } },
+                new[] { new object[] { 112d } });
             expected.AddResultInsRem(
                 7200,
                 0,
-                new[] {new object[] {54d}},
-                new[] {new object[] {88d}});
+                new[] { new object[] { 54d } },
+                new[] { new object[] { 88d } });
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
             execution.Execute(false);
@@ -368,7 +564,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(1200, 0, null, null);
             expected.AddResultInsRem(2200, 0, null, null);
@@ -377,13 +573,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             expected.AddResultInsRem(
                 5200,
                 0,
-                new[] {new object[] {112d}},
-                new[] {new object[] {109d}});
+                new[] { new object[] { 112d } },
+                new[] { new object[] { 109d } });
             expected.AddResultInsRem(
                 6200,
                 0,
                 null,
-                new[] {new object[] {112d}});
+                new[] { new object[] { 112d } });
             expected.AddResultInsRem(7200, 0, null, null);
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
@@ -398,7 +594,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(1200, 0, null, null);
             expected.AddResultInsRem(2200, 0, null, null);
@@ -407,13 +603,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             expected.AddResultInsRem(
                 5200,
                 0,
-                new[] {new object[] {109d}, new object[] {112d}},
-                new[] {new object[] {109d}});
+                new[] { new object[] { 109d }, new object[] { 112d } },
+                new[] { new object[] { 109d } });
             expected.AddResultInsRem(
                 6200,
                 0,
                 null,
-                new[] {new object[] {112d}});
+                new[] { new object[] { 112d } });
             expected.AddResultInsRem(7200, 0, null, null);
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
@@ -428,43 +624,43 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 1200,
                 0,
-                new[] {new object[] {25d}, new object[] {34d}},
-                new[] {new object[] {null}, new object[] {25d}});
+                new[] { new object[] { 25d }, new object[] { 34d } },
+                new[] { new object[] { null }, new object[] { 25d } });
             expected.AddResultInsRem(
                 2200,
                 0,
-                new[] {new object[] {58d}, new object[] {59d}, new object[] {85d}},
-                new[] {new object[] {34d}, new object[] {58d}, new object[] {59d}});
+                new[] { new object[] { 58d }, new object[] { 59d }, new object[] { 85d } },
+                new[] { new object[] { 34d }, new object[] { 58d }, new object[] { 59d } });
             expected.AddResultInsRem(
                 3200,
                 0,
-                new[] {new object[] {85d}},
-                new[] {new object[] {85d}});
+                new[] { new object[] { 85d } },
+                new[] { new object[] { 85d } });
             expected.AddResultInsRem(
                 4200,
                 0,
-                new[] {new object[] {87d}},
-                new[] {new object[] {85d}});
+                new[] { new object[] { 87d } },
+                new[] { new object[] { 85d } });
             expected.AddResultInsRem(
                 5200,
                 0,
-                new[] {new object[] {109d}, new object[] {112d}},
-                new[] {new object[] {87d}, new object[] {109d}});
+                new[] { new object[] { 109d }, new object[] { 112d } },
+                new[] { new object[] { 87d }, new object[] { 109d } });
             expected.AddResultInsRem(
                 6200,
                 0,
-                new[] {new object[] {87d}, new object[] {88d}},
-                new[] {new object[] {112d}, new object[] {87d}});
+                new[] { new object[] { 87d }, new object[] { 88d } },
+                new[] { new object[] { 112d }, new object[] { 87d } });
             expected.AddResultInsRem(
                 7200,
                 0,
-                new[] {new object[] {79d}, new object[] {54d}},
-                new[] {new object[] {88d}, new object[] {79d}});
+                new[] { new object[] { 79d }, new object[] { 54d } },
+                new[] { new object[] { 88d }, new object[] { 79d } });
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
             execution.Execute(false);
@@ -478,38 +674,38 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 200,
                 1,
-                new[] {new object[] {25d}},
-                new[] {new object[] {null}});
+                new[] { new object[] { 25d } },
+                new[] { new object[] { null } });
             expected.AddResultInsRem(
                 1500,
                 1,
-                new[] {new object[] {58d}},
-                new[] {new object[] {34d}});
+                new[] { new object[] { 58d } },
+                new[] { new object[] { 34d } });
             expected.AddResultInsRem(
                 3500,
                 1,
-                new[] {new object[] {87d}},
-                new[] {new object[] {85d}});
+                new[] { new object[] { 87d } },
+                new[] { new object[] { 85d } });
             expected.AddResultInsRem(
                 4300,
                 1,
-                new[] {new object[] {109d}},
-                new[] {new object[] {87d}});
+                new[] { new object[] { 109d } },
+                new[] { new object[] { 87d } });
             expected.AddResultInsRem(
                 5700,
                 0,
-                new[] {new object[] {87d}},
-                new[] {new object[] {112d}});
+                new[] { new object[] { 87d } },
+                new[] { new object[] { 112d } });
             expected.AddResultInsRem(
                 6300,
                 0,
-                new[] {new object[] {79d}},
-                new[] {new object[] {88d}});
+                new[] { new object[] { 79d } },
+                new[] { new object[] { 88d } });
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
             execution.Execute(false);
@@ -523,42 +719,42 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"sum(Price)"};
+            string[] fields = { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 1200,
                 0,
-                new[] {new object[] {34d}},
+                new[] { new object[] { 34d } },
                 null);
             expected.AddResultInsRem(
                 2200,
                 0,
-                new[] {new object[] {85d}},
+                new[] { new object[] { 85d } },
                 null);
             expected.AddResultInsRem(
                 3200,
                 0,
-                new[] {new object[] {85d}},
+                new[] { new object[] { 85d } },
                 null);
             expected.AddResultInsRem(
                 4200,
                 0,
-                new[] {new object[] {87d}},
+                new[] { new object[] { 87d } },
                 null);
             expected.AddResultInsRem(
                 5200,
                 0,
-                new[] {new object[] {112d}},
+                new[] { new object[] { 112d } },
                 null);
             expected.AddResultInsRem(
                 6200,
                 0,
-                new[] {new object[] {88d}},
+                new[] { new object[] { 88d } },
                 null);
             expected.AddResultInsRem(
                 7200,
                 0,
-                new[] {new object[] {54d}},
+                new[] { new object[] { 54d } },
                 null);
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
@@ -826,7 +1022,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                "output every 5 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                string[] fields = {"result"};
+                string[] fields = { "result" };
 
                 SendMDEvent(env, 20);
                 SendMDEvent(env, -100);
@@ -838,11 +1034,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {20L}});
+                    new[] { new object[] { 20L } });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {20L}});
+                    new[] { new object[] { 20L } });
                 env.Listener("s0").Reset();
 
                 env.UndeployAll();
@@ -861,7 +1057,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                "output every 5 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                string[] fields = {"result"};
+                string[] fields = { "result" };
                 env.SendEventBean(new SupportBean("S0", 0));
 
                 SendMDEvent(env, 20);
@@ -874,11 +1070,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {20L}});
+                    new[] { new object[] { 20L } });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {20L}});
+                    new[] { new object[] { 20L } });
                 env.Listener("s0").Reset();
 
                 env.UndeployAll();
@@ -1045,8 +1241,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 1000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {2L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 2L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1058,8 +1254,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 2000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {4L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 4L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1069,16 +1265,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 9000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {5L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 5L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
                 SendTimer(env, 10000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {4L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 4L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1088,8 +1284,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 11000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {3L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 3L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1123,8 +1319,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 1000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {2L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 2L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1136,8 +1332,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 2000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {4L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 4L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1147,8 +1343,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 9000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {5L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 5L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1156,8 +1352,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 10000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {5L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 5L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1167,8 +1363,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 11000);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    new[] {"cnt"},
-                    new[] {new object[] {3L}});
+                    new[] { "cnt" },
+                    new[] { new object[] { 3L } });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 

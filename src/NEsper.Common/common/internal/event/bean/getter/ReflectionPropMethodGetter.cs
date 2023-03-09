@@ -141,12 +141,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public override string ToString()
         {
-            return string.Format(
-                "{0}: {1}, {2}: {3}, {4}: {5}, {6}: {7}",
-                nameof(_propertyType), _propertyType,
-                nameof(_property), _property,
-                nameof(_method), _method,
-                nameof(_targetType), _targetType);
+            return
+                $"{nameof(_propertyType)}: {_propertyType}, {nameof(_property)}: {_property}, {nameof(_method)}: {_method}, {nameof(_targetType)}: {_targetType}";
         }
     }
 } // end of namespace

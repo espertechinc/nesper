@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 
                 var contexts = MyRenderer.Contexts;
                 var context = contexts.FirstOrDefault(c => 
-                    c.EventType.Name == typeof(MyRendererEvent).Name && 
+                    c.EventType.Name == nameof(MyRendererEvent) && 
                     c.IndexedPropertyIndex == 1);
                 Assert.That(context, Is.Not.Null);
                 Assert.That(context.DefaultRenderer, Is.Not.Null);

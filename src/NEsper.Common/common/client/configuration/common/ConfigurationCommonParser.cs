@@ -343,7 +343,7 @@ namespace com.espertech.esper.common.client.configuration.common
             var variableName = GetRequiredAttribute(element, "name");
             var type = GetRequiredAttribute(element, "type");
 
-            var variableType = TypeHelper.GetTypeForSimpleName(type, ClassForNameProviderDefault.INSTANCE);
+            var variableType = TypeHelper.GetTypeForSimpleName(type, TypeResolverDefault.INSTANCE);
             if (variableType == null) {
                 throw new ConfigurationException(
                     "Invalid variable type for variable '" + variableName + "', the type is not recognized");

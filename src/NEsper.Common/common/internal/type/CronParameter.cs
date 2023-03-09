@@ -54,12 +54,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public string Formatted()
         {
-            return string.Format(
-                "{0}(day {1} month {2})",
-                Operator,
-                Day.FormatInt(),
-                Month.FormatInt()
-            );
+            return $"{Operator}(day {Day.FormatInt()} month {Month.FormatInt()})";
         }
 
         public CodegenExpression Make()

@@ -359,7 +359,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private string GetGeneratorDetail(Type generator)
         {
-#if DEBUG
+#if DEBUG && STACKTRACE
             var stack = new StackTrace(true);
             string stackString = null;
             for (var i = 1; i < 10; i++) {
@@ -387,6 +387,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 #endif
         }
 
+#if DEBUG && STACKTRACE
         private string GetStackString(
             int i,
             StackTrace stack)
@@ -398,7 +399,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var lineNumber = stackFrame.GetFileLineNumber();
             return className + "." + methodName + "():" + lineNumber;
         }
-
+#endif
+        
         private CodegenMethod AddChild(CodegenMethod methodNode)
         {
             if (Children.IsEmpty()) {

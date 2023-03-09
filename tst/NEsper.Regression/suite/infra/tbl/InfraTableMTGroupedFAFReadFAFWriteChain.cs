@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var threads = new Thread[runnables.Count];
             for (var i = 0; i < runnables.Count; i++) {
                 threads[i] = new Thread(runnables[i].Run);
-                threads[i].Name = typeof(InfraTableMTGroupedFAFReadFAFWriteChain).Name + "-" + i;
+                threads[i].Name = nameof(InfraTableMTGroupedFAFReadFAFWriteChain) + "-" + i;
                 threads[i].Start();
             }
 

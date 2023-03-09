@@ -30,8 +30,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             EPServicesContext services)
         {
             var classLoader = ClassProvidedImportClassLoaderFactory.GetClassLoader(
-                compiled.Assemblies,
-                services.ClassLoaderParent,
+                compiled.ArtifactRepository,
+                services.TypeResolverParent,
                 services.ClassProvidedPathRegistry);
 
             if (compiled.Manifest.QueryProviderClassName == null) {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             // load module resource class
             Type clazz;
             try {
-                clazz = classLoader.GetClass(className);
+                clazz = classLoader.ResolveType(className, false);
             }
             catch (TypeLoadException e) {
                 throw new EPException(e);
@@ -67,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
                 throw new EPException(e);
             }
 
-            if (classLoader is ClassProvidedImportClassLoader importClassLoader) {
+            if (classLoader is ClassProvidedImportTypeResolver importClassLoader) {
                 importClassLoader.Imported = fafProvider.ModuleDependencies.PathClasses;
             }
 

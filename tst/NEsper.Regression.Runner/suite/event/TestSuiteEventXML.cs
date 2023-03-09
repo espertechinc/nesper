@@ -24,25 +24,9 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventXML
+    public class TestSuiteEventXML : AbstractTestBase
     {
-        [SetUp]
-        public void SetUp()
-        {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            session.Dispose();
-            session = null;
-        }
-
-        private RegressionSession session;
-
-        private static void Configure(Configuration configuration)
+        public static void Configure(Configuration configuration)
         {
             configuration.Compiler.ViewResources.IsIterableUnbound = true;
             configuration.Common.AddVariable("var", typeof(int), 0);
@@ -380,19 +364,19 @@ namespace com.espertech.esper.regressionrun.suite.@event
         [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaInvalid()
         {
-            RegressionRunner.Run(session, new EventXMLSchemaInvalid());
+            RegressionRunner.Run(_session, new EventXMLSchemaInvalid());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaVariableAndDotMethodResolution()
         {
-            RegressionRunner.Run(session, new EventXMLNoSchemaVariableAndDotMethodResolution());
+            RegressionRunner.Run(_session, new EventXMLNoSchemaVariableAndDotMethodResolution());
         }
 
         [Test, RunInApplicationDomain]
         public void TestEventXMLCreateSchemaInvalid()
         {
-            RegressionRunner.Run(session, new EventXMLCreateSchemaInvalid());
+            RegressionRunner.Run(_session, new EventXMLCreateSchemaInvalid());
         }
 
         /// <summary>

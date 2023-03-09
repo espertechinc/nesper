@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 
 		public string ForgeClassName()
 		{
-			return typeof(DIOSkipSerde).Name;
+			return nameof(DIOSkipSerde);
 		}
 	}
 } // end of namespace

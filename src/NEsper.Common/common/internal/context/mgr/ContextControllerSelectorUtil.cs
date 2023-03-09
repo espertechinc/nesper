@@ -29,12 +29,12 @@ namespace com.espertech.esper.common.@internal.context.mgr
             bool isNested)
         {
             var expected = new LinkedHashSet<string>();
-            expected.Add(typeof(ContextPartitionSelectorAll).Name);
+            expected.Add(nameof(ContextPartitionSelectorAll));
             if (!isNested) {
-                expected.Add(typeof(ContextPartitionSelectorFiltered).Name);
+                expected.Add(nameof(ContextPartitionSelectorFiltered));
             }
 
-            expected.Add(typeof(ContextPartitionSelectorById).Name);
+            expected.Add(nameof(ContextPartitionSelectorById));
             for (var i = 0; i < choice.Length; i++) {
                 expected.Add(choice[i].GetSimpleName());
             }

@@ -239,13 +239,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Type clazz = null;
             var className = (string) properties.Get(CLASS_PROPERTY_NAME);
             try {
-                clazz = TypeHelper.GetClassForName(className, importService.ClassForNameProvider);
+                clazz = TypeHelper.GetClassForName(className, importService.TypeResolver);
             }
             catch (TypeLoadException) {
                 if (!className.Contains(".")) {
                     className = topClass.Namespace + "." + className;
                     try {
-                        clazz = TypeHelper.GetClassForName(className, importService.ClassForNameProvider);
+                        clazz = TypeHelper.GetClassForName(className, importService.TypeResolver);
                     }
                     catch (TypeLoadException) {
                     }
