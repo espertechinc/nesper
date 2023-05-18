@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         }
 
         public IThreadLocal<HistoricalDataCache> DataCacheThreadLocal { get; } =
-            new SlimThreadLocal<HistoricalDataCache>(() => null);
+            new SystemThreadLocal<HistoricalDataCache>(() => null);
 
         public abstract void Ready(
             StatementContext statementContext,
