@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IThreadLocal<ArrayDeque<Dispatchable>> dispatchStateThreadLocal =
-            new SlimThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
+            new SystemThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
 
         public IThreadLocal<ArrayDeque<Dispatchable>> DispatchStateThreadLocal => dispatchStateThreadLocal;
 
         public void Dispatch()
         {
-            DispatchFromQueue(dispatchStateThreadLocal.GetOrCreate());
+            DispatchFromQueue(dispatchStateThreadLocal.Value);
         }
 
         public void AddExternal(Dispatchable dispatchable)
@@ -45,16 +45,18 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             dispatchQueue.Add(dispatchable);
         }
 
-        private static void DispatchFromQueue(ArrayDeque<Dispatchable> dispatchQueue)
+        private static void DispatchFromQueue(Deque<Dispatchable> dispatchQueue)
         {
-            using (new Tracer(Log, "DispatchFromQueue")) {
-                while (true) {
-                    var next = dispatchQueue.Poll();
-                    if (next == null) {
-                        break;
-                    }
+            if (dispatchQueue != null) {
+                using (new Tracer(Log, "DispatchFromQueue")) {
+                    while (true) {
+                        var next = dispatchQueue.Poll();
+                        if (next == null) {
+                            break;
+                        }
 
-                    next.Execute();
+                        next.Execute();
+                    }
                 }
             }
         }

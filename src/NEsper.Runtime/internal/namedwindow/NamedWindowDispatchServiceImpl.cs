@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
@@ -41,7 +42,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
         private readonly VariableManagementService variableService;
 
         private readonly IThreadLocal<DispatchesTL> threadLocal = 
-            new SlimThreadLocal<DispatchesTL>(() => new DispatchesTL());
+            new SystemThreadLocal<DispatchesTL>(() => new DispatchesTL());
 
         public NamedWindowDispatchServiceImpl(
             SchedulingService schedulingService,
@@ -77,8 +78,8 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
 
         public bool Dispatch()
         {
-            var dispatchesTL = threadLocal.GetOrCreate();
-            if (dispatchesTL.Dispatches.IsEmpty()) {
+            var dispatchesTL = threadLocal.Value;
+            if (dispatchesTL == null || dispatchesTL.Dispatches.IsEmpty()) {
                 return false;
             }
 
@@ -94,6 +95,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                         dispatchesTL.Current.AddAll(dispatchesTL.Dispatches);
                         dispatchesTL.Dispatches.Clear();
                         ProcessDispatches(dispatchesTL.Current, dispatchesTL.Work, dispatchesTL.DispatchesPerStmt);
+                        Console.WriteLine("{0}", dispatchesTL.Current.Count);
                     }
                     catch (EPException) {
                         throw;
@@ -427,11 +429,13 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
 
         private class DispatchesTL
         {
-            public ArrayDeque<NamedWindowConsumerLatch> Dispatches { get; } = new ArrayDeque<NamedWindowConsumerLatch>();
+            private const int DefaultDequeSize = 16;
+            
+            public ArrayDeque<NamedWindowConsumerLatch> Dispatches { get; } = new ArrayDeque<NamedWindowConsumerLatch>(DefaultDequeSize);
 
-            public ArrayDeque<NamedWindowConsumerLatch> Current { get; } = new ArrayDeque<NamedWindowConsumerLatch>();
+            public ArrayDeque<NamedWindowConsumerLatch> Current { get; } = new ArrayDeque<NamedWindowConsumerLatch>(DefaultDequeSize);
 
-            public ArrayDeque<NamedWindowConsumerLatch> Work { get; } = new ArrayDeque<NamedWindowConsumerLatch>();
+            public ArrayDeque<NamedWindowConsumerLatch> Work { get; } = new ArrayDeque<NamedWindowConsumerLatch>(DefaultDequeSize);
 
             public IDictionary<EPStatementAgentInstanceHandle, object> DispatchesPerStmt { get; } =
                 new Dictionary<EPStatementAgentInstanceHandle, object>();

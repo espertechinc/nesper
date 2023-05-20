@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             _variableService = variableService;
 
-            _arrayPerThread = new SlimThreadLocal<EventBean[]>(
+            _arrayPerThread = new SystemThreadLocal<EventBean[]>(
                 () => {
                     var eventsPerStream = new EventBean[prototypeArray.Length];
                     Array.Copy(prototypeArray, 0, eventsPerStream, 0, prototypeArray.Length);

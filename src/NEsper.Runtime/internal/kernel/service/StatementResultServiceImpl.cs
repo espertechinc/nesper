@@ -69,7 +69,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             StatementInformationalsRuntime statementInformationals,
             EPServicesContext epServicesContext)
         {
-            StatementDispatchTl = new SlimThreadLocal<StatementDispatchTLEntry>(() => new StatementDispatchTLEntry());
+            StatementDispatchTl = new SystemThreadLocal<StatementDispatchTLEntry>(() => new StatementDispatchTLEntry());
             _statementInformationals = statementInformationals;
             _epServicesContext = epServicesContext;
             _outboundThreading = epServicesContext.ThreadingService.IsOutboundThreading;
@@ -253,7 +253,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public void ClearDeliveriesRemoveStream(EventBean[] removedEvents)
         {
-            var entry = DispatchTL.GetOrCreate();
+            var entry = DispatchTL.Value;
+            if (entry == null) {
+                return;
+            }
 
             entry.Results.RemoveWhere(
                 pair => {

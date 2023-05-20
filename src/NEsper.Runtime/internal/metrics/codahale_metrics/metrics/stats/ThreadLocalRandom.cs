@@ -26,7 +26,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         ///     The actual ThreadLocal
         /// </summary>
         private static readonly IThreadLocal<ThreadLocalRandom> LOCAL_RANDOM_THREAD_LOCAL =
-            new SlimThreadLocal<ThreadLocalRandom>(() => new ThreadLocalRandom());
+            new SystemThreadLocal<ThreadLocalRandom>(() => new ThreadLocalRandom());
 
         /// <summary>
         ///     Initialization flag to permit calls to setSeed to succeed only while executing the Random
