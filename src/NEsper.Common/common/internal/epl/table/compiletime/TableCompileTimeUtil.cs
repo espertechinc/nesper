@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
 			var index = StringValue.UnescapedIndexOfDot(subproperty);
 			if (index == -1) {
-				var tableNodeX = new ExprTableAccessNodeSubprop(table.TableName, subproperty);
+				ExprTableAccessNodeSubprop tableNodeX = new ExprTableAccessNodeSubprop(table.TableName, subproperty);
 				if (indexIfIndexed != null) {
 					tableNodeX.AddChildNode(new ExprConstantNodeImpl(indexIfIndexed));
 				}

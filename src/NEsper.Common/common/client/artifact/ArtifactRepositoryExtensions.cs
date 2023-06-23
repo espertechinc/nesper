@@ -1,5 +1,7 @@
 ﻿using System;
 
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 #if NETCORE
@@ -18,16 +20,19 @@ namespace com.espertech.esper.common.client.artifact
 
             lock (container) {
                 if (container.DoesNotHave<IArtifactRepositoryManager>()) {
-                    container.Register<IArtifactRepositoryManager>(GetDefaultArtifactRepositoryManager(), Lifespan.Singleton);
+                    container.Register<IArtifactRepositoryManager>(GetDefaultArtifactRepositoryManager, Lifespan.Singleton);
                 }
             }
 
             return container.Resolve<IArtifactRepositoryManager>();
         }
 
-        public static IArtifactRepositoryManager GetDefaultArtifactRepositoryManager()
+        public static IArtifactRepositoryManager GetDefaultArtifactRepositoryManager(IContainer container)
         {
-            return new DefaultArtifactRepositoryManager();
+            var baseTypeResolver = container.Has<TypeResolver>()
+                ? container.Resolve<TypeResolver>()
+                : TypeResolverDefault.INSTANCE;
+            return new DefaultArtifactRepositoryManager(baseTypeResolver);
         }
 
 #if NETCORE
