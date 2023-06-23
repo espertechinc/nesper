@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using com.espertech.esper.compat;
+
 #if NETCORE
 using System.Runtime.Loader;
 #endif
@@ -18,13 +20,15 @@ namespace com.espertech.esper.common.client.artifact
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IDictionary<string, IArtifactRepository> _repositoryTable;
-        
-        public DefaultArtifactRepositoryManager()
+        private readonly TypeResolver _parentTypeResolver;
+
+        public DefaultArtifactRepositoryManager(TypeResolver parentTypeResolver)
         {
+            _parentTypeResolver = parentTypeResolver;
             _repositoryTable = new Dictionary<string, IArtifactRepository>();
             
 #if NETCORE
-            DefaultRepository = new ArtifactRepositoryAssemblyLoadContext();
+            DefaultRepository = new ArtifactRepositoryAssemblyLoadContext(_parentTypeResolver);
 #else
             DefaultRepository = new ArtifactRepositoryAppDomain(AppDomain.CurrentDomain);
 #endif
@@ -63,7 +67,7 @@ namespace com.espertech.esper.common.client.artifact
             lock (_repositoryTable) {
                 if (!_repositoryTable.TryGetValue(deploymentId, out var artifactRepository) && createIfMissing) {
 #if NETCORE
-                    artifactRepository = new ArtifactRepositoryAssemblyLoadContext(deploymentId);
+                    artifactRepository = new ArtifactRepositoryAssemblyLoadContext(deploymentId, _parentTypeResolver);
 #else
                     artifactRepository = new ArtifactRepositoryAppDomain(AppDomain.CurrentDomain);
 #endif

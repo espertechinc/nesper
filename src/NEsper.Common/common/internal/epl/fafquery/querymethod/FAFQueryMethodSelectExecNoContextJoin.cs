@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             UniformPair<EventBean[]> results = resultSetProcessor.ProcessJoinResult(result.First, null, true);
 
-            EventBean[] distinct = EventBeanUtility.GetDistinctByProp(results.First, select.DistinctKeyGetter);
+            EventBean[] distinct = EventBeanUtility.GetDistinctByProp(results?.First, select.DistinctKeyGetter);
 
             return new EPPreparedQueryResult(resultSetProcessor.ResultEventType, distinct);
         }

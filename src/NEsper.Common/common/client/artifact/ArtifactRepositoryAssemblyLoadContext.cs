@@ -33,26 +33,30 @@ namespace com.espertech.esper.common.client.artifact
         /// <summary>
         /// Constructor.
         /// </summary>
-        public ArtifactRepositoryAssemblyLoadContext()
+        /// <param name="parentTypeResolver"></param>
+        public ArtifactRepositoryAssemblyLoadContext(TypeResolver parentTypeResolver)
         {
             _assemblyLoadContext = CreateAssemblyLoadContext(
                 this,
                 "default-artifact-repository-assembly-load-context",
                 true);
-            _typeResolver = new ArtifactTypeResolver(this, TypeResolverDefault.INSTANCE);
+            _typeResolver = new ArtifactTypeResolver(this, parentTypeResolver);
         }
 
         /// <summary>
         /// Constructs an artifact repository with a given load context name.
         /// </summary>
         /// <param name="deploymentId"></param>
-        public ArtifactRepositoryAssemblyLoadContext(string deploymentId)
+        /// <param name="parentTypeResolver"></param>
+        public ArtifactRepositoryAssemblyLoadContext(
+            string deploymentId,
+            TypeResolver parentTypeResolver)
         {
             _assemblyLoadContext = CreateAssemblyLoadContext(
                 this,
                 "artifact-repository-assembly-load-context-" + deploymentId,
                 true);
-            _typeResolver = new ArtifactTypeResolver(this, TypeResolverDefault.INSTANCE);
+            _typeResolver = new ArtifactTypeResolver(this, parentTypeResolver);
         }
 
         /// <summary>
