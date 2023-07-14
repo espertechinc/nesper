@@ -149,7 +149,17 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public RoslynCompiler WithMetaDataReferences(IEnumerable<MetadataReference> metadataReferences)
         {
-            MetadataReferences = metadataReferences;
+            if (metadataReferences != null) {
+                if (MetadataReferences == null) {
+                    MetadataReferences = metadataReferences;
+                }
+                else {
+                    MetadataReferences = MetadataReferences
+                        .Concat(metadataReferences)
+                        .ToList();
+                }
+            }
+
             return this;
         }
         

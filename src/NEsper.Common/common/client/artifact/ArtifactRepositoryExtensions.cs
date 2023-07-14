@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.client.artifact
             var baseTypeResolver = container.Has<TypeResolver>()
                 ? container.Resolve<TypeResolver>()
                 : TypeResolverDefault.INSTANCE;
-            return new DefaultArtifactRepositoryManager(baseTypeResolver);
+            var assemblyResolver = container.Has<AssemblyResolver>()
+                    ? container.Resolve<AssemblyResolver>()
+                    : null;
+            return new DefaultArtifactRepositoryManager(baseTypeResolver, assemblyResolver);
         }
 
 #if NETCORE

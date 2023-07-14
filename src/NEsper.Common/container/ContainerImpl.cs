@@ -142,6 +142,12 @@ namespace com.espertech.esper.container
             return _container.Kernel.HasComponent(typeof(T));
         }
 
+        public bool Has<T>(string name)
+        {
+            CheckDisposed();
+            return _container.Kernel.HasComponent(name);
+        }
+        
         public bool Has(Type serviceType)
         {
             CheckDisposed();
