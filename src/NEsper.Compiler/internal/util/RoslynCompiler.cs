@@ -30,6 +30,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 using IContainer = com.espertech.esper.container.IContainer;
+using MetadataReferenceResolver = com.espertech.esper.common.client.artifact.MetadataReferenceResolver;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -299,9 +300,10 @@ namespace com.espertech.esper.compiler.@internal.util
         
         public MetadataReference GetMetadataReference(Assembly assembly)
         {
-            if (!IsDynamicAssembly(assembly))
-                return MetadataReference.CreateFromFile(assembly.Location);
-        
+            if (!IsDynamicAssembly(assembly)) {
+                return Container.MetadataReferenceResolver().Invoke(assembly);
+            }
+
             return null;
         }
 
