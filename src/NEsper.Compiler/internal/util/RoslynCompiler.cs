@@ -22,6 +22,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compiler.client;
+using com.espertech.esper.compiler.client.util;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -50,7 +52,6 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             Container = container;
             Sources = new List<Source>();
-            InitializeAssemblyResolution();
         }
 
         /// <summary>
@@ -89,40 +90,6 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         public bool IsDebugOptimization { get; set; }
 
-        /// <summary>
-        /// Initializes the assembly resolution mechanism.
-        /// </summary>
-        private void InitializeAssemblyResolution()
-        {
-#if FALSE
-#if NETCORE
-            LoadContext.Resolving += (
-                context,
-                name) => {
-                Log.Info("AssemblyResolve for {0}", name.Name);
-                if (_assemblyCacheBindings.TryGetValue(name.Name, out var bindingPair)) {
-                    Log.Debug("AssemblyResolve: Located {0}", name.Name);
-                    return bindingPair.Assembly;
-                }
-
-                Log.Warn("AssemblyResolve: Unable to locate {0}", name.Name);
-                return null;
-            };
-#else
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
-                Log.Info("AssemblyResolve for {0}", args.Name);
-                if (_assemblyCacheBindings.TryGetValue(args.Name, out var bindingPair)) {
-                    Log.Debug("AssemblyResolve: Located {0}", args.Name);
-                    return bindingPair.Assembly;
-                }
-
-                Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
-                return null;
-            };
-#endif
-#endif
-        } 
-        
         public RoslynCompiler WithCodeLogging(bool isCodeLogging)
         {
             IsCodeLogging = isCodeLogging;
@@ -134,7 +101,6 @@ namespace com.espertech.esper.compiler.@internal.util
             CodeAuditDirectory = targetDirectory;
             return this;
         }
-
 
         public RoslynCompiler WithCodegenClasses(IList<CodegenClass> sorted)
         {
@@ -181,15 +147,12 @@ namespace com.espertech.esper.compiler.@internal.util
 
         internal IEnumerable<MetadataReference> GetCoreMetadataReferences()
         {
-#if NETCORE
-            var coreAssemblies = AssemblyLoadContext.Default.Assemblies;
-#else
-            var coreAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-#endif
-
-            return coreAssemblies
+            var resolver = Container.MetadataReferenceResolver();
+            return Container
+                .CoreAssemblyProvider()
+                .Invoke()
                 .Distinct()
-                .Select(GetMetadataReference)
+                .Select(_ => GetMetadataReference(resolver, _))
                 .Where(_ => _ != null);
         }
         
@@ -298,13 +261,9 @@ namespace com.espertech.esper.compiler.@internal.util
             );
         }
         
-        public MetadataReference GetMetadataReference(Assembly assembly)
+        public MetadataReference GetMetadataReference(MetadataReferenceResolver resolver, Assembly assembly)
         {
-            if (!IsDynamicAssembly(assembly)) {
-                return Container.MetadataReferenceResolver().Invoke(assembly);
-            }
-
-            return null;
+            return !IsDynamicAssembly(assembly) ? resolver.Invoke(assembly) : null;
         }
 
         /// <summary>
