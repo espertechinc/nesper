@@ -38,9 +38,6 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             this.propertyName = propertyName;
             this.underlyingType = underlyingType;
-            if (underlyingType.Name == "MyEvent") {
-                Console.WriteLine("MapEventBeanArrayPropertyGetter: ctor");
-            }
         }
 
         public object GetMap(IDictionary<string, object> map)

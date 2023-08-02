@@ -14,7 +14,6 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.compat.timers
 {
-#if NET6
     public class PeriodicTimerFactory : ITimerFactory
     {
         public ITimer CreateTimer(
@@ -47,24 +46,18 @@ namespace com.espertech.esper.compat.timers
 
             async void ExecuteTimer()
             {
-                Console.WriteLine("Starting");
-                
                 if (_offset != TimeSpan.Zero) {
                     await Task.Delay(_offset);
-                    Console.WriteLine("ExecuteTimer: Delay Fire: {0}", _offset);
                     _timerCallback(this);
                 }
 
                 while (_isRunning && await _timer.WaitForNextTickAsync()) {
-                    Console.WriteLine("ExecuteTimer: Fire");
                     _timerCallback(this);
                 }
             }
 
             public void Dispose()
             {
-                Console.WriteLine("Dispose");
-                
                 _isRunning = false;
                 _timer?.Dispose();
                 _timer = null;
@@ -75,5 +68,4 @@ namespace com.espertech.esper.compat.timers
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
-#endif
 }

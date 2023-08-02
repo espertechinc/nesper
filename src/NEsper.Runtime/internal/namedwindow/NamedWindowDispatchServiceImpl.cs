@@ -95,7 +95,6 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                         dispatchesTL.Current.AddAll(dispatchesTL.Dispatches);
                         dispatchesTL.Dispatches.Clear();
                         ProcessDispatches(dispatchesTL.Current, dispatchesTL.Work, dispatchesTL.DispatchesPerStmt);
-                        Console.WriteLine("{0}", dispatchesTL.Current.Count);
                     }
                     catch (EPException) {
                         throw;
