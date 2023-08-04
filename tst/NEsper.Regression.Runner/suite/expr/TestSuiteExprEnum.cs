@@ -91,6 +91,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         }
 
         [Test]
+        [Parallelizable(ParallelScope.None)]
         public void TestExprEnumNamedWindowPerformance()
         {
             RegressionRunner.Run(_session, new ExprEnumNamedWindowPerformance());

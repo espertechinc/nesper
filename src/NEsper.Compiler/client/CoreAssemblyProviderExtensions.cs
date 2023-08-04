@@ -13,7 +13,7 @@ namespace com.espertech.esper.compiler.client
         /// </summary>
         public static IEnumerable<Assembly> GetCoreAssemblies()
         {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
             return AssemblyLoadContext.Default.Assemblies;
 #else
             return AppDomain.CurrentDomain.GetAssemblies();

@@ -4,7 +4,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
@@ -37,8 +37,5 @@ namespace com.espertech.esper.common.client.artifact
                     : null;
             return new DefaultArtifactRepositoryManager(baseTypeResolver, assemblyResolver);
         }
-
-#if NETCORE
-#endif
     }
 }

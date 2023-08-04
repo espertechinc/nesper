@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.compiler.client.util
 
 		private static Assembly LoadAssembly(byte[] image)
 		{
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 			var assemblyLoadContext = AssemblyLoadContext.CurrentContextualReflectionContext;
 			if (assemblyLoadContext == null) {
 				assemblyLoadContext = AssemblyLoadContext.Default;

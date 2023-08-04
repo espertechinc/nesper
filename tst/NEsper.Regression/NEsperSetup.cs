@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 #else
             //var clearScript = typeof(ScriptingEngineJScript);
 #endif

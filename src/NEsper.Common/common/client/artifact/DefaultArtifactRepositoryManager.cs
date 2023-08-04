@@ -5,7 +5,7 @@ using System.Reflection;
 
 using com.espertech.esper.compat;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.artifact
         private readonly TypeResolver _parentTypeResolver;
         private readonly AssemblyResolver _assemblyResolver;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
         public DefaultArtifactRepositoryManager(
             TypeResolver parentTypeResolver,
             AssemblyResolver assemblyResolver)
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.artifact
             _assemblyResolver = assemblyResolver;
             _repositoryTable = new Dictionary<string, IArtifactRepository>();
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
             DefaultRepository = new ArtifactRepositoryAssemblyLoadContext(
                 _parentTypeResolver, _assemblyResolver);
 #else
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.client.artifact
         {
             lock (_repositoryTable) {
                 if (!_repositoryTable.TryGetValue(deploymentId, out var artifactRepository) && createIfMissing) {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
                     artifactRepository = new ArtifactRepositoryAssemblyLoadContext(
                         deploymentId,
                         _parentTypeResolver,

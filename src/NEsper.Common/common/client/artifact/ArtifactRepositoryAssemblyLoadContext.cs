@@ -10,14 +10,14 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Reflection;
 using System.Runtime.Loader;
 #endif
 
 namespace com.espertech.esper.common.client.artifact
 {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
     public class ArtifactRepositoryAssemblyLoadContext : BaseArtifactRepository, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

@@ -99,13 +99,8 @@ namespace com.espertech.esper.compat.timers
         {
             lock (_baseTimerLock)
             {
-                if (_baseTimer == null)
-                {
-#if NETCORE
-                    _baseTimer = new HarmonicTimer(OnTimerEvent);
-#else
+                if (_baseTimer == null) {
                     _baseTimer = new HighResolutionTimer(OnTimerEvent, null, 0, 10);
-#endif
                 }
             }
         }

@@ -15,7 +15,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
@@ -2078,7 +2078,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             IEnumerable<Assembly> assemblySearchPath = AssemblySearchPath?.Invoke();
             if (assemblySearchPath == null) {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
                 assemblySearchPath = AssemblyLoadContext.Default.Assemblies.ToList();
 #else
                 assemblySearchPath = AppDomain.CurrentDomain.GetAssemblies();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 

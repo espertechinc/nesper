@@ -10,7 +10,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime;
 using System.Runtime.Loader;
 #endif
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionrun.runner
             Runtime = null;
         }
         
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
         public class DisposableAssemblyLoadContext : AssemblyLoadContext,
             IDisposable
         {

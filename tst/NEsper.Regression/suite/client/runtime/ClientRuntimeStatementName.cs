@@ -21,19 +21,19 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithtatementNameDuplicate(execs);
-            WithingleModuleTwoStatementsNoDep(execs);
+            WithStatementNameDuplicate(execs);
+            WithSingleModuleTwoStatementsNoDep(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithingleModuleTwoStatementsNoDep(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSingleModuleTwoStatementsNoDep(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeSingleModuleTwoStatementsNoDep());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithtatementNameDuplicate(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithStatementNameDuplicate(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementNameDuplicate());

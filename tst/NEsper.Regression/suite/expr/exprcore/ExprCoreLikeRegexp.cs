@@ -190,7 +190,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 					"select TheString regexp \"*any*\" from SupportBean",
 					"Failed to validate select-clause expression 'TheString regexp \"*any*\"': " +
 					"Failed to compile regex pattern '*any*': " +
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 					"Invalid pattern '*any*' at offset 1. Quantifier {x,y} following nothing."
 #else
 					"parsing \"*any*\" - Quantifier {x,y} following nothing."
