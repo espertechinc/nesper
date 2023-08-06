@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 
@@ -90,7 +91,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     agentInstanceContext);
             }
 
-            UniformPair<EventBean[]> results = resultSetProcessor.ProcessJoinResult(result.First, null, true);
+            UniformPair<EventBean[]> results = resultSetProcessor.ProcessJoinResult(
+                result.First,
+                EmptySet<MultiKeyArrayOfKeys<EventBean>>.Instance,
+                true);
 
             EventBean[] distinct = EventBeanUtility.GetDistinctByProp(results?.First, select.DistinctKeyGetter);
 

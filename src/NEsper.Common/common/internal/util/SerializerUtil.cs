@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>byte array</returns>
         public static byte[] ObjectToByteArr(object underlying)
         {
-            return SerializerFactory.Serialize(
-                new[] {SerializerFactory.OBJECT_SERIALIZER},
+            return SerializerFactory.Instance.Serialize(
+                new[] {SerializerFactory.Instance.OBJECT_SERIALIZER},
                 new[] {underlying});
         }
 
@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.util
                 return null;
             }
 
-            return SerializerFactory.Deserialize(
+            return SerializerFactory.Instance.Deserialize(
                 1,
                 bytes,
-                new[] {SerializerFactory.OBJECT_SERIALIZER})[0];
+                new[] {SerializerFactory.Instance.OBJECT_SERIALIZER})[0];
         }
 
         public static object ByteArrBase64ToObject(string s)

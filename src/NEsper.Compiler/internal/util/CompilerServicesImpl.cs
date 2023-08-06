@@ -102,6 +102,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .RoslynCompiler()
                 .WithMetaDataReferences(repository.AllMetadataReferences)
                 .WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+                .WithDebugOptimization(configuration.Compiler.IsDebugOptimization)
                 .WithCodeLogging(configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(configuration.Compiler.Logging.AuditDirectory)
                 .WithSources(

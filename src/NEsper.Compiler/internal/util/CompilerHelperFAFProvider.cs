@@ -318,6 +318,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .RoslynCompiler()
                 .WithMetaDataReferences(artifactRepository.AllMetadataReferences)
                 .WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+                .WithDebugOptimization(compileTimeServices.Configuration.Compiler.IsDebugOptimization)
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(new List<CodegenClass>() { clazz });

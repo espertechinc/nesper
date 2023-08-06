@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -48,17 +49,38 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         /// <param name="serializers">serializers</param>
         /// <returns>hash</returns>
         public static int SerializeAndCRC32Hash(
+            IContainer container,
+            object objectMayArray,
+            int granularity,
+            Serializer[] serializers)
+        {
+            return SerializeAndCRC32Hash(
+                SerializerFactory.Instance,
+                objectMayArray,
+                granularity,
+                serializers);
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="objectMayArray">value</param>
+        /// <param name="granularity">granularity</param>
+        /// <param name="serializers">serializers</param>
+        /// <returns>hash</returns>
+        public static int SerializeAndCRC32Hash(
+            SerializerFactory serializerFactory,
             object objectMayArray,
             int granularity,
             Serializer[] serializers)
         {
             byte[] bytes;
             try {
-                if (objectMayArray is object[]) {
-                    bytes = SerializerFactory.Serialize(serializers, (object[]) objectMayArray);
+                if (objectMayArray is object[] objectArray) {
+                    bytes = serializerFactory.Serialize(serializers, objectArray);
                 }
                 else {
-                    bytes = SerializerFactory.Serialize(serializers[0], objectMayArray);
+                    bytes = serializerFactory.Serialize(serializers[0], objectMayArray);
                 }
             }
             catch (IOException e) {
@@ -83,8 +105,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             var serializers = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(Serializer[]),
-                StaticMethod(
-                    typeof(SerializerFactory),
+                ExprDotMethod(
+                    EnumValue(typeof(SerializerFactory), "Instance"),
                     "GetSerializers",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(nodes))));
 
@@ -133,6 +155,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     StaticMethod(
                         typeof(ContextControllerHashedGetterCRC32SerializedForge),
                         "SerializeAndCRC32Hash",
+                        EnumValue(typeof(SerializerFactory), "Instance"),
                         Ref("values"),
                         Constant(granularity),
                         serializers));

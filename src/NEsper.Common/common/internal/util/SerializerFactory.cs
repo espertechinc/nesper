@@ -19,98 +19,103 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class SerializerFactory
     {
-        private static readonly List<Serializer> Serializers;
-        private static readonly BinaryFormatter BinaryFormatter = new BinaryFormatter();
+        public static SerializerFactory Instance = new SerializerFactory();
+        
+        private readonly List<Serializer> _serializers;
+        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+        
+        public readonly Serializer NULL_SERIALIZER;
+        public readonly Serializer OBJECT_SERIALIZER;
 
-        public static readonly Serializer NULL_SERIALIZER = new StreamSerializer {
-            ProcSerialize = (
-                obj,
-                writer) => {
-            },
-            ProcDeserialize = stream => null
-        };
-
-        public static readonly Serializer OBJECT_SERIALIZER = new StreamSerializer {
-            ProcSerialize = (
-                obj,
-                stream) => BinaryFormatter.Serialize(stream, obj),
-            ProcDeserialize = stream => {
-                try {
-                    return BinaryFormatter.Deserialize(stream);
-                }
-                catch (TypeLoadException e) {
-                    throw new IOException("unable to deserialize object", e);
-                }
-            }
-        };
-
-        static SerializerFactory()
+        public SerializerFactory()
         {
-            Serializers = new List<Serializer>();
-            Serializers.Add(
+            NULL_SERIALIZER = new StreamSerializer {
+                ProcSerialize = (
+                    obj,
+                    writer) => {
+                },
+                ProcDeserialize = stream => null
+            };
+            
+            OBJECT_SERIALIZER = new StreamSerializer {
+                ProcSerialize = (
+                    obj,
+                    stream) => _binaryFormatter.Serialize(stream, obj),
+                ProcDeserialize = stream => {
+                    try {
+                        return _binaryFormatter.Deserialize(stream);
+                    }
+                    catch (TypeLoadException e) {
+                        throw new IOException("unable to deserialize object", e);
+                    }
+                }
+            };
+            
+            _serializers = new List<Serializer>();
+            _serializers.Add(
                 new SmartSerializer<bool> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadBoolean()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<char> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadChar()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<byte> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadByte()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<short> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadInt16()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<int> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadInt32()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<long> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadInt64()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<float> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadSingle()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<double> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadDouble()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<decimal> {
                     ProcSerialize = (
                         obj,
                         writer) => writer.Write(obj),
                     ProcDeserialize = reader => reader.ReadDecimal()
                 });
-            Serializers.Add(
+            _serializers.Add(
                 new SmartSerializer<string> {
                     ProcSerialize = (
                         obj,
@@ -119,34 +124,35 @@ namespace com.espertech.esper.common.@internal.util
                 });
         }
 
-        public static Serializer[] GetDefaultSerializers()
+        public Serializer[] GetDefaultSerializers()
         {
             List<Serializer> serializer = new List<Serializer>();
             serializer.Add(NULL_SERIALIZER);
-            serializer.AddRange(Serializers);
+            serializer.AddRange(_serializers);
             serializer.Add(OBJECT_SERIALIZER);
             return serializer.ToArray();
         }
 
-        public static Serializer[] GetSerializers(IEnumerable<Type> types)
+        public Serializer[] GetSerializers(IEnumerable<Type> types)
         {
             return types.Select(GetSerializer).ToArray();
         }
 
-        public static Serializer GetSerializer(Type type)
+        public Serializer GetSerializer(Type type)
         {
             if (type == null) {
                 return NULL_SERIALIZER;
             }
 
-            foreach (var serializer in Serializers.Where(serializer => serializer.Accepts(type.GetBoxedType()))) {
+            type = type.GetBoxedType();
+            foreach (var serializer in _serializers.Where(serializer => serializer.Accepts(type))) {
                 return serializer;
             }
 
             return OBJECT_SERIALIZER;
         }
 
-        public static byte[] Serialize(
+        public byte[] Serialize(
             Serializer[] serializers,
             object[] objects)
         {
@@ -161,7 +167,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public static byte[] Serialize(
+        public byte[] Serialize(
             Serializer serializer,
             object @object)
         {
@@ -171,7 +177,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public static object[] Deserialize(
+        public object[] Deserialize(
             int numObjects,
             byte[] bytes,
             Serializer[] serializers)

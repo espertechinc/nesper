@@ -46,6 +46,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					.RoslynCompiler()
 					.WithMetaDataReferences(repository.AllMetadataReferences)
 					.WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+					.WithDebugOptimization(_compileTimeServices.Configuration.Compiler.IsDebugOptimization)
 					.WithCodeLogging(_compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
 					.WithCodeAuditDirectory(_compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
 					.WithCodegenClasses(_compilableItem.Classes);
