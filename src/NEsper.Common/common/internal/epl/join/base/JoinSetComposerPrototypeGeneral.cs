@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                             streamJoinAnalysisResult,
                             agentInstanceContext);
                         if (virtualDWView != null) {
-                            index = VirtualDWQueryPlanUtil.GetJoinIndexTable(items.Get(entry.Key), virtualDWView);
+                            index = VirtualDWQueryPlanUtil.GetJoinIndexTable(items.Get(entry.Key));
                         }
                         else {
                             index = EventTableUtil.BuildIndex(

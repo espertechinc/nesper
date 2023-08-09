@@ -15,7 +15,7 @@ namespace com.espertech.esper.compat.diagnostics
     {
         public static ProcessThread GetProcessThread()
         {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
             return null;
 #else
             var processThread = ProcessThreadHelper.GetProcessThread();
@@ -30,7 +30,7 @@ namespace com.espertech.esper.compat.diagnostics
 
         public static void ExecCpuBound(Func<PerformanceExecutionContext, bool> cpuAction)
         {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
             throw new NotSupportedException("cpu bound execution not supported");
 #else
             var executionContext = new PerformanceExecutionContext();
@@ -40,7 +40,6 @@ namespace com.espertech.esper.compat.diagnostics
                 throw new IllegalStateException("unable to acquire process thread; check platform");
             }
 
-            Console.WriteLine($"processthread: {processThread}");
             executionContext.InitialUserTime = processThread.UserProcessorTime;
             executionContext.InitialPrivTime = processThread.PrivilegedProcessorTime;
             executionContext.InitialTotalTime = processThread.TotalProcessorTime;

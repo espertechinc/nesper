@@ -350,6 +350,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 var compiler = container
                     .RoslynCompiler()
                     .WithMetaDataReferences(artifactRepository.AllMetadataReferences)
+                    .WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+                    .WithDebugOptimization(compileTimeServices.Configuration.Compiler.IsDebugOptimization)
                     .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                     .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                     .WithCodegenClasses(sorted);

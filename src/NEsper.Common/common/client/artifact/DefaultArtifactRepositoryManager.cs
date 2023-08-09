@@ -5,13 +5,11 @@ using System.Reflection;
 
 using com.espertech.esper.compat;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.client.artifact
 {
@@ -21,14 +19,23 @@ namespace com.espertech.esper.common.client.artifact
 
         private readonly IDictionary<string, IArtifactRepository> _repositoryTable;
         private readonly TypeResolver _parentTypeResolver;
+        private readonly AssemblyResolver _assemblyResolver;
 
+#if NETCOREAPP3_0_OR_GREATER
+        public DefaultArtifactRepositoryManager(
+            TypeResolver parentTypeResolver,
+            AssemblyResolver assemblyResolver)
+#else
         public DefaultArtifactRepositoryManager(TypeResolver parentTypeResolver)
+#endif
         {
             _parentTypeResolver = parentTypeResolver;
+            _assemblyResolver = assemblyResolver;
             _repositoryTable = new Dictionary<string, IArtifactRepository>();
-            
-#if NETCORE
-            DefaultRepository = new ArtifactRepositoryAssemblyLoadContext(_parentTypeResolver);
+
+#if NETCOREAPP3_0_OR_GREATER
+            DefaultRepository = new ArtifactRepositoryAssemblyLoadContext(
+                _parentTypeResolver, _assemblyResolver);
 #else
             DefaultRepository = new ArtifactRepositoryAppDomain(AppDomain.CurrentDomain);
 #endif
@@ -66,8 +73,11 @@ namespace com.espertech.esper.common.client.artifact
         {
             lock (_repositoryTable) {
                 if (!_repositoryTable.TryGetValue(deploymentId, out var artifactRepository) && createIfMissing) {
-#if NETCORE
-                    artifactRepository = new ArtifactRepositoryAssemblyLoadContext(deploymentId, _parentTypeResolver);
+#if NETCOREAPP3_0_OR_GREATER
+                    artifactRepository = new ArtifactRepositoryAssemblyLoadContext(
+                        deploymentId,
+                        _parentTypeResolver,
+                        _assemblyResolver);
 #else
                     artifactRepository = new ArtifactRepositoryAppDomain(AppDomain.CurrentDomain);
 #endif

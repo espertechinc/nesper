@@ -10,7 +10,7 @@ using com.espertech.esper.compat.function;
 
 using Microsoft.CodeAnalysis;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 

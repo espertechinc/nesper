@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// get module statements
 			IList<StatementProvider> statementResources;
 			try {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 				if (Log.IsDebugEnabled) {
 					var assemblyLoadContext = AssemblyLoadContext.GetLoadContext(moduleProvider.ModuleProvider.GetType().Assembly);
 					Log.Debug("AssemblyLoadContext: {0}", assemblyLoadContext);

@@ -10,20 +10,20 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Reflection;
 using System.Runtime.Loader;
 #endif
 
 namespace com.espertech.esper.common.client.artifact
 {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
     public class ArtifactRepositoryAssemblyLoadContext : BaseArtifactRepository, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private AssemblyLoadContext _assemblyLoadContext;
-        private TypeResolver _typeResolver;
+        private readonly TypeResolver _typeResolver;
 
         /// <summary>
         /// Returns the assembly load context
@@ -34,10 +34,14 @@ namespace com.espertech.esper.common.client.artifact
         /// Constructor.
         /// </summary>
         /// <param name="parentTypeResolver"></param>
-        public ArtifactRepositoryAssemblyLoadContext(TypeResolver parentTypeResolver)
+        /// <param name="assemblyResolver"></param>
+        public ArtifactRepositoryAssemblyLoadContext(
+            TypeResolver parentTypeResolver,
+            AssemblyResolver assemblyResolver)
         {
             _assemblyLoadContext = CreateAssemblyLoadContext(
                 this,
+                assemblyResolver,
                 "default-artifact-repository-assembly-load-context",
                 true);
             _typeResolver = new ArtifactTypeResolver(this, parentTypeResolver);
@@ -48,12 +52,15 @@ namespace com.espertech.esper.common.client.artifact
         /// </summary>
         /// <param name="deploymentId"></param>
         /// <param name="parentTypeResolver"></param>
+        /// <param name="assemblyResolver"></param>
         public ArtifactRepositoryAssemblyLoadContext(
             string deploymentId,
-            TypeResolver parentTypeResolver)
+            TypeResolver parentTypeResolver,
+            AssemblyResolver assemblyResolver)
         {
             _assemblyLoadContext = CreateAssemblyLoadContext(
                 this,
+                assemblyResolver,
                 "artifact-repository-assembly-load-context-" + deploymentId,
                 true);
             _typeResolver = new ArtifactTypeResolver(this, parentTypeResolver);
@@ -93,6 +100,7 @@ namespace com.espertech.esper.common.client.artifact
 
         public static AssemblyLoadContext CreateAssemblyLoadContext(
             IArtifactRepository repository,
+            AssemblyResolver assemblyResolver,
             string contextName,
             bool isCollectable)
         {
@@ -105,6 +113,10 @@ namespace com.espertech.esper.common.client.artifact
                         var assemblyBaseName = assemblyName.Name;
                         var artifact = repositoryInstance.Resolve(assemblyBaseName);
                         var assembly = artifact?.Assembly;
+                        if (assembly == null) {
+                            assembly = assemblyResolver?.Invoke(assemblyName);
+                        }
+                        
                         return assembly;
                     }
 

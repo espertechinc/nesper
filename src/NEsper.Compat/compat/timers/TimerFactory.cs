@@ -25,15 +25,8 @@ namespace com.espertech.esper.compat.timers
         {
             get
             {
-                lock( factoryLock )
-                {
-                    if (defaultTimerFactory == null)
-                    {
-                        // use the system timer factory unless explicitly instructed
-                        // to do otherwise.
-
-                        defaultTimerFactory = new SystemTimerFactory();
-                    }
+                lock( factoryLock ) {
+                    defaultTimerFactory ??= new SimpleTimerFactory();
                 }
 
                 return defaultTimerFactory;

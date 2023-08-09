@@ -27,7 +27,7 @@ namespace com.espertech.esper.compat.timers
             return new SimpleTimer(timerCallback, offsetInMillis, intervalInMillis);
         }
 
-        private class SimpleTimer : ITimer
+        public class SimpleTimer : ITimer
         {
             private Timer _timer;
 

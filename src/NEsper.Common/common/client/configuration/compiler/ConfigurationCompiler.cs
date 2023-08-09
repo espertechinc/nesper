@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <summary>
         /// Returns true if the compiler should set optimization to debug.
         /// </summary>
-        public bool IsDebugOptimization { get; private set; }
+        public bool IsDebugOptimization { get; set; }
 
         /// <summary>
         ///     Returns the expression-related settings for compiler.

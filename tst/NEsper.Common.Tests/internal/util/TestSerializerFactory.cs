@@ -65,14 +65,15 @@ namespace com.espertech.esper.common.@internal.util
                 classes[i] = expected.GetType();
             }
 
-            var serializers = SerializerFactory.GetSerializers(classes);
-            var bytes = SerializerFactory.Serialize(serializers, expected);
+            var serializerFactory = SerializerFactory.Instance;
+            var serializers = serializerFactory.GetSerializers(classes);
+            var bytes = serializerFactory.Serialize(serializers, expected);
 
-            var result = SerializerFactory.Deserialize(expected.Length, bytes, serializers);
+            var result = serializerFactory.Deserialize(expected.Length, bytes, serializers);
             EPAssertionUtil.AssertEqualsExactOrder(expected, result);
 
             // null values are simply not serialized
-            bytes = SerializerFactory.Serialize(new[] { SerializerFactory.GetSerializer(typeof(int?)) }, new object[] { null });
+            bytes = serializerFactory.Serialize(new[] { serializerFactory.GetSerializer(typeof(int?)) }, new object[] { null });
             Assert.AreEqual(0, bytes.Length);
         }
     }

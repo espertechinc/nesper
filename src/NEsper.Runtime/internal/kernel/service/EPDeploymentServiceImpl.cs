@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 
 using com.espertech.esper.common.client.artifact;

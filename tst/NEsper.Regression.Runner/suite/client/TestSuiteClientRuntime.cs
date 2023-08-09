@@ -314,10 +314,10 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
 
             [Test, RunInApplicationDomain]
-            public void WithingleModuleTwoStatementsNoDep() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithingleModuleTwoStatementsNoDep());
+            public void WithSingleModuleTwoStatementsNoDep() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithSingleModuleTwoStatementsNoDep());
 
             [Test, RunInApplicationDomain]
-            public void WithtatementNameDuplicate() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithtatementNameDuplicate());
+            public void WithStatementNameDuplicate() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithStatementNameDuplicate());
         }
 
         /// <summary>
@@ -334,9 +334,11 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
 
             [Test, RunInApplicationDomain]
+            [Parallelizable(ParallelScope.None)]
             public void WithPerformanceSynthetic() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithPerformanceSynthetic());
 
             [Test, RunInApplicationDomain]
+            [Parallelizable(ParallelScope.None)]
             public void WithPerformanceSyntheticUndelivered() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithPerformanceSyntheticUndelivered());
 
             [Test, RunInApplicationDomain]

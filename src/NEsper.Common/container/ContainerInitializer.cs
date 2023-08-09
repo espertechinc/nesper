@@ -9,7 +9,7 @@
 using System;
 using System.Linq;
 
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
 
@@ -101,10 +101,11 @@ namespace com.espertech.esper.container
                     ic => DefaultResourceManager(), Lifespan.Singleton);
             if (container.DoesNotHave<ITimerFactory>())
                 container.Register<ITimerFactory>(
-                    ic => new SystemTimerFactory(), Lifespan.Singleton);
+                    ic => new SimpleTimerFactory(), Lifespan.Singleton);
             //if (container.DoesNotHave<IConfigurationParser>())
             //    container.Register<IConfigurationParser, ConfigurationParser>(
             //        Lifespan.Transient);
+            
             if (container.DoesNotHave<TypeResolverProvider>())
                 container.Register<TypeResolverProvider>(
                     ic => new ArtifactTypeResolverProvider(ic),

@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace com.espertech.esper.compat.timers
 {
-#if NETCORE
+#if NETCOREAPP3_0_OR_GREATER
 #else
     /// <summary>
     /// Implementation of the TimerFactory that uses the HighResolutionTimer.
